@@ -244,9 +244,12 @@ string (string s) precache_sound = #19;
 string (string s) precache_model = #20; 
 void (entity client, string s) stuffcmd = #21; 
 entity (vector org, float rad) findradius = #22; 
-void (...) bprint = #23; 
-void (...) sprint = #24; 
-void (...) dprint = #25; 
+//void (...) bprint = #23; 
+//void (...) sprint = #24; 
+//void (...) dprint = #25;
+void(string s, ...) bprint				= #0:ex_bprint;
+void(entity client, string s, ...) sprint = #0:ex_sprint;
+void(string s, ...) dprint				= #25;
 string (float f) ftos = #26; 
 string (vector v) vtos = #27; 
 void () coredump = #28; 
@@ -750,3 +753,23 @@ void(entity e) AddToQue =
 		z.nextthink = ((time + TE_LAVASPLASH) + (random() * TE_LAVASPLASH));
 	}
 };
+
+// // Copied from https://github.com/fte-team/fteqw/blob/1f9f3635f0aef3b2eed6b40e35fcf6223c6ad533/engine/common/protocol.h#L362
+//QuakeEx(aka: rerelease) svcs.
+//	these are not really documented anywhere. we're trying to stick with protocol 15 (because that's the only documented protocol it supports properly thanks to demos)
+//	however we still need some special case svcs
+//  (there's also some problematic c2s differences too)
+#define svcqex_updateping			46	// [byte] slot, [signed_qe] ping
+#define svcqex_updatesocial			47	// [byte] slot, 8 bytes of unknown
+#define svcqex_updateplinfo			48	// [byte] slot, [leb128] health, [leb128] armour
+#define svcqex_locprint				49	// uses qe's localised string formatting, otherwise treat as svc_print.
+#define svcqex_servervars			50	// [leb128] changedvalues, [???] value...
+#define svcqex_seq					51	// [leb128] input sequence ack
+#define svcqex_achievement			52	// [string] codename
+#define svcqex_chat					53  // [byte] svcqex_chat, [byte] playercolour, [byte] textcolour, [string] playername, [string] chattext // new from FTE
+#define svcqex_levelcompleted		54
+#define svcqex_backtolobby			55
+#define svcqex_localsound			56
+#define svcqex_prompt				57
+#define svcqex_loccenterprint		58	// [string] codename
+// //

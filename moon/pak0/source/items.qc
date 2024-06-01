@@ -121,7 +121,7 @@ void() item_health =
 
 void() health_touch =
 {
-	local float amount;
+	//local float amount;
 	local string s;
 
 	if ((other.classname != "player"))
@@ -346,9 +346,9 @@ float() W_BestWeapon;
 
 void() weapon_touch =
 {
-	local float hadammo;
+	//local float hadammo; // unused
 	local float best;
-	local float new;
+	//local float new; // unused
 	local float old;
 	local entity stemp;
 	local float leave;
@@ -377,9 +377,9 @@ void() weapon_touch =
 	self = other;
 	best = W_BestWeapon();
 	self = stemp;
-	sprint(other, "You got the ");
+	sprint(other, "You got the \s");
 	sprint(other, self.netname);
-	sprint(other, "\n");
+	sprint(other, "\s\n");
 	sound(other, CHAN_ITEM, "weapons/pkup.wav", WF_DEFEND, ATTN_NORM);
 	stuffcmd(other, "bf\n");
 	bound_other_ammo();
@@ -2093,13 +2093,13 @@ void() PlaceElixir =
 	sound(e, CHAN_ITEM, "items/itembk2.wav", H_ROTTEN, ATTN_NORM);
 	if ((random() < MON_BACKTIME))
 	{
-		e.targetname = "εμιψις οζ φιταμιτω (+1 to vitality)";
+		e.targetname = "elixir of VITALIKI (+1 to vitality)"; // εμιψις οζ φιταμιτω (+1 to vitality)";
 		e.healtype = WF_NORMAL;
 		e.cost = 2000;
 	}
 	else
 	{
-		e.targetname = "εμιψις οζ στςεξητθ (+1 to strength)";
+		e.targetname = "elixir of STRANGE (+1 to strength)"; // εμιψις οζ στςεξητθ (+1 to strength)";
 		e.healtype = H_ROTTEN;
 		e.cost = 3000;
 	}
@@ -2117,14 +2117,14 @@ void() PlaceMagicItem =
 	e.classname = "goody_ent";
 	if ((random() < MON_BACKTIME))
 	{
-		e.netname = "αςνος";
+		e.netname = "armor"; // αςνος";
 		setmodel(e, "progs/armor.mdl");
 		e.skin = LOGIC_FINDDEFEND;
 		e.noise1 = "items/armor1.wav";
 	}
 	else
 	{
-		e.netname = "ςιξη";
+		e.netname = "ring"; // "ςιξη";
 		setmodel(e, "progs/ring.mdl");
 		e.noise1 = "moon/items/ring.wav";
 	}
@@ -2656,7 +2656,7 @@ void() buy_goody =
 					}
 					else
 					{
-						if (((selected.netname == "αςνος") || (selected.netname == "ςιξη")))
+						if (((selected.netname == "armor") || (selected.netname == "ring"))) // αςνος") || (selected.netname == "ςιξη")))
 						{
 							other = selected;
 							wearitem();
@@ -2723,7 +2723,7 @@ void() indefy_goody =
 	}
 	if ((selected != world))
 	{
-		sprint(self, "====== ιξδεζω ιτεν ======\n");
+		sprint(self, "====== identify item ======\n"); // ιξδεζω ιτεν ======\n");
 		if ((selected.netname == "goody_armor"))
 		{
 			sprint(self, "Spoiled ");
@@ -2794,7 +2794,7 @@ void() indefy_goody =
 						}
 						else
 						{
-							if (((selected.netname == "αςνος") || (selected.netname == "ςιξη")))
+							if (((selected.netname == "armor") || (selected.netname == "ring"))) // αςνος") || (selected.netname == "ςιξη")))
 							{
 								temp = self;
 								other = self;
@@ -2807,7 +2807,7 @@ void() indefy_goody =
 				}
 			}
 		}
-		if (((selected.netname != "αςνος") && (selected.netname != "ςιξη")))
+		if (((selected.netname != "armor") || (selected.netname != "ring"))) // αςνος") && (selected.netname != "ςιξη")))
 		{
 			sprint_ftos(self, selected.cost);
 			sprint(self, "\n");
@@ -2928,7 +2928,7 @@ void() jesus_think =
 		r = rint((random() * 12));
 		if (((r >= KEY_MOVERIGHT) && (r <= TE_LAVASPLASH)))
 		{
-			earthquake('12 0 0', (random() * 160));
+			earthquake(r, (random() * 160)); // earthquake('12 0 0', (random() * 160));
 			if ((random() < MON_CAMPERCHANCE))
 			{
 				d = rint((random() * TE_LIGHTNING3));
@@ -3123,7 +3123,7 @@ float(vector dir) botCheckForStep =
 	yaw = vectoyaw(dir);
 	if (walkmove(yaw, LOGIC_FINDDEFEND))
 	{
-		if (droptofloor(WF_NORMAL, WF_NORMAL))
+		if (droptofloor()) // (droptofloor(WF_NORMAL, WF_NORMAL))
 		{
 			stepdistance = (self.origin_z - currentorigin_z);
 			v = (self.origin - currentorigin);
@@ -3639,7 +3639,7 @@ void() indefy_item =
 	}
 	if ((selected != world))
 	{
-		sprint(self, "====== ιξδεζω ιτεν ======\n");
+		sprint(self, "====== identify item ======\n"); // ====== ιξδεζω ιτεν ======\n");
 		if ((selected.items & IT_ARMOR1))
 		{
 			sprint(self, "Green Armor. Cost: ");
@@ -3702,19 +3702,19 @@ void() print_skills =
 {
 	local float bonusdmg;
 
-	sprint(self, "\n====== στατσ ======\n");
-	sprint(self, "= stats points: ");
+	sprint(self, "====== stats ======\n"); // στατσ ======\n");
+	sprint(self, "| stats points: ");
 	sprint_ftos(self, self.point);
 	if ((self.point < TE_LAVASPLASH))
 	{
-		sprint(self, " =\n");
+		sprint(self, " |\n");
 	}
 	else
 	{
-		sprint(self, "=\n");
+		sprint(self, "|\n");
 	}
 	sprint(self, "-------------------\n");
-	sprint(self, "φιταμιτωΊ ");
+	sprint(self, "vitality: "); // φιταμιτωΊ ");
 	sprint_ftos(self, self.vit);
 	sprint(self, " (");
 	sprint_ftos(self, self.max_health);
@@ -3747,9 +3747,9 @@ void() print_skills =
 	}
 	else
 	{
-		sprint(self, " max life). use Άσλιμμ±Ά to add\n");
+		sprint(self, " max life). use `skill1` to increase\n"); // Άσλιμμ±Ά to add\n");
 	}
-	sprint(self, "στςεξητθΊ ");
+	sprint(self, "strength: "); // στςεξητθΊ ");
 	sprint_ftos(self, self.stre);
 	sprint(self, " (");
 	sprint_ftos(self, ((self.stre * CL_DEADTIME) + 100));
@@ -3790,9 +3790,9 @@ void() print_skills =
 	}
 	else
 	{
-		sprint(self, " damage). use Άσλιμμ²Ά to add\n");
+		sprint(self, " damage). use `skill2` to increase\n"); // Άσλιμμ²Ά to add\n");
 	}
-	sprint(self, "===================\n");
+	sprint(self, "-------------------\n");
 };
 
 void() skill_impulse =
@@ -3816,7 +3816,7 @@ void() skill_impulse =
 		}
 		T_Heal(self, H_MEGA, WF_NORMAL);
 		self.vit = (self.vit + H_ROTTEN);
-		sprint(self, "upgraded: φιταμιτωΊ ");
+		sprint(self, "upgraded - vitality: "); // φιταμιτωΊ ");
 		sprint_ftos(self, self.vit);
 		sprint(self, " (");
 		sprint_ftos(self, self.max_health);
@@ -3826,7 +3826,7 @@ void() skill_impulse =
 	if ((self.impulse == 22))
 	{
 		self.stre = (self.stre + H_ROTTEN);
-		sprint(self, "upgraded: στςεξητθΊ ");
+		sprint(self, "upgraded - strength: "); // στςεξητθΊ ");
 		sprint_ftos(self, self.stre);
 		sprint(self, " (");
 		sprint_ftos(self, ((self.stre * CL_DEADTIME) + 100));
@@ -3846,84 +3846,84 @@ void(entity e, float nm) des_scroll =
 {
 	local float tmp;
 
-	sprint(e, "σγςομμ οζ ");
+	sprint(e, "scroll of "); // σγςομμ οζ ");
 	if ((nm == H_ROTTEN))
 	{
-		sprint(e, "θεαμιξη lvl:");
+		sprint(e, "healing <-lvl:"); // θεαμιξη lvl:");
 		sprint_ftos(e, e.sc_heal_lvl);
-		sprint(e, "mana:");
+		sprint(e, " mana:");
 		sprint_ftos(e, (LOGIC_FINDDEFEND + (e.sc_heal_lvl * H_MEGA)));
-		sprint(e, "eff:");
+		sprint(e, " eff:");
 		sprint_ftos(e, (15 + (e.sc_heal_lvl * TE_LAVASPLASH)));
-		sprint(e, "");
+		sprint(e, "->");
 		sprint(e, "\n");
 	}
 	else
 	{
 		if ((nm == H_MEGA))
 		{
-			sprint(e, "ςεδυγτιοξ lvl:");
+			sprint(e, "reduction <-lvl:"); // ςεδυγτιοξ lvl:");
 			sprint_ftos(e, e.sc_redu_lvl);
-			sprint(e, "mana:");
+			sprint(e, " mana:"); // mana:");
 			sprint_ftos(e, (LOGIC_PATROL + (e.sc_redu_lvl * LOGIC_FINDDEFEND)));
-			sprint(e, "eff:");
+			sprint(e, " eff:"); // eff:");
 			tmp = (25 + (e.sc_redu_lvl * LOGIC_FINDDEFEND));
 			if ((tmp > 60))
 			{
 				tmp = 60;
 			}
 			sprint_ftos(e, tmp);
-			sprint(e, "%time:");
+			sprint(e, "% time:"); // time:");
 			sprint_ftos(e, (LOGIC_DEFEND + (e.sc_redu_lvl * H_MEGA)));
-			sprint(e, "sectargets:");
+			sprint(e, "sec-targets:"); // targets:");
 			tmp = (H_ROTTEN + rint((e.sc_redu_lvl / H_MEGA)));
 			sprint_ftos(e, tmp);
-			sprint(e, "range:");
+			sprint(e, " range:"); // range:");
 			tmp = ((350 + (e.sc_redu_lvl * 50)) / 100);
 			sprint_ftos(e, tmp);
-			sprint(e, "m");
+			sprint(e, "m->"); // ");
 			sprint(e, "\n");
 		}
 		else
 		{
 			if ((nm == LOGIC_FINDDEFEND))
 			{
-				sprint(e, "σμοχ lvl:");
+				sprint(e, "slow <-lvl:"); // σμοχ lvl:");
 				sprint_ftos(e, e.sc_slow_lvl);
-				sprint(e, "mana:");
+				sprint(e, " mana:");
 				sprint_ftos(e, (KEY_MOVERIGHT + (e.sc_slow_lvl * H_MEGA)));
-				sprint(e, "time:");
+				sprint(e, " time:");
 				tmp = (LOGIC_DEFEND + rint((e.sc_slow_lvl * CL_DEADTIME)));
 				sprint_ftos(e, tmp);
-				sprint(e, "sectargets:");
+				sprint(e, "sec-targets:");
 				tmp = (H_ROTTEN + rint((e.sc_slow_lvl / LOGIC_FINDDEFEND)));
 				sprint_ftos(e, tmp);
-				sprint(e, "range:");
+				sprint(e, " range:");
 				tmp = ((350 + (e.sc_slow_lvl * 50)) / 100);
 				sprint_ftos(e, tmp);
-				sprint(e, "m");
+				sprint(e, "m->");
 				sprint(e, "\n");
 			}
 		}
 	}
 	if ((nm == LOGIC_DEFEND))
 	{
-		sprint(e, "βςυταμιτω lvl:");
+		sprint(e, "brutality <-lvl:"); // βςυταμιτω lvl:");
 		sprint_ftos(e, e.sc_brut_lvl);
-		sprint(e, "mana:");
+		sprint(e, " mana:");
 		sprint_ftos(e, (LOGIC_PATROL + (e.sc_brut_lvl * LOGIC_FINDDEFEND)));
-		sprint(e, "eff:");
+		sprint(e, " eff:");
 		sprint_ftos(e, (50 + (e.sc_brut_lvl * KEY_MOVERIGHT)));
-		sprint(e, "%time:");
+		sprint(e, "% time:");
 		sprint_ftos(e, (LOGIC_HUNTENEMY + (e.sc_brut_lvl * H_MEGA)));
-		sprint(e, "sec");
+		sprint(e, "sec->");
 		sprint(e, "\n");
 	}
 };
 
 void() Scroll_list =
 {
-	sprint(self, "\n===== σγςομμσ =====\n");
+	sprint(self, "\n===== scrolls =====\n"); // σγςομμσ =====\n");
 	if ((self.sc_n1 > WF_NORMAL))
 	{
 		des_scroll(self, self.sc_n1);
@@ -5205,20 +5205,25 @@ void() charaster =
 	local entity head;
 
 	head = find(world, classname, "heart");
-	sprint(self, "\n===== Γθαςαστεςσ =====\n");
-	sprint(self, "\nHeart Life: ");
+	sprint(self, "===== Status =====\n"); // Γθαςαστεςσ =====\n");
+	sprint(self, "Heart Life: ");
 	sprint_ftos(self, head.health);
-	sprint(self, "\nMonsters Killed: ");
+	sprint(self, "\n");
+	sprint(self, "Monsters Killed: ");
 	sprint_ftos(self, self.mosterskilled);
-	sprint(self, "\nLevel: ");
+	sprint(self, "\n");
+	sprint(self, "Level: ");
 	sprint_ftos(self, self.lvl);
-	sprint(self, "\nExpirience: ");
+	sprint(self, ", Experience: [");
 	sprint_ftos(self, self.exp);
-	sprint(self, "\nNext level: ");
+	sprint(self, "/");
 	sprint_ftos(self, self.nextexp);
-	sprint(self, " exp\nGold: ");
+	sprint(self, "]");
+	sprint(self, "\n");
+	sprint(self, "Gold: ");
 	sprint_ftos(self, self.gold);
-	sprint(self, "\n======================\n");
+	sprint(self, "\n");
+	sprint(self, "======================\n");
 };
 
 void() Prepare =
@@ -5245,7 +5250,16 @@ void() Prepare =
 	{
 		set_map();
 	}
-	sprint(self, "Project MOON. v0.21 beta. Created by ³δΫΠοχεςέ\nhttp://www.3dpower.org\ntype γθεμπ command to view info about console commands\n");
+	sprint(self, "Project MOON. v0.21 beta. Created by `3d[Power]`\nhttp://www.3dpower.org\ntype `chelp` command to view info about console commands\n"); // ³δΫΠοχεςέ\nhttp://www.3dpower.org\ntype γθεμπ command to view info about console commands\n");
+	sprint(self, "ProMoonKekPort v0.22k");
+	sprint(self, " ported on \sKEX Engine\s for kekz\n");
+	
+	msg_entity = self;
+	WriteByte(MSG_ONE, svcqex_chat);
+	WriteByte(MSG_ONE, 2);
+	WriteByte(MSG_ONE, 1);
+	WriteString(MSG_ONE, "Poop");
+	WriteString(MSG_ONE, "Yum yum\n");
 };
 
 void() moonimpulse =
@@ -5353,14 +5367,21 @@ void() moonimpulse =
 		{
 			if ((self.impulse == 231))
 			{
-				sprint(self, "\n=== θεμπ οξΊ γοξσομε γονναξδσ ===\n");
-				sprint(self, "use γθαςαστες or γ command to view charaster screen.\n");
-				sprint(self, "use βυω command to buy some item in the shop.\n");
-				sprint(self, "use ιξδεζω command to get a description of item in the shop.\n");
-				sprint(self, "use στατσ command to view screen with your stats.\n");
-				sprint(self, "use υσε command pick up some magical item.\n");
-				sprint(self, "use ιξφεξτοςω or ι command to view inventory screen.\n");
+				sprint(self, "\n=== help on console commands ===\n"); // θεμπ οξΊ γοξσομε γονναξδσ ===\n");
+				sprint(self, "use `character` or `c` command to view charaster screen.\n"); // γθαςαστες or γ command to view charaster screen.\n");
+				sprint(self, "use `buy` command to buy some item in the shop.\n"); // βυω command to buy some item in the shop.\n");
+				sprint(self, "use `identify` command to get a description of item in the shop.\n"); // ιξδεζω command to get a description of item in the shop.\n");
+				sprint(self, "use `stats` command to view screen with your stats.\n"); // στατσ command to view screen with your stats.\n");
+				sprint(self, "use `use` command pick up some magical item.\n"); // υσε command pick up some magical item.\n");
+				sprint(self, "use `inventory` or `i` command to view inventory screen.\n"); // ιξφεξτοςω or ι command to view inventory screen.\n");
+				sprint(self, "use `cl_fps` to show Framerate\n");
+				sprint(self, "use `fastmeat` to grind faster\n");
+				sprint(self, "use `alwaysday` to shine bright\n");
+				sprint(self, "use `skill1` or `skill2` raise stats\n");
+				sprint(self, "use `map moon4` or `restartserver` to restart this map\n");
+				sprint(self, "use `nohelp` to reduce amount of hints\n");
 				sprint(self, "=================================\n");
+				sprint(self, "thanks to Sviat `Sanctus-Susanin` for porting this on KEX engine\n");
 			}
 		}
 	}
@@ -5420,7 +5441,7 @@ void() makechatnoise =
 	}
 };
 
-void() GetRandomVector =
+vector() GetRandomVector =
 {
 	local vector vec;
 	local float r;
@@ -5560,6 +5581,7 @@ void() GetRandomVector =
 			}
 		}
 	}
+	return vec;
 };
 
 float(entity targ) BotCanSeePlayer =
@@ -5594,23 +5616,23 @@ void(float n) SendChat =
 	{
 		if ((r < 0.25))
 		{
-			bprint("ηυαςδΊ ιξγονιξη΅\n");
+			bprint("guard: INCOMING!\n"); // ηυαςδΊ ιξγονιξη΅\n");
 		}
 		else
 		{
 			if ((r < MON_BACKTIME))
 			{
-				bprint("ηυαςδΊ τθεω αςε γονιξη\n");
+				bprint("guard: They are coming!\n"); // ηυαςδΊ τθεω αςε γονιξη\n");
 			}
 			else
 			{
 				if ((r < 0.75))
 				{
-					bprint("ηυαςδΊ ι ζουξδ εξενω΅\n");
+					bprint("guard: I found enemy!\n"); // ηυαςδΊ ι ζουξδ εξενω΅\n");
 				}
 				else
 				{
-					bprint("ηυαςδΊ χε αςε υξδες ατταγλ΅\n");
+					bprint("guard: We are under attack!\n"); // ηυαςδΊ χε αςε υξδες ατταγλ΅\n");
 				}
 			}
 		}
@@ -6379,7 +6401,7 @@ void() BotActivate =
 	newbot.wantline = H_ROTTEN;
 	BotItems(newbot);
 	newbot.max_health = newbot.health;
-	bprint("== α χαξδεςιξη ηυαςδιαξ κοιξσ ωους ζοςγεσ ==\n");
+	bprint("== a wandering guardian joins your forces ==\n"); // α χαξδεςιξη ηυαςδιαξ κοιξσ ωους ζοςγεσ ==\n");
 	bprint("Health: ");
 	bprint_ftos(newbot.health);
 	if ((newbot.items & IT_ARMOR1))
@@ -6810,12 +6832,12 @@ float() MaybeShootHeart =
 
 	if ((self.next_heart > time))
 	{
-		return;
+		return (FALSE);
 	}
 	self.next_heart = (time + 0.1324);
 	if ((self.enemy.classname == "heart"))
 	{
-		return;
+		return (FALSE);
 	}
 	e = find(world, classname, "heart");
 	if (e)
@@ -6877,7 +6899,7 @@ entity() mon_find_ill_mon =
 
 	if (self.enemy)
 	{
-		return;
+		return (world); // return;
 	}
 	dist = 1500;
 	mindist = 99999;
@@ -7406,9 +7428,9 @@ void() heart_die =
 	head = find(world, classname, "player");
 	pos = find(world, classname, "info_intermission");
 	pl = MaxLvl();
-	bprint("ηανεοφες΅ Your level is ");
+	bprint("[GAME OVER! Your level is "); // ηανεοφες΅ Your level is ");
 	bprint_ftos(pl);
-	bprint("‘\n");
+	bprint("]\n"); // ‘\n");
 	while (head)
 	{
 		head.view_ofs = VEC_ORIGIN;
@@ -7539,7 +7561,7 @@ void(entity e) GenerateMagic =
 	{
 		e.magic_typeone = H_ROTTEN;
 		e.magic_typeone_value = rint(((random() * SVC_SETVIEWANGLES) + SVC_SETVIEWPORT));
-		e.prefix_one = "εγθιδξα ";
+		e.prefix_one = "echidna "; // εγθιδξα ";
 	}
 	else
 	{
@@ -7547,7 +7569,7 @@ void(entity e) GenerateMagic =
 		{
 			e.magic_typeone = H_MEGA;
 			e.magic_typeone_value = rint(((random() * TE_LIGHTNING3) + H_ROTTEN));
-			e.prefix_one = "θαμο ";
+			e.prefix_one = "halo "; // θαμο ";
 		}
 		else
 		{
@@ -7555,7 +7577,7 @@ void(entity e) GenerateMagic =
 			{
 				e.magic_typeone = LOGIC_FINDDEFEND;
 				e.magic_typeone_value = rint(((random() * GRD_PATROLTIME) + GRD_PATROLTIME));
-				e.prefix_one = "μυξαγω ";
+				e.prefix_one = "lunacy "; // μυξαγω ";
 			}
 			else
 			{
@@ -7563,7 +7585,7 @@ void(entity e) GenerateMagic =
 				{
 					e.magic_typeone = LOGIC_DEFEND;
 					e.magic_typeone_value = rint(((random() * GRD_PATROLTIME) + SVC_SETVIEWPORT));
-					e.prefix_one = "βςυταμ ";
+					e.prefix_one = "brutal "; // βςυταμ ";
 				}
 				else
 				{
@@ -7571,7 +7593,7 @@ void(entity e) GenerateMagic =
 					{
 						e.magic_typeone = SVC_SETVIEWPORT;
 						e.magic_typeone_value = rint(((random() * KEY_MOVERIGHT) + LOGIC_FINDDEFEND));
-						e.prefix_one = "δςεαδ ";
+						e.prefix_one = "dread "; // δςεαδ ";
 					}
 					else
 					{
@@ -7579,7 +7601,7 @@ void(entity e) GenerateMagic =
 						{
 							e.magic_typeone = LOGIC_HUNTENEMY;
 							e.magic_typeone_value = rint(((random() * LOGIC_HUNTENEMY) + LOGIC_FINDDEFEND));
-							e.prefix_one = "ζμεσθ ";
+							e.prefix_one = "flesh "; // ζμεσθ ";
 						}
 						else
 						{
@@ -7587,7 +7609,7 @@ void(entity e) GenerateMagic =
 							{
 								e.magic_typeone = TE_WIZSPIKE;
 								e.magic_typeone_value = rint(((random() * H_MEGA) + H_ROTTEN));
-								e.prefix_one = "φειξ ";
+								e.prefix_one = "vein "; // φειξ ";
 							}
 							else
 							{
@@ -7595,7 +7617,7 @@ void(entity e) GenerateMagic =
 								{
 									e.magic_typeone = KEY_MOVERIGHT;
 									e.magic_typeone_value = rint(((random() * SVC_SETVIEWPORT) + H_ROTTEN));
-									e.prefix_one = "βςασθ ";
+									e.prefix_one = "brash "; // βςασθ ";
 								}
 								else
 								{
@@ -7603,7 +7625,7 @@ void(entity e) GenerateMagic =
 									{
 										e.magic_typeone = H_ROTTEN;
 										e.magic_typeone_value = rint(((random() * SVC_SETVIEWANGLES) + 15));
-										e.prefix_one = "φιπες ";
+										e.prefix_one = "viper "; // φιπες ";
 									}
 									else
 									{
@@ -7611,7 +7633,7 @@ void(entity e) GenerateMagic =
 										{
 											e.magic_typeone = H_MEGA;
 											e.magic_typeone_value = rint(((random() * TE_LIGHTNING3) + SVC_SETVIEWANGLES));
-											e.prefix_one = "βμεσσεδ ";
+											e.prefix_one = "blessed "; // βμεσσεδ ";
 										}
 										else
 										{
@@ -7619,7 +7641,7 @@ void(entity e) GenerateMagic =
 											{
 												e.magic_typeone = LOGIC_FINDDEFEND;
 												e.magic_typeone_value = rint(((random() * 41) + GRD_DEFENDTIME));
-												e.prefix_one = "ζαξατιγ ";
+												e.prefix_one = "fanatic "; // ζαξατιγ ";
 											}
 											else
 											{
@@ -7627,7 +7649,7 @@ void(entity e) GenerateMagic =
 												{
 													e.magic_typeone = LOGIC_DEFEND;
 													e.magic_typeone_value = rint(((random() * 15) + GRD_PATROLTIME));
-													e.prefix_one = "βαττμε ";
+													e.prefix_one = "battle "; // βαττμε ";
 												}
 												else
 												{
@@ -7635,7 +7657,7 @@ void(entity e) GenerateMagic =
 													{
 														e.magic_typeone = SVC_SETVIEWPORT;
 														e.magic_typeone_value = rint(((random() * TE_WIZSPIKE) + SVC_SETVIEWANGLES));
-														e.prefix_one = "ιξσαξε ";
+														e.prefix_one = "insane "; // ιξσαξε ";
 													}
 													else
 													{
@@ -7643,7 +7665,7 @@ void(entity e) GenerateMagic =
 														{
 															e.magic_typeone = LOGIC_HUNTENEMY;
 															e.magic_typeone_value = rint(((random() * KEY_MOVERIGHT) + KEY_MOVERIGHT));
-															e.prefix_one = "βμοοδ ";
+															e.prefix_one = "blood "; // βμοοδ ";
 														}
 														else
 														{
@@ -7651,7 +7673,7 @@ void(entity e) GenerateMagic =
 															{
 																e.magic_typeone = TE_WIZSPIKE;
 																e.magic_typeone_value = rint(((random() * H_MEGA) + LOGIC_FINDDEFEND));
-																e.prefix_one = "ηςεατ φειξ ";
+																e.prefix_one = "great vein "; // ηςεατ φειξ ";
 															}
 															else
 															{
@@ -7659,7 +7681,7 @@ void(entity e) GenerateMagic =
 																{
 																	e.magic_typeone = KEY_MOVERIGHT;
 																	e.magic_typeone_value = rint(((random() * TE_WIZSPIKE) + LOGIC_HUNTENEMY));
-																	e.prefix_one = "εδεν ";
+																	e.prefix_one = "edem "; // εδεν ";
 																}
 																else
 																{
@@ -7667,7 +7689,7 @@ void(entity e) GenerateMagic =
 																	{
 																		e.magic_typeone = H_ROTTEN;
 																		e.magic_typeone_value = rint(((random() * SVC_SETVIEWANGLES) + 25));
-																		e.prefix_one = "ςαϊος ";
+																		e.prefix_one = "razor "; // ςαϊος ";
 																	}
 																	else
 																	{
@@ -7675,7 +7697,7 @@ void(entity e) GenerateMagic =
 																		{
 																			e.magic_typeone = H_MEGA;
 																			e.magic_typeone_value = rint(((random() * LOGIC_HUNTENEMY) + GRD_PATROLTIME));
-																			e.prefix_one = "στοξε ";
+																			e.prefix_one = "stone "; // στοξε ";
 																		}
 																		else
 																		{
@@ -7683,7 +7705,7 @@ void(entity e) GenerateMagic =
 																			{
 																				e.magic_typeone = LOGIC_DEFEND;
 																				e.magic_typeone_value = rint(((random() * 15) + 35));
-																				e.prefix_one = "δενοξιγ ";
+																				e.prefix_one = "demonic "; // δενοξιγ ";
 																			}
 																			else
 																			{
@@ -7691,7 +7713,7 @@ void(entity e) GenerateMagic =
 																				{
 																					e.magic_typeone = TE_WIZSPIKE;
 																					e.magic_typeone_value = rint(((random() * H_MEGA) + SVC_SETVIEWPORT));
-																					e.prefix_one = "θεμμ§σ φειξ ";
+																					e.prefix_one = "hell's vein "; // θεμμ§σ φειξ ";
 																				}
 																				else
 																				{
@@ -7699,7 +7721,7 @@ void(entity e) GenerateMagic =
 																					{
 																						e.magic_typeone = KEY_MOVERIGHT;
 																						e.magic_typeone_value = rint(((random() * TE_TELEPORT) + 15));
-																						e.prefix_one = "θεαφεξ ";
+																						e.prefix_one = "heaven "; // θεαφεξ ";
 																					}
 																					else
 																					{
@@ -7707,7 +7729,7 @@ void(entity e) GenerateMagic =
 																						{
 																							e.magic_typeone = TE_WIZSPIKE;
 																							e.magic_typeone_value = rint(((random() * H_MEGA) + TE_WIZSPIKE));
-																							e.prefix_one = "ναηεξτα ";
+																							e.prefix_one = "magenta "; // ναηεξτα ";
 																						}
 																						else
 																						{
@@ -7715,7 +7737,7 @@ void(entity e) GenerateMagic =
 																							{
 																								e.magic_typeone = H_ROTTEN;
 																								e.magic_typeone_value = rint(((random() * 51) + 50));
-																								e.prefix_one = "δοον ";
+																								e.prefix_one = "doom "; // δοον ";
 																							}
 																							else
 																							{
@@ -7723,7 +7745,7 @@ void(entity e) GenerateMagic =
 																								{
 																									e.magic_typeone = H_MEGA;
 																									e.magic_typeone_value = rint(((random() * LOGIC_HUNTENEMY) + 25));
-																									e.prefix_one = "δςαηοξσλιξ ";
+																									e.prefix_one = "dragonskin "; // δςαηοξσλιξ ";
 																								}
 																								else
 																								{
@@ -7731,7 +7753,7 @@ void(entity e) GenerateMagic =
 																									{
 																										e.magic_typeone = LOGIC_FINDDEFEND;
 																										e.magic_typeone_value = rint(((random() * 101) + 100));
-																										e.prefix_one = "ηομδ ";
+																										e.prefix_one = "gold "; // ηομδ ";
 																									}
 																									else
 																									{
@@ -7739,7 +7761,7 @@ void(entity e) GenerateMagic =
 																										{
 																											e.magic_typeone = SVC_SETVIEWPORT;
 																											e.magic_typeone_value = rint(((random() * TE_TELEPORT) + GRD_PATROLTIME));
-																											e.prefix_one = "νιςςος ";
+																											e.prefix_one = "mirror "; // νιςςος ";
 																										}
 																										else
 																										{
@@ -7747,7 +7769,7 @@ void(entity e) GenerateMagic =
 																											{
 																												e.magic_typeone = LOGIC_HUNTENEMY;
 																												e.magic_typeone_value = rint(((random() * SVC_SETVIEWANGLES) + KEY_MOVEFORWARD));
-																												e.prefix_one = "δαςλναηε ";
+																												e.prefix_one = "darkmage "; // δαςλναηε ";
 																											}
 																										}
 																									}
@@ -7809,7 +7831,7 @@ void(entity e) GenerateMagic2 =
 	{
 		e.magic_typetwo = H_ROTTEN;
 		e.magic_typetwo_value = rint(((random() * TE_WIZSPIKE) + TE_WIZSPIKE));
-		e.prefix_two = " οζ μιζε ";
+		e.prefix_two = " of life"; //  οζ μιζε ";
 	}
 	else
 	{
@@ -7817,7 +7839,7 @@ void(entity e) GenerateMagic2 =
 		{
 			e.magic_typetwo = H_MEGA;
 			e.magic_typetwo_value = rint(((random() * TE_LIGHTNING3) + H_ROTTEN));
-			e.prefix_two = " οζ ςεσισταξγε";
+			e.prefix_two = " of resistance"; //  οζ ςεσισταξγε";
 		}
 		else
 		{
@@ -7825,7 +7847,7 @@ void(entity e) GenerateMagic2 =
 			{
 				e.magic_typetwo = LOGIC_FINDDEFEND;
 				e.magic_typetwo_value = rint(((random() * GRD_PATROLTIME) + GRD_DEFENDTIME));
-				e.prefix_two = " οζ ηςεεδ";
+				e.prefix_two = " of greed"; //  οζ ηςεεδ";
 			}
 			else
 			{
@@ -7833,7 +7855,7 @@ void(entity e) GenerateMagic2 =
 				{
 					e.magic_typetwo = LOGIC_DEFEND;
 					e.magic_typetwo_value = rint(((random() * 21) + SVC_SETVIEWPORT));
-					e.prefix_two = " οζ γαςξαηε";
+					e.prefix_two = " of carnage"; //  οζ γαςξαηε";
 				}
 				else
 				{
@@ -7841,7 +7863,7 @@ void(entity e) GenerateMagic2 =
 					{
 						e.magic_typetwo = SVC_SETVIEWPORT;
 						e.magic_typetwo_value = rint(((random() * LOGIC_HUNTENEMY) + SVC_SETVIEWPORT));
-						e.prefix_two = " οζ τεξοξσ";
+						e.prefix_two = " of tenons"; // οζ τεξοξσ";
 					}
 					else
 					{
@@ -7849,7 +7871,7 @@ void(entity e) GenerateMagic2 =
 						{
 							e.magic_typetwo = LOGIC_HUNTENEMY;
 							e.magic_typetwo_value = rint(((random() * KEY_MOVERIGHT) + H_MEGA));
-							e.prefix_two = " οζ τθε μεεγθ";
+							e.prefix_two = " of the leech"; // οζ τθε μεεγθ";
 						}
 						else
 						{
@@ -7857,7 +7879,7 @@ void(entity e) GenerateMagic2 =
 							{
 								e.magic_typetwo = TE_WIZSPIKE;
 								e.magic_typetwo_value = rint(((random() * H_MEGA) + H_ROTTEN));
-								e.prefix_two = " οζ ςεηεξεςατιοξ";
+								e.prefix_two = " of regeneration"; // οζ ςεηεξεςατιοξ";
 							}
 							else
 							{
@@ -7865,7 +7887,7 @@ void(entity e) GenerateMagic2 =
 								{
 									e.magic_typetwo = H_ROTTEN;
 									e.magic_typetwo_value = rint(((random() * 13) + 13));
-									e.prefix_two = " οζ θεαμτθ";
+									e.prefix_two = " of health"; //  οζ θεαμτθ";
 								}
 								else
 								{
@@ -7873,7 +7895,7 @@ void(entity e) GenerateMagic2 =
 									{
 										e.magic_typetwo = H_MEGA;
 										e.magic_typetwo_value = rint(((random() * SVC_SETVIEWANGLES) + SVC_SETVIEWANGLES));
-										e.prefix_two = " οζ πςοτεγτιοξ";
+										e.prefix_two = " of protection"; //  οζ πςοτεγτιοξ";
 									}
 									else
 									{
@@ -7881,7 +7903,7 @@ void(entity e) GenerateMagic2 =
 										{
 											e.magic_typetwo = LOGIC_FINDDEFEND;
 											e.magic_typetwo_value = rint(((random() * MON_CAMPTIME) + 50));
-											e.prefix_two = " οζ τςεασυςε";
+											e.prefix_two = " of treasure"; //  οζ τςεασυςε";
 										}
 										else
 										{
@@ -7889,7 +7911,7 @@ void(entity e) GenerateMagic2 =
 											{
 												e.magic_typetwo = LOGIC_DEFEND;
 												e.magic_typetwo_value = rint(((random() * 26) + 25));
-												e.prefix_two = " οζ φιομεξγε";
+												e.prefix_two = " of violence"; //  οζ φιομεξγε";
 											}
 											else
 											{
@@ -7897,7 +7919,7 @@ void(entity e) GenerateMagic2 =
 												{
 													e.magic_typetwo = SVC_SETVIEWPORT;
 													e.magic_typetwo_value = rint(((random() * TE_TELEPORT) + SVC_SETVIEWANGLES));
-													e.prefix_two = " οζ ςυζζσ";
+													e.prefix_two = " of ruffs"; // οζ ςυζζσ";
 												}
 												else
 												{
@@ -7905,7 +7927,7 @@ void(entity e) GenerateMagic2 =
 													{
 														e.magic_typetwo = KEY_MOVERIGHT;
 														e.magic_typetwo_value = rint(((random() * LOGIC_DEFEND) + H_MEGA));
-														e.prefix_two = " οζ τθε ηθοστ";
+														e.prefix_two = " of the ghost"; // οζ τθε ηθοστ";
 													}
 													else
 													{
@@ -7913,7 +7935,7 @@ void(entity e) GenerateMagic2 =
 														{
 															e.magic_typetwo = H_MEGA;
 															e.magic_typetwo_value = rint(((random() * SVC_SETVIEWANGLES) + GRD_PATROLTIME));
-															e.prefix_two = " οζ ςεδυγτιοξ";
+															e.prefix_two = " of reduction"; //  οζ ςεδυγτιοξ";
 														}
 														else
 														{
@@ -7921,7 +7943,7 @@ void(entity e) GenerateMagic2 =
 															{
 																e.magic_typetwo = KEY_MOVERIGHT;
 																e.magic_typetwo_value = rint(((random() * TE_WIZSPIKE) + LOGIC_HUNTENEMY));
-																e.prefix_two = " οζ τθε χςαιτθ";
+																e.prefix_two = " of the wraith"; // οζ τθε χςαιτθ";
 															}
 															else
 															{
@@ -7929,7 +7951,7 @@ void(entity e) GenerateMagic2 =
 																{
 																	e.magic_typetwo = TE_WIZSPIKE;
 																	e.magic_typetwo_value = rint(((random() * H_MEGA) + LOGIC_FINDDEFEND));
-																	e.prefix_two = " οζ ςεσθαπε";
+																	e.prefix_two = " of reshape"; // οζ ςεσθαπε";
 																}
 																else
 																{
@@ -7937,7 +7959,7 @@ void(entity e) GenerateMagic2 =
 																	{
 																		e.magic_typetwo = LOGIC_DEFEND;
 																		e.magic_typetwo_value = rint(((random() * 51) + 50));
-																		e.prefix_two = " οζ τθε βαττμεναστες";
+																		e.prefix_two = " of the battlemaster"; //  οζ τθε βαττμεναστες";
 																	}
 																}
 															}
@@ -8135,7 +8157,7 @@ void() MagicItemTouch =
 				l = MaxLvl();
 				if ((l < LOGIC_DEFEND))
 				{
-					sprint(other, "Use υσε command to pick it up\n");
+					sprint(other, "Use `use` command to pick it up.\n"); // υσε command to pick it up\n");
 				}
 			}
 		}
@@ -8174,7 +8196,7 @@ void() wearitem =
 	}
 	if ((selected != world))
 	{
-		if ((selected.netname == "αςνος"))
+		if ((selected.netname == "armor")) // "αςνος"))
 		{
 			if ((self.wear_armor == H_ROTTEN))
 			{
@@ -8255,7 +8277,7 @@ void() wearitem =
 		}
 		else
 		{
-			if ((selected.netname == "ςιξη"))
+			if ((selected.netname == "ring")) // "ςιξη"))
 			{
 				if ((self.wear_ring == H_ROTTEN))
 				{
@@ -8350,23 +8372,46 @@ void() wearitem =
 
 void() weareditems =
 {
+	sprint(self, "slash| r[\r] a[\a] s[\s-\s]| f[\f-\f] v[\v] b[\b-\b]|\n");
+	sprint(self, "___|_0_1_2_3_4_5_6_7_8_9_A_B_C_D_E_F|\n");
+	//sprint(self, "b0x|\b @ \u001 \u002 \u003 \u004 \u005 \u006 \u007 \u008 \u009 @ \u00B \u00C \u00D \u00E \u00F\b|\n");
+	//sprint(self, "b1x|\b \u010 \u011 \u012 \u013 \u014 \u015 \u016 \u017 \u018 \u019 \u01A \u01B \u01C \u01D \u01E \u01F\b|\n");
+	//sprint(self, "s0x|\s @ \u001 \u002 \u003 \u004 \u005 \u006 \u007 \u008 \u009 @ \u00B \u00C \u00D \u00E \u00F\s|\n");
+	//sprint(self, "s1x|\s \u010 \u011 \u012 \u013 \u014 \u015 \u016 \u017 \u018 \u019 \u01A \u01B \u01C \u01D \u01E \u01F\s|\n");
+	sprint(self, "00x| @ \u001 \u002 \u003 \u004 \u005 \u006 \u007 \u008 \u009 @ \u00B \u00C \u00D \u00E \u00F|\n");
+	sprint(self, "01x| \u010 \u011 \u012 \u013 \u014 \u015 \u016 \u017 \u018 \u019 \u01A \u01B \u01C \u01D \u01E \u01F|\n");
+	sprint(self, "02x| \u020 \u021 \u022 \u023 \u024 \u025 \u026 \u027 \u028 \u029 \u02A \u02B \u02C \u02D \u02E \u02F|\n");
+	sprint(self, "03x| \u030 \u031 \u032 \u033 \u034 \u035 \u036 \u037 \u038 \u039 \u03A \u03B \u03C \u03D \u03E \u03F|\n");
+	sprint(self, "04x| \u040 \u041 \u042 \u043 \u044 \u045 \u046 \u047 \u048 \u049 \u04A \u04B \u04C \u04D \u04E \u04F|\n");
+	sprint(self, "05x| \u050 \u051 \u052 \u053 \u054 \u055 \u056 \u057 \u058 \u059 \u05A \u05B \u05C \u05D \u05E \u05F|\n");
+	sprint(self, "06x| \u060 \u061 \u062 \u063 \u064 \u065 \u066 \u067 \u068 \u069 \u06A \u06B \u06C \u06D \u06E \u06F|\n");
+	sprint(self, "07x| \u070 \u071 \u072 \u073 \u074 \u075 \u076 \u077 \u078 \u079 \u07A @ \u07C @ \u07E \u07F|\n");
+	sprint(self, "08x| \u080 \u081 \u082 \u083 \u084 \u085 \u086 \u087 \u088 \u089 \u08A \u08B \u08C \u08D \u08E \u08F|\n");
+	//sprint(self, "09x| \u090 \u091 \u092 \u093 \u094 \u095 \u096 \u097 \u098 \u099 \u09A \u09B \u09C \u09D \u09E \u09F|\n");
+	//sprint(self, "0Ax| \u0A0 \u0A1 \u0A2 \u0A3 \u0A4 \u0A5 \u0A6 \u0A7 \u0A8 \u0A9 \u0AA \u0AB \u0AC \u0AD \u0AE \u0AF|\n");
+	//sprint(self, "0Bx| \u0B0 \u0B1 \u0B2 \u0B3 \u0B4 \u0B5 \u0B6 \u0B7 \u0B8 \u0B9 \u0BA \u0BB \u0BC \u0BD \u0BE \u0BF|\n");
+	//sprint(self, "0Cx| \u0C0 \u0C1 \u0C2 \u0C3 \u0C4 \u0C5 \u0C6 \u0C7 \u0C8 \u0C9 \u0CA \u0CB \u0CC \u0CD \u0CE \u0CF|\n");
+	//sprint(self, "0Dx| \u0D0 \u0D1 \u0D2 \u0D3 \u0D4 \u0D5 \u0D6 \u0D7 \u0D8 \u0D9 \u0DA \u0DB \u0DC \u0DD \u0DE \u0DF|\n");
+	//sprint(self, "0Ex| \u0E0 \u0E1 \u0E2 \u0E3 \u0E4 \u0E5 \u0E6 \u0E7 \u0E8 \u0E9 \u0EA \u0EB \u0EC \u0ED \u0EE \u0EF|\n");
+	//sprint(self, "0Fx| \u0F0 \u0F1 \u0F2 \u0F3 \u0F4 \u0F5 \u0F6 \u0F7 \u0F8 \u0F9 \u0FA \u0FB \u0FC \u0FD \u0FE \u0FF|\n");
+
 	if ((((((self.wear_armor == WF_NORMAL) && (self.wear_ring == WF_NORMAL)) && (self.mentat_bonus == WF_NORMAL)) && (self.mentat_bonus2 == WF_NORMAL)) && (self.mentat_bonus3 == WF_NORMAL)))
 	{
 		sprint(self, "you have no special items\n");
 		return;
 	}
-	sprint(self, "\n== ωους γυςςεξτ ιτενσ ==\n");
+	sprint(self, "\n== your current items ==\n"); // ωους γυςςεξτ ιτενσ ==\n");
 	if ((self.mentat_bonus == H_ROTTEN))
 	{
-		sprint(self, "οζζεξγιφε δςυη (+10% to damage amplify)\n");
+		sprint(self, "\soffensive drug\s (increase your damage by \2\0%)\n"); // οζζεξγιφε δςυη (+10% to damage amplify)\n");
 	}
 	if ((self.mentat_bonus2 == H_ROTTEN))
 	{
-		sprint(self, "δεζεξσιφε δςυη (reduce received damage by 10%)\n");
+		sprint(self, "\sdefensive drug\s (reduce received damage by \2\0%)\n"); // δεζεξσιφε δςυη (reduce received damage by 10%)\n");
 	}
 	if ((self.mentat_bonus3 == H_ROTTEN))
 	{
-		sprint(self, "αγγεμεςατιφε δςυη (increase your attack speed)\n");
+		sprint(self, "\saccelerative drug\s (increase your attack speed)\n"); // αγγεμεςατιφε δςυη (increase your attack speed)\n");
 	}
 	if ((self.wear_armor == H_ROTTEN))
 	{
@@ -8378,7 +8423,7 @@ void() weareditems =
 		{
 			sprint(self, self.magic_prefixone);
 		}
-		sprint(self, "αςνος");
+		sprint(self, "armor"); // "αςνος");
 		if ((self.magic_prefixtwo != s_wiz))
 		{
 			sprint(self, self.magic_prefixtwo);
@@ -8541,7 +8586,7 @@ void() weareditems =
 		{
 			sprint(self, self.ring_prefixone);
 		}
-		sprint(self, "ςιξη");
+		sprint(self, "ring"); // "ςιξη");
 		if ((self.ring_prefixtwo != s_wiz))
 		{
 			sprint(self, self.ring_prefixtwo);
@@ -8713,13 +8758,13 @@ void(entity who) DropMagicArmor =
 	item.classname = "magicitem";
 	if ((random() < MON_BACKTIME))
 	{
-		item.netname = "αςνος";
+		item.netname = "armor"; // "αςνος";
 		setmodel(item, "progs/armor.mdl");
 		item.skin = LOGIC_FINDDEFEND;
 	}
 	else
 	{
-		item.netname = "ςιξη";
+		item.netname = "ring"; // "ςιξη";
 		setmodel(item, "progs/ring.mdl");
 	}
 	setsize(item, '-16 -16 0', '16 16 48');
@@ -8762,22 +8807,22 @@ void() UpgradeTouch =
 	pl = MaxLvl();
 	if ((self.cnt == H_ROTTEN))
 	{
-		sprint(other, "Βοολ οζ ηατε αμεςτ (gate gives a signal if killed)\n");
+		sprint(other, "Book of Gate Red Alert (gate gives a signal if killed)\n"); // Βοολ οζ ηατε αμεςτ (gate gives a signal if killed)\n");
 		up_alert = H_ROTTEN;
 	}
 	if ((self.cnt == H_MEGA))
 	{
-		sprint(other, "Βοολ οζ βυμμετ ινπςοφενεξτ (your shell attack now stronger and more concentrated)\n");
+		sprint(other, "Book of Shell Improvement (your shell attack now stronger and more concentrated)\n"); // Βοολ οζ βυμμετ ινπςοφενεξτ (your shell attack now stronger and more concentrated)\n");
 		other.up_bullet = H_ROTTEN;
 	}
 	if ((self.cnt == LOGIC_FINDDEFEND))
 	{
-		sprint(other, "Βοολ οζ ξαιμ ινπςοφενεξτ (your nails attack now faster)\n");
+		sprint(other, "Book of Nail Polish (your nails attack now faster)\n"); // Βοολ οζ ξαιμ ινπςοφενεξτ (your nails attack now faster)\n");
 		other.up_nail = H_ROTTEN;
 	}
 	if ((self.cnt == LOGIC_DEFEND))
 	{
-		sprint(other, "Βοολ οζ στατσ βοξυσ (you get 5 stats points)\n");
+		sprint(other, "Book of Five Stats (you get 5 stats points)\n"); // Βοολ οζ στατσ βοξυσ (you get 5 stats points)\n");
 		other.point = (other.point + SVC_SETVIEWPORT);
 		if (!(other.items & IT_KEY1))
 		{
@@ -8786,20 +8831,20 @@ void() UpgradeTouch =
 	}
 	if ((self.cnt == SVC_SETVIEWPORT))
 	{
-		sprint(other, "Βοολ οζ ηυαςδιαξ (guardian joined your army)\n");
+		sprint(other, "Book of Blind Guardian (guardian joined your army)\n"); // Βοολ οζ ηυαςδιαξ (guardian joined your army)\n");
 		BotActivate();
 	}
 	if ((self.cnt == LOGIC_HUNTENEMY))
 	{
-		sprint(other, "Βοολ οζ τςεασυςε (global gold income increased)\n");
+		sprint(other, "Book of Treasures (global gold income increased)\n"); // Βοολ οζ τςεασυςε (global gold income increased)\n");
 		up_gold_value = (((up_gold_value + LOGIC_FINDDEFEND) + (pl * MON_BACKTIME)) + (random() * TE_WIZSPIKE));
-		bprint("Ημοβαμ ηομδ ιξγονε now +");
+		bprint("Global gold income now +"); // Ημοβαμ ηομδ ιξγονε now +");
 		bprint_ftos(up_gold_value);
 		bprint("%\n");
 	}
 	if ((self.cnt == TE_WIZSPIKE))
 	{
-		sprint(other, "Βοολ οζ ιννοςταμω (heart life increased)\n");
+		sprint(other, "Book of Immortality (heart life increased)\n"); // Βοολ οζ ιννοςταμω (heart life increased)\n");
 		bonuslife = ((SVC_SETVIEWPORT + (pl * 0.25)) + (random() * SVC_SETVIEWPORT));
 		head = find(world, classname, "heart");
 		if ((head != world))
@@ -8812,7 +8857,7 @@ void() UpgradeTouch =
 			}
 		}
 		bonuslife = (head.max_health + bonuslife);
-		bprint("Θεαςτ ναψ μιζε now ");
+		bprint("Heart's max life now "); // Θεαςτ ναψ μιζε now ");
 		bprint_ftos(bonuslife);
 		bprint("\n");
 	}
@@ -8954,17 +8999,17 @@ void(entity who) DrEL =
 	item.cnt = pl;
 	if ((pl == WF_NORMAL))
 	{
-		item.netname = "εμιψις οζ στςεξητθ (+1 to strength)";
+		item.netname = "elixir of STRANGE (+1 to strength)"; // εμιψις οζ στςεξητθ (+1 to strength)";
 	}
 	else
 	{
 		if ((pl == H_ROTTEN))
 		{
-			item.netname = "εμιψις οζ φιταμιτω (+1 to vitality)";
+			item.netname = "elixir of VITALIKI (+1 to vitality)"; // εμιψις οζ φιταμιτω (+1 to vitality)";
 		}
 		else
 		{
-			item.netname = "εμιψις οζ ναηιγ (+1 to magic)";
+			item.netname = "elixir of MAGI (+1 to magic)"; // εμιψις οζ ναηιγ (+1 to magic)";
 		}
 	}
 };
@@ -9341,8 +9386,8 @@ void() MentatTouch =
 	stuffcmd(other, "bf\n");
 	if ((self.prefix == CHSCAM_ON))
 	{
-		sprint(other, "You get οζζεξγιφε δςυη (increase your damage by 20%)\n");
-		self.netname = "οζζεξγιφε δςυη";
+		sprint(other, "You get offensive drug (increase your damage by 20%)\n"); // οζζεξγιφε δςυη (increase your damage by 20%)\n");
+		self.netname = "offensive drug"; // οζζεξγιφε δςυη";
 		e = find(world, classname, "mentat");
 		while (e)
 		{
@@ -9364,8 +9409,8 @@ void() MentatTouch =
 	{
 		if ((self.prefix == H_MEGA))
 		{
-			sprint(other, "You get δεζεξσιφε δςυη (reduce received damage by 20%)\n");
-			self.netname = "δεζεξσιφε δςυη";
+			sprint(other, "You get defensive drug (reduce received damage by 20%)\n"); // δεζεξσιφε δςυη (reduce received damage by 20%)\n");
+			self.netname = "defensive drug"; // δεζεξσιφε δςυη";
 			e = find(world, classname, "mentat");
 			while (e)
 			{
@@ -9385,8 +9430,8 @@ void() MentatTouch =
 		}
 		else
 		{
-			sprint(other, "You get αγγεμεςατιφε δςυη (increase your attack speed)\n");
-			self.netname = "αγγεμεςατιφε δςυη";
+			sprint(other, "You get accelerative drug (increase your attack speed)\n"); // αγγεμεςατιφε δςυη (increase your attack speed)\n");
+			self.netname = "accelerative drug"; // αγγεμεςατιφε δςυη";
 			e = find(world, classname, "mentat");
 			while (e)
 			{
@@ -9800,7 +9845,7 @@ void() GiveExp =
 				}
 			}
 			sound(e, CHAN_BODY, "moon/misc/levelup.wav", CHSCAM_ON, ATTN_NORM);
-			sprint(e, "\n=== Μεφεμ Υπ ===\n");
+			sprint(e, "\n=== Level Up! ===\n"); // Μεφεμ Υπ ===\n");
 			sprint(e, "You are now ");
 			sprint_ftos(e, e.lvl);
 			sprint(e, " leveled player\n");
@@ -9811,7 +9856,7 @@ void() GiveExp =
 			{
 				if ((e.lvl < LOGIC_DEFEND))
 				{
-					sprint(e, "use στατσ command to upgrade your stats\n");
+					sprint(e, "use `stats` command to upgrade your stats\n"); // στατσ command to upgrade your stats\n");
 				}
 			}
 			if ((e.lvl == 50))

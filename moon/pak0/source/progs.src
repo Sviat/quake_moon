@@ -1,0 +1,24 @@
+./progs.dat
+
+#pragma flag enable lax //remove this line once you've fixed up any decompiler bugs...
+
+sysdefs.qc
+defs.qc
+subs.qc
+ai.qc
+combat.qc
+items.qc
+weapons.qc
+world.qc
+player.qc
+monsters.qc
+doors.qc
+misc.qc
+demon.qc
+wizard.qc
+dog.qc
+boss.qc
+hknight.qc
+fish.qc
+shalrath.qc
+oldone.qc

@@ -105,7 +105,7 @@ float ATTN_NONE;
 float ATTN_NORM    = 1;
 float ATTN_IDLE    = 2;
 float ATTN_STATIC    = 3;
-float UPDATE_GENERAL;
+float UPDATE_GENERAL = 0;
 float UPDATE_STATIC    = 1;
 float UPDATE_BINARY    = 2;
 float UPDATE_TEMP    = 3;
@@ -244,12 +244,12 @@ string (string s) precache_sound = #19;
 string (string s) precache_model = #20; 
 void (entity client, string s) stuffcmd = #21; 
 entity (vector org, float rad) findradius = #22; 
-//void (...) bprint = #23; 
-//void (...) sprint = #24; 
-//void (...) dprint = #25;
-void(string s, ...) bprint				= #0:ex_bprint;
+/*void (...) bprint = #23; 
+void (...) sprint = #24; 
+void (...) dprint = #25;*/
+void(string s, ...) bprint = #0:ex_bprint;
 void(entity client, string s, ...) sprint = #0:ex_sprint;
-void(string s, ...) dprint				= #25;
+void(string s, ...) dprint = #25;
 string (float f) ftos = #26; 
 string (vector v) vtos = #27; 
 void () coredump = #28; 
@@ -285,12 +285,25 @@ string (string s) precache_file = #68;
 void (entity e) makestatic = #69; 
 void (string s) changelevel = #70; 
 void (string var, string val) cvar_set = #72; 
-void (entity client, string s, ...) centerprint = #73; 
+//void (entity client, string s, ...) centerprint = #73;
+void(entity client, string s, ...) centerprint = #0:ex_centerprint;	// sprint, but in middle
 void (vector pos, string samp, float vol, float atten) ambientsound = #74; 
 string (string s) precache_model2 = #75; 
 string (string s) precache_sound2 = #76; 
 string (string s) precache_file2 = #77; 
 void (entity e) setspawnparms = #78; 
+
+// Debug rendering functions. KEX QuakeC
+void draw_point( vector point, float colormap, float lifetime, float depthtest ) = #0:ex_draw_point;
+void draw_line( vector start, vector end, float colormap, float lifetime, float depthtest ) = #0:ex_draw_line;
+void draw_arrow( vector start, vector end, float colormap, float size, float lifetime, float depthtest ) = #0:ex_draw_arrow;
+void draw_ray( vector start, vector direction, float length, float colormap, float size, float lifetime, float depthtest ) = #0:ex_draw_ray;
+void draw_circle( vector origin, float radius, float colormap, float lifetime, float depthtest ) = #0:ex_draw_circle;
+void draw_bounds( vector min, vector max, float colormap, float lifetime, float depthtest ) = #0:ex_draw_bounds;
+void draw_worldtext( string s, vector origin, float size, float lifetime, float depthtest ) = #0:ex_draw_worldtext;
+void draw_sphere( vector origin, float radius, float colormap, float lifetime, float depthtest ) = #0:ex_draw_sphere;
+void draw_cylinder( vector origin, float halfHeight, float radius, float colormap, float lifetime, float depthtest ) = #0:ex_draw_cylinder;
+
 void(vector tdest, float tspeed, void() func) SUB_CalcMove;
 void(entity ent, vector tdest, float tspeed, void() func) SUB_CalcMoveEnt;
 void(vector destangle, float tspeed, void() func) SUB_CalcAngleMove;
@@ -494,8 +507,82 @@ string s_wiz;
 .float ring_typetwo;
 .float ring_typetwo_value;
 
-void() moster_precache =
+void() monster_precache =
 {
+	precache_model2("progs/monster1.mdl");
+	precache_model2("progs/laser.mdl");
+	precache_model2("progs/laser2.mdl");
+	precache_sound2("enforcer/death1.wav");
+	precache_sound2("enforcer/enfire.wav");
+	precache_sound2("enforcer/enfstop.wav");
+	precache_sound2("shalrath/attack.wav");
+	precache_sound2("shalrath/attack2.wav");
+	precache_sound2("shalrath/death.wav");
+	precache_sound2("shambler/melee1.wav");
+	precache_sound2("shambler/melee2.wav");
+	precache_sound2("shambler/smack.wav");
+	precache_sound2("shambler/sattck1.wav");
+	precache_sound2("shambler/sboom.wav");
+	precache_sound2("shambler/sdeath.wav");
+	precache_sound2("zombie/z_hit.wav");
+	precache_sound2("zombie/z_miss.wav");
+	precache_sound2("zombie/z_shot1.wav");
+	precache_sound2("zombie/z_gib.wav");
+	precache_sound2("zombie/z_pain.wav");
+	precache_sound2("zombie/z_pain1.wav");
+	precache_model("progs/aura.mdl");
+	precache_model("progs/shard.mdl");
+	precache_model("progs/monster0.mdl");
+	precache_model("progs/monster2.mdl");
+	precache_model("progs/monster3.mdl");
+	precache_model("progs/monster4.mdl");
+	precache_model("progs/monster5.mdl");
+	precache_model("progs/monster7.mdl");
+	precache_model("progs/monster8.mdl");
+	precache_model("progs/monster9.mdl");
+	precache_model("progs/spid_gib.mdl");
+	precache_model("progs/h_spider.mdl");
+	precache_model("progs/w_spike.mdl");
+	precache_model("progs/v_spike.mdl");
+	precache_model("progs/h_mage.mdl");
+	precache_model("progs/w_ball.mdl");
+	precache_model("progs/spine.mdl");
+	precache_model("progs/bone.mdl");
+	precache_model("progs/skull.mdl");
+	precache_model("progs/h_guard.mdl");
+	precache_model("progs/h_ogre.mdl");
+	precache_model("progs/grenade.mdl");
+	precache_model("progs/h_shal.mdl");
+	precache_model("progs/uzi.mdl");
+	precache_model("progs/knight.mdl");
+	precache_model("progs/h_knight.mdl");
+	precache_model("progs/s_light.mdl");
+	precache_model("progs/shambler.mdl");
+	precache_sound("ogre/ogdth.wav");
+	precache_sound("ogre/ogsawatk.wav");
+	precache_sound("knight/kdeath.wav");
+	precache_sound("knight/khurt.wav");
+	precache_sound("knight/ksight.wav");
+	precache_sound("knight/sword1.wav");
+	precache_sound("knight/sword2.wav");
+	precache_sound("knight/idle.wav");
+	precache_sound("soldier/death1.wav");
+	precache_sound("soldier/sattck1.wav");
+	//precache_sound("moon/headless/die1.wav"); // missing file
+	precache_sound("moon/monsters/d_spider.wav");
+	precache_sound("moon/monsters/f_spider.wav");
+	precache_sound("moon/monsters/d_snake.wav");
+	precache_sound("moon/monsters/d_mage.wav");
+	precache_sound("moon/monsters/d_mage2.wav");
+	precache_sound("moon/monsters/f_mage.wav");
+};
+
+void() item_precache =
+{
+	precache_model2("progs/h_mega.mdl");
+	precache_model("maps/b_bh100.bsp");
+	precache_model("maps/b_bh25.bsp");
+	precache_model("maps/b_bh10.bsp");
 	precache_model("maps/b_shell0.bsp");
 	precache_model("maps/b_nail0.bsp");
 	precache_model("maps/b_batt0.bsp");
@@ -509,13 +596,7 @@ void() moster_precache =
 	precache_model("progs/armor.mdl");
 	precache_model("progs/ring.mdl");
 	precache_model("progs/drugs.mdl");
-	precache_model("maps/b_bh100.bsp");
-	precache_sound("items/r_item2.wav");
-	precache_model("maps/b_bh25.bsp");
-	precache_sound("items/health1.wav");
-	precache_model("maps/b_bh10.bsp");
 	precache_model("progs/potion.mdl");
-	precache_sound("items/r_item1.wav");
 	precache_model("progs/heart.mdl");
 	precache_model("progs/s_spikeb.mdl");
 	precache_model("progs/player_s.mdl");
@@ -525,6 +606,9 @@ void() moster_precache =
 	precache_model("progs/h_shams.mdl");
 	precache_model("progs/tome.mdl");
 	precache_model("progs/derrick.mdl");
+	precache_sound("items/r_item1.wav");
+	precache_sound("items/r_item2.wav");
+	precache_sound("items/health1.wav");
 	precache_sound("items/armor1.wav");
 	precache_sound("misc/null.wav");
 	precache_sound("moon/ambient/quake.wav");
@@ -540,57 +624,28 @@ void() moster_precache =
 	precache_sound("moon/misc/stone1.wav");
 	precache_sound("moon/misc/stone2.wav");
 	precache_sound("moon/misc/cast.wav");
-	precache_model("progs/aura.mdl");
-	precache_model("progs/shard.mdl");
-	precache_model2("progs/monster1.mdl");
-	precache_model2("progs/h_mega.mdl");
-	precache_model2("progs/laser.mdl");
-	precache_model2("progs/laser2.mdl");
-	precache_sound2("enforcer/death1.wav");
-	precache_sound2("enforcer/enfire.wav");
-	precache_sound2("enforcer/enfstop.wav");
-	precache_model("progs/monster2.mdl");
-	precache_model("progs/spid_gib.mdl");
-	precache_model("progs/h_spider.mdl");
-	precache_sound("moon/monsters/d_spider.wav");
-	precache_sound("moon/monsters/f_spider.wav");
-	precache_model("progs/w_spike.mdl");
-	precache_model("progs/monster3.mdl");
-	precache_model("progs/v_spike.mdl");
-	precache_model("progs/h_mage.mdl");
-	precache_model("progs/w_ball.mdl");
-	precache_sound("moon/monsters/d_mage.wav");
-	precache_sound("moon/monsters/d_mage2.wav");
-	precache_sound("moon/monsters/f_mage.wav");
-	precache_model("progs/spine.mdl");
-	precache_model("progs/bone.mdl");
-	precache_model("progs/skull.mdl");
-	precache_sound("soldier/death1.wav");
-	precache_sound("soldier/sattck1.wav");
-	precache_model("progs/monster0.mdl");
-	precache_model("progs/h_guard.mdl");
-	precache_model("progs/monster4.mdl");
-	precache_model("progs/h_ogre.mdl");
-	precache_model("progs/grenade.mdl");
-	precache_sound("ogre/ogdth.wav");
-	precache_sound("ogre/ogsawatk.wav");
-	precache_model("progs/monster9.mdl");
-	precache_model("progs/h_shal.mdl");
-	precache_sound2("shalrath/attack.wav");
-	precache_sound2("shalrath/attack2.wav");
-	precache_sound2("shalrath/death.wav");
-	precache_model("progs/monster8.mdl");
-	precache_model("progs/uzi.mdl");
-	precache_sound("moon/monsters/d_snake.wav");
-	precache_model("progs/knight.mdl");
-	precache_model("progs/h_knight.mdl");
-	precache_sound("knight/kdeath.wav");
-	precache_sound("knight/khurt.wav");
-	precache_sound("knight/ksight.wav");
-	precache_sound("knight/sword1.wav");
-	precache_sound("knight/sword2.wav");
-	precache_sound("knight/idle.wav");
 };
+
+void() extras_precache =
+{
+	precache_model("progs/scroll.mdl");
+	precache_model("progs/meteors.mdl");
+	//precache_sound("moon/magic/m_slow.wav"); // missing
+	//precache_sound("moon/magic/m_heal.wav"); // missing
+	//precache_sound("moon/magic/m_thun.wav"); // missing
+	//precache_sound("moon/talk/stay1.wav"); // missing
+	//precache_sound("moon/talk/stay2.wav"); // missing
+	//precache_sound("moon/talk/go1.wav"); // missing
+	//precache_sound("moon/talk/go2.wav"); // missing
+};
+
+void() moon_precache =
+{
+	item_precache();
+	monster_precache();
+	extras_precache();
+};
+
 .string gatename;
 .float framtime;
 .float nextyaw;
@@ -657,12 +712,24 @@ float waypoints_ok;
 .float rgn_time;
 .float health_magic_regen_time;
 .float rgnm_time;
-void (entity client, string s, ...) centerprint2 = #73; 
-void (entity client, string s, ...) centerprint3 = #73; 
-void (entity client, string s, ...) centerprint4 = #73; 
-void (entity client, string s, ...) centerprint5 = #73; 
-void (entity client, string s, ...) centerprint6 = #73; 
-void (entity client, string s, ...) centerprint7 = #73; 
+void (entity client, string s) centerprint1 = #73; // unused
+void (entity client, string s, string s) centerprint2 = #73; // unused
+void (entity client, string s, string s, string s) centerprint3 = #73; // unused
+void (entity client, string s, string s, string s, string s) centerprint4 = #73; // unused
+//void (entity client, string s, ...) centerprint5 = #73; 
+void(entity client, string s, ...) centerprint5 = #0:ex_centerprint;	// sprint, but in middle
+void (entity client, string s, string s, string s, string s, string s, string s) centerprint6 = #73; // unused
+void (entity client, string s, string s, string s, string s, string s, string s, string s) centerprint7 = #73; // unused
+
+string(float f) quick_ftos_floor =
+{
+	return ftos(floor(f));
+};
+
+string(float f) quick_ftos =
+{
+	return ftos(f);
+};
 
 void(entity who, float f) sprint_ftos =
 {
@@ -715,7 +782,7 @@ float() player_level =
 	local entity sel;
 	local float maxlvl;
 
-	maxlvl = CONTENT_EMPTY;
+	maxlvl = empty_float; // was CONTENT_EMPTY; supress empty_float unused warning
 	e = find(world, classname, "player");
 	while (e)
 	{
@@ -726,7 +793,7 @@ float() player_level =
 		}
 		e = find(e, classname, "player");
 	}
-	return (sel.lvl);
+	return maxlvl; // return (sel.lvl);
 };
 
 void(entity e) AddToQue =
@@ -773,3 +840,12 @@ void(entity e) AddToQue =
 #define svcqex_prompt				57
 #define svcqex_loccenterprint		58	// [string] codename
 // //
+#define const_qex_color_white 0
+#define const_qex_color_green 1
+#define const_qex_color_teal 2
+#define const_qex_color_yellow 3
+
+#define MOON_GLYPH_WHITECELL "\x0B"
+#define MOON_GLYPH_SELECTION "\x0D"
+#define MOON_GLYPH_BRACKET_OPEN "\x10"
+#define MOON_GLYPH_BRACKET_CLOSE "\x11"

@@ -1,6 +1,138 @@
 //Decompiled code. Please respect the original copyright.
 void() W_SetCurrentAmmo;
 
+void() flash_self =
+{
+	stuffcmd(self, "bf\n");
+};
+
+void() flash_other =
+{
+	stuffcmd(other, "bf\n");
+};
+
+void(entity target, float digit) moon_print_golden_digit =
+{
+	switch(floor(digit))
+	{
+		case 0: sprint(target, "\0"); break;
+		case 1: sprint(target, "\1"); break;
+		case 2: sprint(target, "\2"); break;
+		case 3: sprint(target, "\3"); break;
+		case 4: sprint(target, "\4"); break;
+		case 5: sprint(target, "\5"); break;
+		case 6: sprint(target, "\6"); break;
+		case 7: sprint(target, "\7"); break;
+		case 8: sprint(target, "\8"); break;
+		case 9: sprint(target, "\9"); break;
+		default: sprint(target, MOON_GLYPH_WHITECELL);
+	}
+};
+
+void(entity target, float digit) moon_print_red_digit =
+{
+	switch(floor(digit))
+	{
+		case 0: sprint(target, "\xB0"); break;
+		case 1: sprint(target, "\xB1"); break;
+		case 2: sprint(target, "\xB2"); break;
+		case 3: sprint(target, "\xB3"); break;
+		case 4: sprint(target, "\xB4"); break;
+		case 5: sprint(target, "\xB5"); break;
+		case 6: sprint(target, "\xB6"); break;
+		case 7: sprint(target, "\xB7"); break;
+		case 8: sprint(target, "\xB8"); break;
+		case 9: sprint(target, "\xB9"); break;
+		default: sprint(target, MOON_GLYPH_WHITECELL);
+	}
+};
+
+void(entity target, float number, void(entity target, float digit) color_func) moon_print_color_number =
+{
+	local float remainder;
+	local float digit_count;
+	
+	digit_count = 1;
+	remainder = rint(number);
+	while(remainder > 10)
+	{
+		digit_count = digit_count + 1;
+		remainder = remainder / 10;
+	}
+	
+	local float multiplier;
+	multiplier = 1;
+	for(float i = 1; i < digit_count; ++i)
+	{
+		multiplier = multiplier * 10;
+	}
+	
+	local float top_part;
+	remainder = rint(number);
+	while(digit_count > 1)
+	{
+		top_part = floor(remainder / multiplier);
+		remainder = remainder % multiplier;
+		multiplier = multiplier / 10;
+		digit_count = digit_count - 1;
+		//sprint(target, "{} {} {} {} \n", ftos(number), ftos(top_part), ftos(remainder), ftos(multiplier)); // keep for debug
+		color_func(target, top_part);
+	}
+	color_func(target, remainder);
+};
+
+void(entity target, float number) moon_print_golden_number =
+{
+	moon_print_color_number(target, number, moon_print_golden_digit);
+};
+
+void(entity target, float number) moon_print_red_number =
+{
+	moon_print_color_number(target, number, moon_print_red_digit);
+};
+
+void(entity target) moon_print_target_gold =
+{
+	moon_print_golden_number(target, target.gold);
+	sprint(target, "\n");
+};
+
+void(entity chat_target, entity value_target) moon_print_target_other_health =
+{
+	if (value_target.health < value_target.max_health)
+	{
+		moon_print_red_number(chat_target, value_target.health);
+		sprint(chat_target, "/");
+	}
+	sprint(chat_target, "{}\n", quick_ftos_floor(value_target.max_health));
+};
+
+//[byte] svcqex_chat, [byte] playercolour, [byte] textcolour, [string] playername, [string] chattext
+void(string sender, float sender_color, string text) kex_chat_message_broad =
+{
+	WriteByte(MSG_BROADCAST, svcqex_chat);
+	WriteByte(MSG_BROADCAST, sender_color);
+	WriteByte(MSG_BROADCAST, const_qex_color_teal);
+	WriteString(MSG_BROADCAST, sender);
+	WriteString(MSG_BROADCAST, text);
+};
+
+//[byte] svcqex_chat, [byte] playercolour, [byte] textcolour, [string] playername, [string] chattext
+void(string sender, float sender_color, string text) kex_chat_message_self =
+{
+	local entity bak_entity;
+	bak_entity = msg_entity;
+
+	msg_entity = self;
+	WriteByte(MSG_ONE, svcqex_chat);
+	WriteByte(MSG_ONE, sender_color);
+	WriteByte(MSG_ONE, const_qex_color_white);
+	WriteString(MSG_ONE, sender);
+	WriteString(MSG_ONE, text);
+	
+	msg_entity = bak_entity;
+};
+
 void() SUB_regen =
 {
 	self.model = self.mdl;
@@ -81,6 +213,12 @@ float(entity e, float healamount) T_Mana =
 	}
 	return (WF_DEFEND);
 };
+string NAME_SERVER = "Server";
+string NAME_SETTINGS = "Settings";
+float CHAT_COLOR_TECHMSG = const_qex_color_white;
+float CHAT_COLOR_SELFMSG = const_qex_color_green;
+float CHAT_COLOR_BOTMSG = const_qex_color_teal;
+float CHAT_COLOR_WARNING = const_qex_color_yellow;
 float H_ROTTEN    = 1;
 float H_MEGA    = 2;
 .float healamount;
@@ -351,7 +489,7 @@ void() weapon_touch =
 	//local float new; // unused
 	local float old;
 	local entity stemp;
-	local float leave;
+	//local float leave; // unused
 
 	if (!(other.flags & FL_CLIENT))
 	{
@@ -573,8 +711,8 @@ void() item_sigil =
 
 void() powerup_touch =
 {
-	local entity stemp;
-	local float best;
+	//local entity stemp; // unused
+	//local float best; // unused
 
 	if ((other.classname != "player"))
 	{
@@ -690,12 +828,12 @@ void() item_artifact_super_damage =
 
 void() BackpackTouch =
 {
-	local string s;
+	//local string s; // unused
 	local float best;
 	local float old;
 	local float new;
 	local entity stemp;
-	local float acount;
+	//local float acount; // unused
 
 	if ((other.classname != "player"))
 	{
@@ -3797,12 +3935,12 @@ void() print_skills =
 
 void() skill_impulse =
 {
-	if ((self.impulse == GRD_PATROLTIME))
+	if ((self.impulse == 20))
 	{
 		print_skills();
 		return;
 	}
-	if ((self.point <= WF_NORMAL))
+	if ((self.point <= 0))
 	{
 		sprint(self, "no stats points\n");
 		return;
@@ -4003,7 +4141,7 @@ void() Cast_Slow =
 		{
 			self.mana = WF_NORMAL;
 		}
-		sound(self, CHAN_VOICE, "moon/magic/m_slow.wav", H_ROTTEN, ATTN_NORM);
+		//sound(self, CHAN_VOICE, "moon/magic/m_slow.wav", H_ROTTEN, ATTN_NORM); // missing file
 		self.scroll_time = (time + MON_BACKTIME);
 	}
 	else
@@ -4106,7 +4244,7 @@ void() Cast_Heal =
 	{
 		return;
 	}
-	sound(self, CHAN_VOICE, "moon/magic/m_heal.wav", H_ROTTEN, ATTN_NORM);
+	//sound(self, CHAN_VOICE, "moon/magic/m_heal.wav", H_ROTTEN, ATTN_NORM); // missing file
 	T_Heal(self, eff, WF_NORMAL);
 	self.mana = (self.mana - rm);
 	if ((self.mana < WF_NORMAL))
@@ -4291,7 +4429,7 @@ void() Cast_Shaf =
 	}
 	if ((casted == TRUE))
 	{
-		sound(self, CHAN_WEAPON, "moon/magic/m_thun.wav", H_ROTTEN, ATTN_NORM);
+		//sound(self, CHAN_WEAPON, "moon/magic/m_thun.wav", H_ROTTEN, ATTN_NORM); // missing file
 		self.scroll_time = (time + MON_BACKTIME);
 		return;
 	}
@@ -4712,6 +4850,8 @@ float(float mn) MonsterCtable =
 	{
 		return (rint(((random() * LOGIC_HUNTENEMY) + LOGIC_PATROL)));
 	}
+
+	return (rint(((random() * LOGIC_FINDDEFEND) + H_MEGA))); // supress "not all path returns" warning
 };
 
 void(entity who, float l) MonsterTable =
@@ -4906,7 +5046,7 @@ void() Keep_cam_chasing_owner =
 	local float dist;
 	local float cap;
 	local float f_f;
-	local string s;
+	//local string s; // unused
 
 	self.nextthink = (time + MON_CAMPERCHANCE);
 	if (!(self.owner.speed & CHSCAM_ON))
@@ -5134,11 +5274,11 @@ void() ToggleMode =
 				{
 					if ((random() < MON_BACKTIME))
 					{
-						sound(head, CHAN_VOICE, "moon/talk/stay1.wav", H_ROTTEN, ATTN_NORM);
+						//sound(head, CHAN_VOICE, "moon/talk/stay1.wav", H_ROTTEN, ATTN_NORM); // missing file
 					}
 					else
 					{
-						sound(head, CHAN_VOICE, "moon/talk/stay2.wav", H_ROTTEN, ATTN_NORM);
+						//sound(head, CHAN_VOICE, "moon/talk/stay2.wav", H_ROTTEN, ATTN_NORM); // missing file
 					}
 					head.mode = H_MEGA;
 					bprint("Guard: I will stay here\n");
@@ -5149,11 +5289,11 @@ void() ToggleMode =
 					{
 						if ((random() < MON_BACKTIME))
 						{
-							sound(head, CHAN_VOICE, "moon/talk/go1.wav", H_ROTTEN, ATTN_NORM);
+							//sound(head, CHAN_VOICE, "moon/talk/go1.wav", H_ROTTEN, ATTN_NORM); // missing file
 						}
 						else
 						{
-							sound(head, CHAN_VOICE, "moon/talk/go2.wav", H_ROTTEN, ATTN_NORM);
+							//sound(head, CHAN_VOICE, "moon/talk/go2.wav", H_ROTTEN, ATTN_NORM); // missing file
 						}
 						head.mode = H_ROTTEN;
 						bprint("Guard: I coming\n");
@@ -5203,27 +5343,16 @@ void() shoot_ent =
 void() charaster =
 {
 	local entity head;
-
 	head = find(world, classname, "heart");
-	sprint(self, "===== Status =====\n"); // Ãèáòáóôåòó =====\n");
-	sprint(self, "Heart Life: ");
-	sprint_ftos(self, head.health);
-	sprint(self, "\n");
-	sprint(self, "Monsters Killed: ");
-	sprint_ftos(self, self.mosterskilled);
-	sprint(self, "\n");
-	sprint(self, "Level: ");
-	sprint_ftos(self, self.lvl);
-	sprint(self, ", Experience: [");
-	sprint_ftos(self, self.exp);
-	sprint(self, "/");
-	sprint_ftos(self, self.nextexp);
-	sprint(self, "]");
-	sprint(self, "\n");
+
+	sprint(self, "======= Status =======\n"); // Ãèáòáóôåòó =====\n");
+	sprint(self, "\sHeart\s's Life: ");
+	moon_print_target_other_health(self, head);
+	sprint(self, "Monsters Killed: {}\n", quick_ftos_floor(self.mosterskilled));
+	sprint(self, "Level: {}, Exp {}{}/{}{}\n", quick_ftos_floor(self.lvl), MOON_GLYPH_BRACKET_OPEN, quick_ftos_floor(self.exp), quick_ftos_floor(self.nextexp), MOON_GLYPH_BRACKET_CLOSE);
 	sprint(self, "Gold: ");
-	sprint_ftos(self, self.gold);
-	sprint(self, "\n");
-	sprint(self, "======================\n");
+	moon_print_target_gold(self);
+	sprint(self, "----------------------\n");
 };
 
 void() Prepare =
@@ -5250,141 +5379,117 @@ void() Prepare =
 	{
 		set_map();
 	}
-	sprint(self, "Project MOON. v0.21 beta. Created by `3d[Power]`\nhttp://www.3dpower.org\ntype `chelp` command to view info about console commands\n"); // ³äÛÐï÷åòÝ\nhttp://www.3dpower.org\ntype ãèåìð command to view info about console commands\n");
-	sprint(self, "ProMoonKekPort v0.22k");
-	sprint(self, " ported on \sKEX Engine\s for kekz\n");
-	
-	msg_entity = self;
-	WriteByte(MSG_ONE, svcqex_chat);
-	WriteByte(MSG_ONE, 2);
-	WriteByte(MSG_ONE, 1);
-	WriteString(MSG_ONE, "Poop");
-	WriteString(MSG_ONE, "Yum yum\n");
+	sprint(self, "ReProjet MOON: KekPort port on \sKEX Engine\s v0.22k by \sSanctus-Susanin\s\n");
+	sprint(self, "Project MOON. v0.21 beta. Created by \s3d[Power]\s http://3dpower.org\n");
+	sprint(self, "type \schelp\s command to view info about other console commands\n"); // ³äÛÐï÷åòÝ\nhttp://www.3dpower.org\ntype ãèåìð command to view info about console commands\n");
+	kex_chat_message_self(self.netname, const_qex_color_white, "TEXT 0\n");
+	kex_chat_message_self(self.netname, const_qex_color_green, "TEXT 1\n");
+	kex_chat_message_self(self.netname, const_qex_color_teal, "TEXT 2\n");
+	kex_chat_message_self(self.netname, const_qex_color_yellow, "TEXT 3\n");
+};
+
+void() moon_print_cmd_help = 
+{
+	sprint(self, "==== help on game commands ====\n"); // èåìð ïîº ãïîóïìå ãïííáîäó ===\n");
+	sprint(self, "use `character` or `c` command to view charaster screen.\n"); // ãèáòáóôåò or ã command to view charaster screen.\n");
+	sprint(self, "use `buy` command to buy some item in the shop.\n"); // âõù command to buy some item in the shop.\n");
+	sprint(self, "use `identify` command to get a description of item in the shop.\n"); // éîäåæù command to get a description of item in the shop.\n");
+	sprint(self, "use `stats` command to view screen with your stats.\n"); // óôáôó command to view screen with your stats.\n");
+	sprint(self, "use `use` command pick up some magical item.\n"); // õóå command pick up some magical item.\n");
+	sprint(self, "use `inventory` or `i` command to view inventory screen.\n"); // éîöåîôïòù or é command to view inventory screen.\n");
+	sprint(self, "use `cl_fps` to show Framerate\n");
+	sprint(self, "use `fastmeat` to grind faster\n");
+	sprint(self, "use `alwaysday` to shine bright\n");
+	sprint(self, "use `skill1` or `skill2` raise stats\n");
+	sprint(self, "use `map moon4` or `restartserver` to restart this map\n");
+	sprint(self, "use `nohelp` to reduce amount of hints\n");
+	sprint(self, "--------------------------------------\n");
 };
 
 void() moonimpulse =
 {
-	if ((self.impulse == 86))
+	switch(self.impulse)
 	{
-		if ((self.cl_framtime == WF_NORMAL))
+	case 86:
+		if (self.cl_framtime == 0)
 		{
-			self.cl_framtime = H_ROTTEN;
-			bprint("Client: cl_fps enabled\n");
+			self.cl_framtime = 1;
+			//sprint(self, "Client: cl_fps enabled\n");
+			kex_chat_message_self(NAME_SETTINGS, CHAT_COLOR_TECHMSG, "cl_fps enabled\n");
+		} else {
+			self.cl_framtime = 0;
+			//sprint(self, "Client: cl_fps disabled\n");
+			kex_chat_message_self(NAME_SETTINGS, CHAT_COLOR_TECHMSG, "cl_fps disabled\n");
 		}
-		else
+		break;
+	case 87:
+		if (self.colormap == 1)
 		{
-			if ((self.cl_framtime == H_ROTTEN))
+			if (sv_alwaysday == 0)
 			{
-				self.cl_framtime = WF_NORMAL;
-				bprint("Client: cl_fps disabled\n");
-			}
-		}
-	}
-	else
-	{
-		if (((self.impulse == 87) && (self.colormap == H_ROTTEN)))
-		{
-			if ((sv_alwaysday == WF_NORMAL))
-			{
-				sv_alwaysday = H_ROTTEN;
-				bprint("Server: alwaysday enabled\n");
-			}
-			else
-			{
-				if ((sv_alwaysday == H_ROTTEN))
-				{
-					sv_alwaysday = WF_NORMAL;
-					bprint("Server: alwaysday disabled\n");
-				}
+				sv_alwaysday = 1;
+				//bprint("Server: alwaysday enabled\n");
+				kex_chat_message_broad(NAME_SERVER, CHAT_COLOR_TECHMSG, "alwaysday enabled\n");
+			} else {
+				sv_alwaysday = 0;
+				//bprint("Server: alwaysday disabled\n");
+				kex_chat_message_broad(NAME_SERVER, CHAT_COLOR_TECHMSG, "alwaysday disabled\n");
 			}
 		}
-		else
+		break;
+	case 88:
+		if (self.cl_nohelp == 0)
 		{
-			if ((self.impulse == 88))
+			self.cl_nohelp = 1;
+			//sprint(self, "Client: nohelp enabled\n");
+			kex_chat_message_self(NAME_SETTINGS, CHAT_COLOR_TECHMSG, "nohelp enabled\n");
+		} else {
+			self.cl_nohelp = 0;
+			//sprint(self, "Client: nohelp disabled\n");
+			kex_chat_message_self(NAME_SETTINGS, CHAT_COLOR_TECHMSG, "nohelp disabled\n");
+		}
+		break;
+	case 89:
+		if (self.colormap == 1)
+		{
+			if (sv_fastmeat == 0)
 			{
-				if ((self.cl_nohelp == WF_NORMAL))
-				{
-					self.cl_nohelp = H_ROTTEN;
-					sprint(self, "Client: nohelp enabled\n");
-				}
-				else
-				{
-					if ((self.cl_nohelp == H_ROTTEN))
-					{
-						self.cl_nohelp = WF_NORMAL;
-						sprint(self, "Client: nohelp disabled\n");
-					}
-				}
-			}
-			else
-			{
-				if (((self.impulse == 89) && (self.colormap == H_ROTTEN)))
-				{
-					if ((sv_fastmeat == WF_NORMAL))
-					{
-						sv_fastmeat = H_ROTTEN;
-						bprint("Server: fastmeat enabled\n");
-					}
-					else
-					{
-						if ((sv_fastmeat == H_ROTTEN))
-						{
-							sv_fastmeat = WF_NORMAL;
-							bprint("Server: fastmeat disabled\n");
-						}
-					}
-				}
+				sv_fastmeat = 1;
+				//bprint("Server: fastmeat enabled\n");
+				kex_chat_message_broad(NAME_SERVER, CHAT_COLOR_TECHMSG, "fastmeat enabled\n");
+			} else {
+				sv_fastmeat = WF_NORMAL;
+				//bprint("Server: fastmeat disabled\n");
+				kex_chat_message_broad(NAME_SERVER, CHAT_COLOR_TECHMSG, "fastmeat disabled\n");
 			}
 		}
-	}
-	if ((self.impulse == 94))
-	{
+		break;
+	case 94:
 		weareditems();
-	}
-	if ((self.impulse == 95))
-	{
+		break;
+	case 95:
 		wearitem();
-	}
-	if ((self.impulse == 96))
-	{
+		break;
+	case 96:
 		charaster();
-	}
-	if ((self.impulse == 97))
-	{
+		break;
+	case 97:
 		bye_item();
-	}
-	if ((self.impulse == 98))
-	{
+		break;
+	case 98:
 		indefy_item();
+		break;
+	case 20:
+	case 21:
+	case 22:
+	case 23:
+		skill_impulse();
+		break;
+	case 231:
+		moon_print_cmd_help();
+		break;
 	}
-	else
-	{
-		if (((self.impulse >= GRD_PATROLTIME) && (self.impulse <= SVC_TEMPENTITY)))
-		{
-			skill_impulse();
-		}
-		else
-		{
-			if ((self.impulse == 231))
-			{
-				sprint(self, "\n=== help on console commands ===\n"); // èåìð ïîº ãïîóïìå ãïííáîäó ===\n");
-				sprint(self, "use `character` or `c` command to view charaster screen.\n"); // ãèáòáóôåò or ã command to view charaster screen.\n");
-				sprint(self, "use `buy` command to buy some item in the shop.\n"); // âõù command to buy some item in the shop.\n");
-				sprint(self, "use `identify` command to get a description of item in the shop.\n"); // éîäåæù command to get a description of item in the shop.\n");
-				sprint(self, "use `stats` command to view screen with your stats.\n"); // óôáôó command to view screen with your stats.\n");
-				sprint(self, "use `use` command pick up some magical item.\n"); // õóå command pick up some magical item.\n");
-				sprint(self, "use `inventory` or `i` command to view inventory screen.\n"); // éîöåîôïòù or é command to view inventory screen.\n");
-				sprint(self, "use `cl_fps` to show Framerate\n");
-				sprint(self, "use `fastmeat` to grind faster\n");
-				sprint(self, "use `alwaysday` to shine bright\n");
-				sprint(self, "use `skill1` or `skill2` raise stats\n");
-				sprint(self, "use `map moon4` or `restartserver` to restart this map\n");
-				sprint(self, "use `nohelp` to reduce amount of hints\n");
-				sprint(self, "=================================\n");
-				sprint(self, "thanks to Sviat `Sanctus-Susanin` for porting this on KEX engine\n");
-			}
-		}
-	}
+
 	if ((self.prepared == FALSE))
 	{
 		Prepare();
@@ -5589,7 +5694,7 @@ float(entity targ) BotCanSeePlayer =
 	local vector spot1;
 	local vector spot2;
 	local vector vec;
-	local float r;
+	//local float r; // unused
 
 	spot1 = (self.origin + self.view_ofs);
 	vec = GetRandomVector();
@@ -5642,7 +5747,7 @@ void(float n) SendChat =
 void() bot_find_enemy =
 {
 	local entity head;
-	local entity selected;
+	//local entity selected; // unused
 	local float dist;
 
 	dist = 1500;
@@ -5813,7 +5918,7 @@ void() ai_evade =
 	local float dist;
 	local vector vec;
 	local vector org;
-	local entity e;
+	//local entity e; // unused
 	local float yw;
 
 	if (!(self.flags & FL_ONGROUND))
@@ -6607,10 +6712,10 @@ void(entity own, vector org) ExplodeAlert =
 
 void() mon_evade =
 {
-	local float dist;
+	//local float dist; // unused
 	local vector vec;
 	local vector org;
-	local entity e;
+	//local entity e; // unused
 	local float yw;
 	local entity head;
 
@@ -6790,7 +6895,7 @@ void() MaybeShootGate =
 {
 	local entity e;
 	local entity a;
-	local entity mon;
+	//local entity mon; // unused
 
 	if ((self.next_gate > time))
 	{
@@ -6860,7 +6965,7 @@ float() MaybeShootHeart =
 void() mon_find_enemy =
 {
 	local entity head;
-	local entity selected;
+	//local entity selected; // unused
 	local float dist;
 
 	if (((self.enemy != world) && (self.enemy.classname != "idle_ent")))
@@ -6941,13 +7046,16 @@ entity() mon_find_ill_mon =
 			return (world);
 		}
 	}
+
+	return (world); // shouldnt happen, supress "not all control paths return a value"
 };
 
 void() mon_run_slide =
 {
-	local float ofs;
+	//local float ofs; // unused
 
-	return;
+	return; // disabled by original creator
+	/*
 	if ((random() < 0.05))
 	{
 		self.lefty = (H_ROTTEN - self.lefty);
@@ -6967,6 +7075,7 @@ void() mon_run_slide =
 	}
 	self.lefty = (H_ROTTEN - self.lefty);
 	walkmove((self.ideal_yaw - ofs), movedist);
+	*/ // supress "contains unreachable code" warning
 };
 
 void(entity who) particle_heal =
@@ -8411,7 +8520,7 @@ void() weareditems =
 	}
 	if ((self.mentat_bonus3 == H_ROTTEN))
 	{
-		sprint(self, "\saccelerative drug\s (increase your attack speed)\n"); // áããåìåòáôéöå äòõç (increase your attack speed)\n");
+		sprint(self, "\saccelerative drug\s (increase your attack speed roughly by ~\2\5-\3\0%)\n"); // áããåìåòáôéöå äòõç (increase your attack speed)\n");
 	}
 	if ((self.wear_armor == H_ROTTEN))
 	{
@@ -9564,7 +9673,7 @@ void(entity who) DrWE =
 void(entity who) DropPLGold =
 {
 	local entity item;
-	local entity h;
+	//local entity h; // unused
 
 	if ((self.gold == WF_NORMAL))
 	{
@@ -9796,7 +9905,7 @@ float(float l, float was) exp_table =
 	return (nx);
 };
 
-void() GiveExp =
+void() GiveExp = // REFACTOR ME PLEASE
 {
 	local entity e;
 	local entity head;
@@ -9864,7 +9973,7 @@ void() GiveExp =
 				sprint(e, "Congratulations. You won the game.\n");
 			}
 			sprint(e, "================\n");
-			head = find(world, classname, "heart");
+			head = find(world, classname, "heart"); // TODO: improve logic by raising hearts level same way as players, to be consistent with players joining in and dropping out
 			if ((head != world))
 			{
 				if ((head.lvl != e.lvl))

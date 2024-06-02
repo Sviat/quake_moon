@@ -615,10 +615,10 @@ void() func_door_secret =
 {
 	remove(self);
 };
-entity stemp;
-entity otemp;
+//entity stemp; // unused
+//entity otemp; // unused
 entity s;
-entity old;
+//entity old; // unused
 float PLAYER_ONLY    = 1;
 float SILENT    = 2;
 

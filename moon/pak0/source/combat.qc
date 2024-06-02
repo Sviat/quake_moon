@@ -155,7 +155,7 @@ void(entity targ, entity attacker) Killed =
 void(entity targ, entity inflictor, entity attacker, float damage) T_Damage =
 {
 	local vector dir;
-	local entity oldself;
+	//local entity oldself; // unused
 	local float save;
 	local float take;
 	local float bnresist;

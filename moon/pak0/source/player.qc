@@ -432,7 +432,7 @@ void() player_axpain6 = [ 34, player_run ]
 {
 };
 
-void() player_pain =
+void(entity attacker, float damage) player_pain =
 {
 	if (self.weaponframe)
 	{

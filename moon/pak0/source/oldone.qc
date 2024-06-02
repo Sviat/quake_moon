@@ -418,7 +418,7 @@ void() finale_4 =
 	lightstyle(WF_NORMAL, "m");
 };
 
-void() nopain =
+void(entity attacker, float damage) nopain =
 {
 	self.health = 40000;
 };

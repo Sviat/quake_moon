@@ -452,9 +452,9 @@ void() mage_run =
 void() mage_fire =
 {
 	local entity missile;
-	local vector dir;
-	local float dist;
-	local float flytime;
+	//local vector dir; // unused
+	//local float dist; // unused
+	//local float flytime; // unused
 	local vector org;
 	local vector vec;
 	local vector d;
@@ -797,7 +797,7 @@ void(vector org, vector vec, float spd) LaunchLaser =
 void() enforcer_fire =
 {
 	local vector org;
-	local vector offang;
+	//local vector offang; // unused
 	local vector vec;
 	local vector d;
 	local float t;

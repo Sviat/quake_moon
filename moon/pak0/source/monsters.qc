@@ -10,8 +10,8 @@ void() monster_death_use =
 
 void() walkmonster_start_go =
 {
-	local string stemp;
-	local entity etemp;
+	//local string stemp; // unused
+	//local entity etemp; // unused
 
 	self.max_health = self.health;
 	self.origin_z = (self.origin_z + CHSCAM_ON);

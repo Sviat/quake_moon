@@ -250,9 +250,9 @@ float() DemonCheckAttack;
 void(float side) Demon_Melee;
 void() ai_face;
 float enemy_vis;
-float enemy_infront;
+//float enemy_infront; // unused
 float enemy_range;
-float enemy_yaw;
+//float enemy_yaw; // unused
 
 float() CheckAttack =
 {
@@ -413,7 +413,7 @@ float() ShamCheckAttack =
 	local vector spot1;
 	local vector spot2;
 	local entity targ;
-	local float chance;
+	//local float chance; // unused
 
 	if ((enemy_range == RANGE_MELEE))
 	{

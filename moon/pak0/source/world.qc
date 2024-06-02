@@ -236,7 +236,7 @@ void() bodyque =
 
 void() InitBodyQue =
 {
-	local entity e;
+	//local entity e; // unused
 
 	bodyque_head = spawn();
 	bodyque_head.classname = "bodyque";
@@ -263,7 +263,7 @@ void(entity ent) CopyToBodyQue =
 	setsize(bodyque_head, ent.mins, ent.maxs);
 	bodyque_head = bodyque_head.owner;
 };
-void() player_pain;
+void(entity attacker, float damage) player_pain;
 void() player_stand1;
 void(vector org, entity death_owner) spawn_tdeath;
 float modelindex_eyes;
@@ -313,14 +313,39 @@ void() DecodeLevelParms =
 
 entity() FindIntermission =
 {
-	local entity spot;
+	local	entity spot;
+	local	float cyc;
 
-	spot = find(world, classname, "info_intermission");
+	// look for info_intermission first
+	spot = find (world, classname, "info_intermission");
 	if (spot)
-	{
-		return (spot);
+	{	// pick a random one
+		cyc = random() * 4;
+		while (cyc > 1)
+		{
+			spot = find (spot, classname, "info_intermission");
+
+			if (!spot)
+				spot = find (spot, classname, "info_intermission");
+
+			cyc = cyc - 1;
+		}
+
+		return spot;
 	}
-	objerror("FindIntermission: no spot");
+
+	// then look for the start position
+	spot = find (world, classname, "info_player_start");
+	if (spot)
+		return spot;
+	
+	// testinfo_player_start is only found in regioned levels
+	spot = find (world, classname, "testplayerstart");
+	if (spot)
+		return spot;
+	
+	objerror ("FindIntermission: no spot");
+	return world;
 };
 string nextmap;
 
@@ -382,7 +407,7 @@ void() execute_changelevel =
 
 void() changelevel_touch =
 {
-	local entity pos;
+	//local entity pos; // unused
 
 	if ((other.classname != "player"))
 	{
@@ -583,7 +608,7 @@ void() CheckRules =
 
 void() PlayerDeathThink =
 {
-	local entity old_self;
+	//local entity old_self; // unused
 	local float forward;
 
 	if ((self.flags & FL_ONGROUND))
@@ -624,8 +649,8 @@ void() PlayerDeathThink =
 
 void() PlayerJump =
 {
-	local vector start;
-	local vector end;
+	//local vector start; // unused
+	//local vector end; // unused
 
 	if ((self.flags & FL_WATERJUMP))
 	{
@@ -947,9 +972,9 @@ void() check_spells =
 
 void() PlayerPreThink =
 {
-	local float mspeed;
-	local float aspeed;
-	local float r;
+	//local float mspeed; // unused
+	//local float aspeed; // unused
+	//local float r; // unused
 
 	if ((cvar("sv_maxspeed") > 400))
 	{
@@ -1161,9 +1186,9 @@ void() CheckPowerups =
 
 void() PlayerPostThink =
 {
-	local float mspeed;
-	local float aspeed;
-	local float r;
+	//local float mspeed; // unused
+	//local float aspeed; // unused
+	//local float r; // unused
 
 	if ((self.view_ofs == VEC_ORIGIN))
 	{

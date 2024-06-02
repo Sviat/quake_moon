@@ -390,7 +390,7 @@ void() dog_painb16 = [ 47, dog_run1 ]
 {
 };
 
-void() dog_pain =
+void(entity attacker, float damage) dog_pain =
 {
 	sound(self, CHAN_VOICE, "dog/dpain1.wav", START_OFF, ATTN_NORM);
 	if ((random() > MON_BACKTIME))
@@ -537,7 +537,7 @@ float() CheckDogJump =
 
 float() DogCheckAttack =
 {
-	local vector vec;
+	//local vector vec; // unused
 
 	if (CheckDogMelee())
 	{
@@ -666,7 +666,7 @@ void() ZombieGrenadeTouch =
 void() zomb_fire =
 {
 	local entity missile;
-	local entity mpuff;
+	//local entity mpuff; // unused
 	local vector org;
 	local vector st;
 

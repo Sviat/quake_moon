@@ -453,7 +453,7 @@ float() CheckDemonJump =
 
 float() DemonCheckAttack =
 {
-	local vector vec;
+	//local vector vec; // unused
 
 	if (CheckDemonMelee())
 	{
@@ -2358,7 +2358,7 @@ void() less_die =
 		return;
 	}
 	self.solid = SOLID_NOT;
-	sound(self, CHAN_VOICE, "moon/headless/die1.wav", START_OFF, ATTN_NORM);
+	//sound(self, CHAN_VOICE, "moon/headless/die1.wav", START_OFF, ATTN_NORM); // missing "moon/headless/die1.wav"
 	if ((random() < MON_BACKTIME))
 	{
 		less_die1();

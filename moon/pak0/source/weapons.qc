@@ -17,7 +17,7 @@ void() W_Precache =
 	precache_sound("weapons/grenade.wav");
 	precache_sound("weapons/bounce.wav");
 	precache_sound("weapons/shotgn2.wav");
-	moster_precache();
+	moon_precache();
 };
 
 float() crandom =
@@ -69,7 +69,7 @@ vector() wall_velocity =
 void(vector org, vector vel) SpawnMeatSpray =
 {
 	local entity missile;
-	local entity mpuff;
+	//local entity mpuff; // unused
 
 	missile = spawn();
 	missile.owner = self;
@@ -323,7 +323,7 @@ void() T_MissileTouch =
 void() W_FireRocket =
 {
 	local entity missile;
-	local entity mpuff;
+	//local entity mpuff; // unused
 
 	sound(self, CHAN_WEAPON, "weapons/sgun1.wav", CHSCAM_ON, ATTN_NORM);
 	self.ammo_rockets = (self.ammo_rockets - CHSCAM_ON);
@@ -472,7 +472,7 @@ void() GrenadeTouch =
 void() W_FireGrenade =
 {
 	local entity missile;
-	local entity mpuff;
+	//local entity mpuff; // unused
 
 	self.ammo_rockets = (self.ammo_rockets - CHSCAM_ON);
 	self.currentammo = (self.ammo_rockets - CHSCAM_ON);
@@ -573,7 +573,7 @@ void(vector org, vector dir) launch_sspike =
 void() W_FireSuperSpikes =
 {
 	local vector dir;
-	local entity old;
+	//local entity old; // unused
 
 	sound(self, CHAN_WEAPON, "weapons/spike2.wav", CHSCAM_ON, ATTN_NORM);
 	self.attack_finished = (time + MON_REACTIONTIME);
@@ -587,7 +587,7 @@ void() W_FireSuperSpikes =
 void(float ox) W_FireSpikes =
 {
 	local vector dir;
-	local entity old;
+	//local entity old; // unused
 
 	makevectors(self.v_angle);
 	if (((self.ammo_nails >= H_MEGA) && (self.weapon == IT_SUPER_NAILGUN)))
@@ -613,7 +613,7 @@ void(float ox) W_FireSpikes =
 
 void() spike_touch =
 {
-	local float rand;
+	//local float rand; // unused
 
 	if ((other == self.owner))
 	{
@@ -660,7 +660,7 @@ void() spike_touch =
 
 void() superspike_touch =
 {
-	local float rand;
+	//local float rand; // unused
 	local vector dir;
 
 	if ((other == self.owner))
@@ -1320,19 +1320,24 @@ void() QuadCheat =
 
 void() ImpulseCommands =
 {
-	if (((self.impulse >= CHSCAM_ON) && (self.impulse <= KEY_MOVERIGHT)))
+	if (self.impulse == 1)
+	{
+		return;
+	}
+
+	if (((self.impulse >= 1) && (self.impulse <= 8)))
 	{
 		W_ChangeWeapon();
 	}
-	if ((self.impulse == TE_LIGHTNING3))
+	if ((self.impulse == 9))
 	{
 		CheatCommand();
 	}
-	if ((self.impulse == SVC_SETVIEWANGLES))
+	if ((self.impulse == 10))
 	{
 		CycleWeaponCommand();
 	}
-	if ((self.impulse == TE_TELEPORT))
+	if ((self.impulse == 11))
 	{
 		ServerflagsCommand();
 	}
@@ -1345,7 +1350,7 @@ void() ImpulseCommands =
 		QuadCheat();
 	}
 	moonimpulse();
-	self.impulse = WF_NORMAL;
+	self.impulse = 0;
 };
 
 void() W_WeaponFrame =
@@ -1389,7 +1394,7 @@ vector(vector dir) ModAcc =
 void() M_FireGrenade =
 {
 	local entity missile;
-	local entity mpuff;
+	//local entity mpuff; // unused
 	local vector vec;
 	local vector src;
 	local vector org;
@@ -1493,7 +1498,7 @@ void() M_FireHomeMissile =
 	local entity missile;
 	local vector dir;
 	local float dist;
-	local float flytime;
+	//local float flytime; // unused
 
 	dir = normalize(((self.enemy.origin + '0 0 10') - self.origin));
 	dist = vlen((self.enemy.origin - self.origin));
@@ -1523,7 +1528,7 @@ void() M_FireHomeMissile =
 void() M_FireMissile =
 {
 	local entity missile;
-	local entity mpuff;
+	//local entity mpuff; // unused
 	local vector org;
 	local vector vec;
 	local vector d;

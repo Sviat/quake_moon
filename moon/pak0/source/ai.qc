@@ -1,6 +1,6 @@
 //Decompiled code. Please respect the original copyright.
-entity sight_entity;
-float sight_entity_time;
+//entity sight_entity; // unused
+//float sight_entity_time; // unused
 
 float(float v) anglemod =
 {
@@ -20,7 +20,7 @@ float() CanDamagePoint =
 	local vector spot1;
 	local vector spot2;
 	local entity targ;
-	local float chance;
+	//local float chance; // unused
 
 	targ = self.enemy;
 	spot1 = (self.origin + self.view_ofs);

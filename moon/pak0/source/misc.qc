@@ -146,7 +146,7 @@ void() func_illusionary =
 	self.movetype = MOVETYPE_NONE;
 	self.solid = SOLID_NOT;
 	setmodel(self, self.model);
-	makestatic();
+	makestatic(self);
 };
 
 void() ambient_suck_wind =
@@ -261,7 +261,7 @@ void() misc_noisemaker =
 void() ogre_fire =
 {
 	local entity missile;
-	local entity mpuff;
+	//local entity mpuff; // unused
 	local vector vec;
 	local vector src;
 	local vector d;

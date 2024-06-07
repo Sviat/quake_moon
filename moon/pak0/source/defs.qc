@@ -1,122 +1,122 @@
 //Decompiled code. Please respect the original copyright.
 float FALSE;
-float TRUE    = 1;
-float FL_FLY    = 1;
-float FL_SWIM    = 2;
-float FL_CLIENT    = 8;
-float FL_INWATER    = 16;
-float FL_MONSTER    = 32;
-float FL_GODMODE    = 64;
-float FL_NOTARGET    = 128;
-float FL_ITEM    = 256;
-float FL_ONGROUND    = 512;
-float FL_PARTIALGROUND    = 1024;
-float FL_WATERJUMP    = 2048;
-float FL_JUMPRELEASED    = 4096;
-float MOVETYPE_NONE;
-float MOVETYPE_WALK    = 3;
-float MOVETYPE_STEP    = 4;
-float MOVETYPE_FLY    = 5;
-float MOVETYPE_TOSS    = 6;
-float MOVETYPE_PUSH    = 7;
-float MOVETYPE_NOCLIP    = 8;
-float MOVETYPE_FLYMISSILE    = 9;
-float MOVETYPE_BOUNCE    = 10;
-float MOVETYPE_BOUNCEMISSILE    = 11;
-float SOLID_NOT;
-float SOLID_TRIGGER    = 1;
-float SOLID_BBOX    = 2;
+float TRUE = 1;
+float FL_FLY    	= 1;
+float FL_SWIM   	= 2;
+float FL_CLIENT 	= 8;
+float FL_INWATER    	= 16;
+float FL_MONSTER    	= 32;
+float FL_GODMODE    	= 64;
+float FL_NOTARGET    	= 128;
+float FL_ITEM    	= 256;
+float FL_ONGROUND    	= 512;
+float FL_PARTIALGROUND  = 1024;
+float FL_WATERJUMP    	= 2048;
+float FL_JUMPRELEASED   = 4096;
+float MOVETYPE_NONE	= 0;
+float MOVETYPE_WALK     = 3;
+float MOVETYPE_STEP     = 4;
+float MOVETYPE_FLY    	= 5;
+float MOVETYPE_TOSS     = 6;
+float MOVETYPE_PUSH    	= 7;
+float MOVETYPE_NOCLIP   = 8;
+float MOVETYPE_FLYMISSILE= 9;
+float MOVETYPE_BOUNCE   = 10;
+float MOVETYPE_BOUNCEMISSILE = 11;
+float SOLID_NOT 	= 0;
+float SOLID_TRIGGER    	= 1;
+float SOLID_BBOX    	= 2;
 float SOLID_SLIDEBOX    = 3;
-float SOLID_BSP    = 4;
-float RANGE_MELEE;
-float RANGE_NEAR    = 1;
-float RANGE_MID    = 2;
-float RANGE_FAR    = 3;
-float DEAD_NO;
-float DEAD_DYING    = 1;
-float DEAD_DEAD    = 2;
-float DEAD_RESPAWNABLE    = 3;
-float DAMAGE_NO;
-float DAMAGE_YES    = 1;
-float DAMAGE_AIM    = 2;
-float IT_AXE    = 4096;
-float IT_SHOTGUN    = 1;
-float IT_SUPER_SHOTGUN    = 2;
-float IT_NAILGUN    = 4;
-float IT_SUPER_NAILGUN    = 8;
-float IT_GRENADE_LAUNCHER    = 16;
-float IT_ROCKET_LAUNCHER    = 32;
-float IT_LIGHTNING    = 64;
-float IT_EXTRA_WEAPON    = 128;
-float IT_SHELLS    = 256;
-float IT_NAILS    = 512;
-float IT_ROCKETS    = 1024;
-float IT_CELLS    = 2048;
-float IT_ARMOR1    = 8192;
-float IT_ARMOR2    = 16384;
-float IT_ARMOR3    = 32768;
-float IT_SUPERHEALTH    = 65536;
-float IT_KEY1    = 131072;
-float IT_KEY2    = 262144;
-float IT_INVISIBILITY    = 524288;
-float IT_INVULNERABILITY    = 1048576;
-float IT_SUIT    = 2097152;
-float IT_QUAD    = 4194304;
+float SOLID_BSP    	= 4;
+float RANGE_MELEE = 0;
+float RANGE_NEAR  = 1;
+float RANGE_MID   = 2;
+float RANGE_FAR   = 3;
+float DEAD_NO 		= 0;
+float DEAD_DYING	= 1;
+float DEAD_DEAD 	= 2;
+float DEAD_RESPAWNABLE  = 3;
+float DAMAGE_NO 	= 0;
+float DAMAGE_YES    	= 1;
+float DAMAGE_AIM    	= 2;
+float IT_AXE    		= 4096;
+float IT_SHOTGUN    		= 1;
+float IT_SUPER_SHOTGUN    	= 2;
+float IT_NAILGUN		= 4;
+float IT_SUPER_NAILGUN    	= 8;
+float IT_GRENADE_LAUNCHER    	= 16;
+float IT_ROCKET_LAUNCHER	= 32;
+float IT_LIGHTNING    		= 64;
+float IT_EXTRA_WEAPON 		= 128;
+float IT_SHELLS    		= 256;
+float IT_NAILS     		= 512;
+float IT_ROCKETS   		= 1024;
+float IT_CELLS     		= 2048;
+float IT_ARMOR1    		= 8192;
+float IT_ARMOR2    		= 16384;
+float IT_ARMOR3    		= 32768;
+float IT_SUPERHEALTH    	= 65536;
+float IT_KEY1    		= 131072;
+float IT_KEY2    		= 262144;
+float IT_INVISIBILITY   	= 524288;
+float IT_INVULNERABILITY	= 1048576;
+float IT_SUIT    		= 2097152;
+float IT_QUAD    		= 4194304;
 float CONTENT_EMPTY    = -1;
 float CONTENT_SOLID    = -2;
 float CONTENT_WATER    = -3;
 float CONTENT_SLIME    = -4;
-float CONTENT_LAVA    = -5;
-float CONTENT_SKY    = -6;
-float STATE_TOP;
-float STATE_BOTTOM    = 1;
-float STATE_UP    = 2;
-float STATE_DOWN    = 3;
+float CONTENT_LAVA     = -5;
+float CONTENT_SKY      = -6;
+float STATE_TOP    = 0;
+float STATE_BOTTOM = 1;
+float STATE_UP     = 2;
+float STATE_DOWN   = 3;
 vector VEC_ORIGIN;
-vector VEC_HULL_MIN    = '-16 -16 -24';
-vector VEC_HULL_MAX    = '16 16 32';
+vector VEC_HULL_MIN    	= '-16 -16 -24';
+vector VEC_HULL_MAX    	= '16 16 32';
 vector VEC_HULL2_MIN    = '-32 -32 -24';
 vector VEC_HULL2_MAX    = '32 32 64';
 float SVC_TEMPENTITY    = 23;
-float SVC_KILLEDMONSTER    = 27;
-float SVC_FOUNDSECRET    = 28;
-float SVC_INTERMISSION    = 30;
-float SVC_FINALE    = 31;
-float SVC_CDTRACK    = 32;
+float SVC_KILLEDMONSTER = 27;
+float SVC_FOUNDSECRET	= 28;
+float SVC_INTERMISSION	= 30;
+float SVC_FINALE    	= 31;
+float SVC_CDTRACK    	= 32;
 float SVC_SELLSCREEN    = 33;
-float TE_SPIKE;
-float TE_SUPERSPIKE    = 1;
-float TE_GUNSHOT    = 2;
-float TE_EXPLOSION    = 3;
-float TE_TAREXPLOSION    = 4;
-float TE_LIGHTNING1    = 5;
-float TE_LIGHTNING2    = 6;
-float TE_WIZSPIKE    = 7;
+float TE_SPIKE		= 0;
+float TE_SUPERSPIKE    	= 1;
+float TE_GUNSHOT    	= 2;
+float TE_EXPLOSION    	= 3;
+float TE_TAREXPLOSION   = 4;
+float TE_LIGHTNING1    	= 5;
+float TE_LIGHTNING2    	= 6;
+float TE_WIZSPIKE    	= 7;
 float TE_KNIGHTSPIKE    = 8;
-float TE_LIGHTNING3    = 9;
-float TE_LAVASPLASH    = 10;
-float TE_TELEPORT    = 11;
-float CHAN_AUTO;
-float CHAN_WEAPON    = 1;
-float CHAN_VOICE    = 2;
-float CHAN_ITEM    = 3;
-float CHAN_BODY    = 4;
-float ATTN_NONE;
-float ATTN_NORM    = 1;
-float ATTN_IDLE    = 2;
-float ATTN_STATIC    = 3;
+float TE_LIGHTNING3    	= 9;
+float TE_LAVASPLASH    	= 10;
+float TE_TELEPORT    	= 11;
+float CHAN_AUTO   = 0;
+float CHAN_WEAPON = 1;
+float CHAN_VOICE  = 2;
+float CHAN_ITEM   = 3;
+float CHAN_BODY   = 4;
+float ATTN_NONE	  = 0;
+float ATTN_NORM   = 1;
+float ATTN_IDLE   = 2;
+float ATTN_STATIC = 3;
 float UPDATE_GENERAL = 0;
-float UPDATE_STATIC    = 1;
-float UPDATE_BINARY    = 2;
+float UPDATE_STATIC  = 1;
+float UPDATE_BINARY  = 2;
 float UPDATE_TEMP    = 3;
-float EF_BRIGHTFIELD    = 1;
-float EF_MUZZLEFLASH    = 2;
-float EF_BRIGHTLIGHT    = 4;
+float EF_BRIGHTFIELD = 1;
+float EF_MUZZLEFLASH = 2;
+float EF_BRIGHTLIGHT = 4;
 float EF_DIMLIGHT    = 8;
-float MSG_BROADCAST;
-float MSG_ONE    = 1;
-float MSG_ALL    = 2;
-float MSG_INIT    = 3;
+float MSG_BROADCAST = 0;
+float MSG_ONE       = 1;
+float MSG_ALL       = 2;
+float MSG_INIT      = 3;
 float movedist;
 float gameover;
 string string_null;
@@ -144,10 +144,10 @@ float skill;
 .float lefty;
 .float search_time;
 .float attack_state;
-float AS_STRAIGHT    = 1;
-float AS_SLIDING    = 2;
+float AS_STRAIGHT = 1;
+float AS_SLIDING  = 2;
 float AS_MELEE    = 3;
-float AS_MISSILE    = 4;
+float AS_MISSILE  = 4;
 .float walkframe;
 .float attack_finished;
 .float pain_finished;
@@ -320,8 +320,8 @@ void() FuckOff =
 {
 	bprint("----- hi, litl lamo, try to decompile it, heheh ------");
 };
-vector VEC_WAY_MIN    = '-24 -24 -24';
-vector VEC_WAY_MAX    = '24 24 32';
+vector VEC_WAY_MIN    	= '-24 -24 -24';
+vector VEC_WAY_MAX    	= '24 24 32';
 vector VEC_HULL3_MIN    = '-24 -24 -24';
 vector VEC_HULL3_MAX    = '24 24 64';
 float intermission_running;
@@ -330,48 +330,51 @@ float intermission_exittime;
 .float movevect_x;
 .float movevect_y;
 .float movevect_z;
-float KEY_MOVEUP    = 1;
-float KEY_MOVEDOWN    = 2;
-float KEY_MOVELEFT    = 4;
-float KEY_MOVERIGHT    = 8;
-float KEY_MOVEFORWARD    = 16;
-float KEY_MOVEBACK    = 32;
-float KEY_LOOKUP    = 64;
-float KEY_LOOKDOWN    = 128;
-float KEY_LOOKLEFT    = 256;
-float KEY_LOOKRIGHT    = 512;
+float KEY_MOVEUP    	= 1;
+float KEY_MOVEDOWN    	= 2;
+float KEY_MOVELEFT    	= 4;
+float KEY_MOVERIGHT    	= 8;
+float KEY_MOVEFORWARD   = 16;
+float KEY_MOVEBACK    	= 32;
+float KEY_LOOKUP    	= 64;
+float KEY_LOOKDOWN    	= 128;
+float KEY_LOOKLEFT    	= 256;
+float KEY_LOOKRIGHT    	= 512;
 float GUARD_WALKDIST    = 130;
 float AMBIENT_RATE    = 14.03;
-float MON_REFRESHTIME    = 0.01;
+float MON_REFRESHTIME = 0.01;
 float MON_WALKDIST    = 1;
-float MON_REACTIONTIME    = 0.2;
+float MON_REACTIONTIME= 0.2;
 float MON_BACKTIME    = 0.5;
-float MON_STUCKTIME    = 0.4;
-float MON_STUCKDIST    = 5;
-float MON_UNIQUECHANCE    = 0.04;
-float MON_MAGICCHANCE    = 0.03;
-float MON_CAMPERCHANCE    = 0.1;
+float MON_STUCKTIME   = 0.4;
+float MON_STUCKDIST   = 5;
+float MON_UNIQUECHANCE = 0.04;
+float MON_MAGICCHANCE  = 0.03;
+float MON_CAMPERCHANCE = 0.1;
 float MON_CAMPTIME    = 30;
+float MON_WAVETIME_FAST   = 1;
+float MON_WAVETIME_NORMAl = 10;
+float MON_WAVETIME_SLOW   = 21;
 float CL_DEADTIME    = 1.5;
 float MENTAT_TIME    = 90;
-float IDLE_TIME    = 5;
-float IDLE_MAX    = 20;
-float GRD_DEFENDCHANCE    = 0.35;
-float GRD_PATROLTIME    = 20;
-float GRD_DEFENDTIME    = 40;
+float IDLE_TIME = 5;
+float IDLE_MAX = 20;
+float GRD_DEFENDCHANCE = 0.35;
+float GRD_PATROLTIME   = 20;
+float GRD_DEFENDTIME   = 40;
 float GRD_FIGHTDIST    = 500;
-float GRD_SKIN    = 1;
+float GRD_SKIN = 1;
 .float bot_logic;
 .float action;
 .float action_time;
 void() GenerateAction;
 void(entity e) GeneratePatrolTarget;
-float LOGIC_FREESTYLE;
+float LOGIC_FREESTYLE = 0;
 float LOGIC_FOLLOW    = 1;
-float LOGIC_FINDDEFEND    = 3;
+float LOGIC_FINDDEFEND= 3;
 float LOGIC_DEFEND    = 4;
 float LOGIC_PATROL    = 5;
-float LOGIC_HUNTENEMY    = 6;
+float LOGIC_HUNTENEMY = 6;
 .float guard_chat_incoming;
 float sv_fastmeat;
 float sv_alwaysday;
@@ -468,12 +471,6 @@ void(string gibname, float dm) ThrowGib;
 .float min_attack_dist;
 void() game_brain;
 string s_wiz;
-.string prefix_one;
-.string prefix_two;
-.string prefix_three;
-.string prefix_four;
-.float prefix;
-.float prefix_value;
 .float postenemy_time;
 .vector postenemy_org;
 .float postenemy_org_x;
@@ -494,18 +491,24 @@ string s_wiz;
 .entity mesg_inflictor;
 .float wear_armor;
 .float magic_typeone;
-.string magic_prefixone;
-.string magic_prefixtwo;
 .float magic_typeone_value;
+.string magic_prefixone;
 .float magic_typetwo;
 .float magic_typetwo_value;
+.string magic_prefixtwo;
 .float wear_ring;
 .float ring_typeone;
-.string ring_prefixone;
-.string ring_prefixtwo;
 .float ring_typeone_value;
+.string ring_prefixone;
 .float ring_typetwo;
 .float ring_typetwo_value;
+.string ring_prefixtwo;
+.float prefix;
+.float prefix_value;
+.string prefix_one;
+.string prefix_two;
+.string prefix_three;
+.string prefix_four;
 
 void() monster_precache =
 {
@@ -654,9 +657,9 @@ void() moon_precache =
 .float camp_time;
 .float camp_num;
 .float camp_line;
-float LOGIC_STANDART;
-float LOGIC_CAMPER    = 1;
-float LOGIC_HUNTER    = 2;
+float LOGIC_STANDART = 0;
+float LOGIC_CAMPER   = 1;
+float LOGIC_HUNTER   = 2;
 .float mentat_bonus;
 .float mentat_bonus2;
 .float mentat_bonus3;
@@ -702,9 +705,9 @@ float up_gold_value;
 .float line;
 .float wantnum;
 .float wantline;
-float WF_NORMAL;
+float WF_NORMAL    = 0;
 float WF_DEFEND    = 1;
-float WF_EXTRASIZE    = 2;
+float WF_EXTRASIZE = 2;
 float waypoints_ok;
 .float point;
 .float skl_expl;
@@ -779,7 +782,6 @@ float(float n1, float n2) percent =
 float() player_level =
 {
 	local entity e;
-	local entity sel;
 	local float maxlvl;
 
 	maxlvl = empty_float; // was CONTENT_EMPTY; supress empty_float unused warning
@@ -788,7 +790,6 @@ float() player_level =
 	{
 		if ((e.lvl > maxlvl))
 		{
-			sel = e;
 			maxlvl = e.lvl;
 		}
 		e = find(e, classname, "player");
@@ -811,13 +812,17 @@ void(entity e) AddToQue =
 	z.movetype = MOVETYPE_TOSS;
 	z.solid = SOLID_NOT;
 	z.velocity = e.velocity;
-	if ((sv_fastmeat == WF_DEFEND))
+	if ((sv_fastmeat == 1))
 	{
-		z.nextthink = ((time + WF_DEFEND) + (random() * WF_DEFEND));
+		z.nextthink = ((time + MON_WAVETIME_FAST) + (random() * MON_WAVETIME_FAST));
+	}
+	else if ((sv_fastmeat == -1))
+	{
+		z.nextthink = ((time + MON_WAVETIME_FAST) + (random() * MON_WAVETIME_SLOW));
 	}
 	else
 	{
-		z.nextthink = ((time + TE_LAVASPLASH) + (random() * TE_LAVASPLASH));
+		z.nextthink = ((time + MON_WAVETIME_NORMAl) + (random() * MON_WAVETIME_NORMAl));
 	}
 };
 
@@ -831,14 +836,14 @@ void(entity e) AddToQue =
 #define svcqex_updateplinfo			48	// [byte] slot, [leb128] health, [leb128] armour
 #define svcqex_locprint				49	// uses qe's localised string formatting, otherwise treat as svc_print.
 #define svcqex_servervars			50	// [leb128] changedvalues, [???] value...
-#define svcqex_seq					51	// [leb128] input sequence ack
+#define svcqex_seq				51	// [leb128] input sequence ack
 #define svcqex_achievement			52	// [string] codename
-#define svcqex_chat					53  // [byte] svcqex_chat, [byte] playercolour, [byte] textcolour, [string] playername, [string] chattext // new from FTE
-#define svcqex_levelcompleted		54
+#define svcqex_chat				53	// [byte] svcqex_chat, [byte] playercolour, [byte] textcolour, [string] playername, [string] chattext // new from FTE
+#define svcqex_levelcompleted			54
 #define svcqex_backtolobby			55
 #define svcqex_localsound			56
 #define svcqex_prompt				57
-#define svcqex_loccenterprint		58	// [string] codename
+#define svcqex_loccenterprint			58	// [string] codename
 // //
 #define const_qex_color_white 0
 #define const_qex_color_green 1
@@ -849,3 +854,120 @@ void(entity e) AddToQue =
 #define MOON_GLYPH_SELECTION "\x0D"
 #define MOON_GLYPH_BRACKET_OPEN "\x10"
 #define MOON_GLYPH_BRACKET_CLOSE "\x11"
+
+float MOON_PLAYER_MAX_LEVEL = 50;
+
+float MOON_GOLD_MINE_BASE = 2;
+float MOON_GOLD_MINE_LVLPERCENT = 2.5;
+float MOON_GOLD_MINE_RANDOM = 10;
+
+float MOON_GOLD_LOOT_BASE = 1;
+float MOON_GOLD_LOOT_LVLPERCENT = 5;
+float MOON_GOLD_LOOT_RANDOM = 60;
+
+float MOON_ITEM_NONE = 0;
+float MOON_ITEM_SOME = 1;
+
+float MOON_ITEM_LVLTHRESHOLD_LOW    = 10;
+float MOON_ITEM_LVLTHRESHOLD_NORMAL = 20;
+float MOON_ITEM_LVLTHRESHOLD_HIGH   = 40;
+
+float MOON_ITEM_TRAIT_MAX_PREFIX  = 26;
+float MOON_ITEM_TRAIT_MAX_POSTFIX = 17;
+
+float MOON_ITEM_TRAIT_LOWERBOUND_LOW	= 1;
+float MOON_ITEM_TRAIT_LOWERBOUND_HIGH	= 2;
+float MOON_ITEM_TRAIT_LOWERBOUND_EPIC	= 4;
+float MOON_ITEM_TRAIT_UPPERBOUND_LOW 	= 7;
+float MOON_ITEM_TRAIT_UPPERBOUND_NORMAL = 13;
+float MOON_ITEM_TRAIT_UPPERBOUND_HIGH 	= 16;
+float MOON_ITEM_TRAIT_UPPERBOUND_EPIC 	= 17;
+
+float MOON_ITEM_MAGIC_CHANCE_PREFIX = 0.3;
+float MOON_ITEM_MAGIC_CHANCE_POSTFIX = 0.6; // >this - both
+
+float MOON_ITEM_ARMOR_VS_RING_CHANCE = 0.5;
+
+float MOON_MENTAT_OFFENSE_CODE = 1;
+float MOON_MENTAT_OFFENSE_VALUE = 20;
+string MOON_MENTAT_OFFENSE_NETNAME = "offensive drug";
+string MOON_MENTAT_OFFENSE_NAME = "offensive drug";
+
+float MOON_MENTAT_DEFENSE_CODE = 2;
+float MOON_MENTAT_DEFENSE_VALUE = 20;
+string MOON_MENTAT_DEFENSE_NETNAME = "defensive drug";
+string MOON_MENTAT_DEFENSE_NAME = "defensive drug";
+
+float MOON_MENTAT_SPEED_CODE = 3;
+float MOON_MENTAT_SPEED_VALUE_MIN  = 25;
+float MOON_MENTAT_SPEED_VALUE_NORM = 30;
+float MOON_MENTAT_SPEED_VALUE_MAX  = 35;
+string MOON_MENTAT_SPEED_NETNAME = "accelerative drug";
+string MOON_MENTAT_SPEED_NAME = "accelerative drug";
+
+string MOON_ITEM_ARMOR_NETNAME = "armor";
+string MOON_ITEM_ARMOR_DISPLAY = "armor";
+
+string MOON_ITEM_RING_NETNAME = "ring";
+string MOON_ITEM_RING_DISPLAY = "ring";
+
+float MOON_ITEM_HEALTH_CODE = 1; 
+string MOON_ITEM_HEALTH_PREFIX   	= "FIXME";
+string MOON_ITEM_HEALTH_POSTFIX  	= " of life";
+string MOON_ITEM_HEALTH_PREEFFECT  	= "+";
+string MOON_ITEM_HEALTH_POSTEFFECT  = " to maximum health";
+float MOON_ITEM_HEALTH_BONUS     	= 7;
+float MOON_ITEM_RESIST_CODE = 2; 
+string MOON_ITEM_RESIST_PREFIX   	= "FIXME";
+string MOON_ITEM_RESIST_POSTFIX  	= " of resistance";
+string MOON_ITEM_RESIST_PREEFFECT  	= "reduce damage by ";
+string MOON_ITEM_RESIST_POSTEFFECT  = "%";
+float MOON_ITEM_RESIST_BONUS     	= 9;
+float MOON_ITEM_GOLD_CODE = 3; 
+string MOON_ITEM_GOLD_PREFIX   		= "FIXME";
+string MOON_ITEM_GOLD_POSTFIX  		= " of resistance";
+string MOON_ITEM_GOLD_POSTEFFECT 	= "% extra gold from monsters";
+float MOON_ITEM_GOLD_BONUS_MIN 		= 40;
+float MOON_ITEM_GOLD_BONUS_MAX 		= 60;
+float MOON_ITEM_DAMAGE_CODE = 4; 
+string MOON_ITEM_DAMAGE_PREFIX   	= "FIXME";
+string MOON_ITEM_DAMAGE_POSTFIX  	= "FIXME";
+string MOON_ITEM_DAMAGE_POSTEFFECT 	= "% damage amplify";
+float MOON_ITEM_RETALATE_CODE = 5;
+string MOON_ITEM_RETALATE_PREEFFECT = "attacker takes ";
+string MOON_ITEM_RETALATE_POSTEFFECT= "% of damage caused";
+float MOON_ITEM_VAMPIR_CODE = 6;
+string MOON_ITEM_VAMPIR_POSTEFFECT 	= "% your damage converts to life";
+float MOON_ITEM_REGEN_CODE = 7;
+string MOON_ITEM_REGEN_PREEFFECT  	= "replenish ";
+string MOON_ITEM_REGEN_POSTEFFECT 	= " health every second";
+float MOON_ITEM_CONSUME_CODE = 8;
+string MOON_ITEM_CONSUME_PREEFFECT  = "adds ";
+string MOON_ITEM_CONSUME_POSTEFFECT = " health after each kill";
+
+float MOON_ITEM_GATEALERT_CODE = 1;
+string MOON_ITEM_GATEALERT_EFFECT  	= "Book of Gate \sRed\s Alert (gate gives a signal when killed)\n";
+float MOON_ITEM_SHELLUP_CODE = 2;
+string MOON_ITEM_SHELLUP_EFFECT 	= "Book of Shell Improvement (your shell attack now stronger and more concentrated)\n";
+float MOON_ITEM_NAILUP_CODE = 3;
+string MOON_ITEM_NAILUP_EFFECT 		= "Book of Nail Polish (your nails attack now faster)\n";
+float MOON_ITEM_STATUP_CODE = 4;
+float MOON_ITEM_STATUP_BONUS 		= 5;
+string MOON_ITEM_STATUP_EFFECT 		= "Book of Five Stats (you get \5 stats points)\n";
+float MOON_ITEM_GUARDIAN_CODE = 5;
+string MOON_ITEM_GUARDIAN_EFFECT 	= "Book of Blind Guardian (guardian joins your army)\n";
+float MOON_ITEM_GLOBALGOLD_CODE = 6;
+float MOON_ITEM_GLOBALGOLD_BONUS_FLAT = 5;
+float MOON_ITEM_GLOBALGOLD_BONUS_LVLPERCENT = 0.5;
+float MOON_ITEM_GLOBALGOLD_BONUS_RANDOM = 7;
+string MOON_ITEM_GLOBALGOLD_EFFECT 	= "Book of Treasures (global gold income increase by {}%)\n";
+float MOON_ITEM_HEART_CODE = 7;
+float MOON_ITEM_HEART_BONUS_FLAT 	= 5;
+float MOON_ITEM_HEART_BONUS_LVLPERCENT = 0.25;
+float MOON_ITEM_HEART_BONUS_RANDOM 	= 5;
+string MOON_ITEM_HEART_EFFECT 		= "Book of Immortality (\sheart\s life increased by {})\n";
+
+float(float min, float max) random_int =
+{
+	return rint( (random() * (max - min)) + min );
+};

@@ -218,7 +218,7 @@ void() moon_broadcast_heart_state =
 	heart = moon_gimme_your_heart();
 	if ( heart != world )
 	{
-		bprint("\sHeart\s's life now \x10");
+		bprint("\sHeart\s's life now ");
 		if (heart.health < heart.max_health)
 		{
 			bprint("\s");
@@ -226,7 +226,7 @@ void() moon_broadcast_heart_state =
 			bprint("\s/");
 		}
 		bprint_ftos(heart.max_health);
-		bprint("\x11\n");
+		bprint("\n");
 	}
 };
 
@@ -9051,14 +9051,14 @@ void() UpgradeTouch =
 		break;
 	case MOON_ITEM_GLOBALGOLD_CODE:
 		bonus_value = MOON_ITEM_GLOBALGOLD_BONUS_FLAT + (pl * MOON_ITEM_GLOBALGOLD_BONUS_LVLPERCENT) + (random() * MOON_ITEM_GLOBALGOLD_BONUS_RANDOM);
-		sprint(other, MOON_ITEM_GLOBALGOLD_EFFECT, bonus_value); // Âïïë ïæ ôòåáóõòå (global gold income increased)\n");
+		sprint(other, MOON_ITEM_GLOBALGOLD_EFFECT, quick_ftos_floor(bonus_value)); // Âïïë ïæ ôòåáóõòå (global gold income increased)\n");
 
 		up_gold_value = up_gold_value + bonus_value;
 		moon_broadcast_global_gold_bonus();
 		break;
 	case MOON_ITEM_HEART_CODE:
 		bonus_value = MOON_ITEM_HEART_BONUS_FLAT + (pl * MOON_ITEM_HEART_BONUS_LVLPERCENT) + (random() * MOON_ITEM_HEART_BONUS_RANDOM);
-		sprint(other, MOON_ITEM_HEART_EFFECT, bonus_value); // Âïïë ïæ éííïòôáìù (heart life increased)\n");
+		sprint(other, MOON_ITEM_HEART_EFFECT, quick_ftos_floor(bonus_value)); // Âïïë ïæ éííïòôáìù (heart life increased)\n");
 
 		heart = moon_gimme_your_heart();
 		if ( heart != world )
@@ -9079,27 +9079,7 @@ void() UpgradeTouch =
 	remove(self);
 };
 
-void(entity who) DropUpgrade =
-{
-	local entity item;
-
-	item = spawn();
-	item.origin = (who.origin - '0 0 24');
-	item.velocity_z = 300;
-	item.velocity_x = (-100 + (random() * 200));
-	item.velocity_y = (-100 + (random() * 200));
-	item.cnt = (rint((random() * LOGIC_DEFEND)) + H_ROTTEN);
-	item.flags = FL_ITEM;
-	item.solid = SOLID_TRIGGER;
-	item.movetype = MOVETYPE_TOSS;
-	setmodel(item, "progs/tome.mdl");
-	setsize(item, '-16 -16 0', '16 16 56');
-	item.touch = UpgradeTouch;
-	item.nextthink = (time + MENTAT_TIME);
-	item.think = SUB_Remove;
-};
-
-void(entity who, float val) DropOtherBook =
+void(entity who, float val) DropBookByCode =
 {
 	local entity item;
 
@@ -9117,6 +9097,13 @@ void(entity who, float val) DropOtherBook =
 	item.touch = UpgradeTouch;
 	item.nextthink = (time + MENTAT_TIME);
 	item.think = SUB_Remove;
+};
+
+void(entity who) DropBookUpgrade =
+{
+	local float code;
+	code = random_int(MOON_ITEM_GATEALERT_CODE, MOON_ITEM_GUARDIAN_CODE);
+	DropBookByCode(who, code);
 };
 
 void(entity e) prepare_item =
@@ -9937,6 +9924,7 @@ void() DropItem =
 		e.think = s_explode1;
 		e.nextthink = time;
 	}
+
 	if ((self.prefix == SVC_SETVIEWPORT))
 	{
 		DropGold(self);
@@ -9944,19 +9932,19 @@ void() DropItem =
 	}
 	if ((random() < 0.0035))
 	{
-		DropUpgrade(self);
+		DropBookUpgrade(self);
 		return;
 	}
 	else
 	{
 		if ((random() < 0.0125))
 		{
-			DropOtherBook(self, LOGIC_HUNTENEMY);
+			DropBookByCode(self, MOON_ITEM_GLOBALGOLD_CODE);
 			return;
 		}
 		if ((random() < 0.0125))
 		{
-			DropOtherBook(self, TE_WIZSPIKE);
+			DropBookByCode(self, MOON_ITEM_HEART_CODE);
 			return;
 		}
 	}
@@ -10060,9 +10048,9 @@ void() GiveExp = // REFACTOR ME PLEASE
 			}
 			sound(e, CHAN_BODY, "moon/misc/levelup.wav", CHSCAM_ON, ATTN_NORM);
 			sprint(e, "\n=== Level Up! ===\n"); // Ìåöåì Õð ===\n");
-			sprint(e, "You are now ");
+			sprint(e, "You are now level ");
 			sprint_ftos(e, e.lvl);
-			sprint(e, " leveled player\n");
+			sprint(e, "\n");
 			sprint(e, "Next level: ");
 			sprint_ftos(e, e.nextexp);
 			sprint(e, " expirience.\n");
@@ -10075,7 +10063,7 @@ void() GiveExp = // REFACTOR ME PLEASE
 			}
 			if ((e.lvl == 50))
 			{
-				sprint(e, "Congratulations. You \swon\s the game.\n");
+				sprint(e, "Congratulations! You \swon\s the game.\n");
 			}
 			sprint(e, "================\n");
 			head = find(world, classname, "heart"); // TODO: improve logic by raising hearts level same way as players, to be consistent with players joining in and dropping out

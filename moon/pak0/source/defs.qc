@@ -850,6 +850,18 @@ void(entity e) AddToQue =
 #define const_qex_color_teal 2
 #define const_qex_color_yellow 3
 
+#define const_qc_sprint_a "\a"
+#define const_qc_sprint_f "\f"
+#define const_qc_sprint_r "\r"
+#define const_qc_sprint_v "\v"
+
+#define const_qc_sprint_b_open "\b"
+#define const_qc_sprint_b_close "\b"
+#define const_qc_sprint_s_open "\s"
+#define const_qc_sprint_s_close "\s"
+#define const_qc_sprint_f_open "\f"
+#define const_qc_sprint_f_close "\f"
+
 #define MOON_GLYPH_WHITECELL "\x0B"
 #define MOON_GLYPH_SELECTION "\x0D"
 #define MOON_GLYPH_BRACKET_OPEN "\x10"
@@ -884,7 +896,7 @@ float MOON_ITEM_TRAIT_UPPERBOUND_HIGH 	= 16;
 float MOON_ITEM_TRAIT_UPPERBOUND_EPIC 	= 17;
 
 float MOON_ITEM_MAGIC_CHANCE_PREFIX = 0.3;
-float MOON_ITEM_MAGIC_CHANCE_POSTFIX = 0.6; // >this - both
+float MOON_ITEM_MAGIC_CHANCE_POSTFIX = 0.6; // if above this - both
 
 float MOON_ITEM_ARMOR_VS_RING_CHANCE = 0.5;
 

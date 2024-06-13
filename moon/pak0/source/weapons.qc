@@ -1465,7 +1465,7 @@ void() HomingMissile =
 	local vector dir;
 	local vector vtemp;
 
-	if (((self.enemy.classname == "heart") || (self.enemy.classname == "shoot_ent")))
+	if (((self.enemy.classname == MOON_HEART_CLASSNAME) || (self.enemy.classname == "shoot_ent")))
 	{
 		vtemp = self.enemy.origin;
 	}

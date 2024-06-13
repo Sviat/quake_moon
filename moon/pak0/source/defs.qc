@@ -850,17 +850,15 @@ void(entity e) AddToQue =
 #define const_qex_color_teal 2
 #define const_qex_color_yellow 3
 
-#define const_qc_sprint_a "\a"
-#define const_qc_sprint_f "\f"
-#define const_qc_sprint_r "\r"
-#define const_qc_sprint_v "\v"
+#define const_qc_sprint_a "\a"		// Black cell
+#define const_qc_sprint_f "\f"		// ?!?
+#define const_qc_sprint_r "\r"		// Red triangle	
+#define const_qc_sprint_v "\v"		// White cell
 
-#define const_qc_sprint_b_open "\b"
+#define const_qc_sprint_b_open "\b"	// Red text
 #define const_qc_sprint_b_close "\b"
-#define const_qc_sprint_s_open "\s"
+#define const_qc_sprint_s_open "\s"	// Red text
 #define const_qc_sprint_s_close "\s"
-#define const_qc_sprint_f_open "\f"
-#define const_qc_sprint_f_close "\f"
 
 #define MOON_GLYPH_WHITECELL "\x0B"
 #define MOON_GLYPH_SELECTION "\x0D"
@@ -868,7 +866,25 @@ void(entity e) AddToQue =
 #define MOON_GLYPH_BRACKET_CLOSE "\x11"
 
 float MOON_PLAYER_MAX_LEVEL = 50;
+float MOON_HEART_MAX_LEVEL = 50;
+float MOON_EXP_FIRST_LEVEL = 40;
 
+string MOON_PLAYER_CLASSNAME = "player";
+float MOON_PLAYER_LEVEL_GROW_FAST = 35;
+float MOON_PLAYER_POINT_GROW_FAST = 5;
+float MOON_PLAYER_LEVEL_GROW_NORMAL = 40;
+float MOON_PLAYER_POINT_GROW_NORMAL = 4;
+float MOON_PLAYER_LEVEL_GROW_SLOW = 50; // unnecessary, just for consistency
+float MOON_PLAYER_POINT_GROW_SLOW = 3;
+
+string MOON_HEART_CLASSNAME = "heart";
+float MOON_HEART_HEALTH_GROW = 10;
+float MOON_HEART_HEALTH_REGEN_VALUE = 1;
+float MOON_HEART_HEALTH_REGEN_COOLDOWN = 1;
+
+float MOON_GOLD_MINE_DETECT_PLAYER_RADIUS = 1024; // was 250
+float MOON_GOLD_MINE_DELAY_MIN = 12;
+float MOON_GOLD_MINE_DELAY_RANDOM = 12;
 float MOON_GOLD_MINE_BASE = 2;
 float MOON_GOLD_MINE_LVLPERCENT = 2.5;
 float MOON_GOLD_MINE_RANDOM = 10;
@@ -900,6 +916,7 @@ float MOON_ITEM_MAGIC_CHANCE_POSTFIX = 0.6; // if above this - both
 
 float MOON_ITEM_ARMOR_VS_RING_CHANCE = 0.5;
 
+string MOON_MENTAT_CLASSNAME = "mentat";
 float MOON_MENTAT_OFFENSE_CODE = 1;
 float MOON_MENTAT_OFFENSE_VALUE = 20;
 string MOON_MENTAT_OFFENSE_NETNAME = "offensive drug";
@@ -917,6 +934,8 @@ float MOON_MENTAT_SPEED_VALUE_MAX  = 35;
 string MOON_MENTAT_SPEED_NETNAME = "accelerative drug";
 string MOON_MENTAT_SPEED_NAME = "accelerative drug";
 
+string MOON_ITEM_TRADED_CLASSNAME = "goody_ent";
+string MOON_ITEM_MAGIC_CLASSNAME = "magicitem";
 string MOON_ITEM_ARMOR_NETNAME = "armor";
 string MOON_ITEM_ARMOR_DISPLAY = "armor";
 
@@ -927,13 +946,13 @@ float MOON_ITEM_HEALTH_CODE = 1;
 string MOON_ITEM_HEALTH_PREFIX   	= "FIXME";
 string MOON_ITEM_HEALTH_POSTFIX  	= " of life";
 string MOON_ITEM_HEALTH_PREEFFECT  	= "+";
-string MOON_ITEM_HEALTH_POSTEFFECT  = " to maximum health";
+string MOON_ITEM_HEALTH_POSTEFFECT  	= " to maximum health";
 float MOON_ITEM_HEALTH_BONUS     	= 7;
 float MOON_ITEM_RESIST_CODE = 2; 
 string MOON_ITEM_RESIST_PREFIX   	= "FIXME";
 string MOON_ITEM_RESIST_POSTFIX  	= " of resistance";
 string MOON_ITEM_RESIST_PREEFFECT  	= "reduce damage by ";
-string MOON_ITEM_RESIST_POSTEFFECT  = "%";
+string MOON_ITEM_RESIST_POSTEFFECT  	= "%";
 float MOON_ITEM_RESIST_BONUS     	= 9;
 float MOON_ITEM_GOLD_CODE = 3; 
 string MOON_ITEM_GOLD_PREFIX   		= "FIXME";
@@ -946,16 +965,16 @@ string MOON_ITEM_DAMAGE_PREFIX   	= "FIXME";
 string MOON_ITEM_DAMAGE_POSTFIX  	= "FIXME";
 string MOON_ITEM_DAMAGE_POSTEFFECT 	= "% damage amplify";
 float MOON_ITEM_RETALATE_CODE = 5;
-string MOON_ITEM_RETALATE_PREEFFECT = "attacker takes ";
-string MOON_ITEM_RETALATE_POSTEFFECT= "% of damage caused";
+string MOON_ITEM_RETALATE_PREEFFECT 	= "attacker takes ";
+string MOON_ITEM_RETALATE_POSTEFFECT	= "% of damage caused";
 float MOON_ITEM_VAMPIR_CODE = 6;
 string MOON_ITEM_VAMPIR_POSTEFFECT 	= "% your damage converts to life";
 float MOON_ITEM_REGEN_CODE = 7;
 string MOON_ITEM_REGEN_PREEFFECT  	= "replenish ";
 string MOON_ITEM_REGEN_POSTEFFECT 	= " health every second";
 float MOON_ITEM_CONSUME_CODE = 8;
-string MOON_ITEM_CONSUME_PREEFFECT  = "adds ";
-string MOON_ITEM_CONSUME_POSTEFFECT = " health after each kill";
+string MOON_ITEM_CONSUME_PREEFFECT  	= "adds ";
+string MOON_ITEM_CONSUME_POSTEFFECT 	= " health after each kill";
 
 float MOON_ITEM_GATEALERT_CODE = 1;
 string MOON_ITEM_GATEALERT_EFFECT  	= "Book of Gate \sRed\s Alert (gate gives a signal when killed)\n";
@@ -969,13 +988,13 @@ string MOON_ITEM_STATUP_EFFECT 		= "Book of Five Stats (you get \5 stats points)
 float MOON_ITEM_GUARDIAN_CODE = 5;
 string MOON_ITEM_GUARDIAN_EFFECT 	= "Book of Blind Guardian (guardian joins your army)\n";
 float MOON_ITEM_GLOBALGOLD_CODE = 6;
-float MOON_ITEM_GLOBALGOLD_BONUS_FLAT = 5;
+float MOON_ITEM_GLOBALGOLD_BONUS_FLAT 	= 5;
 float MOON_ITEM_GLOBALGOLD_BONUS_LVLPERCENT = 0.5;
 float MOON_ITEM_GLOBALGOLD_BONUS_RANDOM = 7;
 string MOON_ITEM_GLOBALGOLD_EFFECT 	= "Book of Treasures (global gold income increase by {}%)\n";
 float MOON_ITEM_HEART_CODE = 7;
 float MOON_ITEM_HEART_BONUS_FLAT 	= 5;
-float MOON_ITEM_HEART_BONUS_LVLPERCENT = 0.25;
+float MOON_ITEM_HEART_BONUS_LVLPERCENT 	= 0.25;
 float MOON_ITEM_HEART_BONUS_RANDOM 	= 5;
 string MOON_ITEM_HEART_EFFECT 		= "Book of Immortality (\sheart\s life increased by {})\n";
 

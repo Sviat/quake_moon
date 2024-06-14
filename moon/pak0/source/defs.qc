@@ -223,75 +223,75 @@ float AS_MISSILE  = 4;
 .float waitmax;
 .float distance;
 .float volume;
-void (vector ang) makevectors = #1; 
-void (entity e, vector o) setorigin = #2; 
-void (entity e, string m) setmodel = #3; 
-void (entity e, vector min, vector max) setsize = #4; 
-void () break = #6; 
-float () random = #7; 
-void (entity e, float chan, string samp, float vol, float atten) sound = #8; 
-vector (vector v) normalize = #9; 
-void (string e) error = #10; 
-void (string e) objerror = #11; 
-float (vector v) vlen = #12; 
-float (vector v) vectoyaw = #13; 
-entity () spawn = #14; 
-void (entity e) remove = #15; 
-void (vector v1, vector v2, float nomonsters, entity forent) traceline = #16; 
-entity () checkclient = #17; 
-entity (entity start, .string fld, string match) find = #18; 
-string (string s) precache_sound = #19; 
-string (string s) precache_model = #20; 
-void (entity client, string s) stuffcmd = #21; 
-entity (vector org, float rad) findradius = #22; 
-/*void (...) bprint = #23; 
-void (...) sprint = #24; 
+void (vector ang) makevectors = #1;
+void (entity e, vector o) setorigin = #2;
+void (entity e, string m) setmodel = #3;
+void (entity e, vector min, vector max) setsize = #4;
+void () break = #6;
+float () random = #7;
+void (entity e, float chan, string samp, float vol, float atten) sound = #8;
+vector (vector v) normalize = #9;
+void (string e) error = #10;
+void (string e) objerror = #11;
+float (vector v) vlen = #12;
+float (vector v) vectoyaw = #13;
+entity () spawn = #14;
+void (entity e) remove = #15;
+void (vector v1, vector v2, float nomonsters, entity forent) traceline = #16;
+entity () checkclient = #17;
+entity (entity start, .string fld, string match) find = #18;
+string (string s) precache_sound = #19;
+string (string s) precache_model = #20;
+void (entity client, string s) stuffcmd = #21;
+entity (vector org, float rad) findradius = #22;
+/*void (...) bprint = #23;
+void (...) sprint = #24;
 void (...) dprint = #25;*/
 void(string s, ...) bprint = #0:ex_bprint;
 void(entity client, string s, ...) sprint = #0:ex_sprint;
 void(string s, ...) dprint = #25;
-string (float f) ftos = #26; 
-string (vector v) vtos = #27; 
-void () coredump = #28; 
-void () traceon = #29; 
-void () traceoff = #30; 
-void (entity e) eprint = #31; 
-float (float yaw, float dist) walkmove = #32; 
-float () droptofloor = #34; 
-void (float style, string value) lightstyle = #35; 
-float (float v) rint = #36; 
-float (float v) floor = #37; 
-float (float v) ceil = #38; 
-float (entity e) checkbottom = #40; 
-float (vector v) pointcontents = #41; 
-float (float f) fabs = #43; 
-vector (entity e, float speed) aim = #44; 
-float (string s) cvar = #45; 
-void (string s) localcmd = #46; 
-entity (entity e) nextent = #47; 
-void (vector o, vector d, float color, float count) particle = #48; 
-void () ChangeYaw = #49; 
-vector (vector v) vectoangles = #51; 
-void (float to, float f) WriteByte = #52; 
-void (float to, float f) WriteChar = #53; 
-void (float to, float f) WriteShort = #54; 
-void (float to, float f) WriteLong = #55; 
-void (float to, float f) WriteCoord = #56; 
-void (float to, float f) WriteAngle = #57; 
-void (float to, string s) WriteString = #58; 
-void (float to, entity s) WriteEntity = #59; 
-void (float step) movetogoal = #67; 
-string (string s) precache_file = #68; 
-void (entity e) makestatic = #69; 
-void (string s) changelevel = #70; 
-void (string var, string val) cvar_set = #72; 
+string (float f) ftos = #26;
+string (vector v) vtos = #27;
+void () coredump = #28;
+void () traceon = #29;
+void () traceoff = #30;
+void (entity e) eprint = #31;
+float (float yaw, float dist) walkmove = #32;
+float () droptofloor = #34;
+void (float style, string value) lightstyle = #35;
+float (float v) rint = #36;
+float (float v) floor = #37;
+float (float v) ceil = #38;
+float (entity e) checkbottom = #40;
+float (vector v) pointcontents = #41;
+float (float f) fabs = #43;
+vector (entity e, float speed) aim = #44;
+float (string s) cvar = #45;
+void (string s) localcmd = #46;
+entity (entity e) nextent = #47;
+void (vector o, vector d, float color, float count) particle = #48;
+void () ChangeYaw = #49;
+vector (vector v) vectoangles = #51;
+void (float to, float f) WriteByte = #52;
+void (float to, float f) WriteChar = #53;
+void (float to, float f) WriteShort = #54;
+void (float to, float f) WriteLong = #55;
+void (float to, float f) WriteCoord = #56;
+void (float to, float f) WriteAngle = #57;
+void (float to, string s) WriteString = #58;
+void (float to, entity s) WriteEntity = #59;
+void (float step) movetogoal = #67;
+string (string s) precache_file = #68;
+void (entity e) makestatic = #69;
+void (string s) changelevel = #70;
+void (string var, string val) cvar_set = #72;
 //void (entity client, string s, ...) centerprint = #73;
 void(entity client, string s, ...) centerprint = #0:ex_centerprint;	// sprint, but in middle
-void (vector pos, string samp, float vol, float atten) ambientsound = #74; 
-string (string s) precache_model2 = #75; 
-string (string s) precache_sound2 = #76; 
-string (string s) precache_file2 = #77; 
-void (entity e) setspawnparms = #78; 
+void (vector pos, string samp, float vol, float atten) ambientsound = #74;
+string (string s) precache_model2 = #75;
+string (string s) precache_sound2 = #76;
+string (string s) precache_file2 = #77;
+void (entity e) setspawnparms = #78;
 
 // Debug rendering functions. KEX QuakeC
 void draw_point( vector point, float colormap, float lifetime, float depthtest ) = #0:ex_draw_point;
@@ -719,7 +719,7 @@ void (entity client, string s) centerprint1 = #73; // unused
 void (entity client, string s, string s) centerprint2 = #73; // unused
 void (entity client, string s, string s, string s) centerprint3 = #73; // unused
 void (entity client, string s, string s, string s, string s) centerprint4 = #73; // unused
-//void (entity client, string s, ...) centerprint5 = #73; 
+//void (entity client, string s, ...) centerprint5 = #73;
 void(entity client, string s, ...) centerprint5 = #0:ex_centerprint;	// sprint, but in middle
 void (entity client, string s, string s, string s, string s, string s, string s) centerprint6 = #73; // unused
 void (entity client, string s, string s, string s, string s, string s, string s, string s) centerprint7 = #73; // unused
@@ -852,7 +852,7 @@ void(entity e) AddToQue =
 
 #define const_qc_sprint_a "\a"		// Black cell
 #define const_qc_sprint_f "\f"		// ?!?
-#define const_qc_sprint_r "\r"		// Red triangle	
+#define const_qc_sprint_r "\r"		// Red triangle
 #define const_qc_sprint_v "\v"		// White cell
 
 #define const_qc_sprint_b_open "\b"	// Red text
@@ -877,12 +877,17 @@ float MOON_PLAYER_POINT_GROW_NORMAL = 4;
 float MOON_PLAYER_LEVEL_GROW_SLOW = 50; // unnecessary, just for consistency
 float MOON_PLAYER_POINT_GROW_SLOW = 3;
 
+float MOON_STAT_DAMAGE_PER_STRENGTH = 1;
+float MOON_STAT_HEALTH_PER_VITALITY = 2;
+float MOON_STAT_MANA_PER_MAGIC 		= 1; // Not finished
+
 string MOON_HEART_CLASSNAME = "heart";
+float MOON_HEART_HEALTH_INIT = 200;
 float MOON_HEART_HEALTH_GROW = 10;
 float MOON_HEART_HEALTH_REGEN_VALUE = 1;
 float MOON_HEART_HEALTH_REGEN_COOLDOWN = 1;
 
-float MOON_GOLD_MINE_DETECT_PLAYER_RADIUS = 1024; // was 250
+float MOON_GOLD_MINE_DETECT_PLAYER_RADIUS = 800; // was 250
 float MOON_GOLD_MINE_DELAY_MIN = 12;
 float MOON_GOLD_MINE_DELAY_RANDOM = 12;
 float MOON_GOLD_MINE_BASE = 2;
@@ -896,25 +901,47 @@ float MOON_GOLD_LOOT_RANDOM = 60;
 float MOON_ITEM_NONE = 0;
 float MOON_ITEM_SOME = 1;
 
+string MOON_MARKET_ITEM_CLASSNAME = "goody_ent";
+
 float MOON_ITEM_LVLTHRESHOLD_LOW    = 10;
 float MOON_ITEM_LVLTHRESHOLD_NORMAL = 20;
 float MOON_ITEM_LVLTHRESHOLD_HIGH   = 40;
 
-float MOON_ITEM_TRAIT_MAX_PREFIX  = 26;
+float MOON_ITEM_TRAIT_MAX_EFFECT  = 8;
+float MOON_ITEM_TRAIT_MAX_PREFIX  = 27;
 float MOON_ITEM_TRAIT_MAX_POSTFIX = 17;
 
 float MOON_ITEM_TRAIT_LOWERBOUND_LOW	= 1;
 float MOON_ITEM_TRAIT_LOWERBOUND_HIGH	= 2;
 float MOON_ITEM_TRAIT_LOWERBOUND_EPIC	= 4;
-float MOON_ITEM_TRAIT_UPPERBOUND_LOW 	= 7;
-float MOON_ITEM_TRAIT_UPPERBOUND_NORMAL = 13;
-float MOON_ITEM_TRAIT_UPPERBOUND_HIGH 	= 16;
-float MOON_ITEM_TRAIT_UPPERBOUND_EPIC 	= 17;
+float MOON_ITEM_TRAIT_UPPERBOUND_PREFIX_LOW 	= 8;
+float MOON_ITEM_TRAIT_UPPERBOUND_PREFIX_NORMAL 	= 16;
+float MOON_ITEM_TRAIT_UPPERBOUND_PREFIX_HIGH 	= 21;
+float MOON_ITEM_TRAIT_UPPERBOUND_PREFIX_EPIC 	= 27;
+float MOON_ITEM_TRAIT_UPPERBOUND_POSTFIX_LOW 	= 7;
+float MOON_ITEM_TRAIT_UPPERBOUND_POSTFIX_NORMAL = 13;
+float MOON_ITEM_TRAIT_UPPERBOUND_POSTFIX_HIGH 	= 16;
+float MOON_ITEM_TRAIT_UPPERBOUND_POSTFIX_EPIC 	= 17;
 
 float MOON_ITEM_MAGIC_CHANCE_PREFIX = 0.3;
 float MOON_ITEM_MAGIC_CHANCE_POSTFIX = 0.6; // if above this - both
 
 float MOON_ITEM_ARMOR_VS_RING_CHANCE = 0.5;
+
+string MOON_ELIXIR_CLASSNAME = "elixir";	// Unused? goody_ent?
+string MOON_ELIXIR_MARKET_NETNAME = "goody_elixir";
+float MOON_ELIXIR_STR_CODE = 1;
+float MOON_ELIXIR_STR_VALUE 	= 1;
+string MOON_ELIXIR_STR_NETNAME 	= "elixir of STRANGE (+1 to strength)";
+string MOON_ELIXIR_STR_NAME 	= "elixir of STRANGE (+1 to strength)";
+float MOON_ELIXIR_VIT_CODE = 2;
+float MOON_ELIXIR_VIT_VALUE 	= 1;
+string MOON_ELIXIR_VIT_NETNAME 	= "elixir of VITALIKI (+1 to vitality)";
+string MOON_ELIXIR_VIT_NAME 	= "elixir of VITALIKI (+1 to vitality)";
+float MOON_ELIXIR_MAG_CODE = 3;		// Not finished
+float MOON_ELIXIR_MAG_VALUE 	= 1;
+string MOON_ELIXIR_MAG_NETNAME 	= "elixir of MAGGI (+1 to magic)";
+string MOON_ELIXIR_MAG_NAME 	= "elixir of MAGGI (+1 to magic)";
 
 string MOON_MENTAT_CLASSNAME = "mentat";
 float MOON_MENTAT_OFFENSE_CODE = 1;
@@ -942,28 +969,64 @@ string MOON_ITEM_ARMOR_DISPLAY = "armor";
 string MOON_ITEM_RING_NETNAME = "ring";
 string MOON_ITEM_RING_DISPLAY = "ring";
 
-float MOON_ITEM_HEALTH_CODE = 1; 
-string MOON_ITEM_HEALTH_PREFIX   	= "FIXME";
-string MOON_ITEM_HEALTH_POSTFIX  	= " of life";
+// // list of Magical Effects, _CODE's should be in increasing order
+float MOON_ITEM_HEALTH_CODE = 1;
 string MOON_ITEM_HEALTH_PREEFFECT  	= "+";
-string MOON_ITEM_HEALTH_POSTEFFECT  	= " to maximum health";
-float MOON_ITEM_HEALTH_BONUS     	= 7;
-float MOON_ITEM_RESIST_CODE = 2; 
-string MOON_ITEM_RESIST_PREFIX   	= "FIXME";
-string MOON_ITEM_RESIST_POSTFIX  	= " of resistance";
-string MOON_ITEM_RESIST_PREEFFECT  	= "reduce damage by ";
-string MOON_ITEM_RESIST_POSTEFFECT  	= "%";
+string MOON_ITEM_HEALTH_POSTEFFECT  = " to maximum health";
+string MOON_ITEM_HEALTH_PREFIX_LOW   	= "Echidna ";
+string MOON_ITEM_HEALTH_PREFIX_NORMAL  	= "Echidna ";
+string MOON_ITEM_HEALTH_PREFIX_HIGH  	= "Echidna ";
+string MOON_ITEM_HEALTH_PREFIX_EPIC  	= "Echidna ";
+string MOON_ITEM_HEALTH_POSTFIX  		= " of Life";
+float MOON_ITEM_HEALTH_BONUS     	= 7;//fixme
+float MOON_ITEM_HEALTH_BONUS_RANDOM = 10;
+float MOON_ITEM_HEALTH_BONUS_LOW 		= 5;
+float MOON_ITEM_HEALTH_BONUS_NORMAL		= 5;
+float MOON_ITEM_HEALTH_BONUS_HIGH		= 5;
+float MOON_ITEM_HEALTH_BONUS_EPIC		= 5;
+
+float MOON_ITEM_RESIST_CODE = 2;
+string MOON_ITEM_RESIST_PREEFFECT  	= "reduce damage received by ";
+string MOON_ITEM_RESIST_POSTEFFECT  = "%";
+string MOON_ITEM_RESIST_PREFIX_LOW   	= "Halo ";
+string MOON_ITEM_RESIST_PREFIX_NORMAL  	= "Halo ";
+string MOON_ITEM_RESIST_PREFIX_HIGH   	= "Halo ";
+string MOON_ITEM_RESIST_PREFIX_EPIC   	= "Halo ";
+string MOON_ITEM_RESIST_POSTFIX  		= " of Resistance";
 float MOON_ITEM_RESIST_BONUS     	= 9;
-float MOON_ITEM_GOLD_CODE = 3; 
-string MOON_ITEM_GOLD_PREFIX   		= "FIXME";
-string MOON_ITEM_GOLD_POSTFIX  		= " of resistance";
+float MOON_ITEM_RESIST_BONUS_RANDOM = 9;
+float MOON_ITEM_RESIST_BONUS_LOW 		= 1;
+float MOON_ITEM_RESIST_BONUS_NORMAL		= 5;
+float MOON_ITEM_RESIST_BONUS_HIGH		= 5;
+float MOON_ITEM_RESIST_BONUS_EPIC		= 5;
+
+float MOON_ITEM_GOLD_CODE = 3;
 string MOON_ITEM_GOLD_POSTEFFECT 	= "% extra gold from monsters";
+string MOON_ITEM_GOLD_PREFIX_LOW   		= "Lunacy ";
+string MOON_ITEM_GOLD_PREFIX_NORMAL  	= "Lunacy ";
+string MOON_ITEM_GOLD_PREFIX_HIGH   	= "Lunacy ";
+string MOON_ITEM_GOLD_PREFIX_EPIC   	= "Lunacy ";
+string MOON_ITEM_GOLD_POSTFIX  			= " of Greed";
 float MOON_ITEM_GOLD_BONUS_MIN 		= 40;
-float MOON_ITEM_GOLD_BONUS_MAX 		= 60;
-float MOON_ITEM_DAMAGE_CODE = 4; 
-string MOON_ITEM_DAMAGE_PREFIX   	= "FIXME";
-string MOON_ITEM_DAMAGE_POSTFIX  	= "FIXME";
+float MOON_ITEM_GOLD_BONUS_MAX 		= 60;//fixme
+float MOON_ITEM_GOLD_BONUS_RANDOM = 20;
+float MOON_ITEM_GOLD_BONUS_LOW 			= 20;
+float MOON_ITEM_GOLD_BONUS_NORMAL		= 5;
+float MOON_ITEM_GOLD_BONUS_HIGH			= 5;
+float MOON_ITEM_GOLD_BONUS_EPIC			= 5;
+
+float MOON_ITEM_DAMAGE_CODE = 4;
 string MOON_ITEM_DAMAGE_POSTEFFECT 	= "% damage amplify";
+string MOON_ITEM_DAMAGE_PREFIX_LOW   	= "Brutal ";
+string MOON_ITEM_DAMAGE_PREFIX_NORMAL  	= "Brutal ";
+string MOON_ITEM_DAMAGE_PREFIX_HIGH   	= "Brutal ";
+string MOON_ITEM_DAMAGE_PREFIX_EPIC   	= "Brutal ";
+string MOON_ITEM_DAMAGE_POSTFIX  		= "FIXME";
+float MOON_ITEM_DAMAGE_BONUS_RANDOM = 20;
+float MOON_ITEM_DAMAGE_BONUS_LOW 		= 5;
+float MOON_ITEM_DAMAGE_BONUS_NORMAL		= 5;
+float MOON_ITEM_DAMAGE_BONUS_HIGH		= 5;
+float MOON_ITEM_DAMAGE_BONUS_EPIC		= 5;
 float MOON_ITEM_RETALATE_CODE = 5;
 string MOON_ITEM_RETALATE_PREEFFECT 	= "attacker takes ";
 string MOON_ITEM_RETALATE_POSTEFFECT	= "% of damage caused";
@@ -973,9 +1036,11 @@ float MOON_ITEM_REGEN_CODE = 7;
 string MOON_ITEM_REGEN_PREEFFECT  	= "replenish ";
 string MOON_ITEM_REGEN_POSTEFFECT 	= " health every second";
 float MOON_ITEM_CONSUME_CODE = 8;
-string MOON_ITEM_CONSUME_PREEFFECT  	= "adds ";
-string MOON_ITEM_CONSUME_POSTEFFECT 	= " health after each kill";
+string MOON_ITEM_CONSUME_PREEFFECT	= "adds ";
+string MOON_ITEM_CONSUME_POSTEFFECT	= " health after each kill";
+// // last Effect's _CODE should not be greater than MOON_ITEM_TRAIT_MAX_EFFECT
 
+// // list of Upgrades
 float MOON_ITEM_GATEALERT_CODE = 1;
 string MOON_ITEM_GATEALERT_EFFECT  	= "Book of Gate \sRed\s Alert (gate gives a signal when killed)\n";
 float MOON_ITEM_SHELLUP_CODE = 2;
@@ -997,6 +1062,7 @@ float MOON_ITEM_HEART_BONUS_FLAT 	= 5;
 float MOON_ITEM_HEART_BONUS_LVLPERCENT 	= 0.25;
 float MOON_ITEM_HEART_BONUS_RANDOM 	= 5;
 string MOON_ITEM_HEART_EFFECT 		= "Book of Immortality (\sheart\s life increased by {})\n";
+// // end of list of Upgrades
 
 float(float min, float max) random_int =
 {

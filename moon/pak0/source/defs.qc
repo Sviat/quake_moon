@@ -1087,3 +1087,13 @@ float(float value, float max) clamp =
 	if (value <= max) { return value; }
 	return max;
 };
+
+void() flash_self =
+{
+	stuffcmd(self, "bf\n");
+};
+
+void(entity target) flash_other =
+{
+	stuffcmd(target, "bf\n");
+};

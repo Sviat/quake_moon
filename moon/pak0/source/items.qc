@@ -1,16 +1,6 @@
 //Decompiled code. Please respect the original copyright.
 void() W_SetCurrentAmmo;
 
-void() flash_self =
-{
-	stuffcmd(self, "bf\n");
-};
-
-void(entity target) flash_other =
-{
-	stuffcmd(target, "bf\n");
-};
-
 void(entity target, float digit) moon_print_golden_digit =
 {
 	switch(floor(digit))
@@ -399,7 +389,7 @@ void() health_touch =
 	sprint(other, s);
 	sprint(other, " health\n");
 	sound(other, CHAN_ITEM, self.noise, WF_DEFEND, ATTN_NORM);
-	stuffcmd(other, "bf\n");
+	flash_other(other);
 	self.model = string_null;
 	self.solid = SOLID_NOT;
 	if ((self.healtype == WF_EXTRASIZE))
@@ -474,7 +464,7 @@ void() armor_touch =
 	self.think = SUB_regen;
 	sprint(other, "You got armor\n");
 	sound(other, CHAN_ITEM, "items/armor1.wav", WF_DEFEND, ATTN_NORM);
-	stuffcmd(other, "bf\n");
+	flash_other(other);
 	activator = other;
 	SUB_UseTargets();
 };
@@ -614,7 +604,7 @@ void() weapon_touch =
 	sprint(other, self.netname);
 	sprint(other, "\s\n");
 	sound(other, CHAN_ITEM, "weapons/pkup.wav", WF_DEFEND, ATTN_NORM);
-	stuffcmd(other, "bf\n");
+	flash_other(other);
 	moon_limit_target_ammo(other);
 	old = other.weapon;
 	stemp = self;
@@ -744,7 +734,7 @@ void() ammo_touch =
 	}
 	sprint(other, "\n");
 	sound(other, CHAN_ITEM, "weapons/lock4.wav", WF_DEFEND, ATTN_NORM);
-	stuffcmd(other, "bf\n");
+	flash_other(other);
 	if ((other.weapon == best))
 	{
 		stemp = self;
@@ -834,7 +824,7 @@ void() powerup_touch =
 		self.think = SUB_regen;
 	}
 	sound(other, CHAN_VOICE, self.noise, WF_DEFEND, ATTN_NORM);
-	stuffcmd(other, "bf\n");
+	flash_other(other);
 	self.solid = SOLID_NOT;
 	other.items = (other.items | self.items);
 	self.model = string_null;
@@ -988,7 +978,7 @@ void() BackpackTouch =
 	}
 	sprint(other, "\n");
 	sound(other, CHAN_ITEM, "weapons/pkup.wav", WF_DEFEND, ATTN_NORM);
-	stuffcmd(other, "bf\n");
+	flash_other(other);
 	remove(self);
 	self = other;
 	if (!deathmatch)
@@ -2928,7 +2918,7 @@ void() buy_goody =
 		selected.owner.rstuck_org = selected.owner.origin;
 		self.gold = (self.gold - selected.cost);
 		setmodel(selected, string_null);
-		stuffcmd(self, "bf\n");
+		flash_self();
 		sprint_ftos(self, self.gold);
 		sprint(self, " gold left\n");
 		remove(selected);
@@ -3842,7 +3832,7 @@ void() bye_item =
 		self.gold = (self.gold - selected.cost);
 		setmodel(selected, string_null);
 		selected.free = TRUE;
-		stuffcmd(self, "bf\n");
+		flash_self();
 		sprint_ftos(self, self.gold);
 		sprint(self, " gold left\n");
 	}
@@ -3874,7 +3864,7 @@ void() indefy_item =
 	}
 	if ((selected != world))
 	{
-		sprint(self, "====== identify item ======\n"); // ====== éîäåæù éôåí ======\n");
+		sprint(self, "====== identify item ======\n");
 		if ((selected.items & IT_ARMOR1))
 		{
 			sprint(self, "Green Armor. Cost: ");
@@ -9392,7 +9382,7 @@ void() SCT =
 		}
 	}
 	sound(other, CHAN_ITEM, "moon/items/scroll.wav", CHSCAM_ON, ATTN_NORM);
-	stuffcmd(other, "bf\n");
+	flash_other(other);
 	remove(self);
 };
 
@@ -9442,7 +9432,7 @@ void() ShardTouch =
 		}
 	}
 	sound(other, CHAN_ITEM, "moon/items/shard.wav", CHSCAM_ON, ATTN_NORM);
-	stuffcmd(other, "bf\n");
+	flash_other(other);
 	remove(self);
 };
 

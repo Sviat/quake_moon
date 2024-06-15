@@ -54,7 +54,7 @@ void(entity target, float number, void(entity target, float digit) color_func) m
 
 	digit_count = 1;
 	remainder = rint(number);
-	while(remainder > 10)
+	while(remainder >= 10)
 	{
 		digit_count = digit_count + 1;
 		remainder = remainder / 10;
@@ -234,9 +234,8 @@ void() moon_broadcast_heart_state =
 		bprint("\sHeart\s's life now ");
 		if (heart.health < heart.max_health)
 		{
-			bprint("\s");
 			bprint_ftos(heart.health);
-			bprint("\s/");
+			bprint("\s/\s"); // Im too lazy to duplicate print_red_number for bprint
 		}
 		bprint_ftos(heart.max_health);
 		bprint("\n");
@@ -510,43 +509,28 @@ void() item_armorInv =
 	StartItem();
 };
 
-void() bound_other_ammo =
+void(entity target) moon_limit_target_ammo =
 {
-	if ((other.ammo_shells > 100))
-	{
-		other.ammo_shells = 100;
-	}
-	if ((other.ammo_nails > 200))
-	{
-		other.ammo_nails = 200;
-	}
-	if ((other.ammo_rockets > 100))
-	{
-		other.ammo_rockets = 100;
-	}
-	if ((other.ammo_cells > 100))
-	{
-		other.ammo_cells = 100;
-	}
-};
+	local float max_shells;
+	local float max_nails;
+	max_shells = MOON_AMMO_MAX_SHELL + (target.up_bullet * MOON_ITEM_SHELLUP_SIDEEFFECT_BONUS);
+	max_nails = MOON_AMMO_MAX_NAIL + (target.up_nail * MOON_ITEM_NAILUP_SIDEEFFECT_BONUS);
 
-void() bound_self_ammo =
-{
-	if ((self.ammo_shells > 100))
+	if (target.ammo_shells > max_shells)
 	{
-		self.ammo_shells = 100;
+		target.ammo_shells = max_shells;
 	}
-	if ((self.ammo_nails > 200))
+	if (target.ammo_nails > max_nails)
 	{
-		self.ammo_nails = 200;
+		target.ammo_nails = max_nails;
 	}
-	if ((self.ammo_rockets > 100))
+	if (target.ammo_rockets > MOON_AMMO_MAX_ROCKET)
 	{
-		self.ammo_rockets = 100;
+		target.ammo_rockets = MOON_AMMO_MAX_ROCKET;
 	}
-	if ((self.ammo_cells > 100))
+	if (target.ammo_cells > MOON_AMMO_MAX_CELL)
 	{
-		self.ammo_cells = 100;
+		target.ammo_cells = MOON_AMMO_MAX_CELL;
 	}
 };
 
@@ -631,7 +615,7 @@ void() weapon_touch =
 	sprint(other, "\s\n");
 	sound(other, CHAN_ITEM, "weapons/pkup.wav", WF_DEFEND, ATTN_NORM);
 	stuffcmd(other, "bf\n");
-	bound_other_ammo();
+	moon_limit_target_ammo(other);
 	old = other.weapon;
 	stemp = self;
 	self = other;
@@ -729,7 +713,7 @@ void() ammo_touch =
 	other.ammo_nails = (other.ammo_nails + self.ammo_nails);
 	other.ammo_rockets = (other.ammo_rockets + self.ammo_rockets);
 	other.ammo_cells = (other.ammo_cells + self.ammo_cells);
-	bound_other_ammo();
+	moon_limit_target_ammo(other);
 	if (self.ammo_shells)
 	{
 		sprint(other, "You get ");
@@ -971,7 +955,7 @@ void() BackpackTouch =
 	}
 	old = other.items;
 	other.items = (other.items | new);
-	bound_other_ammo();
+	moon_limit_target_ammo(other);
 	sprint(other, " with ");
 	if (self.ammo_shells)
 	{
@@ -2859,7 +2843,7 @@ void() buy_goody =
 						self.ammo_nails = (self.ammo_nails + selected.ammo_nails);
 						self.ammo_rockets = (self.ammo_rockets + selected.ammo_rockets);
 						self.ammo_cells = (self.ammo_cells + selected.ammo_cells);
-						bound_self_ammo();
+						moon_limit_target_ammo(self);
 						if (selected.ammo_shells)
 						{
 							sprint(self, "You bought ");
@@ -2921,7 +2905,7 @@ void() buy_goody =
 								self.ammo_nails = (self.ammo_nails + selected.ammo_nails);
 								self.ammo_rockets = (self.ammo_rockets + selected.ammo_rockets);
 								self.ammo_cells = (self.ammo_cells + selected.ammo_cells);
-								bound_self_ammo();
+								moon_limit_target_ammo(self);
 								self.items = (self.items | selected.items);
 								sprint(self, "You bought ");
 								sprint(self, selected.targetname);
@@ -3775,7 +3759,7 @@ void() bye_item =
 					self.ammo_nails = (self.ammo_nails + selected.ammo_nails);
 					self.ammo_rockets = (self.ammo_rockets + selected.ammo_rockets);
 					self.ammo_cells = (self.ammo_cells + selected.ammo_cells);
-					bound_self_ammo();
+					moon_limit_target_ammo(self);
 					if (selected.ammo_shells)
 					{
 						sprint(self, "You bought ");
@@ -3835,7 +3819,7 @@ void() bye_item =
 						self.ammo_nails = (self.ammo_nails + selected.ammo_nails);
 						self.ammo_rockets = (self.ammo_rockets + selected.ammo_rockets);
 						self.ammo_cells = (self.ammo_cells + selected.ammo_cells);
-						bound_self_ammo();
+						moon_limit_target_ammo(self);
 						self.items = (self.items | selected.items);
 						sprint(self, "You bought ");
 						sprint(self, selected.targetname);
@@ -3992,7 +3976,7 @@ void() print_skills =
 	sprint(self, " max life)");
 	if (self.point > 0)
 	{
-		sprint(self, ". Use `skill\1` to increase\n"); // ¢óëéìì±¢ to add\n");
+		sprint(self, ". Use `skill\1` to increase"); // ¢óëéìì±¢ to add\n");
 	}
 	sprint(self, "\n| strength: "); // óôòåîçôèº ");
 	sprint_ftos(self, self.stre);
@@ -5476,6 +5460,7 @@ void() Prepare =
 	self.mosterskilled = 0;
 	sv_alwaysday = 0;
 	self.up_bullet = 0;
+	self.up_nail = 0;
 	up_alert = 0;
 	if ((waypoints_ok == FALSE))
 	{
@@ -8828,7 +8813,7 @@ void() weareditems =
 	}
 
 	did_print_section = FALSE;
-	sprint(self, "\n== your current items ==\n"); // ùïõò ãõòòåîô éôåíó ==\n");
+	sprint(self, "\n==== your current items ====\n"); // ùïõò ãõòòåîô éôåíó ==\n");
 	if ((self.mentat_bonus == MOON_ITEM_SOME))
 	{
 		moon_print_mentat_offense(self);
@@ -8903,7 +8888,7 @@ void() weareditems =
 		moon_print_target_magic_ring_name(self);
 		moon_print_self_magic_ring_description(self);
 	}
-	sprint(self, "==========================\n");
+	sprint(self, "============================\n");
 };
 
 void(entity who) DropMagicArmor =
@@ -8955,6 +8940,7 @@ void(entity who) DropMagicArmor =
 void() UpgradeTouch =
 {
 	local float pl;
+	local entity gate;
 	local entity heart;
 	local float bonus_value;
 
@@ -8970,16 +8956,36 @@ void() UpgradeTouch =
 	switch(self.cnt)
 	{
 	case MOON_ITEM_GATEALERT_CODE:
-		sprint(other, MOON_ITEM_GATEALERT_EFFECT); // Âïïë ïæ çáôå áìåòô (gate gives a signal if killed)\n");
-		up_alert = TRUE;
+		if (up_alert < 1)
+		{
+			sprint(other, MOON_ITEM_GATEALERT_EFFECT);
+		} else {
+			sprint(other, MOON_ITEM_GATEALERT_SIDEEFFECT);
+			gate = find(world, classname, "gate");
+			if (gate)
+			{
+				gate.max_health = gate.max_health + MOON_ITEM_GATEALERT_SIDEEFFECT_BONUS;
+			}
+		}
+		up_alert = up_alert + 1;
 		break;
 	case MOON_ITEM_SHELLUP_CODE:
-		sprint(other, MOON_ITEM_SHELLUP_EFFECT); // Âïïë ïæ âõììåô éíðòïöåíåîô (your shell attack now stronger and more concentrated)\n");
-		other.up_bullet = TRUE;
+		if (other.up_bullet < 1)
+		{
+			sprint(other, MOON_ITEM_SHELLUP_EFFECT);
+		} else {
+			sprint(other, MOON_ITEM_SHELLUP_SIDEEFFECT);
+		}
+		other.up_bullet = other.up_bullet + 1; // Re-use same param for both Upgrade and Extra capacity
 		break;
 	case MOON_ITEM_NAILUP_CODE:
-		sprint(other, MOON_ITEM_NAILUP_EFFECT); // Âïïë ïæ îáéì éíðòïöåíåîô (your nails attack now faster)\n");
-		other.up_nail = TRUE;
+		if (other.up_nail < 1)
+		{
+			sprint(other, MOON_ITEM_NAILUP_EFFECT);
+		} else {
+			sprint(other, MOON_ITEM_NAILUP_SIDEEFFECT);
+		}
+		other.up_nail = other.up_nail + 1; // Re-use same param for both Upgrade and Extra capacity
 		break;
 	case MOON_ITEM_STATUP_CODE:
 		sprint(other, MOON_ITEM_STATUP_EFFECT); // Âïïë ïæ óôáôó âïîõó (you get 5 stats points)\n");
@@ -9535,7 +9541,7 @@ void() MentatTouch =
 	{
 	case MOON_MENTAT_OFFENSE_CODE:
 		moon_print_mentat_offense(other);
-		sprint(self, "\n");
+		sprint(other, "\n");
 		//sprint(other, "You get offensive drug (increase your damage by 20%)\n"); // ïææåîãéöå äòõç (increase your damage by 20%)\n");
 		self.netname = MOON_MENTAT_OFFENSE_NETNAME; // ïææåîãéöå äòõç";
 		e = find(world, classname, MOON_MENTAT_CLASSNAME);
@@ -9557,7 +9563,7 @@ void() MentatTouch =
 		break;
 	case MOON_MENTAT_DEFENSE_CODE:
 		moon_print_mentat_defense(other);
-		sprint(self, "\n");
+		sprint(other, "\n");
 		//sprint(other, "You get defensive drug (reduce received damage by 20%)\n"); // äåæåîóéöå äòõç (reduce received damage by 20%)\n");
 		self.netname = MOON_MENTAT_DEFENSE_NETNAME; // äåæåîóéöå äòõç";
 		e = find(world, classname, MOON_MENTAT_CLASSNAME);
@@ -9579,7 +9585,7 @@ void() MentatTouch =
 		break;
 	case MOON_MENTAT_SPEED_CODE:
 		moon_print_mentat_speed(other);
-		sprint(self, "\n");
+		sprint(other, "\n");
 		//sprint(other, "You get accelerative drug (increase your attack speed)\n"); // áããåìåòáôéöå äòõç (increase your attack speed)\n");
 		self.netname = MOON_MENTAT_SPEED_NETNAME; // áããåìåòáôéöå äòõç";
 		e = find(world, classname, MOON_MENTAT_CLASSNAME);

@@ -190,10 +190,10 @@ void() door_killed =
 		{
 			if ((e.gatename == self.gatename))
 			{
-				if ((up_alert == CHSCAM_ON))
+				if ((up_alert >= 1))
 				{
 					makechatnoise();
-					bprint("ηατεΊ σεγυςιτω αμεςτ‘\n");
+					bprint("Gate security alert!\n");
 					e.think = shoot_ent_think;
 					e.nextthink = (time + MON_CAMPERCHANCE);
 				}

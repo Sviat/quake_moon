@@ -219,7 +219,7 @@ void() W_FireShotgun =
 	self.ammo_shells = (self.ammo_shells - CHSCAM_ON);
 	self.currentammo = (self.ammo_shells - CHSCAM_ON);
 	dir = aim(self, 100000);
-	if ((self.up_bullet == CHSCAM_ON))
+	if ((self.up_bullet >= 1)) // Re-use same param for both Upgrade and Extra capacity
 	{
 		FireBullets(TE_WIZSPIKE, dir, '0.02 0.02 0');
 	}
@@ -243,7 +243,7 @@ void() W_FireSuperShotgun =
 	self.ammo_shells = (self.ammo_shells - H_MEGA);
 	self.currentammo = (self.ammo_shells - H_MEGA);
 	dir = aim(self, 100000);
-	if ((self.up_bullet == CHSCAM_ON))
+	if ((self.up_bullet >= 1)) // Re-use same param for both Upgrade and Extra capacity
 	{
 		FireBullets(KEY_MOVEFORWARD, dir, '0.06 0.04 0');
 	}
@@ -527,7 +527,7 @@ void(vector org, vector dir) launch_spike =
 	{
 		spds = (spds + GRD_FIGHTDIST);
 	}
-	if ((self.up_nail == CHSCAM_ON))
+	if ((self.up_nail >= 1)) // Re-use same param for both Upgrade and Extra capacity
 	{
 		spds = (spds + GRD_FIGHTDIST);
 	}
@@ -563,7 +563,7 @@ void(vector org, vector dir) launch_sspike =
 	{
 		spds = (spds + GRD_FIGHTDIST);
 	}
-	if ((self.up_nail == CHSCAM_ON))
+	if ((self.up_nail >= 1)) // Re-use same param for both Upgrade and Extra capacity
 	{
 		spds = (spds + GRD_FIGHTDIST);
 	}

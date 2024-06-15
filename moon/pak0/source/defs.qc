@@ -696,10 +696,10 @@ float() MaxLvl;
 .float strafe_vector_x;
 .float strafe_vector_y;
 .float strafe_vector_z;
-float up_alert;
+float up_alert; // Re-use same param for both Upgrade and Extra health
 float up_gold_value;
-.float up_bullet;
-.float up_nail;
+.float up_bullet; // Re-use same param for both Upgrade and Extra capacity
+.float up_nail; // Re-use same param for both Upgrade and Extra capacity
 .float thinkrefresh;
 .float nextfind_time;
 .float line;
@@ -969,6 +969,11 @@ string MOON_ITEM_ARMOR_DISPLAY = "armor";
 string MOON_ITEM_RING_NETNAME = "ring";
 string MOON_ITEM_RING_DISPLAY = "ring";
 
+float MOON_AMMO_MAX_SHELL 	= 100;
+float MOON_AMMO_MAX_NAIL 	= 200;
+float MOON_AMMO_MAX_ROCKET 	= 100;
+float MOON_AMMO_MAX_CELL 	= 100;
+
 // // list of Magical Effects, _CODE's should be in increasing order
 float MOON_ITEM_HEALTH_CODE = 1;
 string MOON_ITEM_HEALTH_PREEFFECT  	= "+";
@@ -1042,11 +1047,17 @@ string MOON_ITEM_CONSUME_POSTEFFECT	= " health after each kill";
 
 // // list of Upgrades
 float MOON_ITEM_GATEALERT_CODE = 1;
-string MOON_ITEM_GATEALERT_EFFECT  	= "Book of Gate \sRed\s Alert (gate gives a signal when killed)\n";
+string MOON_ITEM_GATEALERT_EFFECT  		= "Book of \sRed\s Alert (gate gives a signal when killed)\n";
+string MOON_ITEM_GATEALERT_SIDEEFFECT 	= "Book of \sRed\s Gate (+10 max health to Gate)\n";
+float MOON_ITEM_GATEALERT_SIDEEFFECT_BONUS = 10;
 float MOON_ITEM_SHELLUP_CODE = 2;
-string MOON_ITEM_SHELLUP_EFFECT 	= "Book of Shell Improvement (your shell attack now stronger and more concentrated)\n";
+string MOON_ITEM_SHELLUP_EFFECT 		= "Book of Shell Improvement (your shell attack now stronger and more concentrated)\n";
+string MOON_ITEM_SHELLUP_SIDEEFFECT 	= "Book of PowerShell Improvement (+10 max shell capacity)\n";
+float MOON_ITEM_SHELLUP_SIDEEFFECT_BONUS = 10;
 float MOON_ITEM_NAILUP_CODE = 3;
 string MOON_ITEM_NAILUP_EFFECT 		= "Book of Nail Polish (your nails attack now faster)\n";
+string MOON_ITEM_NAILUP_SIDEEFFECT 	= "Book of Nail It (+20 max nail capacity)\n";
+float MOON_ITEM_NAILUP_SIDEEFFECT_BONUS = 20;
 float MOON_ITEM_STATUP_CODE = 4;
 float MOON_ITEM_STATUP_BONUS 		= 5;
 string MOON_ITEM_STATUP_EFFECT 		= "Book of Five Stats (you get \5 stats points)\n";

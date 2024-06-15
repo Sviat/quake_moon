@@ -9542,8 +9542,7 @@ void() MentatTouch =
 	case MOON_MENTAT_OFFENSE_CODE:
 		moon_print_mentat_offense(other);
 		sprint(other, "\n");
-		//sprint(other, "You get offensive drug (increase your damage by 20%)\n"); // ïææåîãéöå äòõç (increase your damage by 20%)\n");
-		self.netname = MOON_MENTAT_OFFENSE_NETNAME; // ïææåîãéöå äòõç";
+		self.netname = MOON_MENTAT_OFFENSE_NETNAME;
 		e = find(world, classname, MOON_MENTAT_CLASSNAME);
 		while (e)
 		{
@@ -9564,8 +9563,7 @@ void() MentatTouch =
 	case MOON_MENTAT_DEFENSE_CODE:
 		moon_print_mentat_defense(other);
 		sprint(other, "\n");
-		//sprint(other, "You get defensive drug (reduce received damage by 20%)\n"); // äåæåîóéöå äòõç (reduce received damage by 20%)\n");
-		self.netname = MOON_MENTAT_DEFENSE_NETNAME; // äåæåîóéöå äòõç";
+		self.netname = MOON_MENTAT_DEFENSE_NETNAME;
 		e = find(world, classname, MOON_MENTAT_CLASSNAME);
 		while (e)
 		{
@@ -9586,8 +9584,7 @@ void() MentatTouch =
 	case MOON_MENTAT_SPEED_CODE:
 		moon_print_mentat_speed(other);
 		sprint(other, "\n");
-		//sprint(other, "You get accelerative drug (increase your attack speed)\n"); // áããåìåòáôéöå äòõç (increase your attack speed)\n");
-		self.netname = MOON_MENTAT_SPEED_NETNAME; // áããåìåòáôéöå äòõç";
+		self.netname = MOON_MENTAT_SPEED_NETNAME;
 		e = find(world, classname, MOON_MENTAT_CLASSNAME);
 		while (e)
 		{

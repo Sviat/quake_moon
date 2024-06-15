@@ -850,6 +850,8 @@ void(entity e) AddToQue =
 #define const_qex_color_teal 2
 #define const_qex_color_yellow 3
 
+#define const_qex_display_max 999
+
 #define const_qc_sprint_a "\a"		// Black cell
 #define const_qc_sprint_f "\f"		// ?!?
 #define const_qc_sprint_r "\r"		// Red triangle
@@ -1051,16 +1053,16 @@ string MOON_ITEM_GATEALERT_EFFECT  		= "Book of \sRed\s Alert (gate gives a sign
 string MOON_ITEM_GATEALERT_SIDEEFFECT 	= "Book of \sRed\s Gate (+10 max health to Gate)\n";
 float MOON_ITEM_GATEALERT_SIDEEFFECT_BONUS = 10;
 float MOON_ITEM_SHELLUP_CODE = 2;
-string MOON_ITEM_SHELLUP_EFFECT 		= "Book of Shell Improvement (your shell attack now stronger and more concentrated)\n";
-string MOON_ITEM_SHELLUP_SIDEEFFECT 	= "Book of PowerShell Improvement (+10 max shell capacity)\n";
+string MOON_ITEM_SHELLUP_EFFECT 		= "Book of Shell Shock (your shell attack now stronger and more concentrated)\n";
+string MOON_ITEM_SHELLUP_SIDEEFFECT 	= "Book of PowerShell (+10 max shell capacity)\n";
 float MOON_ITEM_SHELLUP_SIDEEFFECT_BONUS = 10;
 float MOON_ITEM_NAILUP_CODE = 3;
 string MOON_ITEM_NAILUP_EFFECT 		= "Book of Nail Polish (your nails attack now faster)\n";
-string MOON_ITEM_NAILUP_SIDEEFFECT 	= "Book of Nail It (+20 max nail capacity)\n";
+string MOON_ITEM_NAILUP_SIDEEFFECT 	= "9 Inch Book of Nails (+20 max nail capacity)\n";
 float MOON_ITEM_NAILUP_SIDEEFFECT_BONUS = 20;
 float MOON_ITEM_STATUP_CODE = 4;
 float MOON_ITEM_STATUP_BONUS 		= 5;
-string MOON_ITEM_STATUP_EFFECT 		= "Book of Five Stats (you get \5 stats points)\n";
+string MOON_ITEM_STATUP_EFFECT 		= "Book of Higb Five (you get \5 stats points)\n";
 float MOON_ITEM_GUARDIAN_CODE = 5;
 string MOON_ITEM_GUARDIAN_EFFECT 	= "Book of Blind Guardian (guardian joins your army)\n";
 float MOON_ITEM_GLOBALGOLD_CODE = 6;
@@ -1072,10 +1074,16 @@ float MOON_ITEM_HEART_CODE = 7;
 float MOON_ITEM_HEART_BONUS_FLAT 	= 5;
 float MOON_ITEM_HEART_BONUS_LVLPERCENT 	= 0.25;
 float MOON_ITEM_HEART_BONUS_RANDOM 	= 5;
-string MOON_ITEM_HEART_EFFECT 		= "Book of Immortality (\sheart\s life increased by {})\n";
+string MOON_ITEM_HEART_EFFECT 		= "Book of Immortality (\sHeart\s life increased by {})\n";
 // // end of list of Upgrades
 
 float(float min, float max) random_int =
 {
 	return rint( (random() * (max - min)) + min );
+};
+
+float(float value, float max) clamp =
+{
+	if (value <= max) { return value; }
+	return max;
 };

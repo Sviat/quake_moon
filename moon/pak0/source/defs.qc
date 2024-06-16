@@ -353,7 +353,7 @@ float MON_MAGICCHANCE  = 0.03;
 float MON_CAMPERCHANCE = 0.1;
 float MON_CAMPTIME    = 30;
 float MON_WAVETIME_FAST   = 1;
-float MON_WAVETIME_NORMAl = 10;
+float MON_WAVETIME_NORMAL = 10;
 float MON_WAVETIME_SLOW   = 21;
 float CL_DEADTIME    = 1.5;
 float MENTAT_TIME    = 90;
@@ -822,7 +822,7 @@ void(entity e) AddToQue =
 	}
 	else
 	{
-		z.nextthink = ((time + MON_WAVETIME_NORMAl) + (random() * MON_WAVETIME_NORMAl));
+		z.nextthink = ((time + MON_WAVETIME_NORMAL) + (random() * MON_WAVETIME_NORMAL));
 	}
 };
 
@@ -836,25 +836,25 @@ void(entity e) AddToQue =
 #define svcqex_updateplinfo			48	// [byte] slot, [leb128] health, [leb128] armour
 #define svcqex_locprint				49	// uses qe's localised string formatting, otherwise treat as svc_print.
 #define svcqex_servervars			50	// [leb128] changedvalues, [???] value...
-#define svcqex_seq				51	// [leb128] input sequence ack
+#define svcqex_seq					51	// [leb128] input sequence ack
 #define svcqex_achievement			52	// [string] codename
-#define svcqex_chat				53	// [byte] svcqex_chat, [byte] playercolour, [byte] textcolour, [string] playername, [string] chattext // new from FTE
-#define svcqex_levelcompleted			54
+#define svcqex_chat					53	// [byte] svcqex_chat, [byte] playercolour, [byte] textcolour, [string] playername, [string] chattext // new from FTE
+#define svcqex_levelcompleted		54
 #define svcqex_backtolobby			55
 #define svcqex_localsound			56
 #define svcqex_prompt				57
-#define svcqex_loccenterprint			58	// [string] codename
+#define svcqex_loccenterprint		58	// [string] codename
 // //
 #define const_qex_color_white 0
 #define const_qex_color_green 1
 #define const_qex_color_teal 2
 #define const_qex_color_yellow 3
 
-#define const_qex_display_max 999
+#define CONST_QC_DISPLAY_MAX 999
 
 #define const_qc_sprint_a "\a"		// Black cell
 #define const_qc_sprint_f "\f"		// ?!?
-#define const_qc_sprint_r "\r"		// Red triangle
+#define CONST_QC_GLYPH_SELECTION "\r"		// Red triangle
 #define const_qc_sprint_v "\v"		// White cell
 
 #define const_qc_sprint_b_open "\b"	// Red text
@@ -879,7 +879,7 @@ float MOON_PLAYER_POINT_GROW_NORMAL = 4;
 float MOON_PLAYER_LEVEL_GROW_SLOW = 50; // unnecessary, just for consistency
 float MOON_PLAYER_POINT_GROW_SLOW = 3;
 
-float MOON_STAT_DAMAGE_PER_STRENGTH = 1;
+float MOON_STAT_DAMAGE_PER_STRENGTH = 1.5;
 float MOON_STAT_HEALTH_PER_VITALITY = 2;
 float MOON_STAT_MANA_PER_MAGIC 		= 1; // Not finished
 
@@ -888,6 +888,12 @@ float MOON_HEART_HEALTH_INIT = 200;
 float MOON_HEART_HEALTH_GROW = 10;
 float MOON_HEART_HEALTH_REGEN_VALUE = 1;
 float MOON_HEART_HEALTH_REGEN_COOLDOWN = 1;
+
+string MOON_GUARD_CLASSNAME = "guard";
+float MOON_GUARD_HEALTH_INIT = 100;
+float MOON_GUARD_HEALTH_GROW = 25;
+float MOON_GUARD_HEALTH_REGEN_VALUE = 1; // unused
+float MOON_GUARD_HEALTH_REGEN_COOLDOWN = 1; // unused
 
 float MOON_GOLD_MINE_DETECT_PLAYER_RADIUS = 800; // was 250
 float MOON_GOLD_MINE_DELAY_MIN = 12;
@@ -1055,26 +1061,26 @@ float MOON_ITEM_GATEALERT_SIDEEFFECT_BONUS = 10;
 float MOON_ITEM_SHELLUP_CODE = 2;
 string MOON_ITEM_SHELLUP_EFFECT 		= "Book of Shell Shock (your shell attack now stronger and more concentrated)\n";
 string MOON_ITEM_SHELLUP_SIDEEFFECT 	= "Book of PowerShell (+10 max shell capacity)\n";
-float MOON_ITEM_SHELLUP_SIDEEFFECT_BONUS = 10;
+float MOON_ITEM_SHELLUP_SIDEEFFECT_BONUS= 10;
 float MOON_ITEM_NAILUP_CODE = 3;
-string MOON_ITEM_NAILUP_EFFECT 		= "Book of Nail Polish (your nails attack now faster)\n";
-string MOON_ITEM_NAILUP_SIDEEFFECT 	= "9 Inch Book of Nails (+20 max nail capacity)\n";
+string MOON_ITEM_NAILUP_EFFECT 			= "Book of Nail Polish (your nails attack now faster)\n";
+string MOON_ITEM_NAILUP_SIDEEFFECT 		= "9 Inch Book of Nails (+20 max nail capacity)\n";
 float MOON_ITEM_NAILUP_SIDEEFFECT_BONUS = 20;
 float MOON_ITEM_STATUP_CODE = 4;
-float MOON_ITEM_STATUP_BONUS 		= 5;
-string MOON_ITEM_STATUP_EFFECT 		= "Book of Higb Five (you get \5 stats points)\n";
+float MOON_ITEM_STATUP_BONUS 			= 5;
+string MOON_ITEM_STATUP_EFFECT 			= "Book of Higb Five (you get \5 stats points)\n";
 float MOON_ITEM_GUARDIAN_CODE = 5;
-string MOON_ITEM_GUARDIAN_EFFECT 	= "Book of Blind Guardian (guardian joins your army)\n";
+string MOON_ITEM_GUARDIAN_EFFECT 		= "Book of Blind Guardian (guardian joins your army)\n";
 float MOON_ITEM_GLOBALGOLD_CODE = 6;
 float MOON_ITEM_GLOBALGOLD_BONUS_FLAT 	= 5;
 float MOON_ITEM_GLOBALGOLD_BONUS_LVLPERCENT = 0.5;
 float MOON_ITEM_GLOBALGOLD_BONUS_RANDOM = 7;
-string MOON_ITEM_GLOBALGOLD_EFFECT 	= "Book of Treasures (global gold income increase by {}%)\n";
+string MOON_ITEM_GLOBALGOLD_EFFECT 		= "Book of Treasures (global gold income increase by {}%)\n";
 float MOON_ITEM_HEART_CODE = 7;
-float MOON_ITEM_HEART_BONUS_FLAT 	= 5;
+float MOON_ITEM_HEART_BONUS_FLAT 		= 5;
 float MOON_ITEM_HEART_BONUS_LVLPERCENT 	= 0.25;
-float MOON_ITEM_HEART_BONUS_RANDOM 	= 5;
-string MOON_ITEM_HEART_EFFECT 		= "Book of Immortality (\sHeart\s life increased by {})\n";
+float MOON_ITEM_HEART_BONUS_RANDOM 		= 5;
+string MOON_ITEM_HEART_EFFECT 			= "Book of Immortality (\sHeart\s life increased by {})\n";
 // // end of list of Upgrades
 
 float(float min, float max) random_int =

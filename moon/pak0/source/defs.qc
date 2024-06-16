@@ -859,7 +859,7 @@ void(entity e) AddToQue =
 
 #define const_qc_sprint_b_open "\b"	// Red text
 #define const_qc_sprint_b_close "\b"
-#define const_qc_sprint_s_open "\s"	// Red text
+#define const_qc_sprint_s_open "\s"	// Also red text, but why two different codes?
 #define const_qc_sprint_s_close "\s"
 
 #define MOON_GLYPH_WHITECELL "\x0B"
@@ -870,18 +870,30 @@ void(entity e) AddToQue =
 float MOON_PLAYER_MAX_LEVEL = 50;
 float MOON_HEART_MAX_LEVEL = 50;
 float MOON_EXP_FIRST_LEVEL = 40;
+float MOON_NEXTLEVEL_MORE_PLAYERLEVEL_TIMES = 40;
+float MOON_NEXTLEVEL_MORE_SCALING_FACTOR = 1.35;
+
+float MOON_ARMOR_MAX_SOFT = 255;
+float MOON_ARMOR_SHARD_GAIN = 5;
+float MOON_ARMOR_SHARD_TYPE = 0.3;
 
 string MOON_PLAYER_CLASSNAME = "player";
-float MOON_PLAYER_LEVEL_GROW_FAST = 35;
-float MOON_PLAYER_POINT_GROW_FAST = 5;
+float MOON_PLAYER_LEVEL_GROW_FAST 	= 35;
+float MOON_PLAYER_POINT_GROW_FAST 	= 5;
 float MOON_PLAYER_LEVEL_GROW_NORMAL = 40;
 float MOON_PLAYER_POINT_GROW_NORMAL = 4;
-float MOON_PLAYER_LEVEL_GROW_SLOW = 50; // unnecessary, just for consistency
-float MOON_PLAYER_POINT_GROW_SLOW = 3;
+float MOON_PLAYER_LEVEL_GROW_SLOW 	= 50; // unnecessary, just for consistency
+float MOON_PLAYER_POINT_GROW_SLOW 	= 3;
 
-float MOON_STAT_DAMAGE_PER_STRENGTH = 1.5;
+string MOON_STAT_STRENGTH_NAME = "strength";	// Firearms power
+string MOON_STAT_VITALITY_NAME = "vitality";	// Physical health
+string MOON_STAT_SANITY_NAME = "sanity";		// Magic health
+string MOON_STAT_INTUITION_NAME = "intuition";	// Magic power
+
 float MOON_STAT_HEALTH_PER_VITALITY = 2;
-float MOON_STAT_MANA_PER_MAGIC 		= 1; // Not finished
+float MOON_STAT_DAMAGE_PER_STRENGTH = 1.5;
+float MOON_STAT_MANA_PER_SANITY 	= 1; 	// Not finished
+float MOON_STAT_POWER_PER_INTUITION	= 0.5; 	// Not finished
 
 string MOON_HEART_CLASSNAME = "heart";
 float MOON_HEART_HEALTH_INIT = 200;
@@ -894,6 +906,8 @@ float MOON_GUARD_HEALTH_INIT = 100;
 float MOON_GUARD_HEALTH_GROW = 25;
 float MOON_GUARD_HEALTH_REGEN_VALUE = 1; // unused
 float MOON_GUARD_HEALTH_REGEN_COOLDOWN = 1; // unused
+
+float MOON_CREEP_GOLD_PREFIX_CODE = 5;
 
 float MOON_GOLD_MINE_DETECT_PLAYER_RADIUS = 800; // was 250
 float MOON_GOLD_MINE_DELAY_MIN = 12;
@@ -914,6 +928,8 @@ string MOON_MARKET_ITEM_CLASSNAME = "goody_ent";
 float MOON_ITEM_LVLTHRESHOLD_LOW    = 10;
 float MOON_ITEM_LVLTHRESHOLD_NORMAL = 20;
 float MOON_ITEM_LVLTHRESHOLD_HIGH   = 40;
+float MOON_ITEM_LVLTHRESHOLD_POTION_LOWER = 4;
+float MOON_ITEM_LVLTHRESHOLD_POTION_UPPER = 8;
 
 float MOON_ITEM_TRAIT_MAX_EFFECT  = 8;
 float MOON_ITEM_TRAIT_MAX_PREFIX  = 27;
@@ -936,6 +952,18 @@ float MOON_ITEM_MAGIC_CHANCE_POSTFIX = 0.6; // if above this - both
 
 float MOON_ITEM_ARMOR_VS_RING_CHANCE = 0.5;
 
+// MOON_ITEM_POTION -> MOON_POTION
+string MOON_ITEM_POTION_SMALL_NETNAME = "small healing potion";
+float MOON_ITEM_POTION_SMALL_BASE		= 15;
+float MOON_ITEM_POTION_SMALL_RANDOM 	= 35;
+string MOON_ITEM_POTION_NORMAL_NETNAME = "healing potion";
+float MOON_ITEM_POTION_NORMAL_BASE 		= 35;
+float MOON_ITEM_POTION_NORMAL_RANDOM 	= 65;
+string MOON_ITEM_POTION_BIG_NETNAME = "big healing potion";
+float MOON_ITEM_POTION_BIG_BASE 		= 65;
+float MOON_ITEM_POTION_BIG_RANDOM 		= 100;
+
+// MOON_ITEM_ELIXIR -> MOON_ELIXIR
 string MOON_ELIXIR_CLASSNAME = "elixir";	// Unused? goody_ent?
 string MOON_ELIXIR_MARKET_NETNAME = "goody_elixir";
 float MOON_ELIXIR_STR_CODE = 1;
@@ -951,6 +979,7 @@ float MOON_ELIXIR_MAG_VALUE 	= 1;
 string MOON_ELIXIR_MAG_NETNAME 	= "elixir of MAGGI (+1 to magic)";
 string MOON_ELIXIR_MAG_NAME 	= "elixir of MAGGI (+1 to magic)";
 
+// MOON_ITEM_MENTAT -> MOON_MENTAT
 string MOON_MENTAT_CLASSNAME = "mentat";
 float MOON_MENTAT_OFFENSE_CODE = 1;
 float MOON_MENTAT_OFFENSE_VALUE = 20;
@@ -977,6 +1006,7 @@ string MOON_ITEM_ARMOR_DISPLAY = "armor";
 string MOON_ITEM_RING_NETNAME = "ring";
 string MOON_ITEM_RING_DISPLAY = "ring";
 
+// MOON_ITEM_AMMO -> MOON_AMMO
 float MOON_AMMO_MAX_SHELL 	= 100;
 float MOON_AMMO_MAX_NAIL 	= 200;
 float MOON_AMMO_MAX_ROCKET 	= 100;
@@ -984,8 +1014,7 @@ float MOON_AMMO_MAX_CELL 	= 100;
 
 // // list of Magical Effects, _CODE's should be in increasing order
 float MOON_ITEM_HEALTH_CODE = 1;
-string MOON_ITEM_HEALTH_PREEFFECT  	= "+";
-string MOON_ITEM_HEALTH_POSTEFFECT  = " to maximum health";
+string MOON_ITEM_HEALTH_EFFECT  	= "+{} to maximum health";
 string MOON_ITEM_HEALTH_PREFIX_LOW   	= "Echidna ";
 string MOON_ITEM_HEALTH_PREFIX_NORMAL  	= "Echidna ";
 string MOON_ITEM_HEALTH_PREFIX_HIGH  	= "Echidna ";
@@ -999,8 +1028,7 @@ float MOON_ITEM_HEALTH_BONUS_HIGH		= 5;
 float MOON_ITEM_HEALTH_BONUS_EPIC		= 5;
 
 float MOON_ITEM_RESIST_CODE = 2;
-string MOON_ITEM_RESIST_PREEFFECT  	= "reduce damage received by ";
-string MOON_ITEM_RESIST_POSTEFFECT  = "%";
+string MOON_ITEM_RESIST_EFFECT  	= "reduce damage received by {}%";
 string MOON_ITEM_RESIST_PREFIX_LOW   	= "Halo ";
 string MOON_ITEM_RESIST_PREFIX_NORMAL  	= "Halo ";
 string MOON_ITEM_RESIST_PREFIX_HIGH   	= "Halo ";
@@ -1014,7 +1042,7 @@ float MOON_ITEM_RESIST_BONUS_HIGH		= 5;
 float MOON_ITEM_RESIST_BONUS_EPIC		= 5;
 
 float MOON_ITEM_GOLD_CODE = 3;
-string MOON_ITEM_GOLD_POSTEFFECT 	= "% extra gold from monsters";
+string MOON_ITEM_GOLD_EFFECT	 	= "{}% extra gold from monsters";
 string MOON_ITEM_GOLD_PREFIX_LOW   		= "Lunacy ";
 string MOON_ITEM_GOLD_PREFIX_NORMAL  	= "Lunacy ";
 string MOON_ITEM_GOLD_PREFIX_HIGH   	= "Lunacy ";
@@ -1029,7 +1057,7 @@ float MOON_ITEM_GOLD_BONUS_HIGH			= 5;
 float MOON_ITEM_GOLD_BONUS_EPIC			= 5;
 
 float MOON_ITEM_DAMAGE_CODE = 4;
-string MOON_ITEM_DAMAGE_POSTEFFECT 	= "% damage amplify";
+string MOON_ITEM_DAMAGE_EFFECT 		= "{}% damage amplify";
 string MOON_ITEM_DAMAGE_PREFIX_LOW   	= "Brutal ";
 string MOON_ITEM_DAMAGE_PREFIX_NORMAL  	= "Brutal ";
 string MOON_ITEM_DAMAGE_PREFIX_HIGH   	= "Brutal ";
@@ -1040,17 +1068,18 @@ float MOON_ITEM_DAMAGE_BONUS_LOW 		= 5;
 float MOON_ITEM_DAMAGE_BONUS_NORMAL		= 5;
 float MOON_ITEM_DAMAGE_BONUS_HIGH		= 5;
 float MOON_ITEM_DAMAGE_BONUS_EPIC		= 5;
+
 float MOON_ITEM_RETALATE_CODE = 5;
-string MOON_ITEM_RETALATE_PREEFFECT 	= "attacker takes ";
-string MOON_ITEM_RETALATE_POSTEFFECT	= "% of damage caused";
+string MOON_ITEM_RETALATE_EFFECT 	= "attacker takes {}% of damage caused";
+
 float MOON_ITEM_VAMPIR_CODE = 6;
-string MOON_ITEM_VAMPIR_POSTEFFECT 	= "% your damage converts to life";
+string MOON_ITEM_VAMPIR_EFFECT 		= "{}% your damage converts to life";
+
 float MOON_ITEM_REGEN_CODE = 7;
-string MOON_ITEM_REGEN_PREEFFECT  	= "replenish ";
-string MOON_ITEM_REGEN_POSTEFFECT 	= " health every second";
+string MOON_ITEM_REGEN_EFFECT  		= "replenish {} health every second";
+
 float MOON_ITEM_CONSUME_CODE = 8;
-string MOON_ITEM_CONSUME_PREEFFECT	= "adds ";
-string MOON_ITEM_CONSUME_POSTEFFECT	= " health after each kill";
+string MOON_ITEM_CONSUME_EFFECT		= "adds {} health after each kill";
 // // last Effect's _CODE should not be greater than MOON_ITEM_TRAIT_MAX_EFFECT
 
 // // list of Upgrades
@@ -1068,7 +1097,7 @@ string MOON_ITEM_NAILUP_SIDEEFFECT 		= "9 Inch Book of Nails (+20 max nail capac
 float MOON_ITEM_NAILUP_SIDEEFFECT_BONUS = 20;
 float MOON_ITEM_STATUP_CODE = 4;
 float MOON_ITEM_STATUP_BONUS 			= 5;
-string MOON_ITEM_STATUP_EFFECT 			= "Book of Higb Five (you get \5 stats points)\n";
+string MOON_ITEM_STATUP_EFFECT 			= "Book of High Five (you get \5 stats points)\n";
 float MOON_ITEM_GUARDIAN_CODE = 5;
 string MOON_ITEM_GUARDIAN_EFFECT 		= "Book of Blind Guardian (guardian joins your army)\n";
 float MOON_ITEM_GLOBALGOLD_CODE = 6;

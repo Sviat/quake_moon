@@ -458,7 +458,7 @@ entity() SelectSpawnPoint;
 void(vector org) spawn_tfog;
 void() BotActivate;
 float() crandom;
-void() makechatnoise;
+void() moon_make_chat_noise;
 void() bot_run1;
 void() BecomeExplosion;
 void(string gibname, float dm) ThrowGib;
@@ -894,7 +894,10 @@ float MOON_STAT_HEALTH_PER_VITALITY = 2;
 float MOON_STAT_DAMAGE_PER_STRENGTH = 1.5;
 float MOON_STAT_MANA_PER_SANITY 	= 1; 	// Not finished
 float MOON_STAT_POWER_PER_INTUITION	= 0.5; 	// Not finished
+float MOON_STAT_MAXHEALTH_MIN = 1;
+float MOON_STAT_MAXMANA_MIN = 0;
 
+string MOON_GATE_CLASSNAME = "gate";
 string MOON_HEART_CLASSNAME = "heart";
 float MOON_HEART_HEALTH_INIT = 200;
 float MOON_HEART_HEALTH_GROW = 10;

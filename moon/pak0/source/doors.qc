@@ -192,7 +192,7 @@ void() door_killed =
 			{
 				if ((up_alert >= 1))
 				{
-					makechatnoise();
+					moon_make_chat_noise();
 					bprint("Gate security alert!\n");
 					e.think = shoot_ent_think;
 					e.nextthink = (time + MON_CAMPERCHANCE);

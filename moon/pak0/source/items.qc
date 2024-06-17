@@ -1,5 +1,55 @@
 //Decompiled code. Please respect the original copyright.
+string NAME_SERVER 		= "Server";
+string NAME_SETTINGS 	= "Settings";
+string NAME_GUARD 		= "Guardian";
+float CHAT_COLOR_TECHMSG = const_qex_color_white;
+float CHAT_COLOR_SELFMSG = const_qex_color_green;
+float CHAT_COLOR_BOTMSG  = const_qex_color_teal;
+float CHAT_COLOR_WARNING = const_qex_color_yellow;
+float H_ROTTEN    = 1;
+float H_MEGA      = 2;
+.float healamount;
+.float healtype;
+
 void() W_SetCurrentAmmo;
+void() health_touch;
+void() item_megahealth_rot;
+
+float(entity e, float healamount, float ignore) T_Heal =
+{
+	if ((e.health <= WF_NORMAL))
+	{
+		return (WF_NORMAL);
+	}
+	if ((!ignore && (e.health >= e.max_health)))
+	{
+		return (WF_NORMAL);
+	}
+	healamount = ceil(healamount);
+	e.health = (e.health + healamount);
+	if ((!ignore && (e.health >= e.max_health)))
+	{
+		e.health = e.max_health;
+	}
+	e.health = clamp(e.health, CONST_QC_DISPLAY_MAX);
+	return (WF_DEFEND);
+};
+
+float(entity e, float healamount) T_Mana =
+{
+	if ((e.mana >= e.max_mana))
+	{
+		return (WF_NORMAL);
+	}
+	healamount = ceil(healamount);
+	e.mana = (e.mana + healamount);
+	if ((e.mana >= e.max_mana))
+	{
+		e.mana = e.max_mana;
+	}
+	e.mana = clamp(e.mana, CONST_QC_DISPLAY_MAX);
+	return (WF_DEFEND);
+};
 
 void(entity target, float digit) moon_print_golden_digit =
 {
@@ -276,6 +326,38 @@ float(entity target) moon_get_target_bonus_damage =
 	return moon_target_bonus_by_code(target, MOON_ITEM_DAMAGE_CODE);
 };
 
+void(entity target, float value) moon_raise_target_vitality =
+{
+	target.vit = (target.vit + value);
+	target.max_health = (target.max_health + (value*MOON_STAT_HEALTH_PER_VITALITY));
+	target.max_health = clamp(target.max_health, CONST_QC_DISPLAY_MAX);
+	if (value > 0)
+	{
+		T_Heal(other, value*MOON_STAT_HEALTH_PER_VITALITY, 0);
+	} else {
+		if (target.max_health < MOON_STAT_MAXHEALTH_MIN)
+		{
+			target.max_health = MOON_STAT_MAXHEALTH_MIN;
+		}
+	}
+};
+
+void(entity target, float value) moon_raise_target_sanity =
+{
+	target.wiz = (target.wiz + value);
+	target.max_mana = (target.max_mana + (value*MOON_STAT_MANA_PER_SANITY));
+	target.max_mana = clamp(target.max_mana, CONST_QC_DISPLAY_MAX);
+	if (value > 0)
+	{
+		T_Mana(other, value*MOON_STAT_MANA_PER_SANITY);
+	} else {
+		if (target.max_mana < MOON_STAT_MAXMANA_MIN)
+		{
+			target.max_mana = MOON_STAT_MAXMANA_MIN;
+		}
+	}
+};
+
 void() SUB_regen =
 {
 	self.model = self.mdl;
@@ -318,55 +400,6 @@ void() StartItem =
 	self.nextthink = (time + MON_REACTIONTIME);
 	self.think = PlaceItem;
 };
-
-float(entity e, float healamount, float ignore) T_Heal =
-{
-	if ((e.health <= WF_NORMAL))
-	{
-		return (WF_NORMAL);
-	}
-	if ((!ignore && (e.health >= e.max_health)))
-	{
-		return (WF_NORMAL);
-	}
-	healamount = ceil(healamount);
-	e.health = (e.health + healamount);
-	if ((!ignore && (e.health >= e.max_health)))
-	{
-		e.health = e.max_health;
-	}
-	e.health = clamp(e.health, CONST_QC_DISPLAY_MAX);
-	return (WF_DEFEND);
-};
-
-float(entity e, float healamount) T_Mana =
-{
-	if ((e.mana >= e.max_mana))
-	{
-		return (WF_NORMAL);
-	}
-	healamount = ceil(healamount);
-	e.mana = (e.mana + healamount);
-	if ((e.mana >= e.max_mana))
-	{
-		e.mana = e.max_mana;
-	}
-	e.mana = clamp(e.mana, CONST_QC_DISPLAY_MAX);
-	return (WF_DEFEND);
-};
-string NAME_SERVER 		= "Server";
-string NAME_SETTINGS 	= "Settings";
-string NAME_GUARD 		= "Guardian";
-float CHAT_COLOR_TECHMSG = const_qex_color_white;
-float CHAT_COLOR_SELFMSG = const_qex_color_green;
-float CHAT_COLOR_BOTMSG  = const_qex_color_teal;
-float CHAT_COLOR_WARNING = const_qex_color_yellow;
-float H_ROTTEN    = 1;
-float H_MEGA      = 2;
-.float healamount;
-.float healtype;
-void() health_touch;
-void() item_megahealth_rot;
 
 void() item_health =
 {
@@ -512,7 +545,7 @@ void() item_armor1 =
 	self.touch = armor_touch;
 	precache_model("progs/armor.mdl");
 	setmodel(self, "progs/armor.mdl");
-	self.skin = WF_NORMAL;
+	self.skin = 0;
 	setsize(self, '-16 -16 0', '16 16 56');
 	StartItem();
 };
@@ -522,7 +555,7 @@ void() item_armor2 =
 	self.touch = armor_touch;
 	precache_model("progs/armor.mdl");
 	setmodel(self, "progs/armor.mdl");
-	self.skin = WF_DEFEND;
+	self.skin = 1;
 	setsize(self, '-16 -16 0', '16 16 56');
 	StartItem();
 };
@@ -532,7 +565,7 @@ void() item_armorInv =
 	self.touch = armor_touch;
 	precache_model("progs/armor.mdl");
 	setmodel(self, "progs/armor.mdl");
-	self.skin = WF_EXTRASIZE;
+	self.skin = 2;
 	setsize(self, '-16 -16 0', '16 16 56');
 	StartItem();
 };
@@ -3240,7 +3273,7 @@ void() jesus_think =
 						}
 					}
 				}
-				makechatnoise();
+				moon_make_chat_noise();
 			}
 		}
 	}
@@ -5314,7 +5347,7 @@ void() ToggleMode =
 		{
 			if ((head.health > WF_NORMAL))
 			{
-				makechatnoise();
+				moon_make_chat_noise();
 				if ((head.mode == H_ROTTEN))
 				{
 					if ((random() < MON_BACKTIME))
@@ -5562,7 +5595,7 @@ void() MonsterDead =
 	}
 };
 
-void() makechatnoise =
+void() moon_make_chat_noise =
 {
 	local entity p;
 
@@ -5582,7 +5615,7 @@ void() makechatnoise =
 	}
 };
 
-vector() GetRandomVector =
+vector() GetRandomVector = // Works - dont touch
 {
 	local vector vec;
 	local float r;
@@ -5730,7 +5763,6 @@ float(entity targ) BotCanSeePlayer =
 	local vector spot1;
 	local vector spot2;
 	local vector vec;
-	//local float r; // unused
 
 	spot1 = (self.origin + self.view_ofs);
 	vec = GetRandomVector();
@@ -5751,7 +5783,7 @@ void() moon_bot_warn_enemy =
 {
 	local float r;
 
-	makechatnoise();
+	moon_make_chat_noise();
 	r = random_int(1, 4);
 	switch(r)
 	{
@@ -5770,10 +5802,9 @@ void() moon_bot_warn_enemy =
 	}
 };
 
-void() bot_find_enemy =
+void() bot_find_enemy = // Works - dont touch
 {
 	local entity head;
-	//local entity selected; // unused
 	local float dist;
 
 	dist = 1500;
@@ -5807,7 +5838,7 @@ void() bot_find_enemy =
 	}
 };
 
-void() bot_fire =
+void() bot_fire = // Works - dont touch
 {
 	if ((vlen((self.enemy.origin - self.origin)) < 550))
 	{
@@ -5906,7 +5937,7 @@ void() bot_security_check =
 	head = findradius(self.origin, 1500);
 	while (head)
 	{
-		if ((head.classname == "guard"))
+		if ((head.classname == MOON_GUARD_CLASSNAME))
 		{
 			if (((head.health > WF_NORMAL) && (head != self)))
 			{
@@ -5939,12 +5970,11 @@ void() bot_think =
 	}
 };
 
-void() ai_evade =
+void() ai_evade = // Works - dont touch
 {
 	local float dist;
 	local vector vec;
 	local vector org;
-	//local entity e; // unused
 	local float yw;
 
 	if (!(self.flags & FL_ONGROUND))
@@ -5996,7 +6026,7 @@ void() ai_evade =
 	}
 };
 
-void() bot_ai_stand =
+void() bot_ai_stand = // Works - dont touch
 {
 	local float dst;
 
@@ -6083,7 +6113,7 @@ void() bot_ai_stand =
 	}
 };
 
-void() bot_prethink =
+void() bot_prethink = // Works - dont touch
 {
 	if ((((self.jump_flag < -300) && (self.flags & FL_ONGROUND)) && (self.health > WF_NORMAL)))
 	{
@@ -6125,7 +6155,7 @@ float(entity own) NotDamagingPlayer =
 	}
 };
 
-void(float dist) bot_ai_run =
+void(float dist) bot_ai_run = // Black magic ahead
 {
 	local float dst;
 	local vector vec;
@@ -6332,7 +6362,7 @@ void(float dist) bot_ai_run =
 	}
 };
 
-void() bot_run1 =
+void() bot_run1 = // I dont want to even read that
 {
 	bot_ai_run(LOGIC_DEFEND);
 	if ((self.framtime < time))
@@ -6389,7 +6419,7 @@ void() bot_run1 =
 	self.nextthink = (time + MON_REFRESHTIME);
 };
 
-void(entity who) BotItems =
+void(entity who) BotItems = // Works - dont touch
 {
 	local float lv;
 
@@ -6533,27 +6563,26 @@ void() BotActivate =
 	newbot.wantline = H_ROTTEN;
 	BotItems(newbot);
 	bprint("== a wandering guardian joins your forces ==\n"); // á ÷áîäåòéîç çõáòäéáî êïéîó ùïõò æïòãåó ==\n");
-	bprint("HP: {}.", quick_ftos(newbot.max_health));
+	bprint("HP: {}. ", quick_ftos(newbot.max_health));
 	if ((newbot.items & IT_ARMOR1))
 	{
-		bprint("Green armor (");
+		bprint("Green armor");
 	}
 	else
 	{
 		if ((newbot.items & IT_ARMOR2))
 		{
-			bprint("Yellow armor (");
+			bprint("Yellow armor");
 		}
 		else
 		{
 			if ((newbot.items & IT_ARMOR3))
 			{
-				bprint("Red armor (");
+				bprint("Red armor");
 			}
 		}
 	}
-	bprint_ftos(newbot.armorvalue);
-	bprint("). Weapons: Shot");
+	bprint("({}). Weapons: Shot", quick_ftos(newbot.armorvalue));
 	if ((newbot.items & IT_SUPER_SHOTGUN))
 	{
 		bprint(", Supershot");
@@ -6921,7 +6950,6 @@ void() MaybeShootGate =
 {
 	local entity e;
 	local entity a;
-	//local entity mon; // unused
 
 	if ((self.next_gate > time))
 	{
@@ -8481,29 +8509,29 @@ void() MagicItemTouch =
 	{
 		return;
 	}
-	if ((other.health <= WF_NORMAL))
+	if ((other.health <= 0))
 	{
 		return;
 	}
 	if (((other.next_mesg_time < time) || (other.mesg_inflictor != self)))
 	{
-		sprint(other, "=== magic item: ===\n");
+		sprint(other, "=== magic item ===\n");
 		moon_print_target_item_name(other, self.prefix_one, self.netname, self.prefix_two);
 		sprint(other, "\n");
 		moon_print_target_own_magic_item_description(other); // when self is item, its magic is held in same place for both Armor and Ring
 
-		if ((other.cl_nohelp == WF_NORMAL))
+		if ((other.cl_nohelp == 0))
 		{
 			if ((self.classname != MOON_ITEM_TRADED_CLASSNAME))
 			{
 				l = MaxLvl();
-				if ((l < LOGIC_DEFEND))
+				if ((l < 4))
 				{
 					sprint(other, "Use `use` command to pick it up.\n");
 				}
 			}
 		}
-		other.next_mesg_time = (time + LOGIC_DEFEND);
+		other.next_mesg_time = (time + 4);
 		other.mesg_inflictor = self;
 	}
 };
@@ -8591,13 +8619,12 @@ void() wearitem =
 					T_Heal(self, self.magic_typetwo_value, WF_NORMAL);
 				}
 			}
+			sprint(self, "\n");
 			if ((selected.classname == MOON_ITEM_TRADED_CLASSNAME))
 			{
-				sprint(self, "\nYou bought ");
-			}
-			else
-			{
-				sprint(self, "\nYou put on ");
+				sprint(self, "You bought ");
+			} else {
+				sprint(self, "You put on ");
 			}
 			moon_print_target_item_name(self, selected.magic_prefixone, selected.netname, selected.magic_prefixtwo);
 			sprint(self, "\n");
@@ -8668,13 +8695,14 @@ void() wearitem =
 						T_Heal(self, self.ring_typetwo_value, WF_NORMAL);
 					}
 				}
+				sprint(self, "\n");
 				if ((selected.classname == MOON_ITEM_TRADED_CLASSNAME))
 				{
-					sprint(self, "\nYou bought ");
+					sprint(self, "You bought ");
 				}
 				else
 				{
-					sprint(self, "\nYou put on ");
+					sprint(self, "You put on ");
 				}
 				moon_print_target_item_name(self, selected.ring_prefixone, selected.netname, selected.ring_prefixtwo);
 				sprint(self, "\n");
@@ -8832,14 +8860,15 @@ void() UpgradeTouch =
 	local entity heart;
 	local float bonus_value;
 
-	if ((other.classname != "player"))
+	if ((other.classname != MOON_PLAYER_CLASSNAME))
 	{
 		return;
 	}
-	if ((other.health <= WF_NORMAL))
+	if ((other.health <= 0))
 	{
 		return;
 	}
+
 	pl = MaxLvl();
 	switch(self.cnt)
 	{
@@ -8849,7 +8878,7 @@ void() UpgradeTouch =
 			sprint(other, MOON_ITEM_GATEALERT_EFFECT);
 		} else {
 			sprint(other, MOON_ITEM_GATEALERT_SIDEEFFECT);
-			gate = find(world, classname, "gate");
+			gate = find(world, classname, MOON_GATE_CLASSNAME);
 			if (gate)
 			{
 				gate.max_health = gate.max_health + MOON_ITEM_GATEALERT_SIDEEFFECT_BONUS;
@@ -8954,21 +8983,22 @@ void(entity e) prepare_item =
 
 void() HPTouch =
 {
-	if ((other.classname != "player"))
+	if ((other.classname != MOON_PLAYER_CLASSNAME))
 	{
 		return;
 	}
-	if ((other.health <= WF_NORMAL))
+	if ((other.health <= 0))
 	{
 		return;
 	}
+
 	if ((other.health < other.max_health))
 	{
 		sprint(other, "You get {} and receive {} health\n", self.netname, quick_ftos(self.healamount));
 	}
 	else
 	{
-		sprint(other, "You get {}\n", self.netname);
+		sprint(other, "You wasted {}\n", self.netname);
 	}
 	T_Heal(other, self.healamount, WF_NORMAL);
 	sound(other, CHAN_ITEM, "moon/items/potion.wav", H_ROTTEN, ATTN_NORM);
@@ -8990,18 +9020,15 @@ void() ELTouch =
 	switch(floor(self.cnt))
 	{
 	case MOON_ELIXIR_STR_CODE:
-		other.stre = (other.stre + MOON_ELIXIR_STR_VALUE);
+		other.stre = (other.stre + MOON_ELIXIR_STR_VALUE); // strength is simplest of them all and doesnt need function
 		break;
-	case MOON_ELIXIR_VIT_CODE: // refactor out VIT/max health growth
-		other.vit = (other.vit + MOON_ELIXIR_VIT_VALUE);
-		other.max_health = (other.max_health + MOON_ELIXIR_VIT_VALUE*MOON_STAT_HEALTH_PER_VITALITY);
-		T_Heal(other, MOON_ELIXIR_VIT_VALUE*MOON_STAT_HEALTH_PER_VITALITY, WF_NORMAL);
+	case MOON_ELIXIR_VIT_CODE:
+		moon_raise_target_vitality(other, MOON_ELIXIR_VIT_VALUE);
 		break;
 	case MOON_ELIXIR_MAG_CODE:
-		other.wiz = (other.wiz + MOON_ELIXIR_MAG_VALUE);
-		other.max_mana = (other.max_mana + MOON_ELIXIR_MAG_VALUE*MOON_STAT_MANA_PER_SANITY);
-		T_Mana(other, MOON_ELIXIR_MAG_VALUE*MOON_STAT_MANA_PER_SANITY);
+		moon_raise_target_sanity(other, MOON_ELIXIR_MAG_VALUE);
 		break;
+	// TODO: 4th stat
 	}
 
 	sprint(other, "You get {}\n", self.netname);
@@ -9712,14 +9739,15 @@ void() DropItem =
 
 	self.think = SUB_Null;
 	self.nextthink = WF_NORMAL;
-	if ((self.scroll_shaf_eff > time))
+	if ((self.scroll_shaf_eff > time)) // Implement
 	{
 		shaf_eff();
 	}
-	if ((self.scroll_infe_eff > time))
+	if ((self.scroll_infe_eff > time)) // Implement
 	{
 		infe_eff();
 	}
+
 	if ((self.prefix == LOGIC_HUNTENEMY))
 	{
 		e = spawn();

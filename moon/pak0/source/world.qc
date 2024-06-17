@@ -338,12 +338,12 @@ entity() FindIntermission =
 	spot = find (world, classname, "info_player_start");
 	if (spot)
 		return spot;
-	
+
 	// testinfo_player_start is only found in regioned levels
 	spot = find (world, classname, "testplayerstart");
 	if (spot)
 		return spot;
-	
+
 	objerror ("FindIntermission: no spot");
 	return world;
 };
@@ -1280,13 +1280,15 @@ void(entity targ, entity attacker) ClientObituary =
 void() removebody =
 {
 	self.think = SUB_Remove;
-	if ((sv_fastmeat == CHSCAM_ON))
+	if ((sv_fastmeat == 1))
 	{
-		self.nextthink = ((time + CHSCAM_ON) + (random() * CHSCAM_ON));
-	}
-	else
+		self.nextthink = ((time + MON_WAVETIME_FAST) + (random() * MON_WAVETIME_FAST));
+	} else
+	if ((sv_fastmeat == -1))
 	{
-		self.nextthink = ((time + SVC_SETVIEWANGLES) + (random() * SVC_SETVIEWANGLES));
+		self.nextthink = ((time + MON_WAVETIME_SLOW) + (random() * MON_WAVETIME_SLOW));
+	} else {
+		self.nextthink = ((time + MON_WAVETIME_NORMAL) + (random() * MON_WAVETIME_NORMAL));
 	}
 };
 
@@ -1390,13 +1392,15 @@ void() DieUnhead =
 	if ((self.classname == "guard"))
 	{
 		self.think = SUB_Remove;
-		if ((sv_fastmeat == CHSCAM_ON))
+		if ((sv_fastmeat == 1))
 		{
-			self.nextthink = ((time + CHSCAM_ON) + (random() * CHSCAM_ON));
-		}
-		else
+			self.nextthink = ((time + MON_WAVETIME_FAST) + (random() * MON_WAVETIME_FAST));
+		} else
+		if ((sv_fastmeat == -1))
 		{
-			self.nextthink = ((time + SVC_SETVIEWANGLES) + (random() * SVC_SETVIEWANGLES));
+			self.nextthink = ((time + MON_WAVETIME_SLOW) + (random() * MON_WAVETIME_SLOW));
+		} else {
+			self.nextthink = ((time + MON_WAVETIME_NORMAL) + (random() * MON_WAVETIME_NORMAL));
 		}
 	}
 };

@@ -5473,7 +5473,7 @@ void() moon_print_cmd_help =
 	sprint(self, "use `use` command pick up some magical item.\n"); // õóå command pick up some magical item.\n");
 	sprint(self, "use `inventory` or `i` command to view inventory screen.\n"); // éîöåîôïòù or é command to view inventory screen.\n");
 	sprint(self, "use `cl_fps` to show Framerate\n");
-	sprint(self, "use `fastmeat` to grind faster\n");
+	sprint(self, "use `fastmeat` or `slowmeat` to grind faster or slower\n");
 	sprint(self, "use `alwaysday` to shine bright\n");
 	sprint(self, "use `skill\1` or `skill\2` raise stats\n");
 	sprint(self, "use `map moon4` or `restartserver` to restart this map\n");
@@ -5521,13 +5521,26 @@ void() moonimpulse =
 	case 89:
 		if (self.colormap == 1)
 		{
-			if (sv_fastmeat == 0)
+			if (sv_fastmeat <= 0)
 			{
 				sv_fastmeat = 1;
 				kex_chat_message_broad(NAME_SERVER, CHAT_COLOR_TECHMSG, "fastmeat enabled\n");
 			} else {
 				sv_fastmeat = 0;
 				kex_chat_message_broad(NAME_SERVER, CHAT_COLOR_TECHMSG, "fastmeat disabled\n");
+			}
+		}
+		break;
+	case 90:
+		if (self.colormap == 1)
+		{
+			if (sv_fastmeat >= 0)
+			{
+				sv_fastmeat = -1;
+				kex_chat_message_broad(NAME_SERVER, CHAT_COLOR_TECHMSG, "slo-owmeat enabled\n");
+			} else {
+				sv_fastmeat = 0;
+				kex_chat_message_broad(NAME_SERVER, CHAT_COLOR_TECHMSG, "slo-owmeat disabled\n");
 			}
 		}
 		break;
@@ -5585,13 +5598,15 @@ void() MonsterDead =
 {
 	self.solid = SOLID_NOT;
 	self.think = SUB_Remove;
-	if ((sv_fastmeat == H_ROTTEN))
+	if ((sv_fastmeat == 1))
 	{
-		self.nextthink = ((time + H_ROTTEN) + (random() * H_ROTTEN));
-	}
-	else
+		self.nextthink = ((time + MON_WAVETIME_FAST) + (random() * MON_WAVETIME_FAST));
+	} else
+	if ((sv_fastmeat == -1))
 	{
-		self.nextthink = ((time + SVC_SETVIEWANGLES) + (random() * SVC_SETVIEWANGLES));
+		self.nextthink = ((time + MON_WAVETIME_SLOW) + (random() * MON_WAVETIME_SLOW));
+	} else {
+		self.nextthink = ((time + MON_WAVETIME_NORMAL) + (random() * MON_WAVETIME_NORMAL));
 	}
 };
 
@@ -5599,12 +5614,12 @@ void() moon_make_chat_noise =
 {
 	local entity p;
 
-	p = find(world, classname, "player");
+	p = find(world, classname, MOON_PLAYER_CLASSNAME);
 	while ((p != world))
 	{
 		// stuffcmd(p, "play misc/talk.wav\n"); // absent from KEX
 		sound(p, CHAN_VOICE, "misc/talk.wav", WF_DEFEND, ATTN_NORM);
-		p = find(p, classname, "player");
+		p = find(p, classname, MOON_PLAYER_CLASSNAME);
 	}
 	p = find(world, classname, "CameraClient");
 	while ((p != world))

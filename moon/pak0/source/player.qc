@@ -545,13 +545,15 @@ void() PlayerDead =
 	if ((self.classname == "guard"))
 	{
 		self.think = SUB_Remove;
-		if ((sv_fastmeat == CHSCAM_ON))
+		if ((sv_fastmeat == 1))
 		{
-			self.nextthink = ((time + CHSCAM_ON) + (random() * CHSCAM_ON));
-		}
-		else
+			self.nextthink = ((time + MON_WAVETIME_FAST) + (random() * MON_WAVETIME_FAST));
+		} else
+		if ((sv_fastmeat == -1))
 		{
-			self.nextthink = ((time + SVC_SETVIEWANGLES) + (random() * SVC_SETVIEWANGLES));
+			self.nextthink = ((time + MON_WAVETIME_SLOW) + (random() * MON_WAVETIME_SLOW));
+		} else {
+			self.nextthink = ((time + MON_WAVETIME_NORMAL) + (random() * MON_WAVETIME_NORMAL));
 		}
 	}
 };
@@ -597,13 +599,15 @@ void(string gibname, float dm) ThrowGib =
 	new.avelocity_z = (random() * 600);
 	new.think = SUB_Remove;
 	new.ltime = time;
-	if ((sv_fastmeat == CHSCAM_ON))
+	if ((sv_fastmeat == 1))
 	{
-		new.nextthink = ((time + CHSCAM_ON) + (random() * CHSCAM_ON));
-	}
-	else
+		new.nextthink = ((time + MON_WAVETIME_FAST) + (random() * MON_WAVETIME_FAST));
+	} else
+	if ((sv_fastmeat == -1))
 	{
-		new.nextthink = ((time + TE_WIZSPIKE) + (random() * TE_WIZSPIKE));
+		new.nextthink = ((time + MON_WAVETIME_SLOW) + (random() * MON_WAVETIME_SLOW));
+	} else {
+		new.nextthink = ((time + 7) + (random() * 7));
 	}
 	new.frame = WF_NORMAL;
 	new.flags = WF_NORMAL;
@@ -640,13 +644,15 @@ void(string gibname, float dm) FakeThrowHead =
 	setsize(e, '-16 -16 0', '16 16 3');
 	e.avelocity = (crandom() * '0 600 0');
 	e.think = SUB_Remove;
-	if ((sv_fastmeat == CHSCAM_ON))
+	if ((sv_fastmeat == 1))
 	{
-		e.nextthink = ((time + CHSCAM_ON) + (random() * CHSCAM_ON));
-	}
-	else
+		e.nextthink = ((time + MON_WAVETIME_FAST) + (random() * MON_WAVETIME_FAST));
+	} else
+	if ((sv_fastmeat == -1))
 	{
-		e.nextthink = ((time + TE_WIZSPIKE) + (random() * TE_WIZSPIKE));
+		e.nextthink = ((time + MON_WAVETIME_SLOW) + (random() * MON_WAVETIME_SLOW));
+	} else {
+		e.nextthink = ((time + 7) + (random() * 7));
 	}
 };
 
@@ -676,16 +682,18 @@ void() GibPlayer =
 	{
 		sound(self, CHAN_VOICE, "player/udeath.wav", CHSCAM_ON, ATTN_NONE);
 	}
-	if ((self.classname == "guard"))
+	if ((self.classname == MOON_GUARD_CLASSNAME))
 	{
 		self.think = SUB_Remove;
-		if ((sv_fastmeat == CHSCAM_ON))
+		if ((sv_fastmeat == 1))
 		{
-			self.nextthink = ((time + CHSCAM_ON) + (random() * CHSCAM_ON));
-		}
-		else
+			self.nextthink = ((time + MON_WAVETIME_FAST) + (random() * MON_WAVETIME_FAST));
+		} else
+		if ((sv_fastmeat == -1))
 		{
-			self.nextthink = ((time + SVC_SETVIEWANGLES) + (random() * SVC_SETVIEWANGLES));
+			self.nextthink = ((time + MON_WAVETIME_SLOW) + (random() * MON_WAVETIME_SLOW));
+		} else {
+			self.nextthink = ((time + MON_WAVETIME_NORMAL) + (random() * MON_WAVETIME_NORMAL));
 		}
 	}
 };

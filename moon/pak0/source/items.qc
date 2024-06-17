@@ -14,6 +14,8 @@ float H_MEGA      = 2;
 void() W_SetCurrentAmmo;
 void() health_touch;
 void() item_megahealth_rot;
+void() moon_wear_item;
+void() moon_print_inventory;
 
 float(entity e, float healamount, float ignore) T_Heal =
 {
@@ -2942,7 +2944,7 @@ void() buy_goody =
 						if (((selected.netname == "armor") || (selected.netname == "ring"))) // áòíïò") || (selected.netname == "òéîç")))
 						{
 							other = selected;
-							wearitem();
+							moon_wear_item();
 						}
 						else
 						{
@@ -3886,7 +3888,7 @@ void() moon_buy_item =
 	}
 };
 
-void() indefy_item =
+void() moon_identify_item =
 {
 	local entity head;
 	local entity selected;
@@ -3967,7 +3969,7 @@ void() indefy_item =
 	}
 };
 
-void() print_skills =
+void() moon_print_skills =
 {
 	local float bonusdmg;
 
@@ -4013,42 +4015,46 @@ void() print_skills =
 	sprint(self, "---------------------\n");
 };
 
-void() skill_impulse =
+void(float impulse_code) moon_handle_impulse_skill =
 {
-	if ((self.impulse == 20))
+	if ((self.impulse == MOON_IMPULSE_CODE_PRINTSKILL))
 	{
-		print_skills();
+		moon_print_skills();
 		return;
 	}
+
 	if ((self.point <= 0))
 	{
 		sprint(self, "no free stat points\n");
 		return;
 	}
-	if ((self.impulse == 21))
-	{
-		self.max_health = (self.max_health + H_MEGA);	// Refactor all MaxHP gains
-		if ((self.max_health > 999))
-		{
-			self.max_health = 999;
-		}
-		T_Heal(self, H_MEGA, WF_NORMAL);
-		self.vit = (self.vit + 1);
-		self.point = (self.point - 1);
 
-		sprint(self, "upgrade Vitality: {} (", quick_ftos(self.vit));
-		sprint(self, MOON_ITEM_HEALTH_EFFECT, quick_ftos(self.max_health));
-		sprint(self, ")\n");
-	}
-	if ((self.impulse == 22))
+	switch(impulse_code)
 	{
-		self.stre = (self.stre + 1);
-		self.point = (self.point - 1);
+		case MOON_IMPULSE_CODE_UPSKILL_VITALITY:
+			self.point = (self.point - 1);
+			moon_raise_target_vitality(self, 1);
 
-		sprint(self, "upgrade Strength: {} (", quick_ftos(self.stre));
-		sprint(self, MOON_ITEM_DAMAGE_EFFECT, quick_ftos((self.stre * MOON_STAT_DAMAGE_PER_STRENGTH) + 100));
-		sprint(self, ")\n");
+			sprint(self, "upgrade Vitality: {} (", quick_ftos(self.vit));
+			sprint(self, MOON_ITEM_HEALTH_EFFECT, quick_ftos(self.max_health));
+			sprint(self, ")\n");
+			break;
+		case MOON_IMPULSE_CODE_UPSKILL_STRENGTH:
+			self.point = (self.point - 1);
+			self.stre = (self.stre + 1);
+
+			sprint(self, "upgrade Strength: {} (", quick_ftos(self.stre));
+			sprint(self, MOON_ITEM_DAMAGE_EFFECT, quick_ftos((self.stre * MOON_STAT_DAMAGE_PER_STRENGTH) + 100));
+			sprint(self, ")\n");
+			break;
+		case MOON_IMPULSE_CODE_UPSKILL_SANITY:
+		// TODO: implement
+			break;
+		case MOON_IMPULSE_CODE_UPSKILL_INTUITION:
+			// TODO: implement
+			break;
 	}
+
 	if ((self.point <= 0))
 	{
 		if ((self.items & IT_KEY1))
@@ -5545,10 +5551,10 @@ void() moonimpulse =
 		}
 		break;
 	case 94:
-		weareditems();
+		moon_print_inventory();
 		break;
 	case 95:
-		wearitem();
+		moon_wear_item();
 		break;
 	case 96:
 		moon_print_character_status();
@@ -5557,13 +5563,13 @@ void() moonimpulse =
 		moon_buy_item();
 		break;
 	case 98:
-		indefy_item();
+		moon_identify_item();
 		break;
 	case 20:
 	case 21:
 	case 22:
 	case 23:
-		skill_impulse();
+		moon_handle_impulse_skill(self.impulse);
 		break;
 	case 231:
 		moon_print_cmd_help();
@@ -8551,7 +8557,7 @@ void() MagicItemTouch =
 	}
 };
 
-void() wearitem =
+void() moon_wear_item =
 {
 	local entity head;
 	local entity selected;
@@ -8732,7 +8738,7 @@ void() wearitem =
 	}
 };
 
-void() weareditems =
+void() moon_print_inventory =
 {
 	entity e;
 	float duration;

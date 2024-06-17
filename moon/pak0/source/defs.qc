@@ -438,8 +438,6 @@ void(string gibname, float dm) ThrowHead;
 .float frmes;
 .float damage_bonus;
 void() s_explode1;
-void() wearitem;
-void() weareditems;
 void(entity who) CheckEdge;
 void(entity e, float enc) spawn_knight;
 void(entity e, float enc) spawn_snake;
@@ -862,10 +860,22 @@ void(entity e) AddToQue =
 #define const_qc_sprint_s_open "\s"	// Also red text, but why two different codes?
 #define const_qc_sprint_s_close "\s"
 
-#define MOON_GLYPH_WHITECELL "\x0B"
-#define MOON_GLYPH_SELECTION "\x0D"
-#define MOON_GLYPH_BRACKET_OPEN "\x10"
-#define MOON_GLYPH_BRACKET_CLOSE "\x11"
+#define MOON_GLYPH_WHITECELL "\x0B"		// White cell
+#define MOON_GLYPH_SELECTION "\x0D"		// Red triangle
+#define MOON_GLYPH_BRACKET_OPEN "\x10"	// Red [, also x90
+#define MOON_GLYPH_BRACKET_CLOSE "\x11"	// Red ], also x91
+#define MOON_GLYPH_CENTERDOT_WHITE "\x1C" // White center dot
+#define MOON_GLYPH_ARROW "\x7F"			// Arrow pointing left
+#define MOON_GLYPH_BLACKSQUARE "\x88"	// Black square
+#define MOON_GLYPH_REDSQUARE "\x8B"		// Red square
+#define MOON_GLYPH_CENTERDOT_YELLOW "\x8E" // Yellow center dot
+#define MOON_GLYPH_REDARROW "\xFF"		// Red arrow pointing left
+
+float MOON_IMPULSE_CODE_PRINTSKILL = 20;
+float MOON_IMPULSE_CODE_UPSKILL_VITALITY = 21;
+float MOON_IMPULSE_CODE_UPSKILL_STRENGTH = 22;
+float MOON_IMPULSE_CODE_UPSKILL_SANITY = 23;
+float MOON_IMPULSE_CODE_UPSKILL_INTUITION = 24;
 
 float MOON_PLAYER_MAX_LEVEL = 50;
 float MOON_HEART_MAX_LEVEL = 50;

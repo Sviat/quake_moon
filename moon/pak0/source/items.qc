@@ -3974,12 +3974,12 @@ void() moon_print_skills =
 	local float bonusdmg;
 
 	sprint(self, "======= stats =======\n");
-	sprint(self, "| free points: {}", quick_ftos(self.point));
+	sprint(self, "|free points: {}", quick_ftos(self.point));
 	if (self.point < 10)
 	{
 		sprint(self, " ");
 	}
-	sprint(self, "   |\n");
+	sprint(self, "    |\n");
 
 	bonusdmg = moon_get_target_bonus_health(self);
 	sprint(self, "| vitality: {} ({}", quick_ftos(self.vit), quick_ftos(self.max_health));
@@ -5550,6 +5550,12 @@ void() moonimpulse =
 			}
 		}
 		break;
+	case 20:
+	case 21:
+	case 22:
+	case 23:
+		moon_handle_impulse_skill(self.impulse);
+		break;
 	case 94:
 		moon_print_inventory();
 		break;
@@ -5564,12 +5570,6 @@ void() moonimpulse =
 		break;
 	case 98:
 		moon_identify_item();
-		break;
-	case 20:
-	case 21:
-	case 22:
-	case 23:
-		moon_handle_impulse_skill(self.impulse);
 		break;
 	case 231:
 		moon_print_cmd_help();
@@ -7761,6 +7761,9 @@ void(entity e) GenegateCampTarget =
 
 void(entity receiver) moon_print_target_own_magic_item_description =
 {
+	local float was_printed;
+
+	was_printed = TRUE;
 	switch(self.magic_typeone)
 	{
 	case MOON_ITEM_HEALTH_CODE:
@@ -7827,61 +7830,72 @@ void(entity receiver) moon_print_target_own_magic_item_description =
 			sprint(receiver, MOON_ITEM_CONSUME_EFFECT, quick_ftos(self.magic_typeone_value));
 		}
 		break;
+	default:
+		was_printed = FALSE;
 	}
-	sprint(receiver, "\n");
+	if (was_printed)
+	{
+		sprint(receiver, "\n");
+	}
 
+	was_printed = TRUE;
 	switch(self.magic_typetwo)
 	{
 	case MOON_ITEM_HEALTH_CODE:
 		if ( self.magic_typeone != MOON_ITEM_HEALTH_CODE )
 		{
-			sprint(receiver, MOON_ITEM_HEALTH_EFFECT, quick_ftos(self.magic_typetwo));
+			sprint(receiver, MOON_ITEM_HEALTH_EFFECT, quick_ftos(self.magic_typetwo_value));
 		}
 		break;
 	case MOON_ITEM_RESIST_CODE:
 		if ( self.magic_typeone != MOON_ITEM_RESIST_CODE )
 		{
-			sprint(receiver, MOON_ITEM_RESIST_EFFECT, quick_ftos(self.magic_typetwo));
+			sprint(receiver, MOON_ITEM_RESIST_EFFECT, quick_ftos(self.magic_typetwo_value));
 		}
 		break;
 	case MOON_ITEM_GOLD_CODE:
 		if ( self.magic_typeone != MOON_ITEM_GOLD_CODE )
 		{
-			sprint(receiver, MOON_ITEM_GOLD_EFFECT, quick_ftos(self.magic_typetwo));
+			sprint(receiver, MOON_ITEM_GOLD_EFFECT, quick_ftos(self.magic_typetwo_value));
 		}
 		break;
 	case MOON_ITEM_DAMAGE_CODE:
 		if ( self.magic_typeone != MOON_ITEM_DAMAGE_CODE )
 		{
-			sprint(receiver, MOON_ITEM_DAMAGE_EFFECT, quick_ftos(self.magic_typetwo));
+			sprint(receiver, MOON_ITEM_DAMAGE_EFFECT, quick_ftos(self.magic_typetwo_value));
 		}
 		break;
 	case MOON_ITEM_RETALATE_CODE:
 		if ( self.magic_typeone != MOON_ITEM_RETALATE_CODE )
 		{
-			sprint(receiver, MOON_ITEM_RETALATE_EFFECT, quick_ftos(self.magic_typetwo));
+			sprint(receiver, MOON_ITEM_RETALATE_EFFECT, quick_ftos(self.magic_typetwo_value));
 		}
 		break;
 	case MOON_ITEM_VAMPIR_CODE:
 		if ( self.magic_typeone != MOON_ITEM_VAMPIR_CODE )
 		{
-			sprint(receiver, MOON_ITEM_VAMPIR_EFFECT, quick_ftos(self.magic_typetwo));
+			sprint(receiver, MOON_ITEM_VAMPIR_EFFECT, quick_ftos(self.magic_typetwo_value));
 		}
 		break;
 	case MOON_ITEM_REGEN_CODE:
 		if ( self.magic_typeone != MOON_ITEM_REGEN_CODE )
 		{
-			sprint(receiver, MOON_ITEM_REGEN_EFFECT, quick_ftos(self.magic_typetwo));
+			sprint(receiver, MOON_ITEM_REGEN_EFFECT, quick_ftos(self.magic_typetwo_value));
 		}
 		break;
 	case MOON_ITEM_CONSUME_CODE:
 		if ( self.magic_typeone != MOON_ITEM_CONSUME_CODE )
 		{
-			sprint(receiver, MOON_ITEM_CONSUME_EFFECT, quick_ftos(self.magic_typetwo));
+			sprint(receiver, MOON_ITEM_CONSUME_EFFECT, quick_ftos(self.magic_typetwo_value));
 		}
 		break;
+	default:
+		was_printed = FALSE;
 	}
-	sprint(receiver, "\n");
+	if (was_printed)
+	{
+		sprint(receiver, "\n");
+	}
 };
 
 void(entity receiver) moon_print_target_own_magic_ring_description =
@@ -7970,31 +7984,23 @@ void(entity receiver) moon_print_target_own_magic_ring_description =
 		if ( self.ring_typeone != MOON_ITEM_HEALTH_CODE )
 		{
 			sprint(receiver, MOON_ITEM_HEALTH_EFFECT, quick_ftos(self.ring_typetwo_value));
-			// sprint(receiver, MOON_ITEM_HEALTH_PREEFFECT);
-			// sprint_ftos(receiver, self.ring_typetwo_value);
-			// sprint(receiver, MOON_ITEM_HEALTH_POSTEFFECT);
 		}
 		break;
 	case MOON_ITEM_RESIST_CODE:
 		if ( self.ring_typeone != MOON_ITEM_RESIST_CODE )
 		{
 			sprint(receiver, MOON_ITEM_RESIST_EFFECT, quick_ftos(self.ring_typetwo_value));
-			// sprint(receiver, MOON_ITEM_RESIST_PREEFFECT);
-			// sprint_ftos(receiver, self.ring_typetwo_value);
-			// sprint(receiver, MOON_ITEM_RESIST_POSTEFFECT);
 		}
 		break;
 	case MOON_ITEM_GOLD_CODE:
 		if ( self.ring_typeone != MOON_ITEM_GOLD_CODE )
 		{
-			// sprint_ftos(receiver, self.ring_typetwo_value);
 			sprint(receiver, MOON_ITEM_GOLD_EFFECT, quick_ftos(self.ring_typetwo_value));
 		}
 		break;
 	case MOON_ITEM_DAMAGE_CODE:
 		if ( self.ring_typeone != MOON_ITEM_DAMAGE_CODE )
 		{
-			// sprint_ftos(receiver, self.ring_typetwo_value);
 			sprint(receiver, MOON_ITEM_DAMAGE_EFFECT, quick_ftos(self.ring_typetwo_value));
 		}
 		break;
@@ -8002,15 +8008,11 @@ void(entity receiver) moon_print_target_own_magic_ring_description =
 		if ( self.ring_typeone != MOON_ITEM_RETALATE_CODE )
 		{
 			sprint(receiver, MOON_ITEM_RETALATE_EFFECT, quick_ftos(self.ring_typetwo_value));
-			// sprint(receiver, MOON_ITEM_RETALATE_PREEFFECT);
-			// sprint_ftos(receiver, self.ring_typetwo_value);
-			// sprint(receiver, MOON_ITEM_RETALATE_POSTEFFECT);
 		}
 		break;
 	case MOON_ITEM_VAMPIR_CODE:
 		if ( self.ring_typeone != MOON_ITEM_VAMPIR_CODE )
 		{
-			// sprint_ftos(receiver, self.ring_typetwo_value);
 			sprint(receiver, MOON_ITEM_VAMPIR_EFFECT, quick_ftos(self.ring_typetwo_value));
 		}
 		break;
@@ -8018,18 +8020,12 @@ void(entity receiver) moon_print_target_own_magic_ring_description =
 		if ( self.ring_typeone != MOON_ITEM_REGEN_CODE )
 		{
 			sprint(receiver, MOON_ITEM_REGEN_EFFECT, quick_ftos(self.ring_typetwo_value));
-			// sprint(receiver, MOON_ITEM_REGEN_PREEFFECT);
-			// sprint_ftos(receiver, self.ring_typetwo_value);
-			// sprint(receiver, MOON_ITEM_REGEN_POSTEFFECT);
 		}
 		break;
 	case MOON_ITEM_CONSUME_CODE:
 		if ( self.ring_typeone != MOON_ITEM_CONSUME_CODE )
 		{
 			sprint(receiver, MOON_ITEM_CONSUME_EFFECT, quick_ftos(self.ring_typetwo_value));
-			// sprint(receiver, MOON_ITEM_CONSUME_PREEFFECT);
-			// sprint_ftos(receiver, self.ring_typetwo_value);
-			// sprint(receiver, MOON_ITEM_CONSUME_POSTEFFECT);
 		}
 		break;
 	default:

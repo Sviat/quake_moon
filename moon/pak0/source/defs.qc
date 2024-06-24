@@ -13,7 +13,7 @@ float FL_ONGROUND    	= 512;
 float FL_PARTIALGROUND  = 1024;
 float FL_WATERJUMP    	= 2048;
 float FL_JUMPRELEASED   = 4096;
-float MOVETYPE_NONE	= 0;
+float MOVETYPE_NONE		= 0;
 float MOVETYPE_WALK     = 3;
 float MOVETYPE_STEP     = 4;
 float MOVETYPE_FLY    	= 5;
@@ -42,9 +42,9 @@ float DAMAGE_AIM    	= 2;
 float IT_AXE    		= 4096;
 float IT_SHOTGUN    		= 1;
 float IT_SUPER_SHOTGUN    	= 2;
-float IT_NAILGUN		= 4;
+float IT_NAILGUN			= 4;
 float IT_SUPER_NAILGUN    	= 8;
-float IT_GRENADE_LAUNCHER    	= 16;
+float IT_GRENADE_LAUNCHER  	= 16;
 float IT_ROCKET_LAUNCHER	= 32;
 float IT_LIGHTNING    		= 64;
 float IT_EXTRA_WEAPON 		= 128;
@@ -55,7 +55,7 @@ float IT_CELLS     		= 2048;
 float IT_ARMOR1    		= 8192;
 float IT_ARMOR2    		= 16384;
 float IT_ARMOR3    		= 32768;
-float IT_SUPERHEALTH    	= 65536;
+float IT_SUPERHEALTH   	= 65536;
 float IT_KEY1    		= 131072;
 float IT_KEY2    		= 262144;
 float IT_INVISIBILITY   	= 524288;
@@ -84,7 +84,7 @@ float SVC_INTERMISSION	= 30;
 float SVC_FINALE    	= 31;
 float SVC_CDTRACK    	= 32;
 float SVC_SELLSCREEN    = 33;
-float TE_SPIKE		= 0;
+float TE_SPIKE			= 0;
 float TE_SUPERSPIKE    	= 1;
 float TE_GUNSHOT    	= 2;
 float TE_EXPLOSION    	= 3;
@@ -244,12 +244,9 @@ string (string s) precache_sound = #19;
 string (string s) precache_model = #20;
 void (entity client, string s) stuffcmd = #21;
 entity (vector org, float rad) findradius = #22;
-/*void (...) bprint = #23;
-void (...) sprint = #24;
-void (...) dprint = #25;*/
 void(string s, ...) bprint = #0:ex_bprint;
 void(entity client, string s, ...) sprint = #0:ex_sprint;
-void(string s, ...) dprint = #25;
+void(string s, ...) dprint = #0:ex_dprint;
 string (float f) ftos = #26;
 string (vector v) vtos = #27;
 void () coredump = #28;
@@ -285,13 +282,14 @@ string (string s) precache_file = #68;
 void (entity e) makestatic = #69;
 void (string s) changelevel = #70;
 void (string var, string val) cvar_set = #72;
-//void (entity client, string s, ...) centerprint = #73;
-void(entity client, string s, ...) centerprint = #0:ex_centerprint;	// sprint, but in middle
+void (entity client, string s, ...) centerprint = #0:ex_centerprint;	// sprint, but in middle
 void (vector pos, string samp, float vol, float atten) ambientsound = #74;
 string (string s) precache_model2 = #75;
 string (string s) precache_sound2 = #76;
 string (string s) precache_file2 = #77;
 void (entity e) setspawnparms = #78;
+
+void (entity client, string s, ...) centerprint5 = #0:ex_centerprint;	// sprint, but in middle
 
 // Debug rendering functions. KEX QuakeC
 void draw_point( vector point, float colormap, float lifetime, float depthtest ) = #0:ex_draw_point;
@@ -318,8 +316,10 @@ float(entity targ, entity inflictor) CanDamage;
 
 void() FuckOff =
 {
+	bprint(ftos(empty_float)); // supress empty_float unused warning
 	bprint("----- hi, litl lamo, try to decompile it, heheh ------");
 };
+
 vector VEC_WAY_MIN    	= '-24 -24 -24';
 vector VEC_WAY_MAX    	= '24 24 32';
 vector VEC_HULL3_MIN    = '-24 -24 -24';
@@ -713,14 +713,6 @@ float waypoints_ok;
 .float rgn_time;
 .float health_magic_regen_time;
 .float rgnm_time;
-void (entity client, string s) centerprint1 = #73; // unused
-void (entity client, string s, string s) centerprint2 = #73; // unused
-void (entity client, string s, string s, string s) centerprint3 = #73; // unused
-void (entity client, string s, string s, string s, string s) centerprint4 = #73; // unused
-//void (entity client, string s, ...) centerprint5 = #73;
-void(entity client, string s, ...) centerprint5 = #0:ex_centerprint;	// sprint, but in middle
-void (entity client, string s, string s, string s, string s, string s, string s) centerprint6 = #73; // unused
-void (entity client, string s, string s, string s, string s, string s, string s, string s) centerprint7 = #73; // unused
 
 string(float f) quick_ftos_floor =
 {
@@ -732,41 +724,52 @@ string(float f) quick_ftos =
 	return ftos(f);
 };
 
-void(entity who, float f) sprint_ftos =
+void(string s) sprint_self =
+{
+	sprint(self, s);
+};
+
+void(string s) sprint_other =
+{
+	sprint(other, s);
+};
+
+void(entity target, string s) sprintln =
+{
+	sprint(target, s);
+	sprint(target, "\n");
+};
+
+void(string s) sprintln_self =
+{
+	sprint(self, s);
+	sprint(self, "\n");
+};
+
+void(string s) sprintln_other =
+{
+	sprint(other, s);
+	sprint(other, "\n");
+};
+
+void(entity who, float f) sprint_ftos = // TODO: slowly get rid of it
 {
 	local string str;
 
 	str = ftos(floor(f));
-	sprint(who, str);
-};
-
-void(entity who, float f) sprint_fftos =
-{
-	local string str;
-
-	str = ftos(f);
 	sprint(who, str);
 };
 
 void(float f) bprint_ftos =
 {
 	local string str;
-
 	str = ftos(floor(f));
 	bprint(str);
 };
 
-void(string f) ip =
+void(string f) ip = // TODO: slowly get rid of it
 {
 	sprint(self, f);
-};
-
-void(entity who, vector f) sprint_vtos =
-{
-	local string str;
-
-	str = vtos(f);
-	sprint(who, str);
 };
 
 float(float n1, float n2) percent =
@@ -777,12 +780,12 @@ float(float n1, float n2) percent =
 	return (a);
 };
 
-float() player_level =
+float() MaxLvl =
 {
 	local entity e;
 	local float maxlvl;
 
-	maxlvl = empty_float; // was CONTENT_EMPTY; supress empty_float unused warning
+	maxlvl = 0;
 	e = find(world, classname, "player");
 	while (e)
 	{
@@ -792,7 +795,7 @@ float() player_level =
 		}
 		e = find(e, classname, "player");
 	}
-	return maxlvl; // return (sel.lvl);
+	return maxlvl;
 };
 
 void(entity e) AddToQue =

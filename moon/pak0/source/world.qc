@@ -994,8 +994,7 @@ void() PlayerPreThink =
 		if ((self.frmtm <= time))
 		{
 			self.frmes = (self.frmes + CHSCAM_ON);
-			sprint_fftos(self, self.frmes);
-			sprint(self, " fps\n");
+			sprint(self, "{} fps\n", quick_ftos_floor(self.frmes));
 			self.frmtm = (time + CHSCAM_ON);
 			self.frmes = WF_NORMAL;
 		}

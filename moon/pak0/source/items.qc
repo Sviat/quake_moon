@@ -155,7 +155,7 @@ void(entity target, float gain) moon_give_target_gold =
 	target.gold = (target.gold + gain);
 
 	flash_other(target);
-	sprint(target, "You get {} gold\n", moon_gets_golden_number(gain));
+	sprint(target, "You got {} gold\n", quick_ftos_floor(gain));
 	sound(target, CHAN_ITEM, "moon/items/gold.wav", 1, ATTN_NORM);
 };
 

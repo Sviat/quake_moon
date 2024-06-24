@@ -155,13 +155,13 @@ void(entity target, float gain) moon_give_target_gold =
 	target.gold = (target.gold + gain);
 
 	flash_other(target);
-	sprint(target, "You got {} gold\n", quick_ftos_floor(gain));
+	sprint(target, "You got {} gold\n", floor_ftos(gain));
 	sound(target, CHAN_ITEM, "moon/items/gold.wav", 1, ATTN_NORM);
 };
 
 void(entity target) moon_println_target_exp =
 {
-	sprint(target, "Level: {}, Exp {}{}/{}{}\n", quick_ftos_floor(target.lvl), MOON_GLYPH_BRACKET_OPEN, quick_ftos_floor(target.exp), quick_ftos_floor(target.nextexp), MOON_GLYPH_BRACKET_CLOSE);
+	sprint(target, "Level: {}, Exp {}{}/{}{}\n", floor_ftos(target.lvl), MOON_GLYPH_BRACKET_OPEN, floor_ftos(target.exp), floor_ftos(target.nextexp), MOON_GLYPH_BRACKET_CLOSE);
 };
 
 void(entity target) moon_print_mentat_offense =
@@ -238,7 +238,7 @@ void(entity chat_target, entity value_target) moon_println_target_other_health =
 		moon_print_red_number(chat_target, value_target.health);
 		sprint(chat_target, "/");
 	}
-	sprint(chat_target, "{}\n", quick_ftos_floor(value_target.max_health));
+	sprint(chat_target, "{}\n", floor_ftos(value_target.max_health));
 };
 
 //[byte] svcqex_chat, [byte] playercolour, [byte] textcolour, [string] playername, [string] chattext
@@ -289,9 +289,9 @@ void() moon_broadcast_heart_state =
 		bprint("\sHeart\s's life now ");
 		if (heart.health < heart.max_health)
 		{
-			bprint("{}\s/\s", quick_ftos_floor(heart.health)); // Im too lazy to duplicate print_red_number for bprint
+			bprint("{}\s/\s", floor_ftos(heart.health)); // Im too lazy to duplicate print_red_number for bprint
 		}
-		bprint("{}\n", quick_ftos_floor(heart.max_health));
+		bprint("{}\n", floor_ftos(heart.max_health));
 	}
 };
 
@@ -5418,7 +5418,7 @@ void() moon_print_character_status =
 	sprint(self, "======= Status =======\n");
 	sprint(self, "\sHeart\s's Life: ");
 	moon_println_target_other_health(self, heart);
-	sprint(self, "Monsters Killed: {}\n", quick_ftos_floor(self.mosterskilled));
+	sprint(self, "Monsters Killed: {}\n", floor_ftos(self.mosterskilled));
 	moon_println_target_exp(self);
 	sprint(self, "Gold: ");
 	moon_println_target_gold(self);
@@ -7600,7 +7600,7 @@ void() intermission_victory =
 	while (head)
 	{
 		centerprint(head, "\sVICTORY\s\n");
-		sprint(head, "[VICTORY] Your glorious level is {}!\n", quick_ftos_floor(head.lvl));
+		sprint(head, "[VICTORY] Your glorious level is {}!\n", floor_ftos(head.lvl));
 		head.view_ofs = VEC_ORIGIN;
 		head.v_angle = pos.mangle;
 		head.angles = pos.mangle;
@@ -7645,7 +7645,7 @@ void() heart_die =
 	head = find(world, classname, MOON_PLAYER_CLASSNAME);
 	while (head)
 	{
-		sprint(head, "[GAME OVER] Your tiny level was just {}!\n", quick_ftos_floor(head.lvl));
+		sprint(head, "[GAME OVER] Your tiny level was just {}!\n", floor_ftos(head.lvl));
 		head.view_ofs = VEC_ORIGIN;
 		head.v_angle = pos.mangle;
 		head.angles = pos.mangle;
@@ -8740,7 +8740,7 @@ void() moon_print_inventory =
 			if ( (e.owner == self) && (e.mentat_bonus == MOON_ITEM_SOME) )
 			{
 				duration = e.attack_finished - time;
-				sprint(self, " {}{}{}", MOON_GLYPH_BRACKET_OPEN, quick_ftos_floor(duration), MOON_GLYPH_BRACKET_CLOSE);
+				sprint(self, " {}{}{}", MOON_GLYPH_BRACKET_OPEN, floor_ftos(duration), MOON_GLYPH_BRACKET_CLOSE);
 			}
 			e = find(e, classname, MOON_MENTAT_CLASSNAME);
 		}
@@ -8757,7 +8757,7 @@ void() moon_print_inventory =
 			if ( (e.owner == self) && (e.mentat_bonus2 == MOON_ITEM_SOME) )
 			{
 				duration = e.attack_finished - time;
-				sprint(self, " {}{}{}", MOON_GLYPH_BRACKET_OPEN, quick_ftos_floor(duration), MOON_GLYPH_BRACKET_CLOSE);
+				sprint(self, " {}{}{}", MOON_GLYPH_BRACKET_OPEN, floor_ftos(duration), MOON_GLYPH_BRACKET_CLOSE);
 			}
 			e = find(e, classname, MOON_MENTAT_CLASSNAME);
 		}
@@ -8774,7 +8774,7 @@ void() moon_print_inventory =
 			if ( (e.owner == self) && (e.mentat_bonus3 == MOON_ITEM_SOME) )
 			{
 				duration = e.attack_finished - time;
-				sprint(self, " {}{}{}", MOON_GLYPH_BRACKET_OPEN, quick_ftos_floor(duration), MOON_GLYPH_BRACKET_CLOSE);
+				sprint(self, " {}{}{}", MOON_GLYPH_BRACKET_OPEN, floor_ftos(duration), MOON_GLYPH_BRACKET_CLOSE);
 			}
 			e = find(e, classname, MOON_MENTAT_CLASSNAME);
 		}
@@ -8914,14 +8914,14 @@ void() UpgradeTouch =
 		break;
 	case MOON_ITEM_GLOBALGOLD_CODE:
 		bonus_value = MOON_ITEM_GLOBALGOLD_BONUS_FLAT + (pl * MOON_ITEM_GLOBALGOLD_BONUS_LVLPERCENT) + (random() * MOON_ITEM_GLOBALGOLD_BONUS_RANDOM);
-		sprint(other, MOON_ITEM_GLOBALGOLD_EFFECT, quick_ftos_floor(bonus_value));
+		sprint(other, MOON_ITEM_GLOBALGOLD_EFFECT, floor_ftos(bonus_value));
 
 		up_gold_value = up_gold_value + bonus_value;
 		moon_broadcast_global_gold_bonus();
 		break;
 	case MOON_ITEM_HEART_CODE:
 		bonus_value = MOON_ITEM_HEART_BONUS_FLAT + (pl * MOON_ITEM_HEART_BONUS_LVLPERCENT) + (random() * MOON_ITEM_HEART_BONUS_RANDOM);
-		sprint(other, MOON_ITEM_HEART_EFFECT, quick_ftos_floor(bonus_value));
+		sprint(other, MOON_ITEM_HEART_EFFECT, floor_ftos(bonus_value));
 
 		heart = moon_gimme_your_heart();
 		if ( heart != world )

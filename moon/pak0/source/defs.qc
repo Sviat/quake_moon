@@ -714,7 +714,7 @@ float waypoints_ok;
 .float health_magic_regen_time;
 .float rgnm_time;
 
-string(float f) quick_ftos_floor =
+string(float f) floor_ftos =
 {
 	return ftos(floor(f));
 };

@@ -1175,7 +1175,7 @@ void(entity e, float aura) makeaura =
 	a.nextthink = (time + 0.05);
 };
 
-void(entity e) GetPrefix =
+void(entity e) GetPrefix = // TODO: SOME NEXT REFACTORING TARGET
 {
 	local float r;
 
@@ -1471,27 +1471,27 @@ void() do_earthquake =
 	self.nextthink = ((time + MON_REACTIONTIME) - (random() * MON_CAMPERCHANCE));
 };
 
-void(float dl, float el) earthquake =
+void(float dl, float el) earthquake = // TODO: extract constants for tuning
 {
 	local entity e;
 
-	if ((el < KEY_LOOKUP))
+	if ((el < 64))
 	{
-		el = KEY_LOOKUP;
+		el = 64;
 	}
 	e = spawn();
 	e.think = do_earthquake;
 	e.delay = el;
-	e.nextthink = (time + H_ROTTEN);
+	e.nextthink = (time + 1);
 	e.attack_finished = ((time + dl) + (random() * dl));
 };
 
-void() misc_head =
+void() misc_head = // WTF IS THAT, UNUSED?!
 {
 	setmodel(self, self.netname);
 };
 
-void() flr_think =
+void() flr_think = // WTF IS THAT, UNUSED?!
 {
 	if ((sv_alwaysday == H_ROTTEN))
 	{
@@ -1582,7 +1582,7 @@ void() flr_think =
 	self.think = flr_think;
 };
 
-void() flr =
+void() flr = // WTF IS THAT, UNUSED?!
 {
 	lightstyle(KEY_MOVEBACK, "n");
 	self.count = H_ROTTEN;
@@ -1592,7 +1592,7 @@ void() flr =
 	self.think = flr_think;
 };
 
-void() moon4_touch =
+void() moon4_touch = // Works - dont touch
 {
 	local entity tmp;
 	local float nextnum;
@@ -2262,7 +2262,7 @@ void() PlaceArmor =
 	}
 };
 
-void(entity e) GenerateMagicCost =
+void(entity e) moon_calc_magic_cost = // Extract EFFECT switch-case-cost
 {
 	local float ccost;
 
@@ -2285,7 +2285,7 @@ void(entity e) GenerateMagicCost =
 	}
 	if ((e.magic_typeone == LOGIC_PATROL))
 	{
-		ccost = (ccost + (e.magic_typeone_value * GRD_PATROLTIME));
+		ccost = (ccost + (e.magic_typeone_value * 20));
 	}
 	if ((e.magic_typeone == LOGIC_HUNTENEMY))
 	{
@@ -2293,7 +2293,7 @@ void(entity e) GenerateMagicCost =
 	}
 	if ((e.magic_typeone == TE_WIZSPIKE))
 	{
-		ccost = (ccost + (e.magic_typeone_value * GRD_FIGHTDIST));
+		ccost = (ccost + (e.magic_typeone_value * 500));
 	}
 	if ((e.magic_typeone == KEY_MOVERIGHT))
 	{
@@ -2317,7 +2317,7 @@ void(entity e) GenerateMagicCost =
 	}
 	if ((e.magic_typetwo == LOGIC_PATROL))
 	{
-		ccost = (ccost + (e.magic_typetwo_value * GRD_PATROLTIME));
+		ccost = (ccost + (e.magic_typetwo_value * 20));
 	}
 	if ((e.magic_typetwo == LOGIC_HUNTENEMY))
 	{
@@ -2325,7 +2325,7 @@ void(entity e) GenerateMagicCost =
 	}
 	if ((e.magic_typetwo == TE_WIZSPIKE))
 	{
-		ccost = (ccost + (e.magic_typetwo_value * GRD_FIGHTDIST));
+		ccost = (ccost + (e.magic_typetwo_value * 500));
 	}
 	if ((e.magic_typetwo == KEY_MOVERIGHT))
 	{
@@ -2352,15 +2352,15 @@ void() PlaceAmmoBox =
 	if ((random() < 0.6))
 	{
 		setmodel(e, "maps/b_rock0.bsp");
-		e.ammo_rockets = ceil((15 + (random() * TE_LAVASPLASH)));
-		e.cost = ceil((e.ammo_rockets * LOGIC_HUNTENEMY));
+		e.ammo_rockets = ceil((15 + (random() * 10)));
+		e.cost = ceil((e.ammo_rockets * 6));
 		e.targetname = "rockets";
 	}
 	else
 	{
 		setmodel(e, "maps/b_batt0.bsp");
-		e.ammo_cells = ceil((15 + (random() * TE_WIZSPIKE)));
-		e.cost = ceil((e.ammo_cells * KEY_MOVERIGHT));
+		e.ammo_cells = ceil((15 + (random() * 7)));
+		e.cost = ceil((e.ammo_cells * 8));
 		e.targetname = "cells";
 	}
 };
@@ -2408,14 +2408,12 @@ void() PlaceMagicItem =
 	e.classname = "goody_ent";
 	if ((random() < MON_BACKTIME))
 	{
-		e.netname = "armor"; // áòíïò";
+		e.netname = "armor";
 		setmodel(e, "progs/armor.mdl");
-		e.skin = LOGIC_FINDDEFEND;
 		e.noise1 = "items/armor1.wav";
-	}
-	else
-	{
-		e.netname = "ring"; // "òéîç";
+		e.skin = 3;
+	} else {
+		e.netname = "ring";
 		setmodel(e, "progs/ring.mdl");
 		e.noise1 = "moon/items/ring.wav";
 	}
@@ -2424,21 +2422,21 @@ void() PlaceMagicItem =
 	z = random();
 	if ((z < MOON_ITEM_MAGIC_CHANCE_PREFIX))
 	{
-		GenerateMagic(e);
+		moon_generate_magic_prefix(e);
 	}
 	else
 	{
 		if ((z < MOON_ITEM_MAGIC_CHANCE_POSTFIX))
 		{
-			GenerateMagic2(e);
+			moon_generate_magic_postfix(e);
 		}
 		else
 		{
-			GenerateMagic(e);
-			GenerateMagic2(e);
+			moon_generate_magic_prefix(e);
+			moon_generate_magic_postfix(e);
 		}
 	}
-	GenerateMagicCost(e);
+	moon_calc_magic_cost(e);
 };
 
 void() PlaceMega =
@@ -8023,7 +8021,7 @@ void(entity receiver) moon_print_target_own_magic_ring_description =
 	}
 };
 
-void(entity e) GenerateMagic =
+void(entity e) moon_generate_magic_prefix =
 {
 	local float r;
 	local float mxx;
@@ -8320,7 +8318,7 @@ void(entity e) GenerateMagic =
 	}
 };
 
-void(entity e) GenerateMagic2 =
+void(entity e) moon_generate_magic_postfix =
 {
 	local float r;
 	local float mxx;
@@ -8836,18 +8834,18 @@ void(entity who) DropMagicArmor =
 	z = random();
 	if ( z < MOON_ITEM_MAGIC_CHANCE_PREFIX )
 	{
-		GenerateMagic(item);
+		moon_generate_magic_prefix(item);
 	}
 	else
 	{
 		if ( z < MOON_ITEM_MAGIC_CHANCE_POSTFIX )
 		{
-			GenerateMagic2(item);
+			moon_generate_magic_postfix(item);
 		}
 		else
 		{
-			GenerateMagic(item);
-			GenerateMagic2(item);
+			moon_generate_magic_prefix(item);
+			moon_generate_magic_postfix(item);
 		}
 	}
 };
@@ -9389,35 +9387,35 @@ void() mentat_think =
 {
 	if ((self.attack_finished < (time + LOGIC_FINDDEFEND)))
 	{
-		if ((self.cnt == WF_NORMAL))
+		if ((self.cnt == 0))
 		{
 			sprint(self.owner, "{} is fading\n", self.netname);
 		}
-		self.cnt = CHSCAM_ON;
+		self.cnt = 1;
 	}
-	if ((((self.attack_finished < time) || (self.owner.health <= WF_NORMAL)) || (((self.owner.mentat_bonus + self.owner.mentat_bonus2) + self.owner.mentat_bonus3) == WF_NORMAL)))
+	if ((((self.attack_finished < time) || (self.owner.health <= 0)) || (((self.owner.mentat_bonus + self.owner.mentat_bonus2) + self.owner.mentat_bonus3) == 0)))
 	{
-		if ((self.mentat_bonus == CHSCAM_ON))
+		if ((self.mentat_bonus == 1))
 		{
-			self.owner.mentat_bonus = WF_NORMAL;
+			self.owner.mentat_bonus = 0;
 		}
 		else
 		{
-			if ((self.mentat_bonus2 == CHSCAM_ON))
+			if ((self.mentat_bonus2 == 1))
 			{
-				self.owner.mentat_bonus2 = WF_NORMAL;
+				self.owner.mentat_bonus2 = 0;
 			}
 			else
 			{
-				if ((self.mentat_bonus3 == CHSCAM_ON))
+				if ((self.mentat_bonus3 == 1))
 				{
-					self.owner.mentat_bonus3 = WF_NORMAL;
+					self.owner.mentat_bonus3 = 0;
 				}
 			}
 		}
 		remove(self);
 	}
-	self.nextthink = (time + CHSCAM_ON);
+	self.nextthink = (time + 1);
 	self.think = mentat_think;
 };
 

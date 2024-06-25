@@ -413,8 +413,8 @@ float sv_alwaysday;
 .float scroll_time;
 .float mx_speed;
 void() execute_changelevel;
-void(entity e) GenerateMagic;
-void(entity e) GenerateMagic2;
+void(entity e) moon_generate_magic_prefix;
+void(entity e) moon_generate_magic_postfix;
 void() MagicItemTouch;
 void() M_FireShotgun;
 void(vector org) M_FireSuperNail;
@@ -994,6 +994,10 @@ float MOON_ELIXIR_MAG_CODE = 3;		// Not finished
 float MOON_ELIXIR_MAG_VALUE 	= 1;
 string MOON_ELIXIR_MAG_NETNAME 	= "elixir of MAGGI (+1 to magic)";
 string MOON_ELIXIR_MAG_NAME 	= "elixir of MAGGI (+1 to magic)";
+float MOON_ELIXIR_INT_CODE = 4;		// Not finished
+float MOON_ELIXIR_INT_VALUE 	= 1;
+string MOON_ELIXIR_INT_NETNAME 	= "elixir of INTEL (+1 to intuition)";
+string MOON_ELIXIR_INT_NAME 	= "elixir of INTEL (+1 to intuition)";
 
 // MOON_ITEM_MENTAT -> MOON_MENTAT
 string MOON_MENTAT_CLASSNAME = "mentat";

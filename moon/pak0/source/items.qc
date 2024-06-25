@@ -145,7 +145,7 @@ void(entity target) moon_println_target_gold =
 
 void() moon_broadcast_global_gold_bonus =
 {
-	bprint("Global gold income now +{}%\n", quick_ftos(up_gold_value));
+	bprint("Global gold income now +{}%\n", floor_ftos(up_gold_value));
 	// bprint_ftos(up_gold_value);
 	// bprint("%\n");
 };
@@ -9577,7 +9577,7 @@ void(entity who) moon_spawn_drop_weapon =
 				if ((r < 0.6))
 				{
 					setmodel(item, "progs/g_rock.mdl");
-					item.ammo_rockets = rint(((random() * SVC_SETVIEWPORT) + SVC_SETVIEWPORT));
+					item.ammo_rockets = rint(((random() * 10) + 5)); // rnd*5 -> rnd*10
 					item.netname = "Grenade Launcher";
 					item.items = IT_GRENADE_LAUNCHER;
 				}
@@ -9586,14 +9586,14 @@ void(entity who) moon_spawn_drop_weapon =
 					if ((r < 0.8))
 					{
 						setmodel(item, "progs/g_rock2.mdl");
-						item.ammo_rockets = rint(((random() * SVC_SETVIEWPORT) + SVC_SETVIEWPORT));
+						item.ammo_rockets = rint(((random() * 5) + 5));
 						item.netname = "Rocket Launcher";
 						item.items = IT_ROCKET_LAUNCHER;
 					}
 					else
 					{
 						setmodel(item, "progs/g_light.mdl");
-						item.ammo_cells = rint(((random() * SVC_SETVIEWPORT) + 10));
+						item.ammo_cells = rint(((random() * 5) + 10));
 						item.netname = "Thunderbolt";
 						item.items = IT_LIGHTNING;
 					}

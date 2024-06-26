@@ -203,7 +203,7 @@ void(entity target, string prefix, string name, string postfix) moon_print_targe
 	}
 };
 
-void(entity target, entity owner) moon_print_target_magic_armor_name =
+void(entity target, entity owner) moon_println_target_magic_armor_name =
 {
 	if (owner.magic_prefixone != s_wiz)
 	{
@@ -217,7 +217,7 @@ void(entity target, entity owner) moon_print_target_magic_armor_name =
 	sprint(target, "\n");
 };
 
-void(entity target, entity owner) moon_print_target_magic_ring_name =
+void(entity target, entity owner) moon_println_target_magic_ring_name =
 {
 	if (owner.ring_prefixone != s_wiz)
 	{
@@ -6424,16 +6424,16 @@ void() bot_run1 = // I dont want to even read that
 	self.nextthink = (time + MON_REFRESHTIME);
 };
 
-void(entity who) BotItems = // Works - dont touch
+void(entity who) moon_spawn_guard_items = // Works - dont touch
 {
 	local float lv;
 
 	lv = MaxLvl();
 	who.items = ((who.items + IT_AXE) + IT_SHOTGUN);
-	if ((lv <= LOGIC_DEFEND))
+	if ((lv <= 4))
 	{
 		who.items = (who.items + IT_ARMOR1);
-		who.armorvalue = (H_ROTTEN + (lv * 25));
+		who.armorvalue = (1 + (lv * 25));
 		who.armortype = 0.3;
 		if ((random() < 0.3))
 		{
@@ -6450,7 +6450,7 @@ void(entity who) BotItems = // Works - dont touch
 	}
 	else
 	{
-		if ((lv <= KEY_MOVERIGHT))
+		if ((lv <= 8))
 		{
 			who.items = (who.items + IT_ARMOR2);
 			who.armorvalue = ((lv * 25) - 50);
@@ -6529,7 +6529,7 @@ void(entity who) BotItems = // Works - dont touch
 				{
 					who.items = (who.items + IT_ROCKET_LAUNCHER);
 				}
-				if ((random() < MON_BACKTIME))
+				if ((random() < 0.5))
 				{
 					who.items = (who.items + IT_LIGHTNING);
 				}
@@ -6544,7 +6544,7 @@ void(entity who) BotItems = // Works - dont touch
 	who.health = who.max_health;
 };
 
-void() BotActivate =
+void() SpawnBot =
 {
 	local entity newbot;
 	local entity spot;
@@ -6566,9 +6566,9 @@ void() BotActivate =
 	newbot.view_ofs = '0 0 25';
 	newbot.speed = 320;
 	newbot.wantline = H_ROTTEN;
-	BotItems(newbot);
-	bprint("== a wandering guardian joins your forces ==\n"); // á ÷áîäåòéîç çõáòäéáî êïéîó ùïõò æïòãåó ==\n");
-	bprint("HP: {}. ", quick_ftos(newbot.max_health));
+	moon_spawn_guard_items(newbot);
+	bprint("== a wandering guardian joins your forces ==\n");
+	bprint("HP: {}. ", floor_ftos(newbot.max_health));
 	if ((newbot.items & IT_ARMOR1))
 	{
 		bprint("Green armor");
@@ -6619,7 +6619,7 @@ void() BotActivate =
 	newbot.th_missile = bot_fire;
 	newbot.team = self.team;
 	newbot.flags = FL_CLIENT;
-	newbot.mode = H_ROTTEN;
+	newbot.mode = 1;
 	newbot.framtime = CONTENT_EMPTY;
 	newbot.frame = 14;
 	newbot.blockd = FALSE;
@@ -6635,6 +6635,7 @@ void() BotActivate =
 	spawn_tfog(newbot.origin);
 	newbot.nextthink = (time + MON_CAMPERCHANCE);
 	newbot.think = newbot.th_stand;
+
 	kex_chat_message_broad(NAME_GUARD, CHAT_COLOR_BOTMSG, "Ready to serve\n");
 };
 
@@ -7743,7 +7744,7 @@ void(entity e) GenegateCampTarget =
 	}
 };
 
-void(entity receiver) moon_print_target_own_magic_item_description =
+void(entity receiver) moon_println_target_own_magic_item_description =
 {
 	local float was_printed;
 
@@ -7882,7 +7883,7 @@ void(entity receiver) moon_print_target_own_magic_item_description =
 	}
 };
 
-void(entity receiver) moon_print_target_own_magic_ring_description =
+void(entity receiver) moon_println_target_own_magic_ring_description =
 {
 	local float was_printed;
 
@@ -8506,20 +8507,15 @@ void() MagicItemTouch =
 {
 	local float l;
 
-	if ((other.classname != "player"))
-	{
-		return;
-	}
-	if ((other.health <= 0))
-	{
-		return;
-	}
+	if (other.classname != MOON_PLAYER_CLASSNAME) { return; }
+	if (other.health <= 0) { return; }
+
 	if (((other.next_mesg_time < time) || (other.mesg_inflictor != self)))
 	{
 		sprint(other, "=== magic item ===\n");
 		moon_print_target_item_name(other, self.prefix_one, self.netname, self.prefix_two);
 		sprint(other, "\n");
-		moon_print_target_own_magic_item_description(other); // when self is item, its magic is held in same place for both Armor and Ring
+		moon_println_target_own_magic_item_description(other); // when self is item, its magic is held in same place for both Armor and Ring
 
 		if ((other.cl_nohelp == 0))
 		{
@@ -8696,9 +8692,7 @@ void() moon_wear_item =
 				if ((selected.classname == MOON_ITEM_TRADED_CLASSNAME))
 				{
 					sprint(self, "You bought ");
-				}
-				else
-				{
+				} else {
 					sprint(self, "You put on ");
 				}
 				moon_print_target_item_name(self, selected.ring_prefixone, selected.netname, selected.ring_prefixtwo);
@@ -8707,9 +8701,7 @@ void() moon_wear_item =
 		}
 		flash_self();
 		remove(selected);
-	}
-	else
-	{
+	} else {
 		sprint(self, "there is \sno\s items around\n");
 	}
 };
@@ -8780,15 +8772,15 @@ void() moon_print_inventory =
 		did_print_section = TRUE;
 	}
 
-	if ((self.wear_armor == MOON_ITEM_SOME))
+	if ( self.wear_armor == MOON_ITEM_SOME )
 	{
 		if (did_print_section == TRUE)
 		{
 			sprint(self, "--------------------------\n");
 		}
 		sprint(self, CONST_QC_GLYPH_SELECTION);
-		moon_print_target_magic_armor_name(self, self);
-		moon_print_target_own_magic_item_description(self);
+		moon_println_target_magic_armor_name(self, self);
+		moon_println_target_own_magic_item_description(self);
 	}
 
 	if ( self.wear_ring == MOON_ITEM_SOME )
@@ -8798,8 +8790,8 @@ void() moon_print_inventory =
 			sprint(self, "--------------------------\n");
 		}
 		sprint(self, CONST_QC_GLYPH_SELECTION);
-		moon_print_target_magic_ring_name(self, self);
-		moon_print_target_own_magic_ring_description(self);
+		moon_println_target_magic_ring_name(self, self);
+		moon_println_target_own_magic_ring_description(self);
 	}
 	sprint(self, "--------------------------\n");
 };
@@ -8857,14 +8849,8 @@ void() UpgradeTouch =
 	local entity heart;
 	local float bonus_value;
 
-	if ((other.classname != MOON_PLAYER_CLASSNAME))
-	{
-		return;
-	}
-	if ((other.health <= 0))
-	{
-		return;
-	}
+	if (other.classname != MOON_PLAYER_CLASSNAME) { return; }
+	if (other.health <= 0) { return; }
 
 	pl = MaxLvl();
 	switch(self.cnt)
@@ -8904,11 +8890,11 @@ void() UpgradeTouch =
 	case MOON_ITEM_STATUP_CODE:
 		sprint(other, MOON_ITEM_STATUP_EFFECT);
 		other.point = other.point + MOON_ITEM_STATUP_BONUS;
-		other.items = (other.items + IT_KEY1);
+		other.items = (other.items | IT_KEY1);
 		break;
 	case MOON_ITEM_GUARDIAN_CODE:
 		sprint(other, MOON_ITEM_GUARDIAN_EFFECT);
-		BotActivate();
+		SpawnBot();
 		break;
 	case MOON_ITEM_GLOBALGOLD_CODE:
 		bonus_value = MOON_ITEM_GLOBALGOLD_BONUS_FLAT + (pl * MOON_ITEM_GLOBALGOLD_BONUS_LVLPERCENT) + (random() * MOON_ITEM_GLOBALGOLD_BONUS_RANDOM);
@@ -8935,7 +8921,7 @@ void() UpgradeTouch =
 		break;
 	}
 
-	sound(other, CHAN_ITEM, "moon/items/book.wav", H_ROTTEN, ATTN_NORM);
+	sound(other, CHAN_ITEM, "moon/items/book.wav", 1, ATTN_NORM);
 	flash_other(other);
 	remove(self);
 };
@@ -9879,7 +9865,7 @@ void(entity target) level_up_target =
 
 void(entity heart) level_up_heart =
 {
-	BotActivate();
+	SpawnBot();
 	if (heart != world)
 	{
 		if (heart.lvl < MOON_HEART_MAX_LEVEL)

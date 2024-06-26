@@ -8980,39 +8980,25 @@ void(entity e) prepare_item =
 
 void() HPTouch =
 {
-	if ((other.classname != MOON_PLAYER_CLASSNAME))
-	{
-		return;
-	}
-	if ((other.health <= 0))
-	{
-		return;
-	}
+	if (other.classname != MOON_PLAYER_CLASSNAME) { return; }
+	if (other.health <= 0) { return; }
 
 	if ((other.health < other.max_health))
 	{
-		sprint(other, "You get {} and receive {} health\n", self.netname, quick_ftos(self.healamount));
-	}
-	else
-	{
+		sprint(other, "You get {} and receive {} health\n", self.netname, floor_ftos(self.healamount));
+	} else {
 		sprint(other, "You wasted {}\n", self.netname);
 	}
 	T_Heal(other, self.healamount, WF_NORMAL);
-	sound(other, CHAN_ITEM, "moon/items/potion.wav", H_ROTTEN, ATTN_NORM);
+	sound(other, CHAN_ITEM, "moon/items/potion.wav", 1, ATTN_NORM);
 	flash_other(other);
 	remove(self);
 };
 
 void() ELTouch =
 {
-	if ((other.classname != MOON_PLAYER_CLASSNAME))
-	{
-		return;
-	}
-	if ((other.health <= 0))
-	{
-		return;
-	}
+	if (other.classname != MOON_PLAYER_CLASSNAME) { return; }
+	if (other.health <= 0) { return; }
 
 	switch(floor(self.cnt))
 	{
@@ -9025,11 +9011,13 @@ void() ELTouch =
 	case MOON_ELIXIR_MAG_CODE:
 		moon_raise_target_sanity(other, MOON_ELIXIR_MAG_VALUE);
 		break;
-	// TODO: 4th stat
+	case MOON_ELIXIR_INT_CODE:
+		//other.wiz = (other.wiz + MOON_ELIXIR_INT_VALUE); // TODO: 4th stat
+		break;
 	}
 
 	sprint(other, "You get {}\n", self.netname);
-	sound(other, CHAN_ITEM, "moon/items/potion.wav", H_ROTTEN, ATTN_NORM);
+	sound(other, CHAN_ITEM, "moon/items/potion.wav", 1, ATTN_NORM);
 	flash_other(other);
 	remove(self);
 };
@@ -9048,7 +9036,7 @@ void(entity who) moon_spawn_drop_elixir =
 	item.touch = ELTouch;
 	item.nextthink = (time + 60);
 	item.think = SUB_Remove;
-	pl = random_int(MOON_ELIXIR_STR_CODE, MOON_ELIXIR_VIT_CODE);
+	pl = random_int(MOON_ELIXIR_STR_CODE, MOON_ELIXIR_VIT_CODE); // TODO: when implemented, up to MOON_ELIXIR_INT_CODE
 	item.cnt = pl;
 	switch(pl)
 	{
@@ -9060,6 +9048,9 @@ void(entity who) moon_spawn_drop_elixir =
 		break;
 	case MOON_ELIXIR_MAG_CODE:
 		item.netname = MOON_ELIXIR_MAG_NETNAME;
+		break;
+	case MOON_ELIXIR_INT_CODE:
+		item.netname = MOON_ELIXIR_INT_NETNAME;
 		break;
 	}
 };

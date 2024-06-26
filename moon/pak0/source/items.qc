@@ -388,15 +388,12 @@ void() noclass =
 
 void() PlaceItem =
 {
-	local float oldz;
-
 	self.mdl = self.model;
 	self.flags = FL_ITEM;
 	self.solid = SOLID_TRIGGER;
 	self.movetype = MOVETYPE_TOSS;
 	self.velocity = VEC_ORIGIN;
-	self.origin_z = (self.origin_z + LOGIC_HUNTENEMY);
-	oldz = self.origin_z;
+	self.origin_z = (self.origin_z + 6);
 	if (!droptofloor())
 	{
 		dprint("Bonus item fell out of level at {}\n", vtos(self.origin));
@@ -466,8 +463,8 @@ void() health_touch =
 			return;
 		}
 	}
-	sprint(other, "You receive {} health\n", quick_ftos(self.healamount));
-	sound(other, CHAN_ITEM, self.noise, WF_DEFEND, ATTN_NORM);
+	sprint(other, "You receive {} health\n", floor_ftos(self.healamount));
+	sound(other, CHAN_ITEM, self.noise, 1, ATTN_NORM);
 	flash_other(other);
 	self.model = string_null;
 	self.solid = SOLID_NOT;
@@ -487,11 +484,11 @@ void() item_megahealth_rot =
 	other = self.owner;
 	if ((other.health > other.max_health))
 	{
-		other.health = (other.health - WF_DEFEND);
-		self.nextthink = (time + WF_DEFEND);
+		other.health = (other.health - 1);
+		self.nextthink = (time + 1);
 		return;
 	}
-	other.items = (other.items - (other.items & IT_SUPERHEALTH));
+	other.items = (other.items & (~IT_SUPERHEALTH));
 	remove(self);
 };
 
@@ -501,14 +498,9 @@ void() armor_touch =
 	local float value;
 	local float bit;
 
-	if ((other.health <= 0))
-	{
-		return;
-	}
-	if ((other.classname != MOON_PLAYER_CLASSNAME))
-	{
-		return;
-	}
+	if (other.classname != MOON_PLAYER_CLASSNAME) { return; }
+	if (other.health <= 0) { return; }
+
 	if ((self.classname == "item_armor1"))
 	{
 		type = 0.3;
@@ -533,7 +525,7 @@ void() armor_touch =
 	}
 	other.armortype = type;
 	other.armorvalue = value;
-	other.items = ((other.items - (other.items & ((IT_ARMOR1 | IT_ARMOR2) | IT_ARMOR3))) + bit);
+	other.items = (((other.items & (~IT_ARMOR1)) & (~IT_ARMOR2)) & (~IT_ARMOR3)) | bit;
 	self.solid = SOLID_NOT;
 	self.model = string_null;
 	if ((deathmatch == WF_DEFEND))
@@ -542,7 +534,7 @@ void() armor_touch =
 	}
 	self.think = SUB_regen;
 	sprint(other, "You got new armor\n");
-	sound(other, CHAN_ITEM, "items/armor1.wav", WF_DEFEND, ATTN_NORM);
+	sound(other, CHAN_ITEM, "items/armor1.wav", 1, ATTN_NORM);
 	flash_other(other);
 	activator = other;
 	SUB_UseTargets();
@@ -2840,8 +2832,8 @@ void() buy_goody =
 			}
 			self.armortype = selected.armortype;
 			self.armorvalue = selected.armorvalue;
-			self.items = ((self.items - (self.items & ((IT_ARMOR1 | IT_ARMOR2) | IT_ARMOR3))) + selected.items);
-			sound(self, CHAN_ITEM, "items/armor1.wav", H_ROTTEN, ATTN_NORM);
+			self.items = (((self.items & (~IT_ARMOR1)) & (~IT_ARMOR2)) & (~IT_ARMOR3)) | selected.items;
+			sound(self, CHAN_ITEM, "items/armor1.wav", 1, ATTN_NORM);
 		}
 		else
 		{
@@ -3764,7 +3756,7 @@ void() moon_buy_item =
 			}
 			self.armortype = selected.armortype;
 			self.armorvalue = selected.armorvalue;
-			self.items = ((self.items - (self.items & ((IT_ARMOR1 | IT_ARMOR2) | IT_ARMOR3))) + selected.items);
+			self.items = (((self.items & (~IT_ARMOR1)) & (~IT_ARMOR2)) & (~IT_ARMOR3)) | selected.items;
 			sound(self, CHAN_ITEM, "items/armor1.wav", H_ROTTEN, ATTN_NORM);
 			selected.attack_finished = ((time + GRD_PATROLTIME) + (random() * GRD_PATROLTIME));
 		}
@@ -3917,37 +3909,33 @@ void() moon_identify_item =
 		sprint(self, "====== identify item ======\n");
 		if ((selected.items & IT_ARMOR1))
 		{
-			sprint(self, "Green Armor. Cost: ");
+			sprint(self, "Green Armor");
 		}
 		if ((selected.items & IT_ARMOR2))
 		{
-			sprint(self, "Yellow Armor. Cost: ");
+			sprint(self, "Yellow Armor");
 		}
 		if ((selected.items & IT_ARMOR3))
 		{
-			sprint(self, "Red Armor. Cost: ");
+			sprint(self, "Red Armor");
 		}
 		if ((selected.cnt == H_MEGA))
 		{
 			if (selected.ammo_shells)
 			{
-				sprint_ftos(self, selected.ammo_shells);
-				sprint(self, " shells. Cost: ");
+				sprint(self, "{} shells", floor_ftos(selected.ammo_shells));
 			}
 			if (selected.ammo_nails)
 			{
-				sprint_ftos(self, selected.ammo_nails);
-				sprint(self, " nails. Cost: ");
+				sprint(self, "{} nails", floor_ftos(selected.ammo_nails));
 			}
 			if (selected.ammo_rockets)
 			{
-				sprint_ftos(self, selected.ammo_rockets);
-				sprint(self, " rockets. Cost: ");
+				sprint(self, "{} rockets", floor_ftos(selected.ammo_rockets));
 			}
 			if (selected.ammo_cells)
 			{
-				sprint_ftos(self, selected.ammo_cells);
-				sprint(self, " cells. Cost: ");
+				sprint(self, "{} cells", floor_ftos(selected.ammo_cells));
 			}
 		}
 		else
@@ -3955,17 +3943,13 @@ void() moon_identify_item =
 			if ((selected.cnt == LOGIC_FINDDEFEND))
 			{
 				sprint(self, selected.targetname);
-				sprint(self, ". Cost: ");
 			}
 		}
 		if ((selected.items & IT_SUPERHEALTH))
 		{
-			sprint(self, "Medikit +");
-			sprint_ftos(self, selected.healamount);
-			sprint(self, ". Cost: ");
+			sprint(self, "Medkit +{}", floor_ftos(selected.healamount));
 		}
-		sprint_ftos(self, selected.cost);
-		sprint(self, "\n");
+		sprint(self, ". Cost: {}\n", floor_ftos(selected.cost));
 	}
 	else
 	{
@@ -6432,7 +6416,7 @@ void(entity who) moon_spawn_guard_items = // Works - dont touch
 	who.items = ((who.items + IT_AXE) + IT_SHOTGUN);
 	if ((lv <= 4))
 	{
-		who.items = (who.items + IT_ARMOR1);
+		who.items = (who.items | IT_ARMOR1);
 		who.armorvalue = (1 + (lv * 25));
 		who.armortype = 0.3;
 		if ((random() < 0.3))
@@ -6452,7 +6436,7 @@ void(entity who) moon_spawn_guard_items = // Works - dont touch
 	{
 		if ((lv <= 8))
 		{
-			who.items = (who.items + IT_ARMOR2);
+			who.items = (who.items | IT_ARMOR2);
 			who.armorvalue = ((lv * 25) - 50);
 			who.armortype = 0.6;
 			if ((random() < MON_STUCKTIME))
@@ -6480,7 +6464,7 @@ void(entity who) moon_spawn_guard_items = // Works - dont touch
 		{
 			if ((lv <= 12))
 			{
-				who.items = (who.items + IT_ARMOR3);
+				who.items = (who.items | IT_ARMOR3);
 				who.armorvalue = ((lv * 25) - 100);
 				who.armortype = 0.8;
 				if ((random() < MON_STUCKTIME))
@@ -9306,10 +9290,7 @@ void() ShardTouch =
 
 	if (((!(other.items & IT_ARMOR1) && !(other.items & IT_ARMOR2)) && !(other.items & IT_ARMOR3)))
 	{
-		if (!(other.items & IT_ARMOR1))
-		{
-			other.items = (other.items + IT_ARMOR1);
-		}
+		other.items = (other.items | IT_ARMOR1);
 		other.armortype = MOON_ARMOR_SHARD_TYPE;
 		other.armorvalue = MOON_ARMOR_SHARD_GAIN;
 	}
@@ -9321,7 +9302,7 @@ void() ShardTouch =
 			other.armorvalue = MOON_ARMOR_MAX_SOFT;
 		}
 	}
-	sound(other, CHAN_ITEM, "moon/items/shard.wav", CHSCAM_ON, ATTN_NORM);
+	sound(other, CHAN_ITEM, "moon/items/shard.wav", 1, ATTN_NORM);
 	flash_other(other);
 	remove(self);
 };

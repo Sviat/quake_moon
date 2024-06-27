@@ -146,8 +146,6 @@ void(entity target) moon_println_target_gold =
 void() moon_broadcast_global_gold_bonus =
 {
 	bprint("Global gold income now +{}%\n", floor_ftos(up_gold_value));
-	// bprint_ftos(up_gold_value);
-	// bprint("%\n");
 };
 
 void(entity target, float gain) moon_give_target_gold =
@@ -374,15 +372,13 @@ void() SUB_regen =
 {
 	self.model = self.mdl;
 	self.solid = SOLID_TRIGGER;
-	sound(self, CHAN_VOICE, "items/itembk2.wav", WF_DEFEND, ATTN_NORM);
+	sound(self, CHAN_VOICE, "items/itembk2.wav", 1, ATTN_NORM);
 	setorigin(self, self.origin);
 };
 
 void() noclass =
 {
-	dprint("noclass spawned at");
-	dprint(vtos(self.origin));
-	dprint("\n");
+	dprint("noclass spawned at {}\n", vtos(self.origin));
 	remove(self);
 };
 
@@ -2975,8 +2971,7 @@ void() buy_goody =
 		self.gold = (self.gold - selected.cost);
 		setmodel(selected, string_null);
 		flash_self();
-		sprint_ftos(self, self.gold);
-		sprint(self, " gold left\n");
+		sprint(self, "{} gold left\n", floor_ftos(self.gold));
 		remove(selected);
 	}
 };
@@ -3004,7 +2999,7 @@ void() indefy_goody =
 	}
 	if ((selected != world))
 	{
-		sprint(self, "====== identify item ======\n"); // éîäåæù éôåí ======\n");
+		sprint(self, "====== identify item ======\n");
 		if ((selected.netname == "goody_armor"))
 		{
 			sprint(self, "Spoiled ");
@@ -3140,12 +3135,27 @@ void() derrick_think =
 
 	self.nextthink = ((time + MOON_GOLD_MINE_DELAY_MIN) + (random() * MOON_GOLD_MINE_DELAY_RANDOM));
 	self.think = derrick_think;
+
 	head = findradius(self.origin, MOON_GOLD_MINE_DETECT_PLAYER_RADIUS);
 	while (head)
 	{
-		if ((head.classname == "player"))
+		if ( head.classname == MOON_PLAYER_CLASSNAME )
 		{
-			if ((head.health > WF_NORMAL))
+			if ( head.health > 0 )
+			{
+				DropGold(self);
+				return;
+			}
+		}
+		head = head.chain;
+	}
+
+	head = findradius(self.origin, MOON_GOLD_MINE_DETECT_GUARD_RADIUS);
+	while (head)
+	{
+		if ( head.classname == MOON_GUARD_CLASSNAME )
+		{
+			if ( head.health > 0 )
 			{
 				DropGold(self);
 				return;
@@ -3165,7 +3175,7 @@ void(vector org) gold_derrick =
 	setmodel(e, "progs/derrick.mdl");
 	setsize(e, VEC_HULL_MIN, '16 16 24');
 	e.solid = SOLID_BBOX;
-	e.nextthink = ((time + LOGIC_HUNTENEMY) + (random() * TE_WIZSPIKE));
+	e.nextthink = ((time + 6) + (random() * 7));
 	e.think = derrick_think;
 };
 

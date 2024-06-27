@@ -3207,84 +3207,37 @@ void() jesus_think =
 	local float r;
 	local float d;
 
-	if ((gameover == TRUE))
+	if ( gameover == TRUE )
 	{
 		remove(self);
 		return;
 	}
-	if ((random() < AMBIENT_RATE))
+
+	r = rint( random() * 12 );
+	if (((r >= 8) && (r <= 10)))
 	{
-		r = rint((random() * 12));
-		if (((r >= KEY_MOVERIGHT) && (r <= TE_LAVASPLASH)))
+		earthquake(r, (random() * 160)); // earthquake('12 0 0', (random() * 160));
+		if ( random() < 0.1 )
 		{
-			earthquake(r, (random() * 160)); // earthquake('12 0 0', (random() * 160));
-			if ((random() < MON_CAMPERCHANCE))
+			d = rint((random() * 10));
+			switch(d)
 			{
-				d = rint((random() * TE_LIGHTNING3));
-				if ((d == WF_NORMAL))
-				{
-					bprint("jesus: please report this bug to meteo-center :))\n");
-				}
-				else
-				{
-					if ((d == H_ROTTEN))
-					{
-						bprint("jesus: DO NOT shake the earth, fucking demons!\n");
-					}
-					else
-					{
-						if ((d == H_MEGA))
-						{
-							bprint("jesus: wow, what a frenzy!!!\n");
-						}
-						else
-						{
-							if ((d == LOGIC_FINDDEFEND))
-							{
-								bprint("jesus: heh, an earth quake!\n");
-							}
-							else
-							{
-								if ((d == LOGIC_DEFEND))
-								{
-									bprint("jesus: quake is just a cool name for a game\n");
-								}
-								else
-								{
-									if ((d == LOGIC_PATROL))
-									{
-										bprint("jesus: come to vault 13\n");
-									}
-									else
-									{
-										if ((d == LOGIC_HUNTENEMY))
-										{
-											bprint("jesus: visit: http://powersite.narod.ru\n");
-										}
-										else
-										{
-											if ((d == TE_WIZSPIKE))
-											{
-												bprint("jesus: your castle will be your graveyard\n");
-											}
-											else
-											{
-												if ((d == KEY_MOVERIGHT))
-												{
-													bprint("jesus: bring me 10000 gold and i'll give you invulnerability\n");
-												}
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-				moon_make_chat_noise();
+				case 0: bprint("jesus: please report this bug to meteo-center :))\n"); break;
+				case 1: bprint("jesus: DO NOT shake the earth, fucking demons!\n"); break;
+				case 2: bprint("jesus: wow, what a frenzy!!!\n"); break;
+				case 3: bprint("jesus: heh, an earth quake!\n"); break;
+				case 4: bprint("jesus: quake is just a cool name for a game\n"); break;
+				case 5: bprint("jesus: come to vault 13\n"); break;
+				case 6: bprint("jesus: visit: http://powersite.narod.ru\n"); break;
+				case 7: bprint("jesus: your castle will be your graveyard\n"); break;
+				case 8: bprint("jesus: bring me 10000 gold and i'll give you invulnerability\n"); break;
+				case 9: bprint("jesus: you may need time machine\n"); break;
 			}
+
+			moon_make_chat_noise();
 		}
 	}
+
 	self.nextthink = ((time + 60) + (60 * random()));
 	self.think = jesus_think;
 };

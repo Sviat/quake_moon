@@ -8,7 +8,7 @@ float FL_INWATER    	= 16;
 float FL_MONSTER    	= 32;
 float FL_GODMODE    	= 64;
 float FL_NOTARGET    	= 128;
-float FL_ITEM    	= 256;
+float FL_ITEM    		= 256;
 float FL_ONGROUND    	= 512;
 float FL_PARTIALGROUND  = 1024;
 float FL_WATERJUMP    	= 2048;
@@ -23,11 +23,11 @@ float MOVETYPE_NOCLIP   = 8;
 float MOVETYPE_FLYMISSILE= 9;
 float MOVETYPE_BOUNCE   = 10;
 float MOVETYPE_BOUNCEMISSILE = 11;
-float SOLID_NOT 	= 0;
+float SOLID_NOT 		= 0;
 float SOLID_TRIGGER    	= 1;
 float SOLID_BBOX    	= 2;
-float SOLID_SLIDEBOX    = 3;
-float SOLID_BSP    	= 4;
+float SOLID_SLIDEBOX 	= 3;
+float SOLID_BSP    		= 4;
 float RANGE_MELEE = 0;
 float RANGE_NEAR  = 1;
 float RANGE_MID   = 2;
@@ -35,10 +35,10 @@ float RANGE_FAR   = 3;
 float DEAD_NO 		= 0;
 float DEAD_DYING	= 1;
 float DEAD_DEAD 	= 2;
-float DEAD_RESPAWNABLE  = 3;
+float DEAD_RESPAWNABLE = 3;
 float DAMAGE_NO 	= 0;
-float DAMAGE_YES    	= 1;
-float DAMAGE_AIM    	= 2;
+float DAMAGE_YES   	= 1;
+float DAMAGE_AIM   	= 2;
 float IT_AXE    		= 4096;
 float IT_SHOTGUN    		= 1;
 float IT_SUPER_SHOTGUN    	= 2;
@@ -341,7 +341,7 @@ float KEY_LOOKDOWN    	= 128;
 float KEY_LOOKLEFT    	= 256;
 float KEY_LOOKRIGHT    	= 512;
 float GUARD_WALKDIST    = 130;
-float AMBIENT_RATE    = 14.03;
+float AMBIENT_RATE    = 14.03; // unused
 float MON_REFRESHTIME = 0.01;
 float MON_WALKDIST    = 1;
 float MON_REACTIONTIME= 0.2;
@@ -383,14 +383,15 @@ float sv_alwaysday;
 .float rfr;
 .float keys;
 .float oldkeys;
-.float stre;
-.float vit;
-.float wiz;
+.float stre;	// Strength
+.float vit;		// Vitality
+.float wiz;		// Sanity; recovered in KEK port;
+.float intu;	// Intuition; new stat in KEK port; naming kept in line with original
 .float melee;
 .float mana;
 .float max_mana;
 .float mosterskilled;
-.string mxmnastr;
+.string mxmnastr; // unused!?
 .float next_fndcrt;
 .float sc_n1;
 .float sc_n2;
@@ -713,119 +714,6 @@ float waypoints_ok;
 .float health_magic_regen_time;
 .float rgnm_time;
 
-string(float f) floor_ftos =
-{
-	return ftos(floor(f));
-};
-
-string(float f) quick_ftos =
-{
-	return ftos(f);
-};
-
-void(string s) sprint_self =
-{
-	sprint(self, s);
-};
-
-void(string s) sprint_other =
-{
-	sprint(other, s);
-};
-
-void(entity target, string s) sprintln =
-{
-	sprint(target, s);
-	sprint(target, "\n");
-};
-
-void(string s) sprintln_self =
-{
-	sprint(self, s);
-	sprint(self, "\n");
-};
-
-void(string s) sprintln_other =
-{
-	sprint(other, s);
-	sprint(other, "\n");
-};
-
-void(entity who, float f) sprint_ftos = // TODO: slowly get rid of it
-{
-	local string str;
-
-	str = ftos(floor(f));
-	sprint(who, str);
-};
-
-void(float f) bprint_ftos =
-{
-	local string str;
-	str = ftos(floor(f));
-	bprint(str);
-};
-
-void(string f) ip = // TODO: slowly get rid of it
-{
-	sprint(self, f);
-};
-
-float(float n1, float n2) percent =
-{
-	local float a;
-
-	a = rint(((n1 * n2) / 100));
-	return (a);
-};
-
-float() MaxLvl =
-{
-	local entity e;
-	local float maxlvl;
-
-	maxlvl = 0;
-	e = find(world, classname, "player");
-	while (e)
-	{
-		if ((e.lvl > maxlvl))
-		{
-			maxlvl = e.lvl;
-		}
-		e = find(e, classname, "player");
-	}
-	return maxlvl;
-};
-
-void(entity e) AddToQue =
-{
-	local entity z;
-
-	z = spawn();
-	z.origin = e.origin;
-	z.angles = e.angles;
-	setmodel(z, e.model);
-	z.frame = e.frame;
-	z.colormap = e.colormap;
-	z.think = SUB_Remove;
-	z.flags = e.flags;
-	z.movetype = MOVETYPE_TOSS;
-	z.solid = SOLID_NOT;
-	z.velocity = e.velocity;
-	if ((sv_fastmeat == 1))
-	{
-		z.nextthink = ((time + MON_WAVETIME_FAST) + (random() * MON_WAVETIME_FAST));
-	}
-	else if ((sv_fastmeat == -1))
-	{
-		z.nextthink = ((time + MON_WAVETIME_FAST) + (random() * MON_WAVETIME_SLOW));
-	}
-	else
-	{
-		z.nextthink = ((time + MON_WAVETIME_NORMAL) + (random() * MON_WAVETIME_NORMAL));
-	}
-};
-
 // // Copied from https://github.com/fte-team/fteqw/blob/1f9f3635f0aef3b2eed6b40e35fcf6223c6ad533/engine/common/protocol.h#L362
 //QuakeEx(aka: rerelease) svcs.
 //	these are not really documented anywhere. we're trying to stick with protocol 15 (because that's the only documented protocol it supports properly thanks to demos)
@@ -873,11 +761,39 @@ void(entity e) AddToQue =
 #define MOON_GLYPH_CENTERDOT_YELLOW "\x8E" // Yellow center dot
 #define MOON_GLYPH_REDARROW "\xFF"		// Red arrow pointing left
 
-float MOON_IMPULSE_CODE_PRINTSKILL = 20;
+// // Impulse codes. First (*0) and Last (*9) codes usually reserved
+float MOON_IMPULSE_CODE_FIRST = 20;
+// Code range CLI UI 20..99
+float MOON_IMPULSE_CODE_FIRST_CLI_UI = 20;
+float MOON_IMPULSE_CODE_PRINT_STAT = 20;
 float MOON_IMPULSE_CODE_UPSKILL_VITALITY = 21;
 float MOON_IMPULSE_CODE_UPSKILL_STRENGTH = 22;
 float MOON_IMPULSE_CODE_UPSKILL_SANITY = 23;
 float MOON_IMPULSE_CODE_UPSKILL_INTUITION = 24;
+float MOON_IMPULSE_CODE_PRINT_CLI_HELP = 64;
+float MOON_IMPULSE_CODE_PRINT_INVENTORY = 94;
+float MOON_IMPULSE_CODE_PRINT_STATUS = 96;
+float MOON_IMPULSE_CODE_LAST_CLI_UI = 99;
+// Code range SERVER settings 100..149
+float MOON_IMPULSE_CODE_FIRST_SETTING_SERVER = 100;
+float MOON_IMPULSE_CODE_ALWAYSDAY = 101;
+float MOON_IMPULSE_CODE_FASTMEAT = 102;
+float MOON_IMPULSE_CODE_SLOWMEAT = 103;
+float MOON_IMPULSE_CODE_LAST_SETTING_SERVER = 149;
+// Code range CLIENT settings 150..199
+float MOON_IMPULSE_CODE_FIRST_SETTING_CLIENT = 150;
+float MOON_IMPULSE_CODE_NOHELP = 164; // PRINT_HELP + 100
+float MOON_IMPULSE_CODE_SHOWFPS = 170;
+float MOON_IMPULSE_CODE_LAST_SETTING_CLIENT = 199;
+// Code range TRACE CROSSHAIR 200..299 (+200 from related CLI UI)
+float MOON_IMPULSE_CODE_FIRST_TRACE = 200;
+float MOON_IMPULSE_CODE_ITEM_PICKUP = 295;
+float MOON_IMPULSE_CODE_ITEM_BUY = 297;
+float MOON_IMPULSE_CODE_ITEM_IDENTIFY = 298;
+float MOON_IMPULSE_CODE_LAST_TRACE = 299;
+//
+float MOON_IMPULSE_CODE_LAST = 299;
+// //
 
 float MOON_PLAYER_MAX_LEVEL = 50;
 float MOON_HEART_MAX_LEVEL = 50;
@@ -984,20 +900,20 @@ string MOON_ELIXIR_CLASSNAME = "elixir";	// Unused? goody_ent?
 string MOON_ELIXIR_MARKET_NETNAME = "goody_elixir";
 float MOON_ELIXIR_STR_CODE = 1;
 float MOON_ELIXIR_STR_VALUE 	= 1;
-string MOON_ELIXIR_STR_NETNAME 	= "elixir of STRANGE (+1 to strength)";
-string MOON_ELIXIR_STR_NAME 	= "elixir of STRANGE (+1 to strength)";
+string MOON_ELIXIR_STR_NETNAME 	= "elixir of STRANGE (+1 to Strength)";
+string MOON_ELIXIR_STR_NAME 	= "elixir of STRANGE (+1 to Strength)";
 float MOON_ELIXIR_VIT_CODE = 2;
 float MOON_ELIXIR_VIT_VALUE 	= 1;
-string MOON_ELIXIR_VIT_NETNAME 	= "elixir of VITALIKI (+1 to vitality)";
-string MOON_ELIXIR_VIT_NAME 	= "elixir of VITALIKI (+1 to vitality)";
+string MOON_ELIXIR_VIT_NETNAME 	= "elixir of VITALIKI (+1 to Vitality)";
+string MOON_ELIXIR_VIT_NAME 	= "elixir of VITALIKI (+1 to Vitality)";
 float MOON_ELIXIR_MAG_CODE = 3;		// Not finished
 float MOON_ELIXIR_MAG_VALUE 	= 1;
-string MOON_ELIXIR_MAG_NETNAME 	= "elixir of MAGGI (+1 to magic)";
-string MOON_ELIXIR_MAG_NAME 	= "elixir of MAGGI (+1 to magic)";
+string MOON_ELIXIR_MAG_NETNAME 	= "elixir of MAGGI (+1 to Sanity)";
+string MOON_ELIXIR_MAG_NAME 	= "elixir of MAGGI (+1 to Sanity)";
 float MOON_ELIXIR_INT_CODE = 4;		// Not finished
 float MOON_ELIXIR_INT_VALUE 	= 1;
-string MOON_ELIXIR_INT_NETNAME 	= "elixir of INTEL (+1 to intuition)";
-string MOON_ELIXIR_INT_NAME 	= "elixir of INTEL (+1 to intuition)";
+string MOON_ELIXIR_INT_NETNAME 	= "elixir of INTEL (+1 to Intuition)";
+string MOON_ELIXIR_INT_NAME 	= "elixir of INTEL (+1 to Intuition)";
 
 // MOON_ITEM_MENTAT -> MOON_MENTAT
 string MOON_MENTAT_CLASSNAME = "mentat";
@@ -1027,12 +943,12 @@ string MOON_ITEM_RING_NETNAME = "ring";
 string MOON_ITEM_RING_DISPLAY = "ring";
 
 // MOON_ITEM_AMMO -> MOON_AMMO
-float MOON_AMMO_MAX_SHELL 	= 100;
-float MOON_AMMO_MAX_NAIL 	= 200;
+float MOON_AMMO_MAX_SHELL 	= 100;	// Initial max, before any upgrades
+float MOON_AMMO_MAX_NAIL 	= 200;	// Initial max, before any upgrades
 float MOON_AMMO_MAX_ROCKET 	= 100;
 float MOON_AMMO_MAX_CELL 	= 100;
 
-// // list of Magical Effects, _CODE's should be in increasing order
+// // list of Magical Effects, _CODE's should be in strict increasing order without gaps
 float MOON_ITEM_HEALTH_CODE = 1;
 string MOON_ITEM_HEALTH_EFFECT  	= "+{} to maximum health";
 string MOON_ITEM_HEALTH_PREFIX_LOW   	= "Echidna ";
@@ -1103,6 +1019,7 @@ string MOON_ITEM_CONSUME_EFFECT		= "adds {} health after each kill";
 // // last Effect's _CODE should not be greater than MOON_ITEM_TRAIT_MAX_EFFECT
 
 // // list of Upgrades
+// These things cannot and should be attached to Items, hence new Code sequence
 float MOON_ITEM_GATEALERT_CODE = 1;
 string MOON_ITEM_GATEALERT_EFFECT  		= "Book of \sRed\s Alert (gate gives a signal when killed)\n";
 string MOON_ITEM_GATEALERT_SIDEEFFECT 	= "Book of \sRed\s Gate (+10 max health to Gate)\n";
@@ -1150,5 +1067,121 @@ void() flash_self =
 
 void(entity target) flash_other =
 {
+	stuffcmd(other, "bf\n");
+};
+
+void(entity target) flash_target =
+{
 	stuffcmd(target, "bf\n");
+};
+
+string(float f) floor_ftos =
+{
+	return ftos(floor(f));
+};
+
+string(float f) quick_ftos =
+{
+	return ftos(f);
+};
+
+void(string s) sprint_self =
+{
+	sprint(self, s);
+};
+
+void(string s) sprint_other =
+{
+	sprint(other, s);
+};
+
+void(entity target, string s) sprintln =
+{
+	sprint(target, s);
+	sprint(target, "\n");
+};
+
+void(string s) sprintln_self =
+{
+	sprint(self, s);
+	sprint(self, "\n");
+};
+
+void(string s) sprintln_other =
+{
+	sprint(other, s);
+	sprint(other, "\n");
+};
+
+void(entity who, float f) sprint_ftos = // TODO: slowly get rid of it
+{
+	local string str;
+
+	str = ftos(floor(f));
+	sprint(who, str);
+};
+
+void(float f) bprint_ftos =
+{
+	local string str;
+	str = ftos(floor(f));
+	bprint(str);
+};
+
+void(string f) ip = // TODO: slowly get rid of it
+{
+	sprint(self, f);
+};
+
+float(float n1, float n2) percent =
+{
+	local float a;
+
+	a = rint(((n1 * n2) / 100));
+	return (a);
+};
+
+float() MaxLvl =
+{
+	local entity e;
+	local float maxlvl;
+
+	maxlvl = 0;
+	e = find(world, classname, MOON_PLAYER_CLASSNAME);
+	while (e)
+	{
+		if ((e.lvl > maxlvl))
+		{
+			maxlvl = e.lvl;
+		}
+		e = find(e, classname, MOON_PLAYER_CLASSNAME);
+	}
+	return maxlvl;
+};
+
+void(entity e) AddToQue =
+{
+	local entity z;
+
+	z = spawn();
+	z.origin = e.origin;
+	z.angles = e.angles;
+	setmodel(z, e.model);
+	z.frame = e.frame;
+	z.colormap = e.colormap;
+	z.think = SUB_Remove;
+	z.flags = e.flags;
+	z.movetype = MOVETYPE_TOSS;
+	z.solid = SOLID_NOT;
+	z.velocity = e.velocity;
+	if ((sv_fastmeat == 1))
+	{
+		z.nextthink = ((time + MON_WAVETIME_FAST) + (random() * MON_WAVETIME_FAST));
+	} else
+	if ((sv_fastmeat == -1))
+	{
+		z.nextthink = ((time + MON_WAVETIME_SLOW) + (random() * MON_WAVETIME_SLOW));
+	} else {
+		z.nextthink = ((time + MON_WAVETIME_NORMAL) + (random() * MON_WAVETIME_NORMAL));
+	}
 };

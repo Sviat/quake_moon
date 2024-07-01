@@ -152,7 +152,7 @@ void(entity target, float gain) moon_give_target_gold =
 {
 	target.gold = (target.gold + gain);
 
-	flash_other(target);
+	flash_target(target);
 	sprint(target, "You got {} gold\n", floor_ftos(gain));
 	sound(target, CHAN_ITEM, "moon/items/gold.wav", 1, ATTN_NORM);
 };
@@ -461,7 +461,7 @@ void() health_touch =
 	}
 	sprint(other, "You receive {} health\n", floor_ftos(self.healamount));
 	sound(other, CHAN_ITEM, self.noise, 1, ATTN_NORM);
-	flash_other(other);
+	flash_target(other);
 	self.model = string_null;
 	self.solid = SOLID_NOT;
 	if ((self.healtype == WF_EXTRASIZE))
@@ -531,7 +531,7 @@ void() armor_touch =
 	self.think = SUB_regen;
 	sprint(other, "You got new armor\n");
 	sound(other, CHAN_ITEM, "items/armor1.wav", 1, ATTN_NORM);
-	flash_other(other);
+	flash_target(other);
 	activator = other;
 	SUB_UseTargets();
 };
@@ -655,7 +655,7 @@ void() weapon_touch =
 	}
 	sprint(other, "You got the {}\n", self.netname);
 	sound(other, CHAN_ITEM, "weapons/pkup.wav", WF_DEFEND, ATTN_NORM);
-	flash_other(other);
+	flash_target(other);
 
 	old = other.weapon;
 
@@ -788,7 +788,7 @@ void() ammo_touch =
 	}
 	sprint(other, "\n");
 	sound(other, CHAN_ITEM, "weapons/lock4.wav", WF_DEFEND, ATTN_NORM);
-	flash_other(other);
+	flash_target(other);
 	if ((other.weapon == best))
 	{
 		stemp = self;
@@ -878,7 +878,7 @@ void() powerup_touch =
 		self.think = SUB_regen;
 	}
 	sound(other, CHAN_VOICE, self.noise, WF_DEFEND, ATTN_NORM);
-	flash_other(other);
+	flash_target(other);
 	self.solid = SOLID_NOT;
 	other.items = (other.items | self.items);
 	self.model = string_null;
@@ -1032,7 +1032,7 @@ void() BackpackTouch =
 	}
 	sprint(other, "\n");
 	sound(other, CHAN_ITEM, "weapons/pkup.wav", WF_DEFEND, ATTN_NORM);
-	flash_other(other);
+	flash_target(other);
 	remove(self);
 	self = other;
 	if (!deathmatch)
@@ -3677,7 +3677,7 @@ void() trade_spot =
 	self.free = TRUE;
 	self.classname = "trade_spot";
 	self.solid = SOLID_NOT;
-	self.attack_finished = ((time + H_ROTTEN) + (random() * 15));
+	self.attack_finished = ((time + 1) + (random() * 15));
 	setsize(self, VEC_ORIGIN, VEC_ORIGIN);
 };
 
@@ -3964,55 +3964,6 @@ void() moon_print_skills =
 	}
 	sprint(self, "\n");
 	sprint(self, "---------------------\n");
-};
-
-void(float impulse_code) moon_handle_impulse_skill =
-{
-	if ((self.impulse == MOON_IMPULSE_CODE_PRINTSKILL))
-	{
-		moon_print_skills();
-		return;
-	}
-
-	if ((self.point <= 0))
-	{
-		sprint(self, "no free stat points\n");
-		return;
-	}
-
-	switch(impulse_code)
-	{
-		case MOON_IMPULSE_CODE_UPSKILL_VITALITY:
-			self.point = (self.point - 1);
-			moon_raise_target_vitality(self, 1);
-
-			sprint(self, "upgrade Vitality: {} (", quick_ftos(self.vit));
-			sprint(self, MOON_ITEM_HEALTH_EFFECT, quick_ftos(self.max_health));
-			sprint(self, ")\n");
-			break;
-		case MOON_IMPULSE_CODE_UPSKILL_STRENGTH:
-			self.point = (self.point - 1);
-			self.stre = (self.stre + 1);
-
-			sprint(self, "upgrade Strength: {} (", quick_ftos(self.stre));
-			sprint(self, MOON_ITEM_DAMAGE_EFFECT, quick_ftos((self.stre * MOON_STAT_DAMAGE_PER_STRENGTH) + 100));
-			sprint(self, ")\n");
-			break;
-		case MOON_IMPULSE_CODE_UPSKILL_SANITY:
-		// TODO: implement
-			break;
-		case MOON_IMPULSE_CODE_UPSKILL_INTUITION:
-			// TODO: implement
-			break;
-	}
-
-	if ((self.point <= 0))
-	{
-		if ((self.items & IT_KEY1))
-		{
-			self.items = (self.items - IT_KEY1);
-		}
-	}
 };
 
 void(entity e, float nm) des_scroll =
@@ -5418,34 +5369,128 @@ void() moon_print_cmd_help =
 	sprint(self, "-------------------------------------\n");
 };
 
-void() moonimpulse =
+void(float impulse_code) moon_handle_impulse_stat =
+{
+	if ( self.point <= 0 )
+	{
+		sprint(self, "no free stat points\n");
+		return;
+	}
+
+	switch(impulse_code)
+	{
+		case MOON_IMPULSE_CODE_UPSKILL_VITALITY:
+			self.point = (self.point - 1);
+			moon_raise_target_vitality(self, 1);
+
+			sprint(self, "upgrade Vitality: {} (", quick_ftos(self.vit));
+			sprint(self, MOON_ITEM_HEALTH_EFFECT, quick_ftos(self.max_health));
+			sprint(self, ")\n");
+			break;
+		case MOON_IMPULSE_CODE_UPSKILL_STRENGTH:
+			self.point = (self.point - 1);
+			self.stre = (self.stre + 1);
+
+			sprint(self, "upgrade Strength: {} (", quick_ftos(self.stre));
+			sprint(self, MOON_ITEM_DAMAGE_EFFECT, quick_ftos((self.stre * MOON_STAT_DAMAGE_PER_STRENGTH) + 100));
+			sprint(self, ")\n");
+			break;
+		case MOON_IMPULSE_CODE_UPSKILL_SANITY:
+			// TODO: implement
+			// self.point = (self.point - 1);
+			// moon_raise_target_sanity(self, 1);
+			break;
+		case MOON_IMPULSE_CODE_UPSKILL_INTUITION:
+			// TODO: implement
+			// self.point = (self.point - 1);
+			// self.intu = (self.intu + 1);
+			break;
+	}
+
+	if ( self.point <= 0 )
+	{
+		if ( self.items & IT_KEY1 )
+		{
+			self.items = (self.items - IT_KEY1);
+		}
+	}
+};
+
+void(float impulse_code) moon_handle_impulse_ui =
+{
+	switch(impulse_code)
+	{
+	case MOON_IMPULSE_CODE_PRINT_STAT:
+		moon_print_skills();
+		break;
+	case MOON_IMPULSE_CODE_UPSKILL_VITALITY:
+	case MOON_IMPULSE_CODE_UPSKILL_STRENGTH:
+	case MOON_IMPULSE_CODE_UPSKILL_SANITY:
+		moon_handle_impulse_stat(impulse_code);
+		break;
+	case MOON_IMPULSE_CODE_PRINT_CLI_HELP:
+		moon_print_cmd_help();
+		break;
+	case MOON_IMPULSE_CODE_PRINT_INVENTORY:
+		moon_print_inventory();
+		break;
+	case MOON_IMPULSE_CODE_PRINT_STATUS:
+		moon_print_character_status();
+		break;
+	default:
+		dprint("Unhandled impulse code for CLI UI {}\n", impulse_code);
+	}
+};
+
+void(float impulse_code) moon_handle_impulse_server =
+{
+	if (self.colormap != 1)
+	{
+		return;
+	}
+
+	switch(self.impulse)
+	{
+	case MOON_IMPULSE_CODE_ALWAYSDAY:
+		if (sv_alwaysday == 0)
+		{
+			sv_alwaysday = 1;
+			kex_chat_message_broad(NAME_SERVER, CHAT_COLOR_TECHMSG, "alwaysday enabled\n");
+		} else {
+			sv_alwaysday = 0;
+			kex_chat_message_broad(NAME_SERVER, CHAT_COLOR_TECHMSG, "alwaysday disabled\n");
+		}
+		break;
+	case MOON_IMPULSE_CODE_FASTMEAT:
+		if (sv_fastmeat <= 0)
+		{
+			sv_fastmeat = 1;
+			kex_chat_message_broad(NAME_SERVER, CHAT_COLOR_TECHMSG, "fastmeat enabled\n");
+		} else {
+			sv_fastmeat = 0;
+			kex_chat_message_broad(NAME_SERVER, CHAT_COLOR_TECHMSG, "fastmeat disabled\n");
+		}
+		break;
+	case MOON_IMPULSE_CODE_SLOWMEAT:
+		if (sv_fastmeat >= 0)
+		{
+			sv_fastmeat = -1;
+			kex_chat_message_broad(NAME_SERVER, CHAT_COLOR_TECHMSG, "slo-owmeat enabled\n");
+		} else {
+			sv_fastmeat = 0;
+			kex_chat_message_broad(NAME_SERVER, CHAT_COLOR_TECHMSG, "slo-owmeat disabled\n");
+		}
+		break;
+	default:
+		dprint("Unhandled impulse code for SERVER settings {}\n", impulse_code);
+	}
+};
+
+void(float impulse_code) moon_handle_impulse_client =
 {
 	switch(self.impulse)
 	{
-	case 86:
-		if (self.cl_framtime == 0)
-		{
-			self.cl_framtime = 1;
-			kex_chat_message_self(NAME_SETTINGS, CHAT_COLOR_TECHMSG, "cl_fps enabled\n");
-		} else {
-			self.cl_framtime = 0;
-			kex_chat_message_self(NAME_SETTINGS, CHAT_COLOR_TECHMSG, "cl_fps disabled\n");
-		}
-		break;
-	case 87:
-		if (self.colormap == 1)
-		{
-			if (sv_alwaysday == 0)
-			{
-				sv_alwaysday = 1;
-				kex_chat_message_broad(NAME_SERVER, CHAT_COLOR_TECHMSG, "alwaysday enabled\n");
-			} else {
-				sv_alwaysday = 0;
-				kex_chat_message_broad(NAME_SERVER, CHAT_COLOR_TECHMSG, "alwaysday disabled\n");
-			}
-		}
-		break;
-	case 88:
+	case MOON_IMPULSE_CODE_NOHELP:
 		if (self.cl_nohelp == 0)
 		{
 			self.cl_nohelp = 1;
@@ -5455,56 +5500,58 @@ void() moonimpulse =
 			kex_chat_message_self(NAME_SETTINGS, CHAT_COLOR_TECHMSG, "nohelp disabled\n");
 		}
 		break;
-	case 89:
-		if (self.colormap == 1)
+	case MOON_IMPULSE_CODE_SHOWFPS:
+		if (self.cl_framtime == 0)
 		{
-			if (sv_fastmeat <= 0)
-			{
-				sv_fastmeat = 1;
-				kex_chat_message_broad(NAME_SERVER, CHAT_COLOR_TECHMSG, "fastmeat enabled\n");
-			} else {
-				sv_fastmeat = 0;
-				kex_chat_message_broad(NAME_SERVER, CHAT_COLOR_TECHMSG, "fastmeat disabled\n");
-			}
+			self.cl_framtime = 1;
+			kex_chat_message_self(NAME_SETTINGS, CHAT_COLOR_TECHMSG, "cl_fps enabled\n");
+		} else {
+			self.cl_framtime = 0;
+			kex_chat_message_self(NAME_SETTINGS, CHAT_COLOR_TECHMSG, "cl_fps disabled\n");
 		}
 		break;
-	case 90:
-		if (self.colormap == 1)
-		{
-			if (sv_fastmeat >= 0)
-			{
-				sv_fastmeat = -1;
-				kex_chat_message_broad(NAME_SERVER, CHAT_COLOR_TECHMSG, "slo-owmeat enabled\n");
-			} else {
-				sv_fastmeat = 0;
-				kex_chat_message_broad(NAME_SERVER, CHAT_COLOR_TECHMSG, "slo-owmeat disabled\n");
-			}
-		}
-		break;
-	case 20:
-	case 21:
-	case 22:
-	case 23:
-		moon_handle_impulse_skill(self.impulse);
-		break;
-	case 94:
-		moon_print_inventory();
-		break;
-	case 95:
+	default:
+		dprint("Unhandled impulse code for CLIENT settings {}\n", impulse_code);
+	}
+};
+
+void(float impulse_code) moon_handle_impulse_trace =
+{
+	switch(impulse_code)
+	{
+	case MOON_IMPULSE_CODE_ITEM_PICKUP:
 		moon_wear_item();
 		break;
-	case 96:
-		moon_print_character_status();
-		break;
-	case 97:
+	case MOON_IMPULSE_CODE_ITEM_BUY:
 		moon_buy_item();
 		break;
-	case 98:
+	case MOON_IMPULSE_CODE_ITEM_IDENTIFY:
 		moon_identify_item();
 		break;
-	case 231:
-		moon_print_cmd_help();
-		break;
+	default:
+		dprint("Unhandled impulse code for CLI UI {}\n", impulse_code);
+	}
+};
+
+void() moonimpulse =
+{
+	if ( (MOON_IMPULSE_CODE_FIRST_CLI_UI <= self.impulse) && (self.impulse <= MOON_IMPULSE_CODE_LAST_CLI_UI) )
+	{
+		moon_handle_impulse_ui(self.impulse);
+	} else
+	if ( (MOON_IMPULSE_CODE_FIRST_SETTING_SERVER <= self.impulse) && (self.impulse <= MOON_IMPULSE_CODE_LAST_SETTING_SERVER) )
+	{
+		moon_handle_impulse_server(self.impulse);
+	} else
+	if ( (MOON_IMPULSE_CODE_FIRST_SETTING_CLIENT <= self.impulse) && (self.impulse <= MOON_IMPULSE_CODE_LAST_SETTING_CLIENT) )
+	{
+		moon_handle_impulse_client(self.impulse);
+	} else
+	if ( (MOON_IMPULSE_CODE_FIRST_TRACE <= self.impulse) && (self.impulse <= MOON_IMPULSE_CODE_LAST_TRACE) )
+	{
+		moon_handle_impulse_trace(self.impulse);
+	} else {
+		dprint("Impulse code {} out of Project Moon's range {}-{}\n", self.impulse, MOON_IMPULSE_CODE_FIRST, MOON_IMPULSE_CODE_LAST);
 	}
 
 	if ((self.prepared == FALSE))
@@ -8869,7 +8916,7 @@ void() UpgradeTouch =
 	}
 
 	sound(other, CHAN_ITEM, "moon/items/book.wav", 1, ATTN_NORM);
-	flash_other(other);
+	flash_target(other);
 	remove(self);
 };
 
@@ -8924,7 +8971,7 @@ void() HPTouch =
 	}
 	T_Heal(other, self.healamount, WF_NORMAL);
 	sound(other, CHAN_ITEM, "moon/items/potion.wav", 1, ATTN_NORM);
-	flash_other(other);
+	flash_target(other);
 	remove(self);
 };
 
@@ -8951,7 +8998,7 @@ void() ELTouch =
 
 	sprint(other, "You get {}\n", self.netname);
 	sound(other, CHAN_ITEM, "moon/items/potion.wav", 1, ATTN_NORM);
-	flash_other(other);
+	flash_target(other);
 	remove(self);
 };
 
@@ -9215,7 +9262,7 @@ void() SCT = // Finish him
 		}
 	}
 	sound(other, CHAN_ITEM, "moon/items/scroll.wav", CHSCAM_ON, ATTN_NORM);
-	flash_other(other);
+	flash_target(other);
 	remove(self);
 };
 
@@ -9266,7 +9313,7 @@ void() ShardTouch =
 		}
 	}
 	sound(other, CHAN_ITEM, "moon/items/shard.wav", 1, ATTN_NORM);
-	flash_other(other);
+	flash_target(other);
 	remove(self);
 };
 
@@ -9353,7 +9400,7 @@ void() MentatTouch =
 		return;
 	}
 	sound(other, CHAN_ITEM, "moon/items/drug.wav", CHSCAM_ON, ATTN_NORM);
-	flash_other(other);
+	flash_target(other);
 
 	switch(self.prefix)
 	{

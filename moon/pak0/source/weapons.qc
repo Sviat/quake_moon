@@ -1303,24 +1303,12 @@ void() CycleWeaponReverseCommand =
 
 void() ServerflagsCommand =
 {
-	serverflags = ((serverflags * H_MEGA) + CHSCAM_ON);
-};
-
-void() QuadCheat =
-{
-	if ((deathmatch || coop))
-	{
-		return;
-	}
-	self.super_time = CHSCAM_ON;
-	self.super_damage_finished = (time + MON_CAMPTIME);
-	self.items = (self.items | IT_QUAD);
-	dprint("quad cheat\n");
+	serverflags = ((serverflags * 2) + 1);
 };
 
 void() ImpulseCommands =
 {
-	if (self.impulse == 1)
+	if (self.impulse == 0)
 	{
 		return;
 	}
@@ -1344,10 +1332,6 @@ void() ImpulseCommands =
 	if ((self.impulse == 12))
 	{
 		CycleWeaponReverseCommand();
-	}
-	if ((self.impulse == 255))
-	{
-		QuadCheat();
 	}
 	moonimpulse();
 	self.impulse = 0;

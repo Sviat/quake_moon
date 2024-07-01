@@ -5348,18 +5348,18 @@ void() Prepare =
 	}
 	sprint(self, "ReProjet MOON: KekPort v0.24k on \sKEX Engine\s by \sSanctus-Susanin\s\n");
 	sprint(self, "Project MOON. v0.21 beta. Created by \s3d[Power]\s http://3dpower.org\n");
-	sprint(self, "type \schelp\s command to view info about other console commands\n"); // ³äÛÐï÷åòÝ\nhttp://www.3dpower.org\ntype ãèåìð command to view info about console commands\n");
+	sprint(self, "type pm_help command to learn about MOON console commands\n");
 };
 
 void() moon_print_cmd_help =
 {
-	sprint(self, "======= help on game commands =======\n"); // èåìð ïîº ãïîóïìå ãïííáîäó ===\n");
-	sprint(self, "use `character` or `c` command to view charaster screen.\n"); // ãèáòáóôåò or ã command to view charaster screen.\n");
-	sprint(self, "use `buy` command to buy some item in the shop.\n"); // âõù command to buy some item in the shop.\n");
-	sprint(self, "use `identify` command to get a description of item in the shop.\n"); // éîäåæù command to get a description of item in the shop.\n");
-	sprint(self, "use `stats` command to view screen with your stats.\n"); // óôáôó command to view screen with your stats.\n");
-	sprint(self, "use `use` command pick up some magical item.\n"); // õóå command pick up some magical item.\n");
-	sprint(self, "use `inventory` or `i` command to view inventory screen.\n"); // éîöåîôïòù or é command to view inventory screen.\n");
+	sprint(self, "======= help on game commands =======\n");
+	sprint(self, "use `character` or `c` command to view charaster screen.\n");
+	sprint(self, "use `buy` command to buy some item in the shop.\n");
+	sprint(self, "use `identify` command to get a description of item in the shop.\n");
+	sprint(self, "use `stats` command to view screen with your stats.\n");
+	sprint(self, "use `use` command pick up some magical item.\n");
+	sprint(self, "use `inventory` or `i` command to view inventory screen.\n");
 	sprint(self, "use `cl_fps` to show Framerate\n");
 	sprint(self, "use `fastmeat` or `slowmeat` to grind faster or slower\n");
 	sprint(self, "use `alwaysday` to shine bright\n");
@@ -5367,6 +5367,18 @@ void() moon_print_cmd_help =
 	sprint(self, "use `map moon4` or `restartserver` to restart this map\n");
 	sprint(self, "use `nohelp` to reduce amount of hints\n");
 	sprint(self, "-------------------------------------\n");
+};
+
+void() QuadCheat =
+{
+	if ((deathmatch || coop))
+	{
+		return;
+	}
+	self.super_time = 1;
+	self.super_damage_finished = (time + MON_CAMPTIME);
+	self.items = (self.items | IT_QUAD);
+	dprint("quad cheat\n");
 };
 
 void(float impulse_code) moon_handle_impulse_stat =
@@ -5481,6 +5493,9 @@ void(float impulse_code) moon_handle_impulse_server =
 			kex_chat_message_broad(NAME_SERVER, CHAT_COLOR_TECHMSG, "slo-owmeat disabled\n");
 		}
 		break;
+	case MOON_IMPULSE_CODE_CHEAT_QUAD:
+		QuadCheat();
+		break;
 	default:
 		dprint("Unhandled impulse code for SERVER settings {}\n", impulse_code);
 	}
@@ -5535,6 +5550,8 @@ void(float impulse_code) moon_handle_impulse_trace =
 
 void() moonimpulse =
 {
+	if ( self.impulse == MOON_IMPULSE_CODE_NOOP ) { return; }
+
 	if ( (MOON_IMPULSE_CODE_FIRST_CLI_UI <= self.impulse) && (self.impulse <= MOON_IMPULSE_CODE_LAST_CLI_UI) )
 	{
 		moon_handle_impulse_ui(self.impulse);

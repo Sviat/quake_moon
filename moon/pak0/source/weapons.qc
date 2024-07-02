@@ -989,89 +989,64 @@ void() W_ChangeWeapon =
 	local float fl;
 
 	it = self.items;
-	am = WF_NORMAL;
-	if ((self.impulse == CHSCAM_ON))
+	am = 0;
+	switch(self.impulse)
 	{
+	case 1:
 		fl = IT_AXE;
-	}
-	else
-	{
-		if ((self.impulse == H_MEGA))
+		break;
+	case 2:
+		fl = IT_SHOTGUN;
+		if ((self.ammo_shells < 1))
 		{
-			fl = IT_SHOTGUN;
-			if ((self.ammo_shells < CHSCAM_ON))
-			{
-				am = CHSCAM_ON;
-			}
+			am = 1;
 		}
-		else
+		break;
+	case 3:
+		fl = IT_SUPER_SHOTGUN;
+		if ((self.ammo_shells < 2))
 		{
-			if ((self.impulse == LOGIC_FINDDEFEND))
-			{
-				fl = IT_SUPER_SHOTGUN;
-				if ((self.ammo_shells < H_MEGA))
-				{
-					am = CHSCAM_ON;
-				}
-			}
-			else
-			{
-				if ((self.impulse == LOGIC_DEFEND))
-				{
-					fl = IT_NAILGUN;
-					if ((self.ammo_nails < CHSCAM_ON))
-					{
-						am = CHSCAM_ON;
-					}
-				}
-				else
-				{
-					if ((self.impulse == SVC_SETVIEWPORT))
-					{
-						fl = IT_SUPER_NAILGUN;
-						if ((self.ammo_nails < H_MEGA))
-						{
-							am = CHSCAM_ON;
-						}
-					}
-					else
-					{
-						if ((self.impulse == LOGIC_HUNTENEMY))
-						{
-							fl = IT_GRENADE_LAUNCHER;
-							if ((self.ammo_rockets < CHSCAM_ON))
-							{
-								am = CHSCAM_ON;
-							}
-						}
-						else
-						{
-							if ((self.impulse == TE_WIZSPIKE))
-							{
-								fl = IT_ROCKET_LAUNCHER;
-								if ((self.ammo_rockets < CHSCAM_ON))
-								{
-									am = CHSCAM_ON;
-								}
-							}
-							else
-							{
-								if ((self.impulse == KEY_MOVERIGHT))
-								{
-									fl = IT_LIGHTNING;
-									if ((self.ammo_cells < CHSCAM_ON))
-									{
-										am = CHSCAM_ON;
-									}
-								}
-							}
-						}
-					}
-				}
-			}
+			am = 1;
 		}
+		break;
+	case 4:
+		fl = IT_NAILGUN;
+		if ((self.ammo_nails < 1))
+		{
+			am = 1;
+		}
+		break;
+	case 5:
+		fl = IT_SUPER_NAILGUN;
+		if ((self.ammo_nails < 2))
+		{
+			am = 1;
+		}
+		break;
+	case 6:
+		fl = IT_GRENADE_LAUNCHER;
+		if ((self.ammo_rockets < 1))
+		{
+			am = 1;
+		}
+		break;
+	case 7:
+		fl = IT_ROCKET_LAUNCHER;
+		if ((self.ammo_rockets < 1))
+		{
+			am = 1;
+		}
+		break;
+	case 8:
+		fl = IT_LIGHTNING;
+		if ((self.ammo_cells < 1))
+		{
+			am = 1;
+		}
+		break;
 	}
-	self.impulse = WF_NORMAL;
+
+	self.impulse = 0;
 	if (!(self.items & fl))
 	{
 		sprint(self, "no weapon.\n");
@@ -1308,11 +1283,6 @@ void() ServerflagsCommand =
 
 void() ImpulseCommands =
 {
-	if (self.impulse == 0)
-	{
-		return;
-	}
-
 	if (((self.impulse >= 1) && (self.impulse <= 8)))
 	{
 		W_ChangeWeapon();

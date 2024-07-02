@@ -545,16 +545,7 @@ void() PlayerDead =
 	if ((self.classname == "guard"))
 	{
 		self.think = SUB_Remove;
-		if ((sv_fastmeat == 1))
-		{
-			self.nextthink = ((time + MON_WAVETIME_FAST) + (random() * MON_WAVETIME_FAST));
-		} else
-		if ((sv_fastmeat == -1))
-		{
-			self.nextthink = ((time + MON_WAVETIME_SLOW) + (random() * MON_WAVETIME_SLOW));
-		} else {
-			self.nextthink = ((time + MON_WAVETIME_NORMAL) + (random() * MON_WAVETIME_NORMAL));
-		}
+		self.nextthink = time + moon_get_spawn_delay();
 	}
 };
 
@@ -597,18 +588,9 @@ void(string gibname, float dm) ThrowGib =
 	new.avelocity_x = (random() * 600);
 	new.avelocity_y = (random() * 600);
 	new.avelocity_z = (random() * 600);
-	new.think = SUB_Remove;
 	new.ltime = time;
-	if ((sv_fastmeat == 1))
-	{
-		new.nextthink = ((time + MON_WAVETIME_FAST) + (random() * MON_WAVETIME_FAST));
-	} else
-	if ((sv_fastmeat == -1))
-	{
-		new.nextthink = ((time + MON_WAVETIME_SLOW) + (random() * MON_WAVETIME_SLOW));
-	} else {
-		new.nextthink = ((time + 7) + (random() * 7));
-	}
+	new.think = SUB_Remove;
+	new.nextthink = time + moon_get_spawn_delay(); // default (non-fast, non-slow) was 7+rnd*7, now 10+rnd*10
 	new.frame = WF_NORMAL;
 	new.flags = WF_NORMAL;
 };
@@ -644,16 +626,7 @@ void(string gibname, float dm) FakeThrowHead =
 	setsize(e, '-16 -16 0', '16 16 3');
 	e.avelocity = (crandom() * '0 600 0');
 	e.think = SUB_Remove;
-	if ((sv_fastmeat == 1))
-	{
-		e.nextthink = ((time + MON_WAVETIME_FAST) + (random() * MON_WAVETIME_FAST));
-	} else
-	if ((sv_fastmeat == -1))
-	{
-		e.nextthink = ((time + MON_WAVETIME_SLOW) + (random() * MON_WAVETIME_SLOW));
-	} else {
-		e.nextthink = ((time + 7) + (random() * 7));
-	}
+	e.nextthink = time + moon_get_spawn_delay(); // default (non-fast, non-slow) was 7+rnd*7, now 10+rnd*10
 };
 
 void() GibPlayer =
@@ -677,24 +650,13 @@ void() GibPlayer =
 	if ((random() < MON_BACKTIME))
 	{
 		sound(self, CHAN_VOICE, "player/gib.wav", CHSCAM_ON, ATTN_NONE);
-	}
-	else
-	{
+	} else {
 		sound(self, CHAN_VOICE, "player/udeath.wav", CHSCAM_ON, ATTN_NONE);
 	}
 	if ((self.classname == MOON_GUARD_CLASSNAME))
 	{
 		self.think = SUB_Remove;
-		if ((sv_fastmeat == 1))
-		{
-			self.nextthink = ((time + MON_WAVETIME_FAST) + (random() * MON_WAVETIME_FAST));
-		} else
-		if ((sv_fastmeat == -1))
-		{
-			self.nextthink = ((time + MON_WAVETIME_SLOW) + (random() * MON_WAVETIME_SLOW));
-		} else {
-			self.nextthink = ((time + MON_WAVETIME_NORMAL) + (random() * MON_WAVETIME_NORMAL));
-		}
+		self.nextthink = time + moon_get_spawn_delay();
 	}
 };
 

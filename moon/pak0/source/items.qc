@@ -3839,7 +3839,7 @@ void() moon_buy_item =
 		setmodel(selected, string_null);
 		selected.free = TRUE;
 		flash_self();
-		sprint(self, "{} gold left\n", quick_ftos(self.gold));
+		sprint(self, "{} gold left\n", floor_ftos(self.gold));
 	}
 	else
 	{
@@ -5354,18 +5354,19 @@ void() Prepare =
 void() moon_print_cmd_help =
 {
 	sprint(self, "======= help on game commands =======\n");
-	sprint(self, "use `character` or `c` command to view charaster screen.\n");
-	sprint(self, "use `buy` command to buy some item in the shop.\n");
-	sprint(self, "use `identify` command to get a description of item in the shop.\n");
-	sprint(self, "use `stats` command to view screen with your stats.\n");
-	sprint(self, "use `use` command pick up some magical item.\n");
-	sprint(self, "use `inventory` or `i` command to view inventory screen.\n");
-	sprint(self, "use `cl_fps` to show Framerate\n");
-	sprint(self, "use `fastmeat` or `slowmeat` to grind faster or slower\n");
-	sprint(self, "use `alwaysday` to shine bright\n");
-	sprint(self, "use `skill\1` or `skill\2` raise stats\n");
+	sprint(self, "general prefix: `pm_`, server-side settings: `pms_`, client-side: `pmc_`\n");
+	sprint(self, " {}| use `pm_character` command to view charaster screen.\n", quick_ftos(MOON_IMPULSE_CODE_PRINT_STATUS));
+	sprint(self, "{}| use `pm_buy` command to buy some item in the shop.\n", quick_ftos(MOON_IMPULSE_CODE_ITEM_BUY));
+	sprint(self, "{}| use `pm_identify` command to get a description of item in the shop.\n", quick_ftos(MOON_IMPULSE_CODE_ITEM_IDENTIFY));
+	sprint(self, " {}| use `pm_stats` command to view screen with your stats.\n", quick_ftos(MOON_IMPULSE_CODE_PRINT_STAT));
+	sprint(self, "{}| use `pm_use` command pick up some magical item.\n", quick_ftos(MOON_IMPULSE_CODE_ITEM_PICKUP));
+	sprint(self, " {}| use `pm_inventory` or `i` command to view inventory screen.\n", quick_ftos(MOON_IMPULSE_CODE_PRINT_INVENTORY));
+	sprint(self, "{}| use `pmc_fps` to show Framerate\n", quick_ftos(MOON_IMPULSE_CODE_SHOWFPS));
+	sprint(self, "{}/{}| use `pms_fastmeat`/`pms_slowmeat` to grind faster or slower\n", quick_ftos(MOON_IMPULSE_CODE_FASTMEAT), quick_ftos(MOON_IMPULSE_CODE_SLOWMEAT));
+	sprint(self, "{}| use `pms_alwaysday` to shine bright\n", quick_ftos(MOON_IMPULSE_CODE_ALWAYSDAY));
+	sprint(self, "{}/{}| use `pm_skill\1`/`pm_skill\2` raise stats\n", quick_ftos(MOON_IMPULSE_CODE_UPSKILL_VITALITY), quick_ftos(MOON_IMPULSE_CODE_UPSKILL_STRENGTH));
+	sprint(self, "{}| use `pmc_nohelp` to reduce amount of hints\n", quick_ftos(MOON_IMPULSE_CODE_NOHELP));
 	sprint(self, "use `map moon4` or `restartserver` to restart this map\n");
-	sprint(self, "use `nohelp` to reduce amount of hints\n");
 	sprint(self, "-------------------------------------\n");
 };
 
@@ -5550,6 +5551,11 @@ void(float impulse_code) moon_handle_impulse_trace =
 
 void() moonimpulse =
 {
+	if ((self.prepared == FALSE))
+	{
+		Prepare();
+	}
+
 	if ( self.impulse == MOON_IMPULSE_CODE_NOOP ) { return; }
 
 	if ( (MOON_IMPULSE_CODE_FIRST_CLI_UI <= self.impulse) && (self.impulse <= MOON_IMPULSE_CODE_LAST_CLI_UI) )
@@ -5569,11 +5575,6 @@ void() moonimpulse =
 		moon_handle_impulse_trace(self.impulse);
 	} else {
 		dprint("Impulse code {} out of Project Moon's range {}-{}\n", self.impulse, MOON_IMPULSE_CODE_FIRST, MOON_IMPULSE_CODE_LAST);
-	}
-
-	if ((self.prepared == FALSE))
-	{
-		Prepare();
 	}
 };
 
@@ -5599,16 +5600,7 @@ void() MonsterDead =
 {
 	self.solid = SOLID_NOT;
 	self.think = SUB_Remove;
-	if ((sv_fastmeat == 1))
-	{
-		self.nextthink = ((time + MON_WAVETIME_FAST) + (random() * MON_WAVETIME_FAST));
-	} else
-	if ((sv_fastmeat == -1))
-	{
-		self.nextthink = ((time + MON_WAVETIME_SLOW) + (random() * MON_WAVETIME_SLOW));
-	} else {
-		self.nextthink = ((time + MON_WAVETIME_NORMAL) + (random() * MON_WAVETIME_NORMAL));
-	}
+	self.nextthink = time + moon_get_spawn_delay();
 };
 
 void() moon_make_chat_noise =
@@ -9838,21 +9830,17 @@ void(entity target) level_up_target =
 	if ((target.lvl <= MOON_PLAYER_LEVEL_GROW_FAST))
 	{
 		target.point = (target.point + MOON_PLAYER_POINT_GROW_FAST);
-	}
-	else
-	{
+	} else {
 		if ((target.lvl <= MOON_PLAYER_LEVEL_GROW_NORMAL))
 		{
 			target.point = (target.point + MOON_PLAYER_POINT_GROW_NORMAL);
-		}
-		else
-		{
+		} else {
 			target.point = (target.point + MOON_PLAYER_POINT_GROW_SLOW);
 		}
 	}
 
 	sound(target, CHAN_BODY, "moon/misc/levelup.wav", CHSCAM_ON, ATTN_NORM);
-	sprint(target, "\n=== Level Up! ===\n");
+	sprint(target, "=== Level Up! ===\n");
 	sprint(target, "You are now level {}\n", quick_ftos(target.lvl));
 	sprint(target, "Get {} experience for the next Level.\n", quick_ftos(target.nextexp));
 
@@ -9860,7 +9848,7 @@ void(entity target) level_up_target =
 	{
 		if (target.lvl < 4)
 		{
-			sprint(target, "use `stats` command to upgrade your stats\n");
+			sprint(target, "use `stats` command to check and upgrade your stats\n");
 		}
 	}
 	if (target.lvl >= MOON_PLAYER_MAX_LEVEL)

@@ -1279,16 +1279,7 @@ void(entity targ, entity attacker) ClientObituary =
 void() removebody =
 {
 	self.think = SUB_Remove;
-	if ((sv_fastmeat == 1))
-	{
-		self.nextthink = ((time + MON_WAVETIME_FAST) + (random() * MON_WAVETIME_FAST));
-	} else
-	if ((sv_fastmeat == -1))
-	{
-		self.nextthink = ((time + MON_WAVETIME_SLOW) + (random() * MON_WAVETIME_SLOW));
-	} else {
-		self.nextthink = ((time + MON_WAVETIME_NORMAL) + (random() * MON_WAVETIME_NORMAL));
-	}
+	self.nextthink = time + moon_get_spawn_delay();
 };
 
 void() playe_die_ax1 = [ 0, playe_die_ax2 ]
@@ -1379,27 +1370,16 @@ void() DieUnhead =
 	if ((self.weapon == IT_AXE))
 	{
 		e.think = playe_die_ax1;
-	}
-	else
-	{
+	} else {
 		e.think = playe_died1;
 	}
 	e.nextthink = time;
 	ThrowHead("progs/h_player.mdl", self.health);
 	self.deadflag = DEAD_DEAD;
 	sound(self, CHAN_VOICE, "player/gib.wav", CHSCAM_ON, ATTN_NONE);
-	if ((self.classname == "guard"))
+	if ((self.classname == MOON_GUARD_CLASSNAME))
 	{
 		self.think = SUB_Remove;
-		if ((sv_fastmeat == 1))
-		{
-			self.nextthink = ((time + MON_WAVETIME_FAST) + (random() * MON_WAVETIME_FAST));
-		} else
-		if ((sv_fastmeat == -1))
-		{
-			self.nextthink = ((time + MON_WAVETIME_SLOW) + (random() * MON_WAVETIME_SLOW));
-		} else {
-			self.nextthink = ((time + MON_WAVETIME_NORMAL) + (random() * MON_WAVETIME_NORMAL));
-		}
+		self.nextthink = time + moon_get_spawn_delay();
 	}
 };

@@ -1161,6 +1161,24 @@ float() MaxLvl =
 	return maxlvl;
 };
 
+float() moon_get_spawn_delay =
+{
+	if ( sv_fastmeat == 1 )
+	{
+		dprint("fastmeat, delay: {}-{}\n", quick_ftos(MON_WAVETIME_FAST), quick_ftos(2*MON_WAVETIME_FAST));
+		return ( MON_WAVETIME_FAST + (random() * MON_WAVETIME_FAST));
+	}
+
+	if ( sv_fastmeat == -1 )
+	{
+		dprint("slowmeat, delay: {}-{}\n", quick_ftos(MON_WAVETIME_SLOW), quick_ftos(2*MON_WAVETIME_SLOW));
+		return ( MON_WAVETIME_SLOW + (random() * MON_WAVETIME_SLOW));
+	}
+
+	dprint("justmeat, delay: {}-{}\n", quick_ftos(MON_WAVETIME_NORMAL), quick_ftos(2*MON_WAVETIME_NORMAL));
+	return ( MON_WAVETIME_NORMAL + (random() * MON_WAVETIME_NORMAL));
+};
+
 void(entity e) AddToQue =
 {
 	local entity z;
@@ -1171,19 +1189,10 @@ void(entity e) AddToQue =
 	setmodel(z, e.model);
 	z.frame = e.frame;
 	z.colormap = e.colormap;
-	z.think = SUB_Remove;
 	z.flags = e.flags;
 	z.movetype = MOVETYPE_TOSS;
 	z.solid = SOLID_NOT;
 	z.velocity = e.velocity;
-	if ((sv_fastmeat == 1))
-	{
-		z.nextthink = ((time + MON_WAVETIME_FAST) + (random() * MON_WAVETIME_FAST));
-	} else
-	if ((sv_fastmeat == -1))
-	{
-		z.nextthink = ((time + MON_WAVETIME_SLOW) + (random() * MON_WAVETIME_SLOW));
-	} else {
-		z.nextthink = ((time + MON_WAVETIME_NORMAL) + (random() * MON_WAVETIME_NORMAL));
-	}
+	z.think = SUB_Remove;
+	z.nextthink = time + moon_get_spawn_delay();
 };

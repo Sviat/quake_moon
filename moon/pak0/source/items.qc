@@ -332,7 +332,7 @@ void(entity target, float value) moon_raise_target_max_health =
 	target.max_health = clamp(target.max_health, CONST_QC_DISPLAY_MAX);
 	if (value > 0)
 	{
-		T_Heal(other, value, 0);
+		T_Heal(target, value, 0);
 	} else {
 		if (target.max_health < MOON_STAT_MAXHEALTH_MIN)
 		{
@@ -447,14 +447,14 @@ void() health_touch =
 		{
 			return;
 		}
-		if (!T_Heal(other, self.healamount, WF_DEFEND))
+		if (!T_Heal(other, self.healamount, 1))
 		{
 			return;
 		}
 	}
 	else
 	{
-		if (!T_Heal(other, self.healamount, WF_NORMAL))
+		if (!T_Heal(other, self.healamount, 0))
 		{
 			return;
 		}
@@ -2845,7 +2845,7 @@ void() buy_goody =
 				}
 				if ((selected.healtype == H_MEGA))
 				{
-					T_Heal(self, selected.healamount, H_ROTTEN);
+					T_Heal(self, selected.healamount, 1);
 					if (!(self.items & IT_SUPERHEALTH))
 					{
 						mega = spawn();
@@ -2861,19 +2861,15 @@ void() buy_goody =
 			{
 				if ((selected.netname == "goody_elixir"))
 				{
-					sprint(self, "You bought ");
-					sprint(self, selected.targetname);
-					sprint(self, "\n");
+					sprint(self, "You bought {}\n", selected.targetname);
 					sound(self, CHAN_ITEM, selected.noise1, H_ROTTEN, ATTN_NORM);
-					if ((selected.healtype == WF_NORMAL))
+					if ((selected.healtype == 0))
 					{
-						self.vit = (self.vit + H_ROTTEN);
-						self.max_health = (self.max_health + H_MEGA);
-						T_Heal(self, H_MEGA, WF_NORMAL);
+						moon_raise_target_vitality(self, MOON_ELIXIR_VIT_VALUE);
 					}
-					if ((selected.healtype == H_ROTTEN))
+					if ((selected.healtype == 1))
 					{
-						self.stre = (self.stre + H_ROTTEN);
+						self.stre = (self.stre + MOON_ELIXIR_STR_VALUE);
 					}
 				}
 				else
@@ -3737,13 +3733,13 @@ void() moon_buy_item =
 					{
 						return;
 					}
-					T_Heal(self, selected.healamount, WF_NORMAL);
+					T_Heal(self, selected.healamount, 0);
 				}
 				else
 				{
 					if ((selected.healtype == H_MEGA))
 					{
-						T_Heal(self, selected.healamount, H_ROTTEN);
+						T_Heal(self, selected.healamount, 1);
 						if (!(self.items & IT_SUPERHEALTH))
 						{
 							mega = spawn();
@@ -4216,14 +4212,12 @@ void() Cast_Heal =
 	eff = (15 + (self.sc_heal_lvl * TE_LAVASPLASH));
 	if ((self.mana < rm))
 	{
-		ip("this spell requies ");
-		sprint_ftos(self, rm);
-		ip(" mana\n");
+		sprint(self, "this spell requies {} mana\n", floor_ftos(rm));
 		return;
 	}
 	if ((self.health >= self.max_health))
 	{
-		ip("your life already at maximum\n");
+		sprint(self, "your life already at maximum\n");
 		return;
 	}
 	if ((self.scroll_time > time))
@@ -4231,11 +4225,11 @@ void() Cast_Heal =
 		return;
 	}
 	//sound(self, CHAN_VOICE, "moon/magic/m_heal.wav", H_ROTTEN, ATTN_NORM); // missing file
-	T_Heal(self, eff, WF_NORMAL);
+	T_Heal(self, eff, 0);
 	self.mana = (self.mana - rm);
-	if ((self.mana < WF_NORMAL))
+	if ((self.mana < 0))
 	{
-		self.mana = WF_NORMAL;
+		self.mana = 0;
 	}
 	self.scroll_heal_eff = (time + MON_BACKTIME);
 	self.scroll_time = (time + MON_BACKTIME);
@@ -5877,7 +5871,7 @@ void() bot_fire = // Works - dont touch
 			}
 		}
 	}
-	if ((self.items & IT_LIGHTNING))
+	if ((self.items & IT_ROCKET_LAUNCHER))
 	{
 		self.shootframe = H_MEGA;
 		self.walkframe = WF_NORMAL;
@@ -8978,7 +8972,7 @@ void() HPTouch =
 	} else {
 		sprint(other, "You wasted {}\n", self.netname);
 	}
-	T_Heal(other, self.healamount, WF_NORMAL);
+	T_Heal(other, self.healamount, 0);
 	sound(other, CHAN_ITEM, "moon/items/potion.wav", 1, ATTN_NORM);
 	flash_target(other);
 	remove(self);

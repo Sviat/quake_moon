@@ -404,6 +404,73 @@ void() StartItem =
 	self.think = PlaceItem;
 };
 
+float(entity emitter, float track) moon_walkman_play = // return track length
+{
+	switch (track)
+	{
+	case 0:
+		sound(emitter, MOON_WALKMAN_CHANNEL, "misc/null.wav", 1, ATTN_NORM);
+		return 0;
+	case 1:
+		sound(emitter, MOON_WALKMAN_CHANNEL, "music/bpm/01_judgement.wav", MOON_WALKMAN_VOLUME_MUSIC, MOON_WALKMAN_ATTEN_MUSIC);
+		return 316;
+	case 2:
+		sound(emitter, MOON_WALKMAN_CHANNEL, "music/bpm/02_the_rhytm_king.wav", MOON_WALKMAN_VOLUME_MUSIC, MOON_WALKMAN_ATTEN_MUSIC);
+		return 363;
+	case 3:
+		sound(emitter, MOON_WALKMAN_CHANNEL, "music/bpm/03_the_crypt.wav", MOON_WALKMAN_VOLUME_MUSIC, MOON_WALKMAN_ATTEN_MUSIC);
+		return 297;
+	case 4:
+		sound(emitter, MOON_WALKMAN_CHANNEL, "music/bpm/04_corruption.wav", MOON_WALKMAN_VOLUME_MUSIC, MOON_WALKMAN_ATTEN_MUSIC);
+		return 294;
+	case 5:
+		sound(emitter, MOON_WALKMAN_CHANNEL, "music/bpm/05_depths_of_helheim.wav", MOON_WALKMAN_VOLUME_MUSIC, MOON_WALKMAN_ATTEN_MUSIC);
+		return 382;
+	case 6:
+		sound(emitter, MOON_WALKMAN_CHANNEL, "music/bpm/12_yggdrasil_roots.wav", MOON_WALKMAN_VOLUME_MUSIC, MOON_WALKMAN_ATTEN_MUSIC);
+		return 365;
+	case 7:
+		sound(emitter, MOON_WALKMAN_CHANNEL, "music/bpm/07_machinations.wav", MOON_WALKMAN_VOLUME_MUSIC, MOON_WALKMAN_ATTEN_MUSIC);
+		return 286;
+	case 8:
+		sound(emitter, MOON_WALKMAN_CHANNEL, "music/bpm/08_into_asgard.wav", MOON_WALKMAN_VOLUME_MUSIC, MOON_WALKMAN_ATTEN_MUSIC);
+		return 348;
+	case 9:
+		sound(emitter, MOON_WALKMAN_CHANNEL, "music/bpm/09_paradox.wav", MOON_WALKMAN_VOLUME_MUSIC, MOON_WALKMAN_ATTEN_MUSIC);
+		return 275;
+	case 10:
+		sound(emitter, MOON_WALKMAN_CHANNEL, "music/bpm/10_fight_of_the_valkyrie.wav", MOON_WALKMAN_VOLUME_MUSIC, MOON_WALKMAN_ATTEN_MUSIC);
+		return 416;
+	case 11:
+		sound(emitter, MOON_WALKMAN_CHANNEL, "music/bpm/11_muninn_arrmoury.wav", MOON_WALKMAN_VOLUME_SHOP, MOON_WALKMAN_ATTEN_SHOP);
+		return 112;
+	case 12:
+		sound(emitter, MOON_WALKMAN_CHANNEL, "music/bpm/06_huginn_shop.wav", MOON_WALKMAN_VOLUME_SHOP, MOON_WALKMAN_ATTEN_SHOP);
+		return 88;
+	default:
+		return 0;
+	}
+};
+
+void(entity emitter) moon_walkman_stop =
+{
+	moon_walkman_play(emitter, 0);
+}
+
+float(entity emitter) moon_walkman_start_music_gate =
+{
+	local float track;
+	track = random_int(1, 10);
+	return moon_walkman_play(emitter, track);
+}
+
+float(entity emitter) moon_walkman_start_music_shop =
+{
+	local float track;
+	track = random_int(11, 12);
+	return moon_walkman_play(emitter, track);
+}
+
 void() item_health =
 {
 	self.touch = health_touch;
@@ -1441,7 +1508,7 @@ void() do_earthquake =
 			{
 				if (((self.attack_finished - LOGIC_PATROL) > time))
 				{
-					sound(e, CHAN_AUTO, "moon/ambient/quake.wav", H_ROTTEN, ATTN_NORM);
+					sound(e, CHAN_AUTO, "moon/ambient/quake.wav", 1, ATTN_NORM);
 				}
 			}
 			e.flags = (e.flags - FL_ONGROUND);
@@ -1474,12 +1541,12 @@ void(float dl, float el) earthquake = // TODO: extract constants for tuning
 	e.attack_finished = ((time + dl) + (random() * dl));
 };
 
-void() misc_head = // WTF IS THAT, UNUSED?!
+void() misc_head = // need to find classname with same string
 {
 	setmodel(self, self.netname);
 };
 
-void() flr_think = // WTF IS THAT, UNUSED?!
+void() flr_think =
 {
 	if ((sv_alwaysday == H_ROTTEN))
 	{
@@ -1570,7 +1637,7 @@ void() flr_think = // WTF IS THAT, UNUSED?!
 	self.think = flr_think;
 };
 
-void() flr = // WTF IS THAT, UNUSED?!
+void() flr = // need to find classname with same string
 {
 	lightstyle(KEY_MOVEBACK, "n");
 	self.count = H_ROTTEN;
@@ -2223,7 +2290,7 @@ void() PlaceArmor =
 	r = random();
 	if ((r < 0.36))
 	{
-		e.skin = WF_NORMAL;
+		e.skin = 0;
 		e.armorvalue = (50 + rint((random() * 50)));
 		e.armortype = 0.3;
 		e.items = IT_ARMOR1;
@@ -2233,7 +2300,7 @@ void() PlaceArmor =
 	{
 		if ((r < 0.7))
 		{
-			e.skin = H_ROTTEN;
+			e.skin = 1;
 			e.armorvalue = (100 + rint((random() * 50)));
 			e.armortype = 0.6;
 			e.items = IT_ARMOR2;
@@ -2241,7 +2308,7 @@ void() PlaceArmor =
 		}
 		else
 		{
-			e.skin = H_MEGA;
+			e.skin = 2;
 			e.armorvalue = (150 + rint((random() * 50)));
 			e.armortype = 0.8;
 			e.items = IT_ARMOR3;
@@ -2661,8 +2728,24 @@ void() spawn_saler =
 void() sale_think =
 {
 	spawn_saler();
-	self.nextthink = ((time + 15) + (TE_LAVASPLASH * random()));
+	self.nextthink = ((time + 15) + (10 * random()));
 	self.think = sale_think;
+};
+
+void() walkman_think =
+{
+	if (time > self.next_heart)
+	{
+		self.next_heart = time + moon_walkman_start_music_shop(self.master); // self.master caches emitter_shop
+	}
+
+	if (time > self.next_gate)
+	{
+		self.next_gate = time + moon_walkman_start_music_gate(self.killer); // self.killer caches emitter_gate
+	}
+
+	self.nextthink = time + 30;
+	self.think = walkman_think;
 };
 
 void() sale_brain =
@@ -2670,8 +2753,39 @@ void() sale_brain =
 	local entity e;
 
 	e = spawn();
-	e.nextthink = ((time + GRD_PATROLTIME) + (H_MEGA * random()));
+	e.nextthink = ((time + 20) + (2 * random()));
 	e.think = sale_think;
+};
+
+void() walkman_brain =
+{
+	local entity e;
+
+	local entity emitter_gate;
+	local entity emitter_shop;
+
+	emitter_gate = find(world, classname, MOON_GATE_CLASSNAME);
+	if (emitter_gate == world)
+	{
+		bprint("Cannot find any sound gate\n");
+		return;
+	}
+
+	emitter_shop = find(world, netname, "health_trader");
+	if (emitter_shop == world)
+	{
+		bprint("Cannot find any healthy trader\n");
+		return;
+	}
+
+	e = spawn();
+	e.killer = emitter_gate;
+	e.master = emitter_shop;
+
+	e.next_gate = time + 32;
+
+	e.think = walkman_think;
+	e.nextthink = (time + 10) + (20 * random());
 };
 
 void() s_touch =
@@ -2684,14 +2798,14 @@ void() s_touch =
 	{
 		return;
 	}
-	other.wantnum = H_MEGA;
-	other.action = LOGIC_FINDDEFEND;
+	other.wantnum = 2;
+	other.action = 3;
 	other.cnt = self.angles_y;
 	other.ideal_yaw = self.angles_y;
 	other.goalentity = world;
 	self.enemy = other;
 	self.free = FALSE;
-	other.free = H_ROTTEN;
+	other.free = 1;
 };
 
 void(vector org, float ang, float nm) S =
@@ -2728,18 +2842,18 @@ void() ns_touch =
 	}
 	if ((other.wantnum > self.num))
 	{
-		nextnum = (self.num + H_ROTTEN);
+		nextnum = (self.num + 1);
 	}
 	if ((other.wantnum < self.num))
 	{
-		nextnum = (self.num - H_ROTTEN);
+		nextnum = (self.num - 1);
 	}
-	if (((other.action == H_MEGA) && (self.num == H_MEGA)))
+	if (((other.action == 2) && (self.num == 2)))
 	{
 		remove(other);
 		return;
 	}
-	if ((((other.action == H_ROTTEN) && (self.num < LOGIC_DEFEND)) || (other.action == H_MEGA)))
+	if ((((other.action == 1) && (self.num < 4)) || (other.action == 2)))
 	{
 		tmp = find(world, classname, "sale_way");
 		while (tmp)
@@ -2754,9 +2868,9 @@ void() ns_touch =
 	}
 	else
 	{
-		while (H_ROTTEN)
+		while (TRUE)
 		{
-			zzz = rint((random() * LOGIC_PATROL));
+			zzz = rint((random() * 5));
 			ops = find(world, classname, "sale_ent");
 			while (ops)
 			{
@@ -3321,6 +3435,7 @@ void() set_map = // nothing to do here until all other problems are done
 	game_brain();
 	jesus_brain();
 	sale_brain();
+	walkman_brain();
 	waypoints_ok = TRUE;
 };
 
@@ -5552,6 +5667,11 @@ void() moonimpulse =
 
 	if ( self.impulse == MOON_IMPULSE_CODE_NOOP ) { return; }
 
+	if ( (self.impulse >= 220) && (self.impulse <= 232) )
+	{
+		moon_walkman_play(self, self.impulse - 220);
+	}
+
 	if ( (MOON_IMPULSE_CODE_FIRST_CLI_UI <= self.impulse) && (self.impulse <= MOON_IMPULSE_CODE_LAST_CLI_UI) )
 	{
 		moon_handle_impulse_ui(self.impulse);
@@ -6557,7 +6677,7 @@ void() SpawnBot =
 	newbot.takedamage = DAMAGE_AIM;
 	newbot.goalentity = world;
 	newbot.movetarget = world;
-	newbot.pausetime = (time + H_MEGA);
+	newbot.pausetime = (time + 2);
 	newbot.ideal_yaw = (newbot.angles * '0 1 0');
 	newbot.yaw_speed = LOGIC_HUNTENEMY;
 	newbot.view_ofs = '0 0 25';
@@ -7611,7 +7731,7 @@ void() intermission_victory =
 		head = find(head, classname, MOON_PLAYER_CLASSNAME);
 	}
 
-	intermission_running = 1;
+	intermission_running = 2; // End of Episode screen
 	intermission_exittime = (time + 10);
 	WriteByte(MSG_ALL, SVC_INTERMISSION);
 
@@ -7656,7 +7776,7 @@ void() heart_die =
 		head = find(head, classname, MOON_PLAYER_CLASSNAME);
 	}
 
-	intermission_running = 1;
+	intermission_running = 1; // Stats screen
 	intermission_exittime = (time + 5);
 	WriteByte(MSG_ALL, SVC_INTERMISSION);
 	ThrowGib("progs/gib1.mdl", self.health);
@@ -8029,27 +8149,19 @@ void(entity e) moon_generate_magic_prefix =
 	{
 		r = random_int(MOON_ITEM_TRAIT_LOWERBOUND_LOW, MOON_ITEM_TRAIT_UPPERBOUND_PREFIX_LOW);
 		//r = rint(((random() * MOON_ITEM_TRAIT_UPPERBOUND_PREFIX_LOW) + 1));
-	}
-	else
+	} else
+	if ((mxx <= MOON_ITEM_LVLTHRESHOLD_NORMAL))
 	{
-		if ((mxx <= MOON_ITEM_LVLTHRESHOLD_NORMAL))
-		{
-			r = random_int(MOON_ITEM_TRAIT_LOWERBOUND_LOW, MOON_ITEM_TRAIT_UPPERBOUND_PREFIX_NORMAL);
-			//r = rint(((random() * MOON_ITEM_TRAIT_UPPERBOUND_PREFIX_NORMAL) + 1));
-		}
-		else
-		{
-			if ((mxx <= MOON_ITEM_LVLTHRESHOLD_HIGH))
-			{
-				r = random_int(MOON_ITEM_TRAIT_LOWERBOUND_HIGH, MOON_ITEM_TRAIT_UPPERBOUND_PREFIX_HIGH);
-				//r = rint(((random() * MOON_ITEM_TRAIT_UPPERBOUND_PREFIX_HIGH) + 1));
-			}
-			else
-			{
-				r = random_int(MOON_ITEM_TRAIT_LOWERBOUND_EPIC, MOON_ITEM_TRAIT_UPPERBOUND_PREFIX_EPIC);
-				//r = rint(((random() * MOON_ITEM_TRAIT_UPPERBOUND_PREFIX_EPIC) + 1));
-			}
-		}
+		r = random_int(MOON_ITEM_TRAIT_LOWERBOUND_LOW, MOON_ITEM_TRAIT_UPPERBOUND_PREFIX_NORMAL);
+		//r = rint(((random() * MOON_ITEM_TRAIT_UPPERBOUND_PREFIX_NORMAL) + 1));
+	} else
+	if ((mxx <= MOON_ITEM_LVLTHRESHOLD_HIGH))
+	{
+		r = random_int(MOON_ITEM_TRAIT_LOWERBOUND_HIGH, MOON_ITEM_TRAIT_UPPERBOUND_PREFIX_HIGH);
+		//r = rint(((random() * MOON_ITEM_TRAIT_UPPERBOUND_PREFIX_HIGH) + 1));
+	} else {
+		r = random_int(MOON_ITEM_TRAIT_LOWERBOUND_EPIC, MOON_ITEM_TRAIT_UPPERBOUND_PREFIX_EPIC);
+		//r = rint(((random() * MOON_ITEM_TRAIT_UPPERBOUND_PREFIX_EPIC) + 1));
 	}
 
 	r = r % MOON_ITEM_TRAIT_MAX_PREFIX;

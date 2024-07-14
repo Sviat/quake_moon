@@ -101,7 +101,9 @@ float CHAN_WEAPON = 1;
 float CHAN_VOICE  = 2;
 float CHAN_ITEM   = 3;
 float CHAN_BODY   = 4;
+// float CHAN_MUSIC; // See Moon's Walkman channel
 float ATTN_NONE	  = 0;
+// float ATTN_LOWEST;  // See Moon's Walkman attenuation
 float ATTN_NORM   = 1;
 float ATTN_IDLE   = 2;
 float ATTN_STATIC = 3;
@@ -611,7 +613,7 @@ void() item_precache =
 	precache_sound("items/r_item2.wav");
 	precache_sound("items/health1.wav");
 	precache_sound("items/armor1.wav");
-	precache_sound("misc/null.wav");
+	precache_sound("misc/null.wav"); // Null to clear channel
 	precache_sound("moon/ambient/quake.wav");
 	precache_sound("moon/items/ring.wav");
 	precache_sound("moon/items/shard.wav");
@@ -640,11 +642,29 @@ void() extras_precache =
 	//precache_sound("moon/talk/go2.wav"); // missing
 };
 
+void() music_precache =
+{
+	// // BPM
+	precache_sound("music/bpm/01_judgement.wav");
+	precache_sound("music/bpm/02_the_rhytm_king.wav");
+	precache_sound("music/bpm/03_the_crypt.wav");
+	precache_sound("music/bpm/04_corruption.wav");
+	precache_sound("music/bpm/05_depths_of_helheim.wav");
+	precache_sound("music/bpm/06_huginn_shop.wav");
+	precache_sound("music/bpm/07_machinations.wav");
+	precache_sound("music/bpm/08_into_asgard.wav");
+	precache_sound("music/bpm/09_paradox.wav");
+	precache_sound("music/bpm/10_fight_of_the_valkyrie.wav");
+	precache_sound("music/bpm/11_muninn_arrmoury.wav");
+	precache_sound("music/bpm/12_yggdrasil_roots.wav");
+};
+
 void() moon_precache =
 {
 	item_precache();
 	monster_precache();
 	extras_precache();
+	music_precache();
 };
 
 .string gatename;
@@ -794,8 +814,14 @@ float MOON_IMPULSE_CODE_ITEM_BUY = 194;
 float MOON_IMPULSE_CODE_ITEM_IDENTIFY = 196;
 float MOON_IMPULSE_CODE_LAST_TRACE = 223;
 //
-float MOON_IMPULSE_CODE_LAST = 223;
+float MOON_IMPULSE_CODE_LAST = 234;
 // //
+
+float MOON_WALKMAN_CHANNEL = 6;
+float MOON_WALKMAN_VOLUME_MUSIC = 0.32;
+float MOON_WALKMAN_VOLUME_SHOP = 1;
+float MOON_WALKMAN_ATTEN_MUSIC = 0.42;
+float MOON_WALKMAN_ATTEN_SHOP = 1.0;
 
 float MOON_PLAYER_MAX_LEVEL = 50;
 float MOON_HEART_MAX_LEVEL = 50;
@@ -1051,7 +1077,7 @@ float MOON_ITEM_HEART_BONUS_RANDOM 		= 5;
 string MOON_ITEM_HEART_EFFECT 			= "Book of Immortality (\sHeart\s life increased by {})\n";
 // // end of list of Upgrades
 
-float(float min, float max) random_int =
+float(float min, float max) random_int = // result in [min, max] range. N.B! including both sides
 {
 	return rint( (random() * (max - min)) + min );
 };
@@ -1060,6 +1086,13 @@ float(float value, float max) clamp =
 {
 	if (value <= max) { return value; }
 	return max;
+};
+
+float(float min, float value, float max) clampd =
+{
+	if (value < min) { return min; }
+	if (value > max) { return max; }
+	return value;
 };
 
 void() flash_self =

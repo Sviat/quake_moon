@@ -4763,7 +4763,7 @@ void(entity who, float l) GetPrfx =
 	who.view_ofs = '0 0 25';
 };
 
-float(float mn) MonsterCtable =
+float(float mn) MonsterCtable = // rename later to moon_get_monster_wave_count
 {
 	if ( mn <= 1 )
 	{
@@ -4823,7 +4823,7 @@ float(float lvl) MonsterGenType =
 	return random_int(MOON_MONSTER_CODE_SOLDIER, MOON_MONSTER_CODE_SHALRATH);
 };
 
-void(entity who, float l) MonsterTable =
+void(entity who, float l) MonsterTable = // rename later to moon_spawn_monster
 {
 	local float gen;
 	local float shift;
@@ -5095,7 +5095,7 @@ void() StartSpawning =
 	{
 		return;
 	}
-	if ((self.count <= 0))
+	if ( self.count <= 0 )
 	{
 		remove(self);
 		return;
@@ -5106,12 +5106,12 @@ void() StartSpawning =
 	self.think = StartSpawning;
 };
 
-void(float z) SpawnMoster =
+void(float mon_count) SpawnMoster =
 {
 	local entity a;
 
 	a = spawn();
-	a.count = z;
+	a.count = mon_count;
 	a.classname = "monster_generator";
 	a.think = StartSpawning;
 	a.nextthink = time;
@@ -5250,8 +5250,8 @@ void() Prepare =
 	{
 		set_map();
 	}
-	sprint(self, "ReProjet MOON: KekPort v0.24k on \sKEX Engine\s by \sSanctus-Susanin\s\n");
 	sprint(self, "Project MOON. v0.21 beta. Created by \s3d[Power]\s http://3dpower.org\n");
+	sprint(self, "ReProjet MOON: KekPort v0.24k on \sKEX Engine\s by \sSanctus-Susanin\s\n");
 	sprint(self, "type pm_help command to learn about MOON console commands\n");
 };
 
@@ -5294,10 +5294,10 @@ void(float impulse_code) moon_handle_impulse_stat =
 		return;
 	}
 
+	self.point = (self.point - 1);
 	switch(impulse_code)
 	{
 		case MOON_IMPULSE_CODE_UPSKILL_VITALITY:
-			self.point = (self.point - 1);
 			moon_raise_target_vitality(self, 1);
 
 			sprint(self, "upgrade Vitality: {} (", quick_ftos(self.vit));
@@ -5305,7 +5305,6 @@ void(float impulse_code) moon_handle_impulse_stat =
 			sprint(self, ")\n");
 			break;
 		case MOON_IMPULSE_CODE_UPSKILL_STRENGTH:
-			self.point = (self.point - 1);
 			self.stre = (self.stre + 1);
 
 			sprint(self, "upgrade Strength: {} (", quick_ftos(self.stre));
@@ -5314,12 +5313,10 @@ void(float impulse_code) moon_handle_impulse_stat =
 			break;
 		case MOON_IMPULSE_CODE_UPSKILL_SANITY:
 			// TODO: implement
-			// self.point = (self.point - 1);
 			// moon_raise_target_sanity(self, 1);
 			break;
 		case MOON_IMPULSE_CODE_UPSKILL_INTUITION:
 			// TODO: implement
-			// self.point = (self.point - 1);
 			// self.intu = (self.intu + 1);
 			break;
 	}

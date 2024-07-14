@@ -2736,12 +2736,12 @@ void() walkman_think =
 {
 	if (time > self.next_heart)
 	{
-		self.next_heart = time + moon_walkman_start_music_shop(self.master); // self.master caches emitter_shop
+		self.next_heart = time + MOON_WALKMAN_DELAY_BETWEENTRACKS + moon_walkman_start_music_shop(self.master); // self.master caches emitter_shop
 	}
 
 	if (time > self.next_gate)
 	{
-		self.next_gate = time + moon_walkman_start_music_gate(self.killer); // self.killer caches emitter_gate
+		self.next_gate = time + MOON_WALKMAN_DELAY_BETWEENTRACKS + moon_walkman_start_music_gate(self.killer); // self.killer caches emitter_gate
 	}
 
 	self.nextthink = time + 30;
@@ -4703,210 +4703,62 @@ void(entity who, float l) GetPrfx =
 	{
 		bprint("ERROR IN GetPrfx(...): player level is negative value.\n");
 	}
-	if ((l == 0))
+	switch(l):
 	{
-		s = "novice ";
+	case 0: s = "novice "; break;
+	case 1: s = "ordinary "; break;
+	case 2: s = "promoted "; break;
+	case 3: s = "advanced "; break;
+	case 4: s = "experienced "; break;
+	case 5: s = "grim "; break;
+	case 6: s = "massive "; break;
+	case 7: s = "skillful "; break;
+	case 8: s = "incredible "; break;
+	case 9: s = "merciless "; break;
+	case 10: s = "drilled "; break;
+	case 11: s = "war "; break;
+	case 12: s = "enourmous "; break;
+	case 13: s = "powerful "; break;
+	case 14: s = "grand "; break;
+	case 15: s = "chaos "; break;
+	case 16: s = "demonical "; break;
+	case 17: s = "superior "; break;
+	case 18: s = "hurricane "; break;
+	case 19: s = "defacing "; break;
+	case 20: s = "phantom "; break;
+	case 21: s = "lord "; break;
+	case 22: s = "baron "; break;
+	case 23: s = "overlord "; break;
+	case 24: s = "warlord "; break;
+	case 25: s = "king "; break;
+	case 26: s = "plague "; break;
+	case 27: s = "storm "; break;
+	case 28: s = "shadow "; break;
+	case 29: s = "holocaust "; break;
+	case 30: s = "order "; break;
+	case 31: s = "dire "; break;
+	case 32: s = "gale "; break;
+	case 33: s = "cruel "; break;
+	case 34: s = "doom "; break;
+	case 35: s = "serious "; break;
+	case 36: s = "celestial "; break;
+	case 37: s = "terrible "; break;
+	case 38: s = "diamond "; break;
+	case 39: s = "rush "; break;
+	case 40: s = "crashing "; break;
+	case 41: s = "fanged "; break;
+	case 42: s = "thirsty "; break;
+	case 43: s = "splitter "; break;
+	case 44: s = "sunder "; break;
+	case 45: s = "rend "; break;
+	case 46: s = "reaver "; break;
+	case 47: s = "gnash "; break;
+	case 48: s = "blow "; break;
+	case 49: s = "smasher "; break;
+	case 50: s = "satan's "; break;
+	default: s = "satan's ";
 	}
-	if ((l == 1))
-	{
-		s = "ordinary ";
-	}
-	if ((l == 2))
-	{
-		s = "promoted ";
-	}
-	if ((l == 3))
-	{
-		s = "advanced ";
-	}
-	if ((l == 4))
-	{
-		s = "experienced ";
-	}
-	if ((l == 5))
-	{
-		s = "grim ";
-	}
-	if ((l == 6))
-	{
-		s = "massive ";
-	}
-	if ((l == 7))
-	{
-		s = "skillful ";
-	}
-	if ((l == 8))
-	{
-		s = "incredible ";
-	}
-	if ((l == 9))
-	{
-		s = "merciless ";
-	}
-	if ((l == 10))
-	{
-		s = "drilled ";
-	}
-	if ((l == 11))
-	{
-		s = "war ";
-	}
-	if ((l == 12))
-	{
-		s = "enourmous ";
-	}
-	if ((l == 13))
-	{
-		s = "powerful ";
-	}
-	if ((l == 14))
-	{
-		s = "grand ";
-	}
-	if ((l == 15))
-	{
-		s = "chaos ";
-	}
-	if ((l == 16))
-	{
-		s = "demonical ";
-	}
-	if ((l == 17))
-	{
-		s = "superior ";
-	}
-	if ((l == 18))
-	{
-		s = "hurricane ";
-	}
-	if ((l == 19))
-	{
-		s = "defacing ";
-	}
-	if ((l == 20))
-	{
-		s = "phantom ";
-	}
-	if ((l == 21))
-	{
-		s = "lord ";
-	}
-	if ((l == 22))
-	{
-		s = "baron ";
-	}
-	if ((l == 23))
-	{
-		s = "overlord ";
-	}
-	if ((l == 24))
-	{
-		s = "warlord ";
-	}
-	if ((l == 25))
-	{
-		s = "king ";
-	}
-	if ((l == 26))
-	{
-		s = "plague ";
-	}
-	if ((l == 27))
-	{
-		s = "storm ";
-	}
-	if ((l == 28))
-	{
-		s = "shadow ";
-	}
-	if ((l == 29))
-	{
-		s = "holocaust ";
-	}
-	if ((l == 30))
-	{
-		s = "order ";
-	}
-	if ((l == 31))
-	{
-		s = "dire ";
-	}
-	if ((l == 32))
-	{
-		s = "gale ";
-	}
-	if ((l == 33))
-	{
-		s = "cruel ";
-	}
-	if ((l == 34))
-	{
-		s = "doom ";
-	}
-	if ((l == 35))
-	{
-		s = "serious ";
-	}
-	if ((l == 36))
-	{
-		s = "celestial ";
-	}
-	if ((l == 37))
-	{
-		s = "terrible ";
-	}
-	if ((l == 38))
-	{
-		s = "diamond ";
-	}
-	if ((l == 39))
-	{
-		s = "rush ";
-	}
-	if ((l == 40))
-	{
-		s = "crashing ";
-	}
-	if ((l == 41))
-	{
-		s = "fanged ";
-	}
-	if ((l == 42))
-	{
-		s = "thirsty ";
-	}
-	if ((l == 43))
-	{
-		s = "splitter ";
-	}
-	if ((l == 44))
-	{
-		s = "sunder ";
-	}
-	if ((l == 45))
-	{
-		s = "rend ";
-	}
-	if ((l == 46))
-	{
-		s = "reaver ";
-	}
-	if ((l == 47))
-	{
-		s = "gnash ";
-	}
-	if ((l == 48))
-	{
-		s = "blow ";
-	}
-	if ((l == 49))
-	{
-		s = "smasher ";
-	}
-	if ((l >= 50))
-	{
-		s = "satan's ";
-	}
+
 	who.prefix_two = s;
 	who.view_ofs = '0 0 25';
 };
@@ -9737,9 +9589,7 @@ void(entity who) DropGold =
 	{
 		item.origin = (who.origin + '0 0 8');
 		item.gold = ((MOON_GOLD_MINE_BASE + (MOON_GOLD_MINE_LVLPERCENT * player_maxlvl)) + (random() * (MOON_GOLD_MINE_RANDOM + (player_maxlvl * MOON_GOLD_MINE_BASE))));
-	}
-	else
-	{
+	} else {
 		item.origin = (who.origin - '0 0 24');
 		item.gold = ((MOON_GOLD_LOOT_BASE + (MOON_GOLD_LOOT_LVLPERCENT * player_maxlvl)) + (random() * MOON_GOLD_LOOT_RANDOM));
 	}

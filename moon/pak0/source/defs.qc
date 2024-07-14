@@ -1078,6 +1078,24 @@ float MOON_ITEM_HEART_BONUS_RANDOM 		= 5;
 string MOON_ITEM_HEART_EFFECT 			= "Book of Immortality (\sHeart\s life increased by {})\n";
 // // end of list of Upgrades
 
+// // Monster related consts
+float MOON_MONSTER_CODE_SOLDIER 	= 1;
+float MOON_MONSTER_CODE_ENFORCER 	= 2;
+float MOON_MONSTER_CODE_SPIDER 		= 3;
+float MOON_MONSTER_CODE_OGRE 		= 4;
+float MOON_MONSTER_CODE_SNAKE 		= 5;
+float MOON_MONSTER_CODE_MAGE 		= 6;
+float MOON_MONSTER_CODE_SHALRATH 	= 7;
+float MOON_MONSTER_BASELEVEL_SOLDIER 	= 0;
+float MOON_MONSTER_BASELEVEL_ENFORCER 	= 1;
+float MOON_MONSTER_BASELEVEL_SPIDER 	= 2;
+float MOON_MONSTER_BASELEVEL_OGRE 		= 4;
+float MOON_MONSTER_BASELEVEL_SNAKE 		= 6;
+float MOON_MONSTER_BASELEVEL_MAGE 		= 8;
+float MOON_MONSTER_BASELEVEL_SHALRATH 	= 15;
+
+// // end of Monster related consts
+
 float(float min, float max) random_int = // result in [min, max] range. N.B! including both sides
 {
 	return rint( (random() * (max - min)) + min );

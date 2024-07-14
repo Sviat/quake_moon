@@ -4703,60 +4703,60 @@ void(entity who, float l) GetPrfx =
 	{
 		bprint("ERROR IN GetPrfx(...): player level is negative value.\n");
 	}
-	switch(l):
+	switch(l)
 	{
-	case 0: s = "novice "; break;
-	case 1: s = "ordinary "; break;
-	case 2: s = "promoted "; break;
-	case 3: s = "advanced "; break;
-	case 4: s = "experienced "; break;
-	case 5: s = "grim "; break;
-	case 6: s = "massive "; break;
-	case 7: s = "skillful "; break;
-	case 8: s = "incredible "; break;
-	case 9: s = "merciless "; break;
-	case 10: s = "drilled "; break;
-	case 11: s = "war "; break;
-	case 12: s = "enourmous "; break;
-	case 13: s = "powerful "; break;
-	case 14: s = "grand "; break;
-	case 15: s = "chaos "; break;
-	case 16: s = "demonical "; break;
-	case 17: s = "superior "; break;
-	case 18: s = "hurricane "; break;
-	case 19: s = "defacing "; break;
-	case 20: s = "phantom "; break;
-	case 21: s = "lord "; break;
-	case 22: s = "baron "; break;
-	case 23: s = "overlord "; break;
-	case 24: s = "warlord "; break;
-	case 25: s = "king "; break;
-	case 26: s = "plague "; break;
-	case 27: s = "storm "; break;
-	case 28: s = "shadow "; break;
-	case 29: s = "holocaust "; break;
-	case 30: s = "order "; break;
-	case 31: s = "dire "; break;
-	case 32: s = "gale "; break;
-	case 33: s = "cruel "; break;
-	case 34: s = "doom "; break;
-	case 35: s = "serious "; break;
-	case 36: s = "celestial "; break;
-	case 37: s = "terrible "; break;
-	case 38: s = "diamond "; break;
-	case 39: s = "rush "; break;
-	case 40: s = "crashing "; break;
-	case 41: s = "fanged "; break;
-	case 42: s = "thirsty "; break;
-	case 43: s = "splitter "; break;
-	case 44: s = "sunder "; break;
-	case 45: s = "rend "; break;
-	case 46: s = "reaver "; break;
-	case 47: s = "gnash "; break;
-	case 48: s = "blow "; break;
-	case 49: s = "smasher "; break;
-	case 50: s = "satan's "; break;
-	default: s = "satan's ";
+		case 0: s = "novice "; break;
+		case 1: s = "ordinary "; break;
+		case 2: s = "promoted "; break;
+		case 3: s = "advanced "; break;
+		case 4: s = "experienced "; break;
+		case 5: s = "grim "; break;
+		case 6: s = "massive "; break;
+		case 7: s = "skillful "; break;
+		case 8: s = "incredible "; break;
+		case 9: s = "merciless "; break;
+		case 10: s = "drilled "; break;
+		case 11: s = "war "; break;
+		case 12: s = "enourmous "; break;
+		case 13: s = "powerful "; break;
+		case 14: s = "grand "; break;
+		case 15: s = "chaos "; break;
+		case 16: s = "demonical "; break;
+		case 17: s = "superior "; break;
+		case 18: s = "hurricane "; break;
+		case 19: s = "defacing "; break;
+		case 20: s = "phantom "; break;
+		case 21: s = "lord "; break;
+		case 22: s = "baron "; break;
+		case 23: s = "overlord "; break;
+		case 24: s = "warlord "; break;
+		case 25: s = "king "; break;
+		case 26: s = "plague "; break;
+		case 27: s = "storm "; break;
+		case 28: s = "shadow "; break;
+		case 29: s = "holocaust "; break;
+		case 30: s = "order "; break;
+		case 31: s = "dire "; break;
+		case 32: s = "gale "; break;
+		case 33: s = "cruel "; break;
+		case 34: s = "doom "; break;
+		case 35: s = "serious "; break;
+		case 36: s = "celestial "; break;
+		case 37: s = "terrible "; break;
+		case 38: s = "diamond "; break;
+		case 39: s = "rush "; break;
+		case 40: s = "crashing "; break;
+		case 41: s = "fanged "; break;
+		case 42: s = "thirsty "; break;
+		case 43: s = "splitter "; break;
+		case 44: s = "sunder "; break;
+		case 45: s = "rend "; break;
+		case 46: s = "reaver "; break;
+		case 47: s = "gnash "; break;
+		case 48: s = "blow "; break;
+		case 49: s = "smasher "; break;
+		case 50: s = "satan's "; break;
+		default: s = "satan's ";
 	}
 
 	who.prefix_two = s;
@@ -4765,159 +4765,102 @@ void(entity who, float l) GetPrfx =
 
 float(float mn) MonsterCtable =
 {
-	if ((mn == WF_NORMAL))
+	if ( mn <= 1 )
 	{
-		return (rint(((random() * LOGIC_FINDDEFEND) + H_MEGA)));
+		return random_int(2, 5);
 	}
-	if ((mn == H_ROTTEN))
+	if ( mn == 2 )
 	{
-		return (rint(((random() * LOGIC_FINDDEFEND) + H_MEGA)));
+		return random_int(2, 6);
 	}
-	if ((mn == H_MEGA))
+	if ( mn == 3 )
 	{
-		return (rint(((random() * LOGIC_DEFEND) + H_MEGA)));
+		return random_int(2, 6);
 	}
-	if ((mn == LOGIC_FINDDEFEND))
+	if ( mn < 9 )
 	{
-		return (rint(((random() * LOGIC_DEFEND) + H_MEGA)));
+		return random_int(3, 7);
 	}
-	if (((mn >= LOGIC_DEFEND) && (mn <= KEY_MOVERIGHT)))
+	if ( mn < 18 )
 	{
-		return (rint(((random() * LOGIC_DEFEND) + LOGIC_FINDDEFEND)));
+		return random_int(3, 8);
 	}
-	if (((mn >= TE_LIGHTNING3) && (mn <= 17)))
+	if ( mn < 48 )
 	{
-		return (rint(((random() * LOGIC_PATROL) + LOGIC_FINDDEFEND)));
+		return random_int(4, 9);
 	}
-	if (((mn >= 18) && (mn < 48)))
-	{
-		return (rint(((random() * LOGIC_PATROL) + LOGIC_DEFEND)));
-	}
-	if ((mn >= 48))
-	{
-		return (rint(((random() * LOGIC_HUNTENEMY) + LOGIC_PATROL)));
-	}
+	//if ( mn >= 48 )
+	return random_int(5, 11);
+};
 
-	return (rint(((random() * LOGIC_FINDDEFEND) + H_MEGA))); // supress "not all path returns" warning
+float(float lvl) MonsterGenType =
+{
+	if ( lvl < MOON_MONSTER_BASELEVEL_ENFORCER )
+	{
+		return MOON_MONSTER_CODE_SOLDIER;
+	}
+	if ( lvl < MOON_MONSTER_BASELEVEL_SPIDER )
+	{
+		return random_int(MOON_MONSTER_CODE_SOLDIER, MOON_MONSTER_CODE_ENFORCER);
+	}
+	if ( lvl < MOON_MONSTER_BASELEVEL_OGRE )
+	{
+		return random_int(MOON_MONSTER_CODE_SOLDIER, MOON_MONSTER_CODE_SPIDER);
+	}
+	if ( lvl < MOON_MONSTER_BASELEVEL_SNAKE )
+	{
+		return random_int(MOON_MONSTER_CODE_SOLDIER, MOON_MONSTER_CODE_OGRE);
+	}
+	if ( lvl < MOON_MONSTER_BASELEVEL_MAGE )
+	{
+		return random_int(MOON_MONSTER_CODE_SOLDIER, MOON_MONSTER_CODE_SNAKE);
+	}
+	if ( lvl < MOON_MONSTER_BASELEVEL_SHALRATH )
+	{
+		return random_int(MOON_MONSTER_CODE_SOLDIER, MOON_MONSTER_CODE_MAGE);
+	}
+	//if ( lvl >= MOON_MONSTER_BASELEVEL_SHALRATH )
+	return random_int(MOON_MONSTER_CODE_SOLDIER, MOON_MONSTER_CODE_SHALRATH);
 };
 
 void(entity who, float l) MonsterTable =
 {
-	local float r;
-	local float k;
 	local float gen;
-	local float enforcer_base_level;
-	local float spider_base_level;
-	local float orge_base_level;
-	local float mage_base_level;
-	local float shalrath_base_level;
-	local float snake_base_level;
+	local float shift;
+	local float shifted_lvl;
 
-	r = random();
-	k = rint((random() * LOGIC_FINDDEFEND));
-	if ((l == WF_NORMAL))
+	shift = rint(random() * 3);
+	shifted_lvl = l - shift;
+
+	gen = MonsterGenType(l);
+	switch(gen)
 	{
-		gen = H_ROTTEN;
-	}
-	else
-	{
-		if ((l == H_ROTTEN))
-		{
-			gen = rint((H_ROTTEN + (random() * H_ROTTEN)));
-		}
-		else
-		{
-			if (((l >= H_MEGA) && (l < LOGIC_DEFEND)))
-			{
-				gen = rint((H_ROTTEN + (random() * H_MEGA)));
-			}
-			else
-			{
-				if (((l >= LOGIC_DEFEND) && (l < LOGIC_HUNTENEMY)))
-				{
-					gen = rint((H_ROTTEN + (random() * LOGIC_FINDDEFEND)));
-				}
-				else
-				{
-					if (((l >= LOGIC_HUNTENEMY) && (l < KEY_MOVERIGHT)))
-					{
-						gen = rint((H_ROTTEN + (random() * LOGIC_DEFEND)));
-					}
-					else
-					{
-						if (((l >= KEY_MOVERIGHT) && (l < 15)))
-						{
-							gen = rint((H_ROTTEN + (random() * LOGIC_PATROL)));
-						}
-						else
-						{
-							if ((l >= 15))
-							{
-								gen = rint((H_ROTTEN + (random() * LOGIC_HUNTENEMY)));
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-	enforcer_base_level = 1;
-	spider_base_level = 2;
-	orge_base_level = 4;
-	snake_base_level = 6;
-	mage_base_level = 8;
-	shalrath_base_level = 15;
-	if ((gen == H_ROTTEN))
-	{
-		spawn_soldier(self, (l - k));
-	}
-	else
-	{
-		if ((gen == H_MEGA))
-		{
-			spawn_enforcer(self, ((l - k) - enforcer_base_level));
-		}
-		else
-		{
-			if ((gen == LOGIC_FINDDEFEND))
-			{
-				spawn_spider(self, ((l - k) - spider_base_level));
-			}
-			else
-			{
-				if ((gen == LOGIC_DEFEND))
-				{
-					spawn_ogre(self, ((l - k) - orge_base_level));
-				}
-				else
-				{
-					if ((gen == LOGIC_PATROL))
-					{
-						spawn_snake(self, ((l - k) - snake_base_level));
-					}
-					else
-					{
-						if ((gen == LOGIC_HUNTENEMY))
-						{
-							spawn_mage(self, ((l - k) - mage_base_level));
-						}
-						else
-						{
-							if ((gen == TE_WIZSPIKE))
-							{
-								spawn_shalrath(self, ((l - k) - shalrath_base_level));
-							}
-							else
-							{
-								bprint("ERROR IN MonsterTable(...): gen spawns null monster\n");
-							}
-						}
-					}
-				}
-			}
-		}
+	case MOON_MONSTER_CODE_SOLDIER:
+		spawn_soldier(self, shifted_lvl - MOON_MONSTER_BASELEVEL_SOLDIER);
+		break;
+	case MOON_MONSTER_CODE_ENFORCER:
+		spawn_enforcer(self, (shifted_lvl - MOON_MONSTER_BASELEVEL_ENFORCER));
+		break;
+	case MOON_MONSTER_CODE_SPIDER:
+		spawn_spider(self, (shifted_lvl - MOON_MONSTER_BASELEVEL_SPIDER));
+		break;
+	case MOON_MONSTER_CODE_OGRE:
+		spawn_ogre(self, (shifted_lvl - MOON_MONSTER_BASELEVEL_OGRE));
+		break;
+	case MOON_MONSTER_CODE_SNAKE:
+		spawn_snake(self, (shifted_lvl - MOON_MONSTER_BASELEVEL_SNAKE));
+		break;
+	case MOON_MONSTER_CODE_MAGE:
+		spawn_mage(self, (shifted_lvl - MOON_MONSTER_BASELEVEL_MAGE));
+		break;
+	case MOON_MONSTER_CODE_SHALRATH:
+		spawn_shalrath(self, (shifted_lvl - MOON_MONSTER_BASELEVEL_SHALRATH));
+		break;
+	default:
+		bprint("ERROR IN MonsterTable(...): gen spawns null monster\n");
 	}
 };
+
 float SVC_SETVIEWPORT    = 5;
 float SVC_SETVIEWANGLES    = 10;
 float CHSCAM_ON    = 1;

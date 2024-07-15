@@ -1201,7 +1201,7 @@ float MOON_MONSTER_WAVETIME_DELAY_SLOW   	= 45;
 float MOON_MONSTER_WAVETIME_RANDOM_FAST   	= 35;
 float MOON_MONSTER_WAVETIME_RANDOM_NORMAL 	= 30;
 float MOON_MONSTER_WAVETIME_RANDOM_SLOW   	= 20;
-float MOON_MONSTER_CORPSEDECAY_FACTOR   	= 2; // ~how many waves stays corpse
+float MOON_MONSTER_CORPSEDECAY_FACTOR   	= 3; // ~how many waves stays corpse
 
 float MOON_MONSTER_CODE_SOLDIER 	= 1;
 float MOON_MONSTER_CODE_ENFORCER 	= 2;
@@ -1335,29 +1335,38 @@ float() moon_get_max_player_level =
 float() moon_get_spawn_delay =
 {
 	float temp;
-
-	if ( sv_fastmeat == 1 )
+	if ( sv_fastmeat > 0 )
 	{
 		temp = MOON_MONSTER_WAVETIME_DELAY_FAST + (random() * MOON_MONSTER_WAVETIME_RANDOM_FAST);
-		dprint("fastmeat {}-{}, delay: {}\n", quick_ftos(MOON_MONSTER_WAVETIME_DELAY_FAST), quick_ftos(MOON_MONSTER_WAVETIME_RANDOM_FAST), quick_ftos(temp));
+		bprint("fastmeat {}-{}, delay: {}\n", quick_ftos(MOON_MONSTER_WAVETIME_DELAY_FAST), quick_ftos(MOON_MONSTER_WAVETIME_RANDOM_FAST), quick_ftos(temp));
 		return temp;
 	}
 
-	if ( sv_fastmeat == -1 )
+	if ( sv_fastmeat < 0 )
 	{
 		temp = MOON_MONSTER_WAVETIME_DELAY_SLOW + (random() * MOON_MONSTER_WAVETIME_RANDOM_SLOW);
-		dprint("slowmeat {}-{}, delay: {}\n", quick_ftos(MOON_MONSTER_WAVETIME_DELAY_SLOW), quick_ftos(MOON_MONSTER_WAVETIME_RANDOM_SLOW), quick_ftos(temp));
+		bprint("slowmeat {}-{}, delay: {}\n", quick_ftos(MOON_MONSTER_WAVETIME_DELAY_SLOW), quick_ftos(MOON_MONSTER_WAVETIME_RANDOM_SLOW), quick_ftos(temp));
 		return temp;
 	}
 
 	temp = MOON_MONSTER_WAVETIME_DELAY_NORMAL + (random() * MOON_MONSTER_WAVETIME_RANDOM_NORMAL);
-	dprint("justmeat {}-{}, delay: {}\n", quick_ftos(MOON_MONSTER_WAVETIME_DELAY_NORMAL), quick_ftos(MOON_MONSTER_WAVETIME_RANDOM_NORMAL), quick_ftos(temp));
+	bprint("justmeat {}-{}, delay: {}\n", quick_ftos(MOON_MONSTER_WAVETIME_DELAY_NORMAL), quick_ftos(MOON_MONSTER_WAVETIME_RANDOM_NORMAL), quick_ftos(temp));
 	return temp;
 };
 
 float() moon_get_despawn_delay =
 {
-	return moon_get_spawn_delay() * MOON_MONSTER_CORPSEDECAY_FACTOR;
+	if ( sv_fastmeat > 0 )
+	{
+		return (MOON_MONSTER_WAVETIME_DELAY_FAST + MOON_MONSTER_WAVETIME_RANDOM_FAST) * MOON_MONSTER_CORPSEDECAY_FACTOR;
+	}
+
+	if ( sv_fastmeat < 0 )
+	{
+		return (MOON_MONSTER_WAVETIME_DELAY_SLOW + MOON_MONSTER_WAVETIME_RANDOM_SLOW) * MOON_MONSTER_CORPSEDECAY_FACTOR;
+	}
+
+	return (MOON_MONSTER_WAVETIME_DELAY_NORMAL + MOON_MONSTER_WAVETIME_RANDOM_NORMAL) * MOON_MONSTER_CORPSEDECAY_FACTOR;
 };
 
 void(entity e) AddToQue =

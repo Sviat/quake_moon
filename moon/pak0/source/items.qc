@@ -3342,8 +3342,8 @@ void() jesus_think =
 				case 7: bprint("jesus: your castle will be your graveyard\n"); break;
 				case 8: bprint("jesus: bring me 10000 gold and i'll give you invulnerability\n"); break;
 				case 9: bprint("jesus: you may need time machine\n"); break;
+				case 10:bprint("jesus: no comments\n"); break;
 			}
-
 			moon_make_chat_noise();
 		}
 	}
@@ -4050,10 +4050,10 @@ void() moon_print_skills =
 	{
 		sprint(self, " (+{})", quick_ftos(bonusdmg));
 	}
-	sprint(self, " max life) |");
+	sprint(self, " max hp) |");
 	if (self.point > 0)
 	{
-		sprint(self, " Use `skill\1` to increase");
+		sprint(self, " Use `skill\1` to raise");
 	}
 	sprint(self, "\n");
 
@@ -4068,10 +4068,10 @@ void() moon_print_skills =
 	{
 		sprint(self, " (+{}%)", quick_ftos(bonusdmg));
 	}
-	sprint(self, " damage) |");
+	sprint(self, " dmg) |");
 	if (self.point > 0)
 	{
-		sprint(self, " Use `skill\2` to increase");
+		sprint(self, " Use `skill\2` to raise");
 	}
 	sprint(self, "\n");
 	sprint(self, "---------------------\n");
@@ -4158,24 +4158,24 @@ void(entity e, float nm) des_scroll =
 
 void() Scroll_list =
 {
-	sprint(self, "\n===== scrolls =====\n"); // óãòïììó =====\n");
-	if ((self.sc_n1 > WF_NORMAL))
+	sprint(self, "===== scrolls =====\n");
+	if ((self.sc_n1 > 0))
 	{
 		des_scroll(self, self.sc_n1);
 	}
-	if ((self.sc_n2 > WF_NORMAL))
+	if ((self.sc_n2 > 0))
 	{
 		des_scroll(self, self.sc_n2);
 	}
-	if ((self.sc_n3 > WF_NORMAL))
+	if ((self.sc_n3 > 0))
 	{
 		des_scroll(self, self.sc_n3);
 	}
-	if ((self.sc_n4 > WF_NORMAL))
+	if ((self.sc_n4 > 0))
 	{
 		des_scroll(self, self.sc_n4);
 	}
-	if ((self.sc_n5 > WF_NORMAL))
+	if ((self.sc_n5 > 0))
 	{
 		des_scroll(self, self.sc_n5);
 	}
@@ -4202,9 +4202,9 @@ void() Cast_Slow =
 	dur = (LOGIC_DEFEND + rint((self.sc_redu_lvl * CL_DEADTIME)));
 	if ((self.mana < rm))
 	{
-		ip("this spell requies ");
+		sprint_self("this spell requies ");
 		sprint_ftos(self, rm);
-		ip(" mana\n");
+		sprint_self(" mana\n");
 		return;
 	}
 	head = findradius(self.origin, rng);
@@ -4273,9 +4273,9 @@ void() Cast_Redu =
 	dur = (LOGIC_DEFEND + (self.sc_redu_lvl * H_MEGA));
 	if ((self.mana < rm))
 	{
-		ip("this spell requies ");
+		sprint_self("this spell requies ");
 		sprint_ftos(self, rm);
-		ip(" mana\n");
+		sprint_self(" mana\n");
 		return;
 	}
 	head = findradius(self.origin, rng);
@@ -4361,9 +4361,9 @@ void() Cast_Brut =
 	dur = (LOGIC_HUNTENEMY + (self.sc_brut_lvl * H_MEGA));
 	if ((self.mana < rm))
 	{
-		ip("this spell requies ");
+		sprint_self("this spell requies ");
 		sprint_ftos(self, rm);
-		ip(" mana\n");
+		sprint_self(" mana\n");
 		return;
 	}
 	if ((self.scroll_time > time))
@@ -4652,7 +4652,7 @@ void(float nm) Cast =
 	{
 		if ((self.sc_n1 <= WF_NORMAL))
 		{
-			ip("no 1st scroll to cast\n");
+			sprint_self("no 1st scroll to cast\n");
 			return;
 		}
 		CastN(self.sc_n1);
@@ -4661,7 +4661,7 @@ void(float nm) Cast =
 	{
 		if ((self.sc_n2 <= WF_NORMAL))
 		{
-			ip("no 2nd scroll to cast\n");
+			sprint_self("no 2nd scroll to cast\n");
 			return;
 		}
 		CastN(self.sc_n2);
@@ -4670,7 +4670,7 @@ void(float nm) Cast =
 	{
 		if ((self.sc_n3 <= WF_NORMAL))
 		{
-			ip("no 3rd scroll to cast\n");
+			sprint_self("no 3rd scroll to cast\n");
 			return;
 		}
 		CastN(self.sc_n3);
@@ -4679,7 +4679,7 @@ void(float nm) Cast =
 	{
 		if ((self.sc_n4 <= WF_NORMAL))
 		{
-			ip("no 4th scroll to cast\n");
+			sprint_self("no 4th scroll to cast\n");
 			return;
 		}
 		CastN(self.sc_n4);
@@ -4688,7 +4688,7 @@ void(float nm) Cast =
 	{
 		if ((self.sc_n5 <= WF_NORMAL))
 		{
-			ip("no 5th scroll to cast\n");
+			sprint_self("no 5th scroll to cast\n");
 			return;
 		}
 		CastN(self.sc_n5);
@@ -5100,7 +5100,7 @@ void() StartSpawning =
 		remove(self);
 		return;
 	}
-	mxx = MaxLvl();
+	mxx = moon_get_max_player_level();
 	MonsterTable(self, mxx);
 	self.nextthink = (time + 0.3);
 	self.think = StartSpawning;
@@ -5185,10 +5185,10 @@ void() brain_think =
 		remove(self);
 		return;
 	}
-	mxx = MaxLvl();
+	mxx = moon_get_max_player_level();
 	mn = MonsterCtable(mxx);
 	SpawnMoster(mn);
-	self.nextthink = ((time + 30) + (random() * 30));
+	self.nextthink = time + moon_get_spawn_delay();
 	self.think = brain_think;
 };
 
@@ -5197,7 +5197,7 @@ void() game_brain =
 	local entity e;
 
 	e = spawn();
-	e.nextthink = ((time + 30) + (random() * 30));
+	e.nextthink = (time + MOON_MONSTER_FISRTWAVETIME_DELAY) + (random() * MOON_MONSTER_FISRTWAVETIME_RANDOM);
 	e.think = brain_think;
 };
 
@@ -5376,23 +5376,23 @@ void(float impulse_code) moon_handle_impulse_server =
 		}
 		break;
 	case MOON_IMPULSE_CODE_FASTMEAT:
-		if (sv_fastmeat <= 0)
+		if (sv_fastmeat > 0)
 		{
-			sv_fastmeat = 1;
-			kex_chat_message_broad(NAME_SERVER, CHAT_COLOR_TECHMSG, "fastmeat enabled\n");
-		} else {
 			sv_fastmeat = 0;
 			kex_chat_message_broad(NAME_SERVER, CHAT_COLOR_TECHMSG, "fastmeat disabled\n");
+		} else {
+			sv_fastmeat = 1;
+			kex_chat_message_broad(NAME_SERVER, CHAT_COLOR_TECHMSG, "fastmeat enabled\n");
 		}
 		break;
 	case MOON_IMPULSE_CODE_SLOWMEAT:
-		if (sv_fastmeat >= 0)
+		if (sv_fastmeat < 0)
 		{
-			sv_fastmeat = -1;
-			kex_chat_message_broad(NAME_SERVER, CHAT_COLOR_TECHMSG, "slo-owmeat enabled\n");
-		} else {
 			sv_fastmeat = 0;
 			kex_chat_message_broad(NAME_SERVER, CHAT_COLOR_TECHMSG, "slo-owmeat disabled\n");
+		} else {
+			sv_fastmeat =-1;
+			kex_chat_message_broad(NAME_SERVER, CHAT_COLOR_TECHMSG, "slo-owmeat enabled\n");
 		}
 		break;
 	case MOON_IMPULSE_CODE_CHEAT_QUAD:
@@ -5411,20 +5411,20 @@ void(float impulse_code) moon_handle_impulse_client =
 		if (self.cl_nohelp == 0)
 		{
 			self.cl_nohelp = 1;
-			kex_chat_message_self(NAME_SETTINGS, CHAT_COLOR_TECHMSG, "nohelp enabled\n");
+			kex_chat_message_self(NAME_SETTINGS, CHAT_COLOR_TECHMSG, "extra help enabled\n");
 		} else {
 			self.cl_nohelp = 0;
-			kex_chat_message_self(NAME_SETTINGS, CHAT_COLOR_TECHMSG, "nohelp disabled\n");
+			kex_chat_message_self(NAME_SETTINGS, CHAT_COLOR_TECHMSG, "extra help disabled\n");
 		}
 		break;
 	case MOON_IMPULSE_CODE_SHOWFPS:
 		if (self.cl_framtime == 0)
 		{
 			self.cl_framtime = 1;
-			kex_chat_message_self(NAME_SETTINGS, CHAT_COLOR_TECHMSG, "cl_fps enabled\n");
+			kex_chat_message_self(NAME_SETTINGS, CHAT_COLOR_TECHMSG, "FPS count enabled\n");
 		} else {
 			self.cl_framtime = 0;
-			kex_chat_message_self(NAME_SETTINGS, CHAT_COLOR_TECHMSG, "cl_fps disabled\n");
+			kex_chat_message_self(NAME_SETTINGS, CHAT_COLOR_TECHMSG, "FPS count disabled\n");
 		}
 		break;
 	default:
@@ -5506,7 +5506,7 @@ void() MonsterDead =
 {
 	self.solid = SOLID_NOT;
 	self.think = SUB_Remove;
-	self.nextthink = time + moon_get_spawn_delay();
+	self.nextthink = time + moon_get_despawn_delay();
 };
 
 void() moon_make_chat_noise =
@@ -6336,7 +6336,7 @@ void(entity who) moon_spawn_guard_items = // Works - dont touch
 {
 	local float lv;
 
-	lv = MaxLvl();
+	lv = moon_get_max_player_level();
 	who.items = ((who.items + IT_AXE) + IT_SHOTGUN);
 	if ((lv <= 4))
 	{
@@ -7979,7 +7979,7 @@ void(entity e) moon_generate_magic_prefix =
 	local float r;
 	local float mxx;
 
-	mxx = MaxLvl();
+	mxx = moon_get_max_player_level();
 	r = moon_generate_trait_prefix_code(mxx);
 	e.magic_typeone = r % (MOON_ITEM_TRAIT_MAX_EFFECT + 1); // assuming trait fits the grid [LOW1-8,NORMAL1-8,HIGH1-8,EPIC1-8]
 	switch(r)
@@ -8125,7 +8125,7 @@ void(entity e) moon_generate_magic_postfix =
 	local float r;
 	local float mxx;
 
-	mxx = MaxLvl();
+	mxx = moon_get_max_player_level();
 	r = moon_generate_trait_postfix_code(mxx);
 	e.magic_typetwo = r % (MOON_ITEM_TRAIT_MAX_EFFECT + 1);
 
@@ -8247,7 +8247,7 @@ void() MagicItemTouch =
 		{
 			if ((self.classname != MOON_ITEM_TRADED_CLASSNAME))
 			{
-				l = MaxLvl();
+				l = moon_get_max_player_level();
 				if ((l < 4))
 				{
 					sprint(other, "Use `use` command to pick it up.\n");
@@ -8578,7 +8578,7 @@ void() UpgradeTouch =
 	if (other.classname != MOON_PLAYER_CLASSNAME) { return; }
 	if (other.health <= 0) { return; }
 
-	pl = MaxLvl();
+	pl = moon_get_max_player_level();
 	switch(self.cnt)
 	{
 	case MOON_ITEM_GATEALERT_CODE:
@@ -8783,7 +8783,7 @@ void(entity who) moon_spawn_drop_potion =
 	item.movetype = MOVETYPE_TOSS;
 	item.angles_y = rint((random() * 360));
 	setmodel(item, "progs/potion.mdl");
-	pl = MaxLvl();
+	pl = moon_get_max_player_level();
 	if ((pl < MOON_ITEM_LVLTHRESHOLD_POTION_LOWER))
 	{
 		item.healamount = rint(((random() * MOON_ITEM_POTION_SMALL_RANDOM) + MOON_ITEM_POTION_SMALL_BASE));
@@ -9348,7 +9348,7 @@ void(entity who) DropGold =
 	local float bngld;
 	local float player_maxlvl;
 
-	player_maxlvl = MaxLvl();
+	player_maxlvl = moon_get_max_player_level();
 	item = spawn();
 	if ((who.classname == "derrick"))
 	{
@@ -9560,7 +9560,7 @@ void(entity target) level_up_target =
 		}
 	}
 
-	sound(target, CHAN_BODY, "moon/misc/levelup.wav", CHSCAM_ON, ATTN_NORM);
+	sound(target, CHAN_BODY, "moon/misc/levelup.wav", 1, ATTN_NORM);
 	sprint(target, "=== Level Up! ===\n");
 	sprint(target, "You are now level {}\n", quick_ftos(target.lvl));
 	sprint(target, "Get {} experience for the next Level.\n", quick_ftos(target.nextexp));

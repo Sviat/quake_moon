@@ -354,9 +354,6 @@ float MON_UNIQUECHANCE = 0.04;
 float MON_MAGICCHANCE  = 0.03;
 float MON_CAMPERCHANCE = 0.1;
 float MON_CAMPTIME    = 30;
-float MON_WAVETIME_FAST   = 1;
-float MON_WAVETIME_NORMAL = 10;
-float MON_WAVETIME_SLOW   = 21;
 float CL_DEADTIME    = 1.5;
 float MENTAT_TIME    = 90;
 float IDLE_TIME = 5;
@@ -690,7 +687,7 @@ void(float shotcount, vector dir, vector spread) FireBullets;
 .float num;
 float() FindWaypoint;
 void(entity who) DropGold;
-float() MaxLvl;
+float() moon_get_max_player_level;
 .float cost;
 .float free;
 .float gold;
@@ -1196,6 +1193,16 @@ string MOON_ITEM_HEART_EFFECT 			= "Book of Immortality (\sHeart\s life increase
 // // end of list of Upgrades
 
 // // Monster related consts
+float MOON_MONSTER_FISRTWAVETIME_DELAY		= 30; // for the first wave Host has no chance to use fast/slowmeat
+float MOON_MONSTER_FISRTWAVETIME_RANDOM		= 30;
+float MOON_MONSTER_WAVETIME_DELAY_FAST   	= 15;
+float MOON_MONSTER_WAVETIME_DELAY_NORMAL 	= 30;
+float MOON_MONSTER_WAVETIME_DELAY_SLOW   	= 45;
+float MOON_MONSTER_WAVETIME_RANDOM_FAST   	= 35;
+float MOON_MONSTER_WAVETIME_RANDOM_NORMAL 	= 30;
+float MOON_MONSTER_WAVETIME_RANDOM_SLOW   	= 20;
+float MOON_MONSTER_CORPSEDECAY_FACTOR   	= 2; // ~how many waves stays corpse
+
 float MOON_MONSTER_CODE_SOLDIER 	= 1;
 float MOON_MONSTER_CODE_ENFORCER 	= 2;
 float MOON_MONSTER_CODE_SPIDER 		= 3;
@@ -1299,11 +1306,6 @@ void(float f) bprint_ftos =
 	bprint(str);
 };
 
-void(string f) ip = // TODO: slowly get rid of it
-{
-	sprint(self, f);
-};
-
 float(float n1, float n2) percent =
 {
 	local float a;
@@ -1312,7 +1314,7 @@ float(float n1, float n2) percent =
 	return (a);
 };
 
-float() MaxLvl =
+float() moon_get_max_player_level =
 {
 	local entity e;
 	local float maxlvl;
@@ -1332,20 +1334,30 @@ float() MaxLvl =
 
 float() moon_get_spawn_delay =
 {
+	float temp;
+
 	if ( sv_fastmeat == 1 )
 	{
-		dprint("fastmeat, delay: {}-{}\n", quick_ftos(MON_WAVETIME_FAST), quick_ftos(2*MON_WAVETIME_FAST));
-		return ( MON_WAVETIME_FAST + (random() * MON_WAVETIME_FAST));
+		temp = MOON_MONSTER_WAVETIME_DELAY_FAST + (random() * MOON_MONSTER_WAVETIME_RANDOM_FAST);
+		dprint("fastmeat {}-{}, delay: {}\n", quick_ftos(MOON_MONSTER_WAVETIME_DELAY_FAST), quick_ftos(MOON_MONSTER_WAVETIME_RANDOM_FAST), quick_ftos(temp));
+		return temp;
 	}
 
 	if ( sv_fastmeat == -1 )
 	{
-		dprint("slowmeat, delay: {}-{}\n", quick_ftos(MON_WAVETIME_SLOW), quick_ftos(2*MON_WAVETIME_SLOW));
-		return ( MON_WAVETIME_SLOW + (random() * MON_WAVETIME_SLOW));
+		temp = MOON_MONSTER_WAVETIME_DELAY_SLOW + (random() * MOON_MONSTER_WAVETIME_RANDOM_SLOW);
+		dprint("slowmeat {}-{}, delay: {}\n", quick_ftos(MOON_MONSTER_WAVETIME_DELAY_SLOW), quick_ftos(MOON_MONSTER_WAVETIME_RANDOM_SLOW), quick_ftos(temp));
+		return temp;
 	}
 
-	dprint("justmeat, delay: {}-{}\n", quick_ftos(MON_WAVETIME_NORMAL), quick_ftos(2*MON_WAVETIME_NORMAL));
-	return ( MON_WAVETIME_NORMAL + (random() * MON_WAVETIME_NORMAL));
+	temp = MOON_MONSTER_WAVETIME_DELAY_NORMAL + (random() * MOON_MONSTER_WAVETIME_RANDOM_NORMAL);
+	dprint("justmeat {}-{}, delay: {}\n", quick_ftos(MOON_MONSTER_WAVETIME_DELAY_NORMAL), quick_ftos(MOON_MONSTER_WAVETIME_RANDOM_NORMAL), quick_ftos(temp));
+	return temp;
+};
+
+float() moon_get_despawn_delay =
+{
+	return moon_get_spawn_delay() * MOON_MONSTER_CORPSEDECAY_FACTOR;
 };
 
 void(entity e) AddToQue =
@@ -1363,5 +1375,5 @@ void(entity e) AddToQue =
 	z.solid = SOLID_NOT;
 	z.velocity = e.velocity;
 	z.think = SUB_Remove;
-	z.nextthink = time + moon_get_spawn_delay();
+	z.nextthink = time + moon_get_despawn_delay();
 };

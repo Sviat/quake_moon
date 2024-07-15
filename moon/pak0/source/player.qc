@@ -545,7 +545,7 @@ void() PlayerDead =
 	if ((self.classname == "guard"))
 	{
 		self.think = SUB_Remove;
-		self.nextthink = time + moon_get_spawn_delay();
+		self.nextthink = time + moon_get_despawn_delay();
 	}
 };
 
@@ -590,7 +590,7 @@ void(string gibname, float dm) ThrowGib =
 	new.avelocity_z = (random() * 600);
 	new.ltime = time;
 	new.think = SUB_Remove;
-	new.nextthink = time + moon_get_spawn_delay(); // default (non-fast, non-slow) was 7+rnd*7, now 10+rnd*10
+	new.nextthink = time + moon_get_despawn_delay(); // default (non-fast, non-slow) was 7+rnd*7, now 10+rnd*10
 	new.frame = WF_NORMAL;
 	new.flags = WF_NORMAL;
 };
@@ -626,7 +626,7 @@ void(string gibname, float dm) FakeThrowHead =
 	setsize(e, '-16 -16 0', '16 16 3');
 	e.avelocity = (crandom() * '0 600 0');
 	e.think = SUB_Remove;
-	e.nextthink = time + moon_get_spawn_delay(); // default (non-fast, non-slow) was 7+rnd*7, now 10+rnd*10
+	e.nextthink = time + moon_get_despawn_delay(); // default (non-fast, non-slow) was 7+rnd*7, now 10+rnd*10
 };
 
 void() GibPlayer =
@@ -656,7 +656,7 @@ void() GibPlayer =
 	if ((self.classname == MOON_GUARD_CLASSNAME))
 	{
 		self.think = SUB_Remove;
-		self.nextthink = time + moon_get_spawn_delay();
+		self.nextthink = time + moon_get_despawn_delay();
 	}
 };
 

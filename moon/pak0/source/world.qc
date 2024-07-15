@@ -1279,7 +1279,7 @@ void(entity targ, entity attacker) ClientObituary =
 void() removebody =
 {
 	self.think = SUB_Remove;
-	self.nextthink = time + moon_get_spawn_delay();
+	self.nextthink = time + moon_get_despawn_delay();
 };
 
 void() playe_die_ax1 = [ 0, playe_die_ax2 ]
@@ -1380,6 +1380,6 @@ void() DieUnhead =
 	if ((self.classname == MOON_GUARD_CLASSNAME))
 	{
 		self.think = SUB_Remove;
-		self.nextthink = time + moon_get_spawn_delay();
+		self.nextthink = time + moon_get_despawn_delay();
 	}
 };

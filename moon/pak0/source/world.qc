@@ -839,13 +839,19 @@ void() CheckCrosshair =
 		return;
 	}
 	self.console_time = (time + MON_REACTIONTIME);
-	traceline(self.origin, (self.origin + (v_forward * 1500)), FALSE, self);
-	if ((trace_ent.flags & FL_MONSTER))
+	traceline(self.origin, (self.origin + (v_forward * 1500)), 2, self);
+	if ( trace_ent.flags & FL_MONSTER )
 	{
-		centerprint5(self, trace_ent.prefix_one, trace_ent.prefix_two, trace_ent.netname, trace_ent.prefix_three, trace_ent.prefix_four);
-	}
-	else
+		centerprint(self, "{}{}{}{}{}", trace_ent.prefix_one, trace_ent.prefix_two, trace_ent.netname, trace_ent.prefix_three, trace_ent.prefix_four);
+	} else
+	if ( trace_ent.classname == MOON_PLAYER_CLASSNAME )
 	{
+		centerprint(self, trace_ent.netname);
+	} else
+	if ( trace_ent.classname == MOON_GUARD_CLASSNAME )
+	{
+		centerprint(self, "comrade");
+	} else {
 		centerprint(self, s_wiz);
 	}
 };

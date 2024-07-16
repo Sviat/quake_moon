@@ -564,14 +564,11 @@ void(entity e, float enc) spawn_ogre =
 	m.movetype = MOVETYPE_STEP;
 	setmodel(m, "progs/monster4.mdl");
 	setsize(m, VEC_HULL2_MIN, VEC_HULL2_MAX);
-	if ((enc < WF_NORMAL))
-	{
-		enc = WF_NORMAL;
-	}
+	m.view_ofs = '0 0 25'; // TODO: fix for each of them
 	m.netname = "ogre";
 	m.skin = WF_NORMAL;
 	m.speed = 230;
-	GetPrfx(m, enc);
+	GetMonsterPrefixLevel(m, enc);
 	if ((enc == WF_NORMAL))
 	{
 		m.health = 200;
@@ -679,7 +676,6 @@ void(entity e, float enc) spawn_ogre =
 	m.shootframe = FALSE;
 	makevectors(m.angles);
 	spawn_tdeath(m.origin, m);
-	e.count = (e.count - CHSCAM_ON);
 	m.th_stand = ogre_stand;
 	m.th_run = ogre_run;
 	m.th_die = ogre_die;
@@ -885,14 +881,11 @@ void(entity e, float enc) spawn_snake =
 	setmodel(m, "progs/monster8.mdl");
 	setsize(m, '-22 -22 -24', '22 22 48');
 	m.speed = 220;
-	if ((enc < WF_NORMAL))
-	{
-		enc = WF_NORMAL;
-	}
 	m.green_blood = CHSCAM_ON;
+	m.view_ofs = '0 0 25'; // TODO: fix for each of them
 	m.netname = "snake";
 	m.lvl = enc;
-	GetPrfx(m, enc);
+	GetMonsterPrefixLevel(m, enc);
 	if ((enc == WF_NORMAL))
 	{
 		m.health = 140;
@@ -1000,5 +993,4 @@ void(entity e, float enc) spawn_snake =
 	makevectors(m.angles);
 	spawn_tfog((m.origin + (v_forward * GRD_PATROLTIME)));
 	spawn_tdeath(m.origin, m);
-	e.count = (e.count - START_OFF);
 };

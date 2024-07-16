@@ -1606,23 +1606,20 @@ void(entity e, float enc) spawn_spider =
 	m.movetype = MOVETYPE_STEP;
 	setmodel(m, "progs/monster2.mdl");
 	setsize(m, '-22 -22 -24', '22 22 5');
-	if ((enc < WF_NORMAL))
-	{
-		enc = WF_NORMAL;
-	}
-	m.green_blood = START_OFF;
+	m.green_blood = 1;
+	m.view_ofs = '0 0 25'; // TODO: fix for each of them
 	m.netname = "spider";
 	m.speed = 225;
 	m.lvl = enc;
-	GetPrfx(m, enc);
-	if ((enc == WF_NORMAL))
+	GetMonsterPrefixLevel(m, enc);
+	if ((enc == 0))
 	{
 		m.health = 180;
 		m.exp = DOOR_GOLD_KEY;
 	}
 	else
 	{
-		if ((enc >= START_OFF))
+		if ((enc >= 1))
 		{
 			m.health = (180 + (enc * GRD_PATROLTIME));
 			m.exp = (DOOR_GOLD_KEY + (enc * SVC_SETVIEWPORT));
@@ -1632,19 +1629,19 @@ void(entity e, float enc) spawn_spider =
 			}
 			if ((random() > 0.6))
 			{
-				m.poison = START_OFF;
+				m.poison = 1;
 				m.netname = "poison spider";
 			}
 		}
 	}
 	if ((random() < MON_UNIQUECHANCE))
 	{
-		unique = rint(((random() * DOOR_DONT_LINK) + START_OFF));
+		unique = rint(((random() * DOOR_DONT_LINK) + 1));
 	}
-	if ((unique == START_OFF))
+	if ((unique == 1))
 	{
-		m.skin = WF_NORMAL;
-		m.ability = START_OFF;
+		m.skin = 0;
+		m.ability = 1;
 		m.items = IT_QUAD;
 		m.super_damage_finished = (time + 999);
 		m.effects = (m.effects | EF_DIMLIGHT);
@@ -1652,26 +1649,26 @@ void(entity e, float enc) spawn_spider =
 	}
 	else
 	{
-		if ((unique == SILENT))
+		if ((unique == 2))
 		{
-			m.skin = START_OFF;
-			m.ability = SILENT;
+			m.skin = 1;
+			m.ability = 2;
 			m.prefix_one = "iron ";
 		}
 		else
 		{
-			if ((unique == LOGIC_FINDDEFEND))
+			if ((unique == 3))
 			{
-				m.skin = SILENT;
-				m.ability = LOGIC_FINDDEFEND;
+				m.skin = 2;
+				m.ability = 3;
 				m.prefix_one = "stone ";
 			}
 			else
 			{
-				if ((unique == DOOR_DONT_LINK))
+				if ((unique == 4))
 				{
-					m.skin = LOGIC_FINDDEFEND;
-					m.ability = DOOR_DONT_LINK;
+					m.skin = 3;
+					m.ability = 4;
 					m.prefix_one = "blood ";
 				}
 				else
@@ -1690,22 +1687,22 @@ void(entity e, float enc) spawn_spider =
 	if ((random() < MON_MAGICCHANCE))
 	{
 		GetPrefix(m);
-		if ((m.skin == WF_NORMAL))
+		if ((m.skin == 0))
 		{
-			m.skin = DOOR_DONT_LINK;
+			m.skin = 0; // was 4, but skin out of range
 		}
 	}
 	else
 	{
 		if ((random() < MON_CAMPERCHANCE))
 		{
-			if ((unique == WF_NORMAL))
+			if ((unique == 0))
 			{
 				GenegateCampTarget(m);
 			}
 		}
 	}
-	if ((unique >= START_OFF))
+	if ((unique >= 1))
 	{
 		m.exp = (m.exp * 1.25);
 	}
@@ -1721,7 +1718,6 @@ void(entity e, float enc) spawn_spider =
 	m.shootframe = FALSE;
 	makevectors(m.angles);
 	spawn_tdeath(m.origin, m);
-	e.count = (e.count - START_OFF);
 };
 
 void() army_stand =
@@ -1731,7 +1727,7 @@ void() army_stand =
 	{
 		if ((self.shootframe == TRUE))
 		{
-			if ((self.continues == WF_NORMAL))
+			if ((self.continues == 0))
 			{
 				if ((self.walkframe >= DOOR_GOLD_KEY))
 				{
@@ -1782,7 +1778,7 @@ void() army_run =
 	{
 		if ((self.shootframe == TRUE))
 		{
-			if ((self.continues == WF_NORMAL))
+			if ((self.continues == 0))
 			{
 				if ((self.walkframe >= DOOR_GOLD_KEY))
 				{
@@ -1829,7 +1825,7 @@ void() army_run =
 void() army_fire =
 {
 	self.shootframe = TRUE;
-	if ((self.continues == WF_NORMAL))
+	if ((self.continues == 0))
 	{
 		self.walkframe = WF_NORMAL;
 	}
@@ -1987,10 +1983,6 @@ void(entity e, float enc) spawn_soldier =
 	local float unique;
 	local float zz;
 
-	if ((enc < WF_NORMAL))
-	{
-		enc = WF_NORMAL;
-	}
 	spot = MonterSpawnPoint();
 	if ((spot == world))
 	{
@@ -2001,7 +1993,8 @@ void(entity e, float enc) spawn_soldier =
 	m.movetype = MOVETYPE_STEP;
 	setmodel(m, "progs/monster0.mdl");
 	setsize(m, VEC_HULL_MIN, '16 16 40');
-	m.skin = WF_NORMAL;
+	m.skin = 0;
+	m.view_ofs = '0 0 25'; // TODO: fix for each of them
 	m.netname = "soldier";
 	m.speed = 240;
 	m.misspeed = 1000;
@@ -2012,10 +2005,10 @@ void(entity e, float enc) spawn_soldier =
 			unique = rint(((random() * DOOR_DONT_LINK) + START_OFF));
 		}
 	}
-	if ((unique == START_OFF))
+	if ((unique == 1))
 	{
-		m.skin = WF_NORMAL;
-		m.ability = START_OFF;
+		m.skin = 0;
+		m.ability = 1;
 		m.items = IT_QUAD;
 		m.super_damage_finished = (time + 999);
 		m.effects = (m.effects | EF_DIMLIGHT);
@@ -2023,33 +2016,33 @@ void(entity e, float enc) spawn_soldier =
 	}
 	else
 	{
-		if ((unique == SILENT))
+		if ((unique == 2))
 		{
-			m.skin = START_OFF;
-			m.ability = SILENT;
+			m.skin = 1;
+			m.ability = 2;
 			m.prefix_one = "iron ";
 		}
 		else
 		{
-			if ((unique == LOGIC_FINDDEFEND))
+			if ((unique == 3))
 			{
-				m.skin = SILENT;
-				m.ability = LOGIC_FINDDEFEND;
+				m.skin = 2;
+				m.ability = 3;
 				m.prefix_one = "stone ";
 			}
 			else
 			{
-				if ((unique == DOOR_DONT_LINK))
+				if ((unique == 4))
 				{
-					m.skin = LOGIC_FINDDEFEND;
-					m.ability = DOOR_DONT_LINK;
+					m.skin = 3;
+					m.ability = 4;
 					m.prefix_one = "blood ";
 				}
 				else
 				{
-					if ((unique == SVC_SETVIEWPORT))
+					if ((unique == 5))
 					{
-						m.ability = SVC_SETVIEWPORT;
+						m.ability = 5;
 						m.speed = 450;
 						m.misspeed = 1800;
 						m.prefix_one = "fast ";
@@ -2058,11 +2051,11 @@ void(entity e, float enc) spawn_soldier =
 			}
 		}
 	}
-	GetPrfx(m, enc);
-	if ((enc == WF_NORMAL))
+	GetMonsterPrefixLevel(m, enc);
+	if ((enc == 0))
 	{
 		m.health = MON_CAMPTIME;
-		m.exp = SVC_SETVIEWPORT;
+		m.exp = 5;
 		if ((random() < MON_BACKTIME))
 		{
 			m.netname = "shotgun soldier";
@@ -2071,19 +2064,19 @@ void(entity e, float enc) spawn_soldier =
 		else
 		{
 			m.netname = "nail soldier";
-			m.continues = START_OFF;
+			m.continues = 1;
 			m.items = (m.items | IT_NAILGUN);
 		}
 	}
 	else
 	{
-		if ((enc == START_OFF))
+		if ((enc == 1))
 		{
 			m.health = GRD_DEFENDTIME;
 			m.exp = TE_WIZSPIKE;
 			if ((random() < MON_BACKTIME))
 			{
-				m.continues = START_OFF;
+				m.continues = 1;
 				m.netname = "supernail soldier";
 				m.items = (m.items | IT_SUPER_NAILGUN);
 			}
@@ -2100,7 +2093,7 @@ void(entity e, float enc) spawn_soldier =
 				zz = random();
 				m.health = (MON_CAMPTIME + (enc * GRD_PATROLTIME));
 				m.exp = (TE_WIZSPIKE + (enc * DOOR_DONT_LINK));
-				if ((enc > SVC_SETVIEWPORT))
+				if ((enc > 5))
 				{
 					m.damage_bonus = ((enc * 15) - 75);
 				}
@@ -2114,13 +2107,13 @@ void(entity e, float enc) spawn_soldier =
 					if ((zz < MON_STUCKTIME))
 					{
 						m.netname = "nail soldier";
-						m.continues = START_OFF;
+						m.continues = 1;
 						m.items = (m.items | IT_NAILGUN);
 					}
 				}
 				if ((zz < 0.7))
 				{
-					m.continues = START_OFF;
+					m.continues = 1;
 					m.netname = "supernail soldier";
 					m.items = (m.items | IT_SUPER_NAILGUN);
 				}
@@ -2135,7 +2128,7 @@ void(entity e, float enc) spawn_soldier =
 	if ((random() < MON_MAGICCHANCE))
 	{
 		GetPrefix(m);
-		if ((m.skin == WF_NORMAL))
+		if ((m.skin == 0))
 		{
 			m.skin = DOOR_DONT_LINK;
 		}
@@ -2144,7 +2137,7 @@ void(entity e, float enc) spawn_soldier =
 	{
 		if ((random() < MON_CAMPERCHANCE))
 		{
-			if ((unique == WF_NORMAL))
+			if ((unique == 0))
 			{
 				GenegateCampTarget(m);
 			}
@@ -2162,7 +2155,6 @@ void(entity e, float enc) spawn_soldier =
 	m.shootframe = FALSE;
 	makevectors(m.angles);
 	spawn_tdeath(m.origin, m);
-	e.count = (e.count - START_OFF);
 	m.th_stand = army_stand;
 	m.th_run = army_run;
 	m.th_missile = army_fire;

@@ -291,8 +291,6 @@ string (string s) precache_sound2 = #76;
 string (string s) precache_file2 = #77;
 void (entity e) setspawnparms = #78;
 
-void (entity client, string s, ...) centerprint5 = #0:ex_centerprint;	// sprint, but in middle
-
 // Debug rendering functions. KEX QuakeC
 void draw_point( vector point, float colormap, float lifetime, float depthtest ) = #0:ex_draw_point;
 void draw_line( vector start, vector end, float colormap, float lifetime, float depthtest ) = #0:ex_draw_line;

@@ -219,10 +219,6 @@ void(entity e, float enc) spawn_shalrath =
 	local entity spot;
 	local float unique;
 
-	if ((enc < WF_NORMAL))
-	{
-		enc = WF_NORMAL;
-	}
 	spot = MonterSpawnPoint();
 	if ((spot == world))
 	{
@@ -236,10 +232,11 @@ void(entity e, float enc) spawn_shalrath =
 	m.enchanced = WF_NORMAL;
 	m.speed = 200;
 	m.health = 300;
+	m.view_ofs = '0 0 25'; // TODO: fix for each of them
 	m.netname = "shalrath";
 	m.skin = WF_NORMAL;
 	m.misspeed = 700;
-	GetPrfx(m, enc);
+	GetMonsterPrefixLevel(m, enc);
 	if ((enc == WF_NORMAL))
 	{
 		m.health = 300;
@@ -355,7 +352,6 @@ void(entity e, float enc) spawn_shalrath =
 	m.attack_finished = time;
 	makevectors(m.angles);
 	spawn_tdeath(m.origin, m);
-	e.count = (e.count - START_OFF);
 };
 
 void() Mage_Cast =
@@ -619,10 +615,6 @@ void(entity e, float enc) spawn_mage =
 	local entity spot;
 	local float unique;
 
-	if ((enc < WF_NORMAL))
-	{
-		enc = WF_NORMAL;
-	}
 	spot = MonterSpawnPoint();
 	if ((spot == world))
 	{
@@ -634,8 +626,9 @@ void(entity e, float enc) spawn_mage =
 	setmodel(m, "progs/monster3.mdl");
 	setsize(m, VEC_HULL_MIN, '16 16 40');
 	m.speed = 205;
+	m.view_ofs = '0 0 25'; // TODO: fix for each of them
 	m.netname = "mage";
-	GetPrfx(m, enc);
+	GetMonsterPrefixLevel(m, enc);
 	if ((enc == WF_NORMAL))
 	{
 		m.health = 140;
@@ -699,7 +692,6 @@ void(entity e, float enc) spawn_mage =
 	m.shootframe = FALSE;
 	makevectors(m.angles);
 	spawn_tdeath(m.origin, m);
-	e.count = (e.count - START_OFF);
 	m.th_stand = mage_stand;
 	m.th_run = mage_run;
 	m.th_missile = mage_fire;
@@ -1021,7 +1013,7 @@ void() enf_die =
 	}
 };
 
-void(entity e, float enc) spawn_enforcer =
+void(entity spawner, float enc) spawn_enforcer =
 {
 	local entity m;
 	local entity spot;
@@ -1043,10 +1035,11 @@ void(entity e, float enc) spawn_enforcer =
 	setsize(m, VEC_HULL_MIN, '16 16 40');
 	m.enchanced = WF_NORMAL;
 	m.speed = 240;
+	m.view_ofs = '0 0 25'; // TODO: fix for each of them
 	m.netname = "enforcer";
 	m.skin = WF_NORMAL;
 	m.misspeed = 800;
-	GetPrfx(m, enc);
+	GetMonsterPrefixLevel(m, enc);
 	if ((enc == WF_NORMAL))
 	{
 		m.health = 80;
@@ -1162,5 +1155,4 @@ void(entity e, float enc) spawn_enforcer =
 	m.attack_finished = time;
 	makevectors(m.angles);
 	spawn_tdeath(m.origin, m);
-	e.count = (e.count - START_OFF);
 };

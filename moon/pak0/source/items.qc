@@ -4695,13 +4695,13 @@ void(float nm) Cast =
 	}
 };
 
-void(entity who, float l) GetPrfx =
+void(entity who, float l) GetMonsterPrefixLevel =
 {
 	local string s;
 
 	if ((l < 0))
 	{
-		bprint("ERROR IN GetPrfx(...): player level is negative value.\n");
+		bprint("ERROR IN GetMonsterPrefixLevel(...): player level is negative value.\n");
 	}
 	switch(l)
 	{
@@ -4760,36 +4760,35 @@ void(entity who, float l) GetPrfx =
 	}
 
 	who.prefix_two = s;
-	who.view_ofs = '0 0 25';
 };
 
-float(float mn) MonsterCtable = // rename later to moon_get_monster_wave_count
+float(float level) moon_get_monster_wave_size =
 {
-	if ( mn <= 1 )
+	if ( level <= 1 )
 	{
 		return random_int(2, 5);
 	}
-	if ( mn == 2 )
+	if ( level == 2 )
 	{
 		return random_int(2, 6);
 	}
-	if ( mn == 3 )
+	if ( level == 3 )
 	{
 		return random_int(2, 6);
 	}
-	if ( mn < 9 )
+	if ( level < 9 )
 	{
 		return random_int(3, 7);
 	}
-	if ( mn < 18 )
+	if ( level < 18 )
 	{
 		return random_int(3, 8);
 	}
-	if ( mn < 48 )
+	if ( level < 48 )
 	{
 		return random_int(4, 9);
 	}
-	//if ( mn >= 48 )
+	//if ( level >= 48 )
 	return random_int(5, 11);
 };
 
@@ -4823,7 +4822,7 @@ float(float lvl) MonsterGenType =
 	return random_int(MOON_MONSTER_CODE_SOLDIER, MOON_MONSTER_CODE_SHALRATH);
 };
 
-void(entity who, float l) MonsterTable = // rename later to moon_spawn_monster
+void(entity spawner, float l) MonsterTable = // rename later to moon_spawn_monster
 {
 	local float gen;
 	local float shift;
@@ -4832,32 +4831,33 @@ void(entity who, float l) MonsterTable = // rename later to moon_spawn_monster
 	shift = rint(random() * 3);
 	shifted_lvl = l - shift;
 
+	spawner.count = (spawner.count - 1);
 	gen = MonsterGenType(l);
-	switch(gen)
+	switch(gen)	// TODO: split/refactor spawn_X functions to handle only specific to X stuff there
 	{
 	case MOON_MONSTER_CODE_SOLDIER:
-		spawn_soldier(self, shifted_lvl - MOON_MONSTER_BASELEVEL_SOLDIER);
+		spawn_soldier(spawner, clampd(0, shifted_lvl - MOON_MONSTER_BASELEVEL_SOLDIER, 50) );
 		break;
 	case MOON_MONSTER_CODE_ENFORCER:
-		spawn_enforcer(self, (shifted_lvl - MOON_MONSTER_BASELEVEL_ENFORCER));
+		spawn_enforcer(spawner, clampd(0, shifted_lvl - MOON_MONSTER_BASELEVEL_ENFORCER, 50));
 		break;
 	case MOON_MONSTER_CODE_SPIDER:
-		spawn_spider(self, (shifted_lvl - MOON_MONSTER_BASELEVEL_SPIDER));
+		spawn_spider(spawner, clampd(0, shifted_lvl - MOON_MONSTER_BASELEVEL_SPIDER, 50));
 		break;
 	case MOON_MONSTER_CODE_OGRE:
-		spawn_ogre(self, (shifted_lvl - MOON_MONSTER_BASELEVEL_OGRE));
+		spawn_ogre(spawner, clampd(0, shifted_lvl - MOON_MONSTER_BASELEVEL_OGRE, 50));
 		break;
 	case MOON_MONSTER_CODE_SNAKE:
-		spawn_snake(self, (shifted_lvl - MOON_MONSTER_BASELEVEL_SNAKE));
+		spawn_snake(spawner, clampd(0, shifted_lvl - MOON_MONSTER_BASELEVEL_SNAKE, 50));
 		break;
 	case MOON_MONSTER_CODE_MAGE:
-		spawn_mage(self, (shifted_lvl - MOON_MONSTER_BASELEVEL_MAGE));
+		spawn_mage(spawner, clampd(0, shifted_lvl - MOON_MONSTER_BASELEVEL_MAGE, 50));
 		break;
 	case MOON_MONSTER_CODE_SHALRATH:
-		spawn_shalrath(self, (shifted_lvl - MOON_MONSTER_BASELEVEL_SHALRATH));
+		spawn_shalrath(spawner, clampd(0, shifted_lvl - MOON_MONSTER_BASELEVEL_SHALRATH, 50));
 		break;
 	default:
-		bprint("ERROR IN MonsterTable(...): gen spawns null monster\n");
+		dprint("ERROR IN MonsterTable(...): gen spawns null monster\n");
 	}
 };
 
@@ -4869,7 +4869,7 @@ void(float opt) Remove_chase_cam;
 float chasecam_dist    = 118;
 float chasecam_zofs    = 24;
 
-void(entity cam_owner) Start_chase_cam =
+void(entity cam_owner) Start_chase_cam = // Black magic Voodoo shit
 {
 	local entity chase_cam;
 
@@ -5186,7 +5186,7 @@ void() brain_think =
 		return;
 	}
 	mxx = moon_get_max_player_level();
-	mn = MonsterCtable(mxx);
+	mn = moon_get_monster_wave_size(mxx);
 	SpawnMoster(mn);
 	self.nextthink = time + moon_get_spawn_delay();
 	self.think = brain_think;
@@ -5201,7 +5201,7 @@ void() game_brain =
 	e.think = brain_think;
 };
 
-void() info_monster_start =
+void() info_monster_start = // Empty ctor()
 {
 };
 
@@ -5242,9 +5242,10 @@ void() Prepare =
 	self.mana = 35;
 	self.max_mana = 35;
 	self.mosterskilled = 0;
-	sv_alwaysday = 0;
 	self.up_bullet = 0;
 	self.up_nail = 0;
+	sv_alwaysday = 0;
+	sv_fastmeat = 0;
 	up_alert = 0;
 	if ((waypoints_ok == FALSE))
 	{

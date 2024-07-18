@@ -940,7 +940,14 @@ string MOON_ITEM_POTION_BIG_NETNAME = "big healing potion";
 float MOON_ITEM_POTION_BIG_BASE 		= 65;
 float MOON_ITEM_POTION_BIG_RANDOM 		= 100;
 
-// MOON_ITEM_AMMO -> MOON_AMMO . Ammo boxes can only be bought
+
+// MOON_ITEM_AMMO -> MOON_AMMO
+// Player backpack soft limits
+float MOON_AMMO_MAX_SHELL 	= 100;	// Initial max, before any upgrades
+float MOON_AMMO_MAX_NAIL 	= 200;	// Initial max, before any upgrades
+float MOON_AMMO_MAX_ROCKET 	= 100;
+float MOON_AMMO_MAX_CELL 	= 100;
+// These ammo boxes can be bought in shop, on market or looted, need to update later
 string MOON_AMMO_SHELLS_DISPLAYNAME = "shells";
 float MOON_AMMO_SHELLS_BASE = 10;
 float MOON_AMMO_SHELLS_RANDOM = 20;
@@ -1051,12 +1058,6 @@ string MOON_ITEM_ARMOR_DISPLAY = "armor";
 
 string MOON_ITEM_RING_NETNAME = "ring";
 string MOON_ITEM_RING_DISPLAY = "ring";
-
-// MOON_ITEM_AMMO -> MOON_AMMO
-float MOON_AMMO_MAX_SHELL 	= 100;	// Initial max, before any upgrades
-float MOON_AMMO_MAX_NAIL 	= 200;	// Initial max, before any upgrades
-float MOON_AMMO_MAX_ROCKET 	= 100;
-float MOON_AMMO_MAX_CELL 	= 100;
 
 float MOON_ITEM_RARITY_LOW 		= 0;
 float MOON_ITEM_RARITY_NORMAL 	= 1;

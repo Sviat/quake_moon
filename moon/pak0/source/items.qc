@@ -3976,7 +3976,7 @@ void() moon_identify_item =
 
 void() moon_print_skills =
 {
-	local float bonusdmg;
+	local float bonus;
 
 	sprint(self, "======= stats =======\n");
 	sprint(self, "|free points: {}", quick_ftos(self.point));
@@ -3986,12 +3986,12 @@ void() moon_print_skills =
 	}
 	sprint(self, "    |\n");
 
-	bonusdmg = moon_get_target_bonus_health(self);
+	bonus = moon_get_target_bonus_health(self);
 	sprint(self, "| vitality: {} ({}", quick_ftos(self.vit), quick_ftos(self.max_health));
 
-	if ((bonusdmg > 0))
+	if ((bonus > 0))
 	{
-		sprint(self, " (+{})", quick_ftos(bonusdmg));
+		sprint(self, " (+{})", quick_ftos(bonus));
 	}
 	sprint(self, " max hp) |");
 	if (self.point > 0)
@@ -4000,16 +4000,16 @@ void() moon_print_skills =
 	}
 	sprint(self, "\n");
 
-	bonusdmg = moon_get_target_bonus_damage(self);
+	bonus = moon_get_target_bonus_damage(self);
 	if ((self.mentat_bonus == MOON_ITEM_SOME))
 	{
-		bonusdmg = (bonusdmg + GRD_PATROLTIME);
+		bonus = (bonus + MOON_MENTAT_OFFENSE_VALUE);
 	}
 
 	sprint(self, "| strength: {} ({}%", quick_ftos(self.stre), quick_ftos((self.stre * MOON_STAT_DAMAGE_PER_STRENGTH) + 100));
-	if (bonusdmg > 0)
+	if (bonus > 0)
 	{
-		sprint(self, " (+{}%)", quick_ftos(bonusdmg));
+		sprint(self, " (+{}%)", quick_ftos(bonus));
 	}
 	sprint(self, " dmg) |");
 	if (self.point > 0)
@@ -4020,7 +4020,7 @@ void() moon_print_skills =
 	sprint(self, "---------------------\n");
 };
 
-void(entity e, float nm) des_scroll =
+void(entity e, float nm) des_scroll = // TODO: clear this mess one day
 {
 	local float tmp;
 
@@ -4125,7 +4125,7 @@ void() Scroll_list =
 	sprint(self, "===================\n");
 };
 
-void() Cast_Slow =
+void() Cast_Slow = // TODO: clear this mess one day. Slow is Slow
 {
 	local float rm;
 	local float dur;
@@ -4190,7 +4190,7 @@ void() Cast_Slow =
 	}
 };
 
-void() Cast_Redu =
+void() Cast_Redu = // TODO: clear this mess one day. WTF is redu?
 {
 	local float rm;
 	local float eff;
@@ -4261,7 +4261,7 @@ void() Cast_Redu =
 	}
 };
 
-void() Cast_Heal =
+void() Cast_Heal = // TODO: clear this mess one day. Heal is Heal
 {
 	local float rm;
 	local float eff;
@@ -4293,7 +4293,7 @@ void() Cast_Heal =
 	self.scroll_time = (time + MON_BACKTIME);
 };
 
-void() Cast_Brut =
+void() Cast_Brut = // TODO: clear this mess one day. Brutal? Damage amp
 {
 	local float rm;
 	local float eff;
@@ -4320,10 +4320,10 @@ void() Cast_Brut =
 		self.mana = WF_NORMAL;
 	}
 	self.scroll_time = (time + MON_BACKTIME);
-	self.scroll_brut_eff = (time + dur);
+	self.scroll_brut_eff = (time + dur); // suspicious as fuck
 };
 
-void() Cast_Shie =
+void() Cast_Shie = // TODO: clear this mess one day. Shield, not Shiet
 {
 	if ((self.scroll_time > time))
 	{
@@ -4340,7 +4340,7 @@ void() Cast_Shie =
 	self.scroll_time = (time + 0.3);
 };
 
-void() infe_eff =
+void() infe_eff = // Inferno effect ctor()
 {
 	local entity e;
 
@@ -4353,7 +4353,7 @@ void() infe_eff =
 	self.scroll_infe_eff = WF_NORMAL;
 };
 
-void() Cast_Infe =
+void() Cast_Infe = // TODO: clear this mess one day. Inferno
 {
 	local entity head;
 	local float casted;
@@ -4406,7 +4406,7 @@ void() Cast_Infe =
 	}
 };
 
-void() shaf_eff =
+void() shaf_eff = // Shaft effect ctor()
 {
 	makevectors(self.angles);
 	self.scroll_shaf_eff = WF_NORMAL;
@@ -4424,7 +4424,7 @@ void() shaf_eff =
 	sound(self, CHAN_BODY, "weapons/lhit.wav", H_ROTTEN, ATTN_NORM);
 };
 
-void() Cast_Shaf =
+void() Cast_Shaf = // TODO: clear this mess one day. Shaf is Shaft, probably thunderstrikes from skies
 {
 	local entity head;
 	local float casted;
@@ -4477,7 +4477,7 @@ void() Cast_Shaf =
 	}
 };
 
-void() mete_eff_th =
+void() mete_eff_th = // TODO: clear this mess one day. Meteor effect think.
 {
 	self.origin = (self.enemy.origin + (v_up * self.owner.mins_z));
 	self.velocity = self.enemy.velocity;
@@ -4512,7 +4512,7 @@ void() mete_eff_th =
 	self.nextthink = (time + MON_REFRESHTIME);
 };
 
-void(entity who) mete_eff =
+void(entity who) mete_eff = // Meteor effect ctor()
 {
 	local entity e;
 
@@ -4529,7 +4529,7 @@ void(entity who) mete_eff =
 	e.nextthink = (time + 0.05);
 };
 
-void() Cast_Mete =
+void() Cast_Mete = // TODO: clear this mess one day. Mete is Meteor
 {
 	local entity head;
 
@@ -4565,7 +4565,7 @@ void() Cast_Mete =
 	}
 };
 
-void(float nm) CastN =
+void(float nm) CastN = // TODO: clear this mess one day. Missing Mete, Shaf, Shie? Here input is Spell (scroll) code
 {
 	if ((nm == H_ROTTEN))
 	{
@@ -4589,7 +4589,7 @@ void(float nm) CastN =
 	}
 };
 
-void(float nm) Cast =
+void(float nm) Cast = // TODO: clear this mess one day. Here input is Spell (scroll) slot
 {
 	if ((nm == H_ROTTEN))
 	{
@@ -4638,71 +4638,73 @@ void(float nm) Cast =
 	}
 };
 
+string(float level) moon_get_monster_level_prefix =
+{
+	if ( level < 0 )
+	{
+		dprint("ERROR IN moon_get_monster_level_prefix(...): provided level is negative.\n");
+		return string_null;
+	}
+	switch(level)
+	{
+		case 0: return "novice ";
+		case 1: return "ordinary ";
+		case 2: return "promoted ";
+		case 3: return "advanced ";
+		case 4: return "experienced ";
+		case 5: return "grim ";
+		case 6: return "massive ";
+		case 7: return "skillful ";
+		case 8: return "incredible ";
+		case 9: return "merciless ";
+		case 10: return "drilled ";
+		case 11: return "war ";
+		case 12: return "enourmous ";
+		case 13: return "powerful ";
+		case 14: return "grand ";
+		case 15: return "chaos ";
+		case 16: return "demonical ";
+		case 17: return "superior ";
+		case 18: return "hurricane ";
+		case 19: return "defacing ";
+		case 20: return "phantom ";
+		case 21: return "lord ";
+		case 22: return "baron ";
+		case 23: return "overlord ";
+		case 24: return "warlord ";
+		case 25: return "king ";
+		case 26: return "plague ";
+		case 27: return "storm ";
+		case 28: return "shadow ";
+		case 29: return "holocaust ";
+		case 30: return "order ";
+		case 31: return "dire ";
+		case 32: return "gale ";
+		case 33: return "cruel ";
+		case 34: return "doom ";
+		case 35: return "serious ";
+		case 36: return "celestial ";
+		case 37: return "terrible ";
+		case 38: return "diamond ";
+		case 39: return "rush ";
+		case 40: return "crashing ";
+		case 41: return "fanged ";
+		case 42: return "thirsty ";
+		case 43: return "splitter ";
+		case 44: return "sunder ";
+		case 45: return "rend ";
+		case 46: return "reaver ";
+		case 47: return "gnash ";
+		case 48: return "blow ";
+		case 49: return "smasher ";
+		case 50: return "satan's ";
+		default: return "satan's ";
+	}
+};
+
 void(entity who, float l) GetMonsterPrefixLevel =
 {
-	local string s;
-
-	if ((l < 0))
-	{
-		bprint("ERROR IN GetMonsterPrefixLevel(...): player level is negative value.\n");
-	}
-	switch(l)
-	{
-		case 0: s = "novice "; break;
-		case 1: s = "ordinary "; break;
-		case 2: s = "promoted "; break;
-		case 3: s = "advanced "; break;
-		case 4: s = "experienced "; break;
-		case 5: s = "grim "; break;
-		case 6: s = "massive "; break;
-		case 7: s = "skillful "; break;
-		case 8: s = "incredible "; break;
-		case 9: s = "merciless "; break;
-		case 10: s = "drilled "; break;
-		case 11: s = "war "; break;
-		case 12: s = "enourmous "; break;
-		case 13: s = "powerful "; break;
-		case 14: s = "grand "; break;
-		case 15: s = "chaos "; break;
-		case 16: s = "demonical "; break;
-		case 17: s = "superior "; break;
-		case 18: s = "hurricane "; break;
-		case 19: s = "defacing "; break;
-		case 20: s = "phantom "; break;
-		case 21: s = "lord "; break;
-		case 22: s = "baron "; break;
-		case 23: s = "overlord "; break;
-		case 24: s = "warlord "; break;
-		case 25: s = "king "; break;
-		case 26: s = "plague "; break;
-		case 27: s = "storm "; break;
-		case 28: s = "shadow "; break;
-		case 29: s = "holocaust "; break;
-		case 30: s = "order "; break;
-		case 31: s = "dire "; break;
-		case 32: s = "gale "; break;
-		case 33: s = "cruel "; break;
-		case 34: s = "doom "; break;
-		case 35: s = "serious "; break;
-		case 36: s = "celestial "; break;
-		case 37: s = "terrible "; break;
-		case 38: s = "diamond "; break;
-		case 39: s = "rush "; break;
-		case 40: s = "crashing "; break;
-		case 41: s = "fanged "; break;
-		case 42: s = "thirsty "; break;
-		case 43: s = "splitter "; break;
-		case 44: s = "sunder "; break;
-		case 45: s = "rend "; break;
-		case 46: s = "reaver "; break;
-		case 47: s = "gnash "; break;
-		case 48: s = "blow "; break;
-		case 49: s = "smasher "; break;
-		case 50: s = "satan's "; break;
-		default: s = "satan's ";
-	}
-
-	who.prefix_two = s;
+	who.prefix_two = moon_get_monster_level_prefix(l);
 };
 
 float(float level) moon_get_monster_wave_size =
@@ -5204,7 +5206,7 @@ void() Prepare =
 	}
 
 	sprint(self, "Project MOON. v0.21 beta. Created by \s3d[Power]\s http://3dpower.org\n");
-	sprint(self, "ReProjet MOON: KekPort v0.24k on \sKEX Engine\s by \sSanctus-Susanin\s\n");
+	sprint(self, "ReProject MOON: KekPort v0.24k on \sKEX Engine\s by \sSanctus-Susanin\s\n");
 	sprint(self, "type pm_help command to learn about MOON console commands\n");
 };
 

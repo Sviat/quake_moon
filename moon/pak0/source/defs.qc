@@ -1404,14 +1404,12 @@ float() moon_get_max_player_level =
 	local float maxlvl;
 
 	maxlvl = 0;
-	e = find(world, classname, MOON_PLAYER_CLASSNAME);
-	while (e)
+	while ( (e = find(e, classname, MOON_PLAYER_CLASSNAME)) )
 	{
 		if ((e.lvl > maxlvl))
 		{
 			maxlvl = e.lvl;
 		}
-		e = find(e, classname, MOON_PLAYER_CLASSNAME);
 	}
 	return maxlvl;
 };

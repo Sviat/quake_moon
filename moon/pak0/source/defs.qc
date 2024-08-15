@@ -825,9 +825,12 @@ float MOON_EXP_FIRST_LEVEL = 40;
 float MOON_NEXTLEVEL_MORE_PLAYERLEVEL_TIMES = 40;
 float MOON_NEXTLEVEL_MORE_SCALING_FACTOR = 1.35;
 
+// Do not confuse MOON_ARMOR_ with MOON_ITEM_ARMOR, former is CyanYellowRed armor, latter is Magical Item
 float MOON_ARMOR_MAX_SOFT = 255;
 float MOON_ARMOR_SHARD_GAIN = 5;
 float MOON_ARMOR_SHARD_TYPE = 0.3;
+string MOON_ARMOR_MARKET_NETNAME = "goody_armor";
+string MOON_ARMOR_MARKET_DISPLAYNAME = "spoiled armor";
 
 string MOON_PLAYER_CLASSNAME = "player";
 float MOON_PLAYER_HEALTH_INIT = 100;
@@ -853,8 +856,8 @@ string MOON_CHAR_BLACK_NAME = "Black";
 string MOON_CHAR_ELDER_NAME = "Elder";
 string MOON_CHAR_NETHER_NAME = "Nether";
 
-string MOON_STAT_STRENGTH_NAME = "strength";	// Firearms power
 string MOON_STAT_VITALITY_NAME = "vitality";	// Physical health (+Ax later)
+string MOON_STAT_STRENGTH_NAME = "strength";	// Firearms power
 string MOON_STAT_SANITY_NAME = "sanity";		// Magic health
 string MOON_STAT_INTUITION_NAME = "intuition";	// Magic power
 
@@ -864,6 +867,11 @@ float MOON_STAT_MANA_PER_SANITY 	= 1; 	// Not finished
 float MOON_STAT_POWER_PER_INTUITION	= 0.5; 	// Not finished
 float MOON_STAT_MAXHEALTH_MIN = 1;
 float MOON_STAT_MAXMANA_MIN = 0;
+
+float MOON_PHYSIC_VELOCITY_X_LIMIT_SOFT = 150;
+float MOON_PHYSIC_VELOCITY_X_LIMIT_HARD = 160;
+float MOON_PHYSIC_VELOCITY_Y_LIMIT_SOFT = 150;
+float MOON_PHYSIC_VELOCITY_Y_LIMIT_HARD = 160;
 
 string MOON_GATE_CLASSNAME = "gate";
 string MOON_HEART_CLASSNAME = "heart";
@@ -892,10 +900,11 @@ float MOON_GOLD_LOOT_BASE = 1;
 float MOON_GOLD_LOOT_LVLPERCENT = 5;
 float MOON_GOLD_LOOT_RANDOM = 60;
 
+string MOON_SHOP_ITEM_CLASSNAME = "???????";	 // Base shop
+string MOON_MARKET_ITEM_CLASSNAME = "goody_ent"; // Black market
+
 float MOON_ITEM_NONE = 0;
 float MOON_ITEM_SOME = 1;
-
-string MOON_MARKET_ITEM_CLASSNAME = "goody_ent";
 
 float MOON_ITEM_LVLTHRESHOLD_LOW    = 10;
 float MOON_ITEM_LVLTHRESHOLD_NORMAL = 20;
@@ -941,6 +950,8 @@ float MOON_MEDKIT_MEGA_TYPE			= 2;
 float MOON_MEDKIT_MEGA_VALUE		= 100;
 float MOON_MEDKIT_MEGA_COST			= 100;
 float MOON_MEDKIT_MEGA_OVERHEAL_SOFTLIMIT = 150;
+string MOON_MEDKIT_MEGA_MARKET_NETNAME = "goody_mega";
+string MOON_MEDKIT_MEGA_MARKET_DISPLAYNAME = "degraded Megapack";
 
 // MOON_ITEM_POTION -> MOON_POTION . Potion -> lootable medkit
 string MOON_ITEM_POTION_SMALL_NETNAME = "small healing potion";
@@ -953,7 +964,6 @@ string MOON_ITEM_POTION_BIG_NETNAME = "big healing potion";
 float MOON_ITEM_POTION_BIG_BASE 		= 65;
 float MOON_ITEM_POTION_BIG_RANDOM 		= 100;
 
-
 // MOON_ITEM_AMMO -> MOON_AMMO
 // Player backpack soft limits
 float MOON_AMMO_MAX_SHELL 	= 100;	// Initial max, before any upgrades
@@ -961,6 +971,7 @@ float MOON_AMMO_MAX_NAIL 	= 200;	// Initial max, before any upgrades
 float MOON_AMMO_MAX_ROCKET 	= 100;
 float MOON_AMMO_MAX_CELL 	= 100;
 // These ammo boxes can be bought in shop, on market or looted, need to update later
+string MOON_AMMO_MARKET_NETNAME = "goody_ammo";
 string MOON_AMMO_SHELLS_DISPLAYNAME = "shells";
 float MOON_AMMO_SHELLS_BASE = 10;
 float MOON_AMMO_SHELLS_RANDOM = 20;
@@ -979,6 +990,8 @@ float MOON_AMMO_CELLS_RANDOM = 8;
 float MOON_AMMO_CELLS_COSTOFONE = 3.5;
 
 // MOON_ITEM_WEAPON -> MOON_WEAPON . Weapons can be bought and looted
+string MOON_WEAPON_MARKET_NETNAME = "goody_weapon";
+
 string MOON_WEAPON_AXE_DISPLAYNAME = "Blood Seeker";
 string MOON_WEAPON_AXE_SHORTNAME = "ax";
 string MOON_WEAPON_SHOTGUN_DISPLAYNAME = "Boomstick";
@@ -1064,7 +1077,6 @@ float MOON_MENTAT_SPEED_VALUE_MAX  = 35;
 string MOON_MENTAT_SPEED_NETNAME = "accelerative drug";
 string MOON_MENTAT_SPEED_NAME = "accelerative drug";
 
-string MOON_ITEM_TRADED_CLASSNAME = "goody_ent";
 string MOON_ITEM_MAGIC_CLASSNAME = "magicitem";
 string MOON_ITEM_ARMOR_NETNAME = "armor";
 string MOON_ITEM_ARMOR_DISPLAY = "armor";
@@ -1419,7 +1431,7 @@ float() moon_get_max_player_level =
 	maxlvl = 0;
 	while ( (e = find(e, classname, MOON_PLAYER_CLASSNAME)) )
 	{
-		if ((e.lvl > maxlvl))
+		if ( e.lvl > maxlvl )
 		{
 			maxlvl = e.lvl;
 		}

@@ -170,6 +170,19 @@ void(entity target, float gain) moon_give_target_gold =
 	sound(target, CHAN_ITEM, "moon/items/gold.wav", 1, ATTN_NORM);
 };
 
+float(entity target, float cost) moon_pay_target_gold =
+{
+	if ( target.gold < cost )
+	{
+		sprint(target, "not enough gold\n");
+		return FALSE;
+	}
+	target.gold = (target.gold - cost);
+
+	sprint(target, "You paid {} gold, {} left", floor_ftos(cost), floor_ftos(target.gold));
+	return TRUE;
+};
+
 void(entity target) moon_println_target_exp =
 {
 	sprint(target, "Level: {}, Exp {}{}/{}{}\n", floor_ftos(target.lvl), MOON_GLYPH_BRACKET_OPEN, floor_ftos(target.exp), floor_ftos(target.nextexp), MOON_GLYPH_BRACKET_CLOSE);
@@ -360,6 +373,11 @@ void(entity target, float value) moon_raise_target_vitality =
 	moon_raise_target_max_health(target, (value*MOON_STAT_HEALTH_PER_VITALITY));
 };
 
+void(entity target, float value = 1) moon_raise_target_strength = // This is not necessary so far, but for consistency
+{
+	target.stre = (target.stre + value);
+};
+
 void(entity target, float value) moon_raise_target_max_mana =
 {
 	target.max_mana = (target.max_mana + value);
@@ -381,6 +399,43 @@ void(entity target, float value) moon_raise_target_sanity =
 	moon_raise_target_max_mana(target, (value*MOON_STAT_MANA_PER_SANITY));
 };
 
+void(entity target, float value = 1) moon_raise_target_intuition = // This is not necessary so far, but for consistency
+{
+	target.intu = (target.intu + value);
+};
+
+void(entity target, entity container) moon_print_target_container_ammo =
+{
+	local float had_any;
+
+	if ( container.ammo_shells )
+	{
+		sprint(target, " {} {}", floor_ftos(container.ammo_shells), MOON_AMMO_SHELLS_DISPLAYNAME);
+		had_any = TRUE;
+	}
+	if ( container.ammo_nails )
+	{
+		sprint(target, " {} {}", floor_ftos(container.ammo_nails), MOON_AMMO_NAILS_DISPLAYNAME);
+		had_any = TRUE;
+	}
+	if ( container.ammo_rockets )
+	{
+		sprint(target, " {} {}", floor_ftos(container.ammo_rockets), MOON_AMMO_ROCKETS_DISPLAYNAME);
+		had_any = TRUE;
+	}
+	if ( container.ammo_cells )
+	{
+		sprint(target, " {} {}", floor_ftos(container.ammo_cells), MOON_AMMO_CELLS_DISPLAYNAME);
+		had_any = TRUE;
+	}
+
+	if ( had_any != TRUE )
+	{
+		sprint(target, "\n");
+		sprint(target, "ERROR: garbage shop have incorrect item! Report this bug and item!\n");
+	}
+};
+
 void() SUB_regen =
 {
 	self.model = self.mdl;
@@ -389,7 +444,7 @@ void() SUB_regen =
 	setorigin(self, self.origin);
 };
 
-void() noclass =
+void() noclass =	// empty c-tor, for catching something
 {
 	dprint("noclass spawned at {}\n", vtos(self.origin));
 	remove(self);
@@ -2448,20 +2503,21 @@ void() PlaceElixir =
 	setmodel(e, "progs/potion.mdl");
 	e.noise1 = "moon/items/potion.wav";
 	e.owner = self;
-	sound(e, CHAN_ITEM, "items/itembk2.wav", H_ROTTEN, ATTN_NORM);
 	code = random_int(MOON_ELIXIR_STR_CODE, MOON_ELIXIR_VIT_CODE);
-	if (code <= MOON_ELIXIR_VIT_CODE)
+	switch(code)
 	{
-		e.targetname = MOON_ELIXIR_VIT_NAME;
-		e.healtype = WF_NORMAL;
-		e.cost = 2000;
+		case MOON_ELIXIR_STR_CODE:
+			e.targetname = MOON_ELIXIR_STR_NAME;
+			e.healtype = MOON_ELIXIR_STR_CODE;
+			e.cost = 3000;
+			break;
+		case MOON_ELIXIR_VIT_CODE:
+			e.targetname = MOON_ELIXIR_VIT_NAME;
+			e.healtype = MOON_ELIXIR_VIT_CODE;
+			e.cost = 2000;
+			break;
 	}
-	else
-	{
-		e.targetname = MOON_ELIXIR_STR_NAME;
-		e.healtype = H_ROTTEN;
-		e.cost = 3000;
-	}
+	sound(e, CHAN_ITEM, "items/itembk2.wav", 1, ATTN_NORM);
 };
 
 void() PlaceMagicItem =
@@ -2917,7 +2973,7 @@ void(vector org, float nm, float rd) NS =
 	e.classname = "sale_way";
 };
 
-void() buy_goody =
+void() moon_buy_item_market =
 {
 	local entity head;
 	local entity selected;
@@ -2926,8 +2982,7 @@ void() buy_goody =
 	local float best;
 
 	min_dist = 100;
-	head = find(world, classname, "goody_ent");
-	while (head)
+	while ( (head = find(head, classname, MOON_MARKET_ITEM_CLASSNAME)) )
 	{
 		if ((head.free == FALSE))
 		{
@@ -2937,166 +2992,112 @@ void() buy_goody =
 				selected = head;
 			}
 		}
-		head = find(head, classname, "goody_ent");
 	}
-	if ((selected != world))
+	if ( selected == world ) { return; }
+
+	if ( moon_pay_target_gold(self, selected.cost) == FALSE ) { return; }
+	sprint(self, "\n"); // moon_pay_target_gold prints receipt, without line break
+	flash_self();
+
+	switch (selected.netname)
 	{
-		if ((self.gold < selected.cost))
-		{
-			sprint(self, "not enough gold\n");
-			return;
-		}
-		if ((selected.netname == "goody_armor"))
-		{
+		case MOON_ARMOR_MARKET_NETNAME:
 			if (((self.armortype * self.armorvalue) >= (selected.armortype * selected.armorvalue)))
 			{
-				sprint(self, "you don't need it\n");
+				sprint(self, "You don't need it\n");
 				return;
 			}
 			self.armortype = selected.armortype;
 			self.armorvalue = selected.armorvalue;
 			self.items = (((self.items & (~IT_ARMOR1)) & (~IT_ARMOR2)) & (~IT_ARMOR3)) | selected.items;
+
+			sprint(self, "You bought {}\n", MOON_ARMOR_MARKET_DISPLAYNAME);
 			sound(self, CHAN_ITEM, "items/armor1.wav", 1, ATTN_NORM);
-		}
-		else
-		{
-			if ((selected.netname == "goody_mega"))
+			break;
+		case MOON_MEDKIT_MEGA_MARKET_NETNAME:
+			if ( self.health >= (self.max_health + MOON_MEDKIT_MEGA_OVERHEAL_SOFTLIMIT) ) { return; }
+			if ( self.health >= CONST_QC_DISPLAY_MAX ) { return; }
+
+			if ((selected.healtype == H_MEGA))
 			{
-				if ((self.health >= (self.max_health + 150)))
+				T_Heal(self, selected.healamount, 1);
+				if (!(self.items & IT_SUPERHEALTH))
 				{
-					return;
-				}
-				if ((self.health >= 999))
-				{
-					return;
-				}
-				if ((selected.healtype == H_MEGA))
-				{
-					T_Heal(self, selected.healamount, 1);
-					if (!(self.items & IT_SUPERHEALTH))
-					{
-						mega = spawn();
-						mega.nextthink = (time + LOGIC_PATROL);
-						mega.think = item_megahealth_rot;
-						mega.owner = self;
-						self.items = (self.items | IT_SUPERHEALTH);
-					}
-				}
-				sound(self, CHAN_ITEM, selected.noise1, H_ROTTEN, ATTN_NORM);
-			}
-			else
-			{
-				if ((selected.netname == "goody_elixir"))
-				{
-					sprint(self, "You bought {}\n", selected.targetname);
-					sound(self, CHAN_ITEM, selected.noise1, H_ROTTEN, ATTN_NORM);
-					if ((selected.healtype == 0))
-					{
-						moon_raise_target_vitality(self, MOON_ELIXIR_VIT_VALUE);
-					}
-					if ((selected.healtype == 1))
-					{
-						self.stre = (self.stre + MOON_ELIXIR_STR_VALUE);
-					}
-				}
-				else
-				{
-					if ((selected.netname == "goody_ammo"))
-					{
-						best = W_BestWeapon();
-						self.ammo_shells = (self.ammo_shells + selected.ammo_shells);
-						self.ammo_nails = (self.ammo_nails + selected.ammo_nails);
-						self.ammo_rockets = (self.ammo_rockets + selected.ammo_rockets);
-						self.ammo_cells = (self.ammo_cells + selected.ammo_cells);
-						moon_limit_target_ammo(self);
-						if (selected.ammo_shells)
-						{
-							sprint(self, "You bought ");
-							sprint_ftos(self, selected.ammo_shells);
-							sprint(self, " shells\n");
-						}
-						else
-						{
-							if (selected.ammo_nails)
-							{
-								sprint(self, "You bought ");
-								sprint_ftos(self, selected.ammo_nails);
-								sprint(self, " nails\n");
-							}
-							else
-							{
-								if (selected.ammo_rockets)
-								{
-									sprint(self, "You bought ");
-									sprint_ftos(self, selected.ammo_rockets);
-									sprint(self, " rockets\n");
-								}
-								else
-								{
-									if (selected.ammo_cells)
-									{
-										sprint(self, "You bought ");
-										sprint_ftos(self, selected.ammo_cells);
-										sprint(self, " cells\n");
-									}
-									else
-									{
-										sprint(self, "ERROR: garbage shop have incorrect items! Report this bug!\n");
-									}
-								}
-							}
-						}
-						sound(self, CHAN_ITEM, "weapons/lock4.wav", H_ROTTEN, ATTN_NORM);
-						if ((self.weapon == best))
-						{
-							self.weapon = W_BestWeapon();
-							// W_SetCurrentAmmo();
-						}
-						W_SetCurrentAmmo();
-					}
-					else
-					{
-						if (((selected.netname == "armor") || (selected.netname == "ring"))) // áòíïò") || (selected.netname == "òéîç")))
-						{
-							other = selected;
-							moon_wear_item();
-						}
-						else
-						{
-							if ((selected.netname == "goody_weapon"))
-							{
-								best = W_BestWeapon();
-								self.ammo_shells = (self.ammo_shells + selected.ammo_shells);
-								self.ammo_nails = (self.ammo_nails + selected.ammo_nails);
-								self.ammo_rockets = (self.ammo_rockets + selected.ammo_rockets);
-								self.ammo_cells = (self.ammo_cells + selected.ammo_cells);
-								moon_limit_target_ammo(self);
-								self.items = (self.items | selected.items);
-								sprint(self, "You bought ");
-								sprint(self, selected.targetname);
-								sprint(self, "\n");
-								sound(self, CHAN_ITEM, "weapons/pkup.wav", H_ROTTEN, ATTN_NORM);
-								if ((self.weapon == best))
-								{
-									self.weapon = W_BestWeapon();
-								}
-								W_SetCurrentAmmo();
-							}
-						}
-					}
+					mega = spawn();
+					mega.nextthink = (time + 5);
+					mega.think = item_megahealth_rot;
+					mega.owner = self;
+					self.items = (self.items | IT_SUPERHEALTH);
 				}
 			}
-		}
-		selected.owner.attack_finished = WF_NORMAL;
-		selected.owner.stuck_time = WF_NORMAL;
-		selected.owner.rstuck_time = WF_NORMAL;
-		selected.owner.rstuck_org = selected.owner.origin;
-		self.gold = (self.gold - selected.cost);
-		setmodel(selected, string_null);
-		flash_self();
-		sprint(self, "{} gold left\n", floor_ftos(self.gold));
-		remove(selected);
+
+			sprint(self, "You bought {}\n", MOON_MEDKIT_MEGA_MARKET_DISPLAYNAME);
+			sound(self, CHAN_ITEM, selected.noise1, 1, ATTN_NORM);
+			break;
+		case MOON_ELIXIR_MARKET_NETNAME:
+			if ((selected.healtype == MOON_ELIXIR_VIT_CODE))
+			{
+				moon_raise_target_vitality(self, MOON_ELIXIR_VIT_VALUE);
+			}
+			if ((selected.healtype == MOON_ELIXIR_STR_CODE))
+			{
+				moon_raise_target_strength(self, MOON_ELIXIR_STR_VALUE);
+			}
+			sprint(self, "You bought {}\n", selected.targetname);
+			sound(self, CHAN_ITEM, selected.noise1, 1, ATTN_NORM);
+			break;
+		case MOON_AMMO_MARKET_NETNAME:
+			self.ammo_shells = (self.ammo_shells + selected.ammo_shells);
+			self.ammo_nails = (self.ammo_nails + selected.ammo_nails);
+			self.ammo_rockets = (self.ammo_rockets + selected.ammo_rockets);
+			self.ammo_cells = (self.ammo_cells + selected.ammo_cells);
+			moon_limit_target_ammo(self);
+
+			best = W_BestWeapon(); // Remember best weapon before buying ammo
+
+			if ( self.weapon == best ) // if had best weapon without ammo before, but have ammo now, change current to best as well
+			{
+				self.weapon = W_BestWeapon();
+			}
+			W_SetCurrentAmmo();
+
+			sprint(self, "You bought");
+			moon_print_target_container_ammo(self, selected); // moon_print_target_container_ammo prints summary, without line break
+			sprint(self, "\n");
+			sound(self, CHAN_ITEM, "weapons/lock4.wav", 1, ATTN_NORM);
+			break;
+		case MOON_WEAPON_MARKET_NETNAME:
+			self.ammo_shells = (self.ammo_shells + selected.ammo_shells);
+			self.ammo_nails = (self.ammo_nails + selected.ammo_nails);
+			self.ammo_rockets = (self.ammo_rockets + selected.ammo_rockets);
+			self.ammo_cells = (self.ammo_cells + selected.ammo_cells);
+			moon_limit_target_ammo(self);
+
+			best = W_BestWeapon(); // Remember best weapon before buying
+			self.items = (self.items | selected.items);
+
+			if ( self.weapon == best ) // if had best weapon before, change current to best as well
+			{
+				self.weapon = W_BestWeapon();
+			}
+			W_SetCurrentAmmo();
+
+			sprint(self, "You bought {}\n", selected.targetname);
+			sound(self, CHAN_ITEM, "weapons/pkup.wav", 1, ATTN_NORM);
+			break;
+		case MOON_ITEM_ARMOR_NETNAME:
+		case MOON_ITEM_RING_NETNAME:
+			other = selected;
+			moon_wear_item();
+			break;
 	}
+
+	selected.owner.attack_finished = 0;
+	selected.owner.stuck_time = 0;
+	selected.owner.rstuck_time = 0;
+	selected.owner.rstuck_org = selected.owner.origin;
+	setmodel(selected, string_null);
+	remove(selected);
 };
 
 void() moon_identify_item_market =
@@ -3799,7 +3800,7 @@ void() moon_buy_item =
 	}
 	if ( selected == world )	// If no trade stands found, check black market
 	{
-		buy_goody();
+		moon_buy_item_market();
 		return;
 	}
 
@@ -4017,6 +4018,9 @@ void() moon_print_skills =
 		sprint(self, " Use `skill\2` to raise");
 	}
 	sprint(self, "\n");
+
+	// TODO: Sanity stat
+	// TODO: Intuition stat
 	sprint(self, "---------------------\n");
 };
 
@@ -5412,7 +5416,7 @@ void() moonimpulse =
 
 	if ( self.impulse == MOON_IMPULSE_CODE_NOOP ) { return; }
 
-	// TODO: killme \/
+	// TODO: killme \/ JUKEBOX CONTROLS
 	if ( (self.impulse >= 220) && (self.impulse <= 232) )
 	{
 		moon_walkman_play(self, self.impulse - 220);
@@ -5441,17 +5445,17 @@ void() moonimpulse =
 
 void() MoonPreThink =
 {
-	if ((self.cold_time > time))
+	if ( self.cold_time > time )
 	{
-		if ((self.flags & FL_ONGROUND))
+		if ( self.flags & FL_ONGROUND )
 		{
-			if ((self.velocity_x > 160))
+			if ( self.velocity_x > MOON_PHYSIC_VELOCITY_X_LIMIT_HARD )
 			{
-				self.velocity_x = 150;
+				self.velocity_x = MOON_PHYSIC_VELOCITY_X_LIMIT_SOFT;
 			}
-			if ((self.velocity_y > 160))
+			if ( self.velocity_y > MOON_PHYSIC_VELOCITY_Y_LIMIT_HARD )
 			{
-				self.velocity_y = 150;
+				self.velocity_y = MOON_PHYSIC_VELOCITY_Y_LIMIT_SOFT;
 			}
 		}
 	}
@@ -7610,14 +7614,17 @@ void(entity e) GenegateCampTarget =
 void(entity receiver) moon_println_target_own_magic_item_description =
 {
 	local float was_printed;
+	local float same_pre_and_postfix;
 
 	was_printed = TRUE;
+	same_pre_and_postfix = FALSE;
 	switch(self.magic_typeone)
 	{
 	case MOON_ITEM_HEALTH_CODE:
 		if ( self.magic_typetwo == MOON_ITEM_HEALTH_CODE )
 		{
 			sprint(receiver, MOON_ITEM_HEALTH_EFFECT, quick_ftos(self.magic_typeone_value + self.magic_typetwo_value));
+			same_pre_and_postfix = TRUE;
 		} else {
 			sprint(receiver, MOON_ITEM_HEALTH_EFFECT, quick_ftos(self.magic_typeone_value));
 		}
@@ -7626,6 +7633,7 @@ void(entity receiver) moon_println_target_own_magic_item_description =
 		if ( self.magic_typetwo == MOON_ITEM_RESIST_CODE )
 		{
 			sprint(receiver, MOON_ITEM_RESIST_EFFECT, quick_ftos(self.magic_typeone_value + self.magic_typetwo_value));
+			same_pre_and_postfix = TRUE;
 		} else {
 			sprint(receiver, MOON_ITEM_RESIST_EFFECT, quick_ftos(self.magic_typeone_value));
 		}
@@ -7634,6 +7642,7 @@ void(entity receiver) moon_println_target_own_magic_item_description =
 		if ( self.magic_typetwo == MOON_ITEM_GOLD_CODE )
 		{
 			sprint(receiver, MOON_ITEM_GOLD_EFFECT, quick_ftos(self.magic_typeone_value + self.magic_typetwo_value));
+			same_pre_and_postfix = TRUE;
 		} else {
 			sprint(receiver, MOON_ITEM_GOLD_EFFECT, quick_ftos(self.magic_typeone_value));
 		}
@@ -7642,6 +7651,7 @@ void(entity receiver) moon_println_target_own_magic_item_description =
 		if ( self.magic_typetwo == MOON_ITEM_DAMAGE_CODE )
 		{
 			sprint(receiver, MOON_ITEM_DAMAGE_EFFECT, quick_ftos(self.magic_typeone_value + self.magic_typetwo_value));
+			same_pre_and_postfix = TRUE;
 		} else {
 			sprint(receiver, MOON_ITEM_DAMAGE_EFFECT, quick_ftos(self.magic_typeone_value));
 		}
@@ -7650,6 +7660,7 @@ void(entity receiver) moon_println_target_own_magic_item_description =
 		if ( self.magic_typetwo == MOON_ITEM_RETALATE_CODE )
 		{
 			sprint(receiver, MOON_ITEM_RETALATE_EFFECT, quick_ftos(self.magic_typeone_value + self.magic_typetwo_value));
+			same_pre_and_postfix = TRUE;
 		} else {
 			sprint(receiver, MOON_ITEM_RETALATE_EFFECT, quick_ftos(self.magic_typeone_value));
 		}
@@ -7658,6 +7669,7 @@ void(entity receiver) moon_println_target_own_magic_item_description =
 		if ( self.magic_typetwo == MOON_ITEM_VAMPIR_CODE )
 		{
 			sprint(receiver, MOON_ITEM_VAMPIR_EFFECT, quick_ftos(self.magic_typeone_value + self.magic_typetwo_value));
+			same_pre_and_postfix = TRUE;
 		} else {
 			sprint(receiver, MOON_ITEM_VAMPIR_EFFECT, quick_ftos(self.magic_typeone_value));
 		}
@@ -7666,6 +7678,7 @@ void(entity receiver) moon_println_target_own_magic_item_description =
 		if ( self.magic_typetwo == MOON_ITEM_REGEN_CODE )
 		{
 			sprint(receiver, MOON_ITEM_REGEN_EFFECT, quick_ftos(self.magic_typeone_value + self.magic_typetwo_value));
+			same_pre_and_postfix = TRUE;
 		} else {
 			sprint(receiver, MOON_ITEM_REGEN_EFFECT, quick_ftos(self.magic_typeone_value));
 		}
@@ -7674,6 +7687,7 @@ void(entity receiver) moon_println_target_own_magic_item_description =
 		if ( self.magic_typetwo == MOON_ITEM_CONSUME_CODE )
 		{
 			sprint(receiver, MOON_ITEM_CONSUME_EFFECT, quick_ftos(self.magic_typeone_value + self.magic_typetwo_value));
+			same_pre_and_postfix = TRUE;
 		} else {
 			sprint(receiver, MOON_ITEM_CONSUME_EFFECT, quick_ftos(self.magic_typeone_value));
 		}
@@ -7681,6 +7695,13 @@ void(entity receiver) moon_println_target_own_magic_item_description =
 	default:
 		was_printed = FALSE;
 	}
+
+	if ( same_pre_and_postfix )
+	{
+		sprint(receiver, "\n");
+		return;
+	}
+
 	if (was_printed)
 	{
 		sprint(receiver, "\n");
@@ -7749,14 +7770,17 @@ void(entity receiver) moon_println_target_own_magic_item_description =
 void(entity receiver) moon_println_target_own_magic_ring_description =
 {
 	local float was_printed;
+	local float same_pre_and_postfix;
 
 	was_printed = TRUE;
+	same_pre_and_postfix = FALSE;
 	switch(self.ring_typeone)
 	{
 	case MOON_ITEM_HEALTH_CODE:
 		if ( self.ring_typetwo == MOON_ITEM_HEALTH_CODE )
 		{
 			sprint(receiver, MOON_ITEM_HEALTH_EFFECT, quick_ftos(self.ring_typeone_value + self.ring_typetwo_value));
+			same_pre_and_postfix = TRUE;
 		} else {
 			sprint(receiver, MOON_ITEM_HEALTH_EFFECT, quick_ftos(self.ring_typeone_value));
 		}
@@ -7765,6 +7789,7 @@ void(entity receiver) moon_println_target_own_magic_ring_description =
 		if ( self.ring_typetwo == MOON_ITEM_RESIST_CODE )
 		{
 			sprint(receiver, MOON_ITEM_RESIST_EFFECT, quick_ftos(self.ring_typeone_value + self.ring_typetwo_value));
+			same_pre_and_postfix = TRUE;
 		} else {
 			sprint(receiver, MOON_ITEM_RESIST_EFFECT, quick_ftos(self.ring_typeone_value));
 		}
@@ -7773,6 +7798,7 @@ void(entity receiver) moon_println_target_own_magic_ring_description =
 		if ( self.ring_typetwo == MOON_ITEM_GOLD_CODE )
 		{
 			sprint(receiver, MOON_ITEM_GOLD_EFFECT, quick_ftos(self.ring_typeone_value + self.ring_typetwo_value));
+			same_pre_and_postfix = TRUE;
 		} else {
 			sprint(receiver, MOON_ITEM_GOLD_EFFECT, quick_ftos(self.ring_typeone_value));
 		}
@@ -7781,6 +7807,7 @@ void(entity receiver) moon_println_target_own_magic_ring_description =
 		if ( self.ring_typetwo == MOON_ITEM_DAMAGE_CODE )
 		{
 			sprint(receiver, MOON_ITEM_DAMAGE_EFFECT, quick_ftos(self.ring_typeone_value + self.ring_typetwo_value));
+			same_pre_and_postfix = TRUE;
 		} else {
 			sprint(receiver, MOON_ITEM_DAMAGE_EFFECT, quick_ftos(self.ring_typeone_value));
 		}
@@ -7789,6 +7816,7 @@ void(entity receiver) moon_println_target_own_magic_ring_description =
 		if ( self.ring_typetwo == MOON_ITEM_RETALATE_CODE )
 		{
 			sprint(receiver, MOON_ITEM_RETALATE_EFFECT, quick_ftos(self.ring_typeone_value + self.ring_typetwo_value));
+			same_pre_and_postfix = TRUE;
 		} else {
 			sprint(receiver, MOON_ITEM_RETALATE_EFFECT, quick_ftos(self.ring_typeone_value));
 		}
@@ -7797,6 +7825,7 @@ void(entity receiver) moon_println_target_own_magic_ring_description =
 		if ( self.ring_typetwo == MOON_ITEM_VAMPIR_CODE )
 		{
 			sprint(receiver, MOON_ITEM_VAMPIR_EFFECT, quick_ftos(self.ring_typeone_value + self.ring_typetwo_value));
+			same_pre_and_postfix = TRUE;
 		} else {
 			sprint(receiver, MOON_ITEM_VAMPIR_EFFECT, quick_ftos(self.ring_typeone_value));
 		}
@@ -7805,6 +7834,7 @@ void(entity receiver) moon_println_target_own_magic_ring_description =
 		if ( self.ring_typetwo == MOON_ITEM_REGEN_CODE )
 		{
 			sprint(receiver, MOON_ITEM_REGEN_EFFECT, quick_ftos(self.ring_typeone_value + self.ring_typetwo_value));
+			same_pre_and_postfix = TRUE;
 		} else {
 			sprint(receiver, MOON_ITEM_REGEN_EFFECT, quick_ftos(self.ring_typeone_value));
 		}
@@ -7813,6 +7843,7 @@ void(entity receiver) moon_println_target_own_magic_ring_description =
 		if ( self.ring_typetwo == MOON_ITEM_CONSUME_CODE )
 		{
 			sprint(receiver, MOON_ITEM_CONSUME_EFFECT, quick_ftos(self.ring_typeone_value + self.ring_typetwo_value));
+			same_pre_and_postfix = TRUE;
 		} else {
 			sprint(receiver, MOON_ITEM_CONSUME_EFFECT, quick_ftos(self.ring_typeone_value));
 		}
@@ -7820,6 +7851,13 @@ void(entity receiver) moon_println_target_own_magic_ring_description =
 	default:
 		was_printed = FALSE;
 	}
+
+	if ( same_pre_and_postfix )
+	{
+		sprint(receiver, "\n");
+		return;
+	}
+
 	if (was_printed)
 	{
 		sprint(receiver, "\n");
@@ -8200,7 +8238,7 @@ void() MagicItemTouch =
 
 		if ((other.cl_nohelp == 0))
 		{
-			if ((self.classname != MOON_ITEM_TRADED_CLASSNAME))
+			if ((self.classname != MOON_MARKET_ITEM_CLASSNAME))
 			{
 				l = moon_get_max_player_level();
 				if ((l < 4))
@@ -8214,7 +8252,7 @@ void() MagicItemTouch =
 	}
 };
 
-void() moon_wear_item =
+void() moon_wear_item = // THIS NEEDS A CLEANING
 {
 	local entity head;
 	local entity selected;
@@ -8231,7 +8269,7 @@ void() moon_wear_item =
 		}
 		head = find(head, classname, MOON_ITEM_MAGIC_CLASSNAME);
 	}
-	if ((other.classname == MOON_ITEM_TRADED_CLASSNAME))
+	if ((other.classname == MOON_MARKET_ITEM_CLASSNAME))
 	{
 		selected = other;
 	}
@@ -8296,7 +8334,7 @@ void() moon_wear_item =
 				}
 			}
 			sprint(self, "\n");
-			if ((selected.classname == MOON_ITEM_TRADED_CLASSNAME))
+			if ((selected.classname == MOON_MARKET_ITEM_CLASSNAME))
 			{
 				sprint(self, "You bought ");
 			} else {
@@ -8370,7 +8408,7 @@ void() moon_wear_item =
 					}
 				}
 				sprint(self, "\n");
-				if ((selected.classname == MOON_ITEM_TRADED_CLASSNAME))
+				if ((selected.classname == MOON_MARKET_ITEM_CLASSNAME))
 				{
 					sprint(self, "You bought ");
 				} else {
@@ -8656,9 +8694,10 @@ void() HPTouch =
 	} else {
 		sprint(other, "You wasted {}\n", self.netname);
 	}
+
+	flash_target(other);
 	T_Heal(other, self.healamount, 0);
 	sound(other, CHAN_ITEM, "moon/items/potion.wav", 1, ATTN_NORM);
-	flash_target(other);
 	remove(self);
 };
 
@@ -8670,7 +8709,7 @@ void() ELTouch =
 	switch(floor(self.cnt))
 	{
 	case MOON_ELIXIR_STR_CODE:
-		other.stre = (other.stre + MOON_ELIXIR_STR_VALUE); // strength is simplest of them all and doesnt need function
+		moon_raise_target_strength(other, MOON_ELIXIR_STR_VALUE);
 		break;
 	case MOON_ELIXIR_VIT_CODE:
 		moon_raise_target_vitality(other, MOON_ELIXIR_VIT_VALUE);
@@ -8679,13 +8718,13 @@ void() ELTouch =
 		moon_raise_target_sanity(other, MOON_ELIXIR_MAG_VALUE);
 		break;
 	case MOON_ELIXIR_INT_CODE:
-		//other.wiz = (other.wiz + MOON_ELIXIR_INT_VALUE); // TODO: 4th stat
+		moon_raise_target_intuition(other, MOON_ELIXIR_INT_VALUE);
 		break;
 	}
 
-	sprint(other, "You get {}\n", self.netname);
-	sound(other, CHAN_ITEM, "moon/items/potion.wav", 1, ATTN_NORM);
 	flash_target(other);
+	sprint(other, "You got {}\n", self.netname);
+	sound(other, CHAN_ITEM, "moon/items/potion.wav", 1, ATTN_NORM);
 	remove(self);
 };
 

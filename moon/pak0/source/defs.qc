@@ -317,7 +317,7 @@ float(entity targ, entity inflictor) CanDamage;
 void() FuckOff =
 {
 	bprint(ftos(empty_float)); // supress empty_float unused warning
-	bprint("----- hi, litl lamo, try to decompile it, heheh ------");
+	bprint("----- hi, litl lamo, try to decompile it, heheh ------"); // kept as a reminder to all envolved
 };
 
 vector VEC_WAY_MIN    	= '-24 -24 -24';
@@ -755,17 +755,17 @@ float waypoints_ok;
 
 #define CONST_QC_DISPLAY_MAX 999
 
-#define const_qc_sprint_a "\a"		// Black cell
-#define const_qc_sprint_f "\f"		// ?!?
-#define CONST_QC_GLYPH_SELECTION "\r"		// Red triangle
-#define const_qc_sprint_v "\v"		// White cell
+#define const_qc_sprint_a "\a"			// Black cell
+#define const_qc_sprint_f "\f"			// ?!?
+#define CONST_QC_GLYPH_SELECTION "\r"	// Red triangle
+#define const_qc_sprint_v "\v"			// White cell
 
-#define const_qc_sprint_b_open "\b"	// Red text
+#define const_qc_sprint_b_open "\b"		// Red text
 #define const_qc_sprint_b_close "\b"
-#define const_qc_sprint_s_open "\s"	// Also red text, but why two different codes?
+#define const_qc_sprint_s_open "\s"		// Also red text, but why two different codes?
 #define const_qc_sprint_s_close "\s"
 
-#define MOON_GLYPH_WHITECELL "\x0B"		// White cell
+#define MOON_GLYPH_WHITECELL "\x0B"		// White cell, should be cursor
 #define MOON_GLYPH_SELECTION "\x0D"		// Red triangle
 #define MOON_GLYPH_BRACKET_OPEN "\x10"	// Red [, also x90
 #define MOON_GLYPH_BRACKET_CLOSE "\x11"	// Red ], also x91
@@ -802,7 +802,7 @@ float MOON_IMPULSE_CODE_FIRST_SETTING_CLIENT = 128;
 float MOON_IMPULSE_CODE_NOHELP = 150;
 float MOON_IMPULSE_CODE_SHOWFPS = 151;
 float MOON_IMPULSE_CODE_LAST_SETTING_CLIENT = 159;
-// Code range TRACE CROSSHAIR 160..223
+// Code range TRACE CROSSHAIR 160..223 (well range finder too)
 float MOON_IMPULSE_CODE_FIRST_TRACE = 160;
 float MOON_IMPULSE_CODE_ITEM_PICKUP = 192;
 float MOON_IMPULSE_CODE_ITEM_BUY = 194;
@@ -840,8 +840,21 @@ float MOON_PLAYER_POINT_GROW_NORMAL = 4;
 float MOON_PLAYER_LEVEL_GROW_SLOW 	= 50; // unnecessary, just for consistency
 float MOON_PLAYER_POINT_GROW_SLOW 	= 3;
 
+// Play-able classes are referred as "Chars" to not confuse with class keyword/property
+string MOON_CHAR_RANGER_CLASS = "default";		// Default, manual Level-up
+string MOON_CHAR_DOOMED_CLASS = "doomed";		// Strength-biased auto Level-up
+string MOON_CHAR_BLACK_CLASS = "black";			// Vitality-biased auto Level-up
+string MOON_CHAR_ELDER_CLASS = "elder";			// Sanity-biased auto Level-up
+string MOON_CHAR_NETHER_CLASS = "nether";		// Intuition-biased auto Level-up
+
+string MOON_CHAR_RANGER_NAME = "Ranger";
+string MOON_CHAR_DOOMED_NAME = "Doomed";
+string MOON_CHAR_BLACK_NAME = "Black";
+string MOON_CHAR_ELDER_NAME = "Elder";
+string MOON_CHAR_NETHER_NAME = "Nether";
+
 string MOON_STAT_STRENGTH_NAME = "strength";	// Firearms power
-string MOON_STAT_VITALITY_NAME = "vitality";	// Physical health
+string MOON_STAT_VITALITY_NAME = "vitality";	// Physical health (+Ax later)
 string MOON_STAT_SANITY_NAME = "sanity";		// Magic health
 string MOON_STAT_INTUITION_NAME = "intuition";	// Magic power
 

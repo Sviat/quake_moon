@@ -5209,8 +5209,8 @@ void() Prepare =
 		set_map();
 	}
 
-	sprint(self, "Project MOON. v0.21 beta. Created by \s3d[Power]\s http://3dpower.org\n");
-	sprint(self, "ReProject MOON: KekPort v0.24k on \sKEX Engine\s by \sSanctus-Susanin\s\n");
+	sprint(self, "Project MOON. Original v0.21beta created by \s3d[Power]\s\n");
+	sprint(self, "ReProject MOON. Remake v0.24k on \sKEX Engine\s by \sSanctus-Susanin\s\n");
 	sprint(self, "type pm_help command to learn about MOON console commands\n");
 };
 
@@ -5218,17 +5218,17 @@ void() moon_print_cmd_help =
 {
 	sprint(self, "======= help on game commands =======\n");
 	sprint(self, "general prefix: `pm_`, server-side settings: `pms_`, client-side: `pmc_`\n");
-	sprint(self, " {}| use `pm_character` command to view charaster screen.\n", quick_ftos(MOON_IMPULSE_CODE_PRINT_STATUS));
-	sprint(self, "{}| use `pm_buy` command to buy some item in the shop.\n", quick_ftos(MOON_IMPULSE_CODE_ITEM_BUY));
-	sprint(self, "{}| use `pm_identify` command to get a description of item in the shop.\n", quick_ftos(MOON_IMPULSE_CODE_ITEM_IDENTIFY));
+	sprint(self, "{}| use `pm_identify` command to get a description of item nearby.\n", quick_ftos(MOON_IMPULSE_CODE_ITEM_IDENTIFY));
+	sprint(self, "{}| use `pm_buy` command to buy closest item in the shop.\n", quick_ftos(MOON_IMPULSE_CODE_ITEM_BUY));
+	sprint(self, "{}| use `pm_use` command pick up closest magical item.\n", quick_ftos(MOON_IMPULSE_CODE_ITEM_PICKUP));
+	sprint(self, " {}| {}| use `pm_skill\1`/`pm_skill\2` raise skills\n", quick_ftos(MOON_IMPULSE_CODE_UPSKILL_VITALITY), quick_ftos(MOON_IMPULSE_CODE_UPSKILL_STRENGTH));
+	sprint(self, " {}| use `pm_character` command to view character screen.\n", quick_ftos(MOON_IMPULSE_CODE_PRINT_STATUS));
 	sprint(self, " {}| use `pm_stats` command to view screen with your stats.\n", quick_ftos(MOON_IMPULSE_CODE_PRINT_STAT));
-	sprint(self, "{}| use `pm_use` command pick up some magical item.\n", quick_ftos(MOON_IMPULSE_CODE_ITEM_PICKUP));
-	sprint(self, " {}| use `pm_inventory` or `i` command to view inventory screen.\n", quick_ftos(MOON_IMPULSE_CODE_PRINT_INVENTORY));
-	sprint(self, "{}| use `pmc_fps` to show Framerate\n", quick_ftos(MOON_IMPULSE_CODE_SHOWFPS));
-	sprint(self, "{}/{}| use `pms_fastmeat`/`pms_slowmeat` to grind faster or slower\n", quick_ftos(MOON_IMPULSE_CODE_FASTMEAT), quick_ftos(MOON_IMPULSE_CODE_SLOWMEAT));
+	sprint(self, " {}| use `pm_inventory` command to view inventory screen.\n", quick_ftos(MOON_IMPULSE_CODE_PRINT_INVENTORY));
+	sprint(self, "{}|{}| use `pms_fastmeat`/`pms_slowmeat` to grind faster or slower\n", quick_ftos(MOON_IMPULSE_CODE_FASTMEAT), quick_ftos(MOON_IMPULSE_CODE_SLOWMEAT));
 	sprint(self, "{}| use `pms_alwaysday` to shine bright\n", quick_ftos(MOON_IMPULSE_CODE_ALWAYSDAY));
-	sprint(self, "{}/{}| use `pm_skill\1`/`pm_skill\2` raise stats\n", quick_ftos(MOON_IMPULSE_CODE_UPSKILL_VITALITY), quick_ftos(MOON_IMPULSE_CODE_UPSKILL_STRENGTH));
 	sprint(self, "{}| use `pmc_nohelp` to reduce amount of hints\n", quick_ftos(MOON_IMPULSE_CODE_NOHELP));
+	sprint(self, "{}| use `pmc_fps` to show Framerate\n", quick_ftos(MOON_IMPULSE_CODE_SHOWFPS));
 	sprint(self, "use `map moon4` or `restartserver` to restart this map\n");
 	sprint(self, "-------------------------------------\n");
 };
@@ -5261,19 +5261,19 @@ void(float impulse_code) moon_handle_impulse_stat =
 			sprint(self, ")\n");
 			break;
 		case MOON_IMPULSE_CODE_UPSKILL_STRENGTH:
-			self.stre = (self.stre + 1);
+			moon_raise_target_strength(self, 1);
 
 			sprint(self, "upgrade Strength: {} (", quick_ftos(self.stre));
 			sprint(self, MOON_ITEM_DAMAGE_EFFECT, quick_ftos((self.stre * MOON_STAT_DAMAGE_PER_STRENGTH) + 100));
 			sprint(self, ")\n");
 			break;
 		case MOON_IMPULSE_CODE_UPSKILL_SANITY:
-			// TODO: implement
 			// moon_raise_target_sanity(self, 1);
+			// TODO: implement
 			break;
 		case MOON_IMPULSE_CODE_UPSKILL_INTUITION:
+			// moon_raise_target_intuition(self, 1);
 			// TODO: implement
-			// self.intu = (self.intu + 1);
 			break;
 	}
 
@@ -9038,8 +9038,8 @@ void() ShardTouch =
 			other.armorvalue = MOON_ARMOR_MAX_SOFT;
 		}
 	}
-	sound(other, CHAN_ITEM, "moon/items/shard.wav", 1, ATTN_NORM);
 	flash_target(other);
+	sound(other, CHAN_ITEM, "moon/items/shard.wav", 1, ATTN_NORM);
 	remove(self);
 };
 

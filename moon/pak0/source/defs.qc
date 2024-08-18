@@ -777,6 +777,7 @@ float waypoints_ok;
 #define MOON_GLYPH_CENTERDOT_YELLOW "\x8E" // Yellow center dot
 #define MOON_GLYPH_REDARROW "\xFF"		// Red arrow pointing left
 
+string MOON_VERSION = "0.25k";
 // // Impulse codes. First 19 keep for original Q1; limit is 255; so we should line up somewhere in between
 float MOON_IMPULSE_CODE_NOOP = 0;
 float MOON_IMPULSE_CODE_FIRST = 32;

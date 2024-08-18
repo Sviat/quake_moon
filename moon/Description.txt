@@ -1,6 +1,6 @@
 -------------------------------------
 Title    : ReProject MOON (Quake 1 ReRelease Mod)
-Version  : 0.24k
+Version  : 0.25k
 Date     : 20.03.2024
 Author   : Sanctus-Susanin, https://steamcommunity.com/id/sanctorum/ (Steam) / @SanctusSusanin (Discord)
 Original : by 3d[Power], haz-3dpower@mail.ru

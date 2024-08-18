@@ -5193,7 +5193,7 @@ void() Prepare =
 	}
 
 	sprint(self, "Project MOON. Original v0.21beta created by \s3d[Power]\s\n");
-	sprint(self, "ReProject MOON. Remake v0.24k on \sKEX Engine\s by \sSanctus-Susanin\s\n");
+	sprint(self, "ReProject MOON. Remake v{} on \sKEX Engine\s by \sSanctus-Susanin\s\n", MOON_VERSION);
 	sprint(self, "type pm_help command to learn about MOON console commands\n");
 };
 

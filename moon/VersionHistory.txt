@@ -4,6 +4,11 @@ Created by Sanctus-Susanin
 https://steamcommunity.com/id/sanctorum/ (Steam) / @SanctusSusanin (Discord)
 -----------------------------
 
+ver 0.25k
+- Major change: now monster waves scale with number of players (the more, the merier)
+	- It is not decided if Experience in future will be split between, currently it is granted to all
+- Added new server-side command `pms_noshake` to disable Moonquakes
+
 ver 0.24k
 - Full clean, rewrite, refactor and modernization of all mod's code
 - Adapted to Steam version of Quake 1 ReRelease, Kex Engine 4.0 Bastet

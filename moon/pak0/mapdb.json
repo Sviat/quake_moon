@@ -1,0 +1,20 @@
+{
+  "episodes": [
+    {
+      "dir": "moon",
+      "name": "ReProject MOON"
+    }
+  ],
+  "maps": [
+    {
+      "title": "Moon Rizing Base",
+      "bsp": "moon4",
+      "episode": "moon",
+      "game": "moon",
+      "dm": true,
+      "bots": false,
+      "coop": true,
+      "sp": true
+    }
+  ]
+}

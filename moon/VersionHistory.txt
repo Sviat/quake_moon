@@ -1,0 +1,64 @@
+-----------------------------
+Project MOON Remake. Version Changes
+Created by Sanctus-Susanin
+https://steamcommunity.com/id/sanctorum/ (Steam) / @SanctusSusanin (Discord)
+-----------------------------
+
+ver 0.24k
+- Full clean, rewrite, refactor and modernization of all mod's code
+- Adapted to Steam version of Quake 1 ReRelease, Kex Engine 4.0 Bastet
+	- Minimal number of gameplay logic changes, mostly bug fixes and parametrization
+- All ancient style Quake-glyphs used in old code and now broken in Kex replaced with normal text, red text and golden digits
+- Optimized all Console User Interface (CUI) prints
+- Added code for future Magic stats (Sanity and Intuition), potions and effects
+- All books and elixirs are renamed for good old fun
+- Friendly Bots are now properly using Kex chat; also they are marked when aiming at
+- Unified all sources of HP and Damage amplification, now it is consistent and ready for future
+- Split "Global" level from Player's level. This is preparation to make proper multiplayer lobbies with Hotjoin
+- Renamed all aliases and remapped impulses to the range of 32-223, type "pm_help" in Q1 console to get full list with actual impulse values
+- Reworked `sv_fastmeat` into `pms_fastmeat` and `pms_slowmeat`
+	- Now they actually control creep wave spawn rate (guess which is which)
+
+- Gameplay changes:
+	- Friendly Bots now trained to dig gold
+	- Any consequent Book of Red Alert after first will give +10 max HP to the Gate
+	- Any consequent Book of Shell Shock (Shotguns mastery) after first will increase max shells capacity by 10
+	- Any consequent Book of Nail Polish (Nailguns mastery) after first will increase max nails capacity by 20
+
+
+-----------------------------
+Project MOON. Version Changes
+Created by 3d[Power]
+http://club.nudl.net
+-----------------------------
+
+ver 0.21 beta
+- Increased the number of cells in one pack sold on the market.
+- The movement of monsters and guards is now smoother and more realistic.
+- Improved AI monsters when attacking the gate, now they act more dispersed. And also can get away from missiles and grenades.
+- Now on the black market sell elixir of strenght and elixir of vitality.
+- Large packs of rockets and cells are now sold on the black market.
+- AI of guards has been improved. They now try not to shoot at players.
+- Offensive drug now gives +20% damage.
+- Defensive drug now gives +20% to defense.
+- In the stats view (button “s”), now also shows how much +% damage and how many HP dods artifacts contain (also drugs are taken into account).
+- Black market trading has been revitalized a bit.
+- Now if the game ends, it really ends!
+
+
+ver 0.20 beta
+- Increased the amount of ammo dropped from monsters.
+- Black market trading is now busier.
+- Heart gains an additional 8 HP each time players are leveled.
+- Heart now regenerates 1HP per 1 second.
+- Added new Book of Treasure (global gold income increased). Gives an additional % to gold from both monsters and mines.
+- Added new book “Book of Immortaly (heart life increased)”. Adds HP to the heart. These two new books drop more often than the others.
+- Changed some item prefixes.
+- Artifacts are now sold on the black market!
+- Slightly changed the formula for calculating gold drops. Now amoung does not grow with such a wild progression from level to level.
+- Hints like “use this command for that” are not written from level 4.
+- Fixed: the black market does not buy mega if the player's life is more than 250.
+- Since there is no magic yet, removed potion of magic, and magic skill
+- Previously, at level up, for 1 strenght it gave +2%damage amplify, now it gives +1.5% damage amplify.
+- Now you can't cheat through sv_maxspeed, sv_gravity.
+- Now if the heart is destroyed, no experience is given for killing monsters.

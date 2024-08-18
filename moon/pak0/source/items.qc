@@ -4670,7 +4670,7 @@ void(entity who, float l) GetMonsterPrefixLevel =
 	who.prefix_two = moon_get_monster_level_prefix(l);
 };
 
-float(float level) moon_get_monster_wave_size =
+float(float level) moon_get_monster_wave_size_for_level =
 {
 	if ( level <= 1 )
 	{
@@ -4698,6 +4698,26 @@ float(float level) moon_get_monster_wave_size =
 	}
 	//if ( level >= 48 )
 	return random_int(5, 11);
+};
+
+float(float level, float player_count) moon_get_monster_wave_size =
+{
+	local float wave;
+
+	wave = moon_get_monster_wave_size_for_level(level);
+	if ( player_count > 1 )
+	{
+		wave = wave + moon_get_monster_wave_size_for_level(level - 1);
+	}
+	if ( player_count > 2 )
+	{
+		wave = wave + moon_get_monster_wave_size_for_level(level - 2);
+	}
+	if ( player_count > 3 )
+	{
+		wave = wave + moon_get_monster_wave_size_for_level(level - 3);
+	}
+	return wave;
 };
 
 float(float lvl) MonsterGenType =
@@ -4997,19 +5017,18 @@ entity() MonterSpawnPoint =
 
 void() StartSpawning =
 {
-	local float mxx;
+	local float player_maxlevel;
 
-	if (gameover)
-	{
-		return;
-	}
+	if (gameover) { return; }
 	if ( self.count <= 0 )
 	{
 		remove(self);
 		return;
 	}
-	mxx = moon_get_max_player_level();
-	MonsterTable(self, mxx);
+
+	player_maxlevel = moon_get_max_player_level();
+	MonsterTable(self, player_maxlevel);
+
 	self.nextthink = (time + 0.3);
 	self.think = StartSpawning;
 };
@@ -5085,17 +5104,21 @@ void() ToggleMode =
 
 void() brain_think =
 {
-	local float mxx;
-	local float mn;
+	local float player_maxlevel;
+	local float player_count;
+	local float monster_count;
 
-	if ((gameover == TRUE))
+	if ( gameover == TRUE )
 	{
 		remove(self);
 		return;
 	}
-	mxx = moon_get_max_player_level();
-	mn = moon_get_monster_wave_size(mxx);
-	SpawnMoster(mn);
+
+	player_maxlevel = moon_get_max_player_level();
+	player_count = moon_get_current_player_count();
+	monster_count = moon_get_monster_wave_size(player_maxlevel, player_count);
+
+	SpawnMoster(monster_count);
 	self.nextthink = time + moon_get_spawn_delay();
 	self.think = brain_think;
 };

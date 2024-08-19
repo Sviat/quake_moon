@@ -3640,7 +3640,7 @@ void(entity who) find_trade_spot = // Refactor next
 						head.cost = MOON_WEAPON_SUPERSHOTGUN_COST_SHOP;
 						head.targetname = MOON_WEAPON_SUPERSHOTGUN_DISPLAYNAME;
 						head.items = IT_SUPER_SHOTGUN;
-					}
+					} else
 					if ( r < 0.3 )
 					{
 						setmodel(head, "progs/g_nail.mdl");

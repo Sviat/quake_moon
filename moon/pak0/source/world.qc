@@ -526,7 +526,7 @@ void() PutClientInServer =
 
 	spot = SelectSpawnPoint();
 	self.velocity = VEC_ORIGIN;
-	self.classname = "player";
+	self.classname = MOON_PLAYER_CLASSNAME;
 	if ((self.think == ClientBan))
 	{
 		return;
@@ -538,7 +538,7 @@ void() PutClientInServer =
 	self.health_magic_regen_time = WF_NORMAL;
 	if ((self.max_health <= WF_NORMAL))
 	{
-		self.max_health = 100;
+		self.max_health = MOON_PLAYER_HEALTH_INIT;
 	}
 	self.flags = FL_CLIENT;
 	self.super_damage_finished = WF_NORMAL;
@@ -995,16 +995,16 @@ void() PlayerPreThink =
 		IntermissionThink();
 		return;
 	}
-	if ((self.cl_framtime == CHSCAM_ON))
+	if ((self.cl_framtime == 1))
 	{
 		if ((self.frmtm <= time))
 		{
-			self.frmes = (self.frmes + CHSCAM_ON);
+			self.frmes = (self.frmes + 1);
 			sprint(self, "{} fps\n", floor_ftos(self.frmes));
-			self.frmtm = (time + CHSCAM_ON);
-			self.frmes = WF_NORMAL;
+			self.frmtm = (time + 1);
+			self.frmes = 0;
 		}
-		self.frmes = (self.frmes + CHSCAM_ON);
+		self.frmes = (self.frmes + 1);
 	}
 	if ((self.view_ofs == VEC_ORIGIN))
 	{
@@ -1022,7 +1022,7 @@ void() PlayerPreThink =
 	regen_life();
 	regen_mana();
 	check_spells();
-	if (((((self.magic_typeone == TE_WIZSPIKE) || (self.magic_typetwo == TE_WIZSPIKE)) || (self.ring_typetwo == TE_WIZSPIKE)) || (self.ring_typeone == TE_WIZSPIKE)))
+	if (((((self.magic_typeone == MOON_ITEM_REGEN_CODE) || (self.magic_typetwo == MOON_ITEM_REGEN_CODE)) || (self.ring_typetwo == MOON_ITEM_REGEN_CODE)) || (self.ring_typeone == MOON_ITEM_REGEN_CODE)))
 	{
 		proc_health_magic_regen_time();
 	}
@@ -1041,16 +1041,14 @@ void() PlayerPreThink =
 	if (self.button2)
 	{
 		PlayerJump();
-	}
-	else
-	{
+	} else {
 		self.flags = (self.flags | FL_JUMPRELEASED);
 	}
 	if ((time < self.pausetime))
 	{
 		self.velocity = VEC_ORIGIN;
 	}
-	if ((((time > self.attack_finished) && (self.currentammo == WF_NORMAL)) && (self.weapon != IT_AXE)))
+	if ( (time > self.attack_finished) && (!W_EnoughAmmoToShoot(self.weapon, self.currentammo)) )
 	{
 		self.weapon = W_BestWeapon();
 		W_SetCurrentAmmo();
@@ -1059,7 +1057,7 @@ void() PlayerPreThink =
 
 void() CheckPowerups =
 {
-	if ((self.health <= WF_NORMAL))
+	if ((self.health <= 0))
 	{
 		return;
 	}
@@ -1241,7 +1239,7 @@ void() ClientConnect =
 	e = find(world, classname, "player");
 	while (e)
 	{
-		if ((e.exp > WF_NORMAL))
+		if ((e.exp > 0))
 		{
 			bprint(self.netname);
 			bprint(" banned. too late join. (can join only after map restart)\n");

@@ -268,11 +268,11 @@ void(entity chat_target, entity value_target) moon_println_target_other_health =
 //[byte] svcqex_chat, [byte] playercolour, [byte] textcolour, [string] playername, [string] chattext
 void(string sender, float sender_color, string text) kex_chat_message_broad =
 {
-	WriteByte(MSG_BROADCAST, svcqex_chat);
-	WriteByte(MSG_BROADCAST, sender_color);
-	WriteByte(MSG_BROADCAST, const_qex_color_teal);
-	WriteString(MSG_BROADCAST, sender);
-	WriteString(MSG_BROADCAST, text);
+	WriteByte(MSG_ALL, svcqex_chat);
+	WriteByte(MSG_ALL, sender_color);
+	WriteByte(MSG_ALL, const_qex_color_teal);
+	WriteString(MSG_ALL, sender);
+	WriteString(MSG_ALL, text);
 };
 
 //[byte] svcqex_chat, [byte] playercolour, [byte] textcolour, [string] playername, [string] chattext
@@ -367,17 +367,6 @@ void(entity target, float value) moon_raise_target_max_health =
 	}
 };
 
-void(entity target, float value) moon_raise_target_vitality =
-{
-	target.vit = (target.vit + value);
-	moon_raise_target_max_health(target, (value*MOON_STAT_HEALTH_PER_VITALITY));
-};
-
-void(entity target, float value = 1) moon_raise_target_strength = // This is not necessary so far, but for consistency
-{
-	target.stre = (target.stre + value);
-};
-
 void(entity target, float value) moon_raise_target_max_mana =
 {
 	target.max_mana = (target.max_mana + value);
@@ -391,6 +380,17 @@ void(entity target, float value) moon_raise_target_max_mana =
 			target.max_mana = MOON_STAT_MAXMANA_MIN;
 		}
 	}
+};
+
+void(entity target, float value) moon_raise_target_vitality =
+{
+	target.vit = (target.vit + value);
+	moon_raise_target_max_health(target, (value*MOON_STAT_HEALTH_PER_VITALITY));
+};
+
+void(entity target, float value = 1) moon_raise_target_strength = // This is not necessary so far, but for consistency
+{
+	target.stre = (target.stre + value);
 };
 
 void(entity target, float value) moon_raise_target_sanity =
@@ -3514,7 +3514,7 @@ void(entity who) find_creature =
 					return;
 				}
 			}
-			if ((self.currentammo == WF_NORMAL))
+			if ((self.currentammo == 0)) // Sign of ???
 			{
 				self.goalentity = FindClosestWaypoint();
 				self.th_run();
@@ -3524,7 +3524,7 @@ void(entity who) find_creature =
 	}
 };
 
-void(entity who) find_trade_spot =
+void(entity who) find_trade_spot = // Refactor next
 {
 	local entity head;
 	local float r;
@@ -5896,7 +5896,7 @@ void() bot_ai_stand = // Works - dont touch
 {
 	local float dst;
 
-	self.currentammo = WF_NORMAL;
+	self.currentammo = 0; // Sign of ???
 	dst = vlen((self.master.origin - self.origin));
 	bot_think();
 	self.think = bot_ai_stand;
@@ -6028,7 +6028,7 @@ void(float dist) bot_ai_run = // Black magic ahead
 	local float stream;
 	local entity head;
 
-	self.currentammo = H_ROTTEN;
+	self.currentammo = 1; // Sign of ???
 	dst = vlen((self.master.origin - self.origin));
 	movedist = dist;
 	bot_think();
@@ -7123,7 +7123,7 @@ void() mon_think =
 	MaybeShootGate();
 	MaybeShootHeart();
 	mon_find_enemy();
-	if ((((self.currentammo == WF_NORMAL) && (gameover == FALSE)) && (self.camp_time < time)))
+	if ((((self.currentammo == 0) && (gameover == FALSE)) && (self.camp_time < time)))
 	{
 		if (FindWaypoint())
 		{
@@ -7136,7 +7136,7 @@ void() mon_ai_stand =
 {
 	local float dst;
 
-	self.currentammo = WF_NORMAL;
+	self.currentammo = 0; // Sign of ???
 	if (!gameover)
 	{
 		dst = vlen((self.goalentity.origin - self.origin));
@@ -7144,7 +7144,7 @@ void() mon_ai_stand =
 		if ((visible(self.goalentity) && (self.goalentity.classname == "waypoint")))
 		{
 			self.ideal_yaw = vectoyaw((self.goalentity.origin - self.origin));
-			self.currentammo = H_ROTTEN;
+			self.currentammo = 1; // Sign of ???
 			self.th_run();
 			return;
 		}
@@ -7156,7 +7156,7 @@ void() mon_ai_stand =
 				if ((self.mon_logic == LOGIC_STANDART))
 				{
 					self.camp_time = CONTENT_EMPTY;
-					self.currentammo = H_ROTTEN;
+					self.currentammo = 1; // Sign of ???
 					self.th_run();
 					return;
 				}
@@ -7199,7 +7199,7 @@ void(float dist) mon_ai_run =
 	local entity mx;
 	local float nm;
 
-	self.currentammo = H_ROTTEN;
+	self.currentammo = 1; // Sign of ???
 	check_heal();
 	CheckEdge(self.goalentity);
 	if (((gameover == TRUE) || (self.camp_time > time)))

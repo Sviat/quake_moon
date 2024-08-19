@@ -314,6 +314,8 @@ void(entity targ, entity inflictor, entity attacker, float damage) T_Damage;
 float(entity e, float healamount, float ignore) T_Heal;
 float(entity targ, entity inflictor) CanDamage;
 
+float(float weapon, float ammo) W_EnoughAmmoToShoot;
+
 void() FuckOff =
 {
 	bprint(ftos(empty_float)); // supress empty_float unused warning

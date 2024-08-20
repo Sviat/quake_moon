@@ -793,23 +793,23 @@ float() W_BestWeapon =
 	local float it;
 
 	it = self.items;
-	if ( (self.waterlevel <= 1) && (W_EnoughAmmoToShoot(IT_LIGHTNING, self.ammo_cells)) )
+	if ( (self.waterlevel <= 1) && (it & IT_LIGHTNING) && (W_EnoughAmmoToShoot(IT_LIGHTNING, self.ammo_cells)) )
 	{
 		return (IT_LIGHTNING);
 	}
-	if ( W_EnoughAmmoToShoot(IT_SUPER_NAILGUN, self.ammo_nails) )
+	if ( (it & IT_SUPER_NAILGUN) && W_EnoughAmmoToShoot(IT_SUPER_NAILGUN, self.ammo_nails) )
 	{
 		return (IT_SUPER_NAILGUN);
 	}
-	if ( W_EnoughAmmoToShoot(IT_SUPER_SHOTGUN, self.ammo_shells) )
+	if ( (it & IT_SUPER_SHOTGUN) && W_EnoughAmmoToShoot(IT_SUPER_SHOTGUN, self.ammo_shells) )
 	{
 		return (IT_SUPER_SHOTGUN);
 	}
-	if ( W_EnoughAmmoToShoot(IT_NAILGUN, self.ammo_nails))
+	if ( (it & IT_NAILGUN) && W_EnoughAmmoToShoot(IT_NAILGUN, self.ammo_nails))
 	{
 		return (IT_NAILGUN);
 	}
-	if ( W_EnoughAmmoToShoot(IT_SHOTGUN, self.ammo_shells) )
+	if ( (it & IT_SHOTGUN) && W_EnoughAmmoToShoot(IT_SHOTGUN, self.ammo_shells) )
 	{
 		return (IT_SHOTGUN);
 	}

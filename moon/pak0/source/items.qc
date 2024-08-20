@@ -874,7 +874,6 @@ void() ammo_touch =
 {
 	local entity stemp;
 	local float best;
-	local string s;
 
 	if ( other.classname != MOON_PLAYER_CLASSNAME ) { return; }
 	if ( other.health <= 0 ) { return; }
@@ -890,37 +889,24 @@ void() ammo_touch =
 	other.ammo_cells = (other.ammo_cells + self.ammo_cells);
 	moon_limit_target_ammo(other);
 
+	flash_target(other);
 	if (self.ammo_shells)
 	{
-		sprint(other, "You get ");
-		s = ftos(self.ammo_shells);
-		sprint(other, s);
-		sprint(other, " shells");
+		sprint(other, "You picked up {} {}\n", floor_ftos(self.ammo_shells), MOON_AMMO_SHELLS_DISPLAYNAME);
 	}
 	if (self.ammo_nails)
 	{
-		sprint(other, "You get ");
-		s = ftos(self.ammo_nails);
-		sprint(other, s);
-		sprint(other, " nails");
+		sprint(other, "You picked up {} {}\n", floor_ftos(self.ammo_nails), MOON_AMMO_NAILS_DISPLAYNAME);
 	}
 	if (self.ammo_rockets)
 	{
-		sprint(other, "You get ");
-		s = ftos(self.ammo_rockets);
-		sprint(other, s);
-		sprint(other, " rockets");
+		sprint(other, "You picked up {} {}\n", floor_ftos(self.ammo_rockets), MOON_AMMO_ROCKETS_DISPLAYNAME);
 	}
 	if (self.ammo_cells)
 	{
-		sprint(other, "You get ");
-		s = ftos(self.ammo_cells);
-		sprint(other, s);
-		sprint(other, " cells");
+		sprint(other, "You picked up {} {}\n", floor_ftos(self.ammo_cells), MOON_AMMO_CELLS_DISPLAYNAME);
 	}
-	sprint(other, "\n");
 	sound(other, CHAN_ITEM, "weapons/lock4.wav", 1, ATTN_NORM);
-	flash_target(other);
 
 	stemp = self;
 	self = other;
@@ -1293,263 +1279,157 @@ void(entity e, float aura) makeaura =
 	a.nextthink = (time + 0.05);
 };
 
-void(entity e) GetPrefix = // TODO: SOME NEXT REFACTORING TARGET
+void(entity e) GetPrefix =
 {
 	local float r;
 
-	r = rint(((random() * 26) + WF_DEFEND));
-	if ((r == WF_DEFEND))
+	r = random_int(1, 28);
+	switch(r)
 	{
+	case 1:
 		e.prefix_three = " of slaughter";
-		makeaura(e, WF_DEFEND);
-		e.prefix_value = MON_REACTIONTIME;
-		e.prefix = WF_DEFEND;
-	}
-	else
-	{
-		if ((r == WF_EXTRASIZE))
-		{
-			e.prefix_three = " of violence";
-			makeaura(e, WF_DEFEND);
-			e.prefix_value = MON_STUCKTIME;
-			e.prefix = WF_DEFEND;
-		}
-		else
-		{
-			if ((r == LOGIC_FINDDEFEND))
-			{
-				e.prefix_three = " in snake armor";
-				e.prefix_value = MON_REACTIONTIME;
-				e.prefix = WF_EXTRASIZE;
-			}
-			else
-			{
-				if ((r == LOGIC_DEFEND))
-				{
-					e.prefix_three = " in demon skin";
-					e.prefix_value = MON_BACKTIME;
-					e.health = (e.health * 2.5);
-					e.exp = (e.exp * WF_EXTRASIZE);
-					e.prefix = WF_EXTRASIZE;
-				}
-				else
-				{
-					if ((r == LOGIC_PATROL))
-					{
-						e.prefix_three = " in bear armor";
-						e.prefix_value = WF_DEFEND;
-						e.prefix = WF_EXTRASIZE;
-					}
-					else
-					{
-						if ((r == LOGIC_HUNTENEMY))
-						{
-							e.prefix_three = " of weakness";
-							e.health = rint((e.health / WF_EXTRASIZE));
-						}
-						else
-						{
-							if ((r == TE_WIZSPIKE))
-							{
-								e.prefix_three = " the profitable";
-								e.exp = rint((e.exp * CL_DEADTIME));
-							}
-							else
-							{
-								if ((r == KEY_MOVERIGHT))
-								{
-									e.prefix_three = " the rip";
-									e.exp = WF_DEFEND;
-									e.health = GRD_PATROLTIME;
-								}
-								else
-								{
-									if ((r == TE_LIGHTNING3))
-									{
-										e.prefix_three = " the warrior";
-										e.prefix = LOGIC_FINDDEFEND;
-									}
-									else
-									{
-										if ((r == TE_LAVASPLASH))
-										{
-											e.prefix_three = " the hunter";
-											e.prefix = LOGIC_FINDDEFEND;
-										}
-										else
-										{
-											if ((r == TE_TELEPORT))
-											{
-												e.prefix_three = " of regeneration";
-												e.prefix = LOGIC_DEFEND;
-												e.prefix_value = LOGIC_FINDDEFEND;
-											}
-											else
-											{
-												if ((r == 12))
-												{
-													e.prefix_three = " of great reshape";
-													e.prefix = LOGIC_DEFEND;
-													e.prefix_value = TE_LAVASPLASH;
-												}
-												else
-												{
-													if ((r == 13))
-													{
-														e.prefix_three = " the rich";
-														e.prefix = LOGIC_PATROL;
-														e.prefix_value = 200;
-													}
-													else
-													{
-														if ((r == 14))
-														{
-															e.prefix_three = " the treasurer";
-															e.prefix = LOGIC_PATROL;
-															e.prefix_value = GRD_FIGHTDIST;
-														}
-														else
-														{
-															if ((r == 15))
-															{
-																e.prefix_three = " the millioner";
-																e.prefix = LOGIC_PATROL;
-																e.prefix_value = 1000;
-															}
-															else
-															{
-																if ((r == KEY_MOVEFORWARD))
-																{
-																	e.prefix_three = " the petard";
-																	e.prefix = LOGIC_HUNTENEMY;
-																	e.prefix_value = 120;
-																}
-																else
-																{
-																	if ((r == 17))
-																	{
-																		e.prefix_three = " the bomb";
-																		e.prefix = LOGIC_HUNTENEMY;
-																		e.prefix_value = 220;
-																	}
-																	else
-																	{
-																		if ((r == 18))
-																		{
-																			e.prefix_three = " the nuclear";
-																			e.prefix = LOGIC_HUNTENEMY;
-																			e.prefix_value = 420;
-																		}
-																		else
-																		{
-																			if ((r == 19))
-																			{
-																				makeaura(e, H_ROTTEN);
-																				e.prefix_three = " the chosen";
-																				e.prefix = TE_WIZSPIKE;
-																				e.prefix_value = 50;
-																			}
-																			else
-																			{
-																				if ((r == GRD_PATROLTIME))
-																				{
-																					makeaura(e, H_ROTTEN);
-																					e.prefix_three = " of destroying";
-																					e.prefix = TE_WIZSPIKE;
-																					e.prefix_value = 100;
-																				}
-																				else
-																				{
-																					if ((r == 21))
-																					{
-																						makeaura(e, H_ROTTEN);
-																						e.prefix_three = " of humiliation";
-																						e.prefix = TE_WIZSPIKE;
-																						e.prefix_value = 200;
-																					}
-																					else
-																					{
-																						if ((r == 22))
-																						{
-																							makeaura(e, H_ROTTEN);
-																							e.prefix_three = " of world erasing";
-																							e.prefix = TE_WIZSPIKE;
-																							e.prefix_value = 300;
-																						}
-																						else
-																						{
-																							if ((r == SVC_TEMPENTITY))
-																							{
-																								e.prefix_three = " of resistance";
-																								e.prefix = KEY_MOVERIGHT;
-																								e.prefix_value = 30;
-																							}
-																							else
-																							{
-																								if ((r == 24))
-																								{
-																									e.prefix_three = " in wood armor";
-																									e.prefix = KEY_MOVERIGHT;
-																									e.prefix_value = GRD_DEFENDTIME;
-																								}
-																								else
-																								{
-																									if ((r == 25))
-																									{
-																										e.prefix_three = " in bronze armor";
-																										e.prefix = KEY_MOVERIGHT;
-																										e.prefix_value = 60;
-																									}
-																									else
-																									{
-																										if ((r == 26))
-																										{
-																											e.prefix_three = " of failure";
-																											e.prefix = TE_LIGHTNING3;
-																											e.prefix_value = 30;
-																										}
-																										else
-																										{
-																											if ((r == SVC_KILLEDMONSTER))
-																											{
-																												e.prefix_three = " of receive";
-																												e.prefix = TE_LIGHTNING3;
-																												e.prefix_value = 60;
-																											}
-																											else
-																											{
-																												if ((r == SVC_FOUNDSECRET))
-																												{
-																													e.prefix_three = " of cry";
-																													e.prefix = TE_LIGHTNING3;
-																													e.prefix_value = MENTAT_TIME;
-																												}
-																											}
-																										}
-																									}
-																								}
-																							}
-																						}
-																					}
-																				}
-																			}
-																		}
-																	}
-																}
-															}
-														}
-													}
-												}
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
+		e.prefix = 1;
+		e.prefix_value = 0.2;
+		makeaura(e, 1);
+		break;
+	case 2:
+		e.prefix_three = " of violence";
+		e.prefix = 1;
+		e.prefix_value = 0.4;
+		makeaura(e, 1);
+		break;
+	case 3:
+		e.prefix_three = " in snake armor";
+		e.prefix = 2;
+		e.prefix_value = 0.2;
+		break;
+	case 4:
+		e.prefix_three = " in demon skin";
+		e.prefix = 2;
+		e.prefix_value = 0.5;
+		e.health = (e.health * 2.5);
+		e.exp = (e.exp * 2);
+		break;
+	case 5:
+		e.prefix_three = " in bear armor";
+		e.prefix = 2;
+		e.prefix_value = 1;
+		break;
+	case 6:
+		e.prefix_three = " of weakness";
+		e.health = rint(e.health / 2);
+		break;
+	case 7:
+		e.prefix_three = " the profitable"; // TODO: may be "the experienced"?
+		e.exp = rint(e.exp * 1.5);
+		break;
+	case 8:
+		e.prefix_three = " the rip";
+		e.exp = 1;
+		e.health = 20;
+		break;
+	case 9:
+		e.prefix_three = " the warrior";
+		e.prefix = 3;
+		break;
+	case 10:
+		e.prefix_three = " the hunter";
+		e.prefix = 3;
+		break;
+	case 11:
+		e.prefix_three = " of regeneration";
+		e.prefix = 4;
+		e.prefix_value = 3;
+		break;
+	case 12:
+		e.prefix_three = " of great reshape";
+		e.prefix = 4;
+		e.prefix_value = 10;
+		break;
+	case 13:
+		e.prefix_three = " the rich";
+		e.prefix = 5;
+		e.prefix_value = 200;
+		break;
+	case 14:
+		e.prefix_three = " the treasurer";
+		e.prefix = 5;
+		e.prefix_value = 500;
+		break;
+	case 15:
+		e.prefix_three = " the millioner";
+		e.prefix = 5;
+		e.prefix_value = 1000;
+		break;
+	case 16:
+		e.prefix_three = " the petard";
+		e.prefix = 6;
+		e.prefix_value = 120;
+		break;
+	case 17:
+		e.prefix_three = " the bomb";
+		e.prefix = 6;
+		e.prefix_value = 220;
+		break;
+	case 18:
+		e.prefix_three = " the nuclear";
+		e.prefix = 6;
+		e.prefix_value = 420;
+		break;
+	case 19:
+		e.prefix_three = " the chosen";
+		e.prefix = 7;
+		e.prefix_value = 50;
+		makeaura(e, 1);
+		break;
+	case 20:
+		e.prefix_three = " of destroying";
+		e.prefix = 7;
+		e.prefix_value = 100;
+		makeaura(e, 1);
+		break;
+	case 21:
+		e.prefix_three = " of humiliation";
+		e.prefix = 7;
+		e.prefix_value = 200;
+		makeaura(e, 1);
+		break;
+	case 22:
+		e.prefix_three = " of world erasing";
+		e.prefix = 7;
+		e.prefix_value = 300;
+		makeaura(e, 1);
+		break;
+	case 23:
+		e.prefix_three = " of resistance";
+		e.prefix = 8;
+		e.prefix_value = 30;
+		break;
+	case 24:
+		e.prefix_three = " in wood armor";
+		e.prefix = 8;
+		e.prefix_value = 40;
+		break;
+	case 25:
+		e.prefix_three = " in bronze armor";
+		e.prefix = 8;
+		e.prefix_value = 60;
+		break;
+	case 26:
+		e.prefix_three = " of failure";
+		e.prefix = 9;
+		e.prefix_value = 30;
+		break;
+	case 27:
+		e.prefix_three = " of receive";
+		e.prefix = 9;
+		e.prefix_value = 60;
+		break;
+	case 28:
+		e.prefix_three = " of cry";
+		e.prefix = 9;
+		e.prefix_value = 90;
+		break;
 	}
 };
 

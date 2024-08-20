@@ -876,23 +876,20 @@ void() ammo_touch =
 	local float best;
 	local string s;
 
-	if ((other.classname != "player"))
-	{
-		return;
-	}
-	if ((other.health <= WF_NORMAL))
-	{
-		return;
-	}
+	if ( other.classname != MOON_PLAYER_CLASSNAME ) { return; }
+	if ( other.health <= 0 ) { return; }
+
 	stemp = self;
 	self = other;
 	best = W_BestWeapon();
 	self = stemp;
+
 	other.ammo_shells = (other.ammo_shells + self.ammo_shells);
 	other.ammo_nails = (other.ammo_nails + self.ammo_nails);
 	other.ammo_rockets = (other.ammo_rockets + self.ammo_rockets);
 	other.ammo_cells = (other.ammo_cells + self.ammo_cells);
 	moon_limit_target_ammo(other);
+
 	if (self.ammo_shells)
 	{
 		sprint(other, "You get ");
@@ -922,20 +919,18 @@ void() ammo_touch =
 		sprint(other, " cells");
 	}
 	sprint(other, "\n");
-	sound(other, CHAN_ITEM, "weapons/lock4.wav", WF_DEFEND, ATTN_NORM);
+	sound(other, CHAN_ITEM, "weapons/lock4.wav", 1, ATTN_NORM);
 	flash_target(other);
-	if ((other.weapon == best))
-	{
-		stemp = self;
-		self = other;
-		self.weapon = W_BestWeapon();
-		// W_SetCurrentAmmo();
-		self = stemp;
-	}
+
 	stemp = self;
 	self = other;
+	if (self.weapon == best)
+	{
+		self.weapon = W_BestWeapon();
+	}
 	W_SetCurrentAmmo();
 	self = stemp;
+
 	remove(self);
 };
 
@@ -1745,9 +1740,7 @@ void() moon4_touch = // Works - dont touch
 	}
 	if (((other.wantline <= WF_NORMAL) || (other.wantline > TE_WIZSPIKE)))
 	{
-		bprint("ERROR: movecode has requested nonexistent way (");
-		bprint_ftos(other.wantline);
-		bprint(" line was requested). Please report this bug.\n");
+		dprint("ERROR: movecode has requested nonexistent way ({} line was requested). Please report this bug.\n", quick_ftos(other.wantline));
 	}
 	if ((other.mon_logic == LOGIC_CAMPER))
 	{
@@ -3524,167 +3517,204 @@ void(entity who) find_creature =
 	}
 };
 
-void(entity who) find_trade_spot = // Refactor next
+void(entity target, float armor_code, float armor_durability = -1) moon_init_target_as_armor =
+{
+	setmodel(target, "progs/armor.mdl");
+	target.health = armor_durability;
+
+	switch(armor_code)
+	{
+	case MOON_ARMOR_GREEN_CODE:
+		target.items = IT_ARMOR1;
+		target.skin = MOON_ARMOR_GREEN_SKIN;
+		target.max_health = MOON_ARMOR_GREEN_DURABILITY;
+		target.armortype = MOON_ARMOR_GREEN_RESISTANCE;
+		target.cost = MOON_ARMOR_GREEN_SHOP_COST;
+		break;
+	case MOON_ARMOR_YELLOW_CODE:
+		target.items = IT_ARMOR2;
+		target.skin = MOON_ARMOR_YELLOW_SKIN;
+		target.max_health = MOON_ARMOR_YELLOW_DURABILITY;
+		target.armortype = MOON_ARMOR_YELLOW_RESISTANCE;
+		target.cost = MOON_ARMOR_YELLOW_SHOP_COST;
+		break;
+	case MOON_ARMOR_RED_CODE:
+		target.items = IT_ARMOR3;
+		target.skin = MOON_ARMOR_RED_SKIN;
+		target.max_health = MOON_ARMOR_RED_DURABILITY;
+		target.armortype = MOON_ARMOR_RED_RESISTANCE;
+		target.cost = MOON_ARMOR_RED_SHOP_COST;
+		break;
+	default:
+		target.max_health = 1; // Division by zero guard
+		dprint("Unknown armor code {}\n", armor_code);
+	}
+
+	// Adjust cost for damaged Armors
+	target.armorvalue = ( (target.health > 0) ? target.health : target.max_health);
+	target.cost = (target.cost * (target.armorvalue / target.max_health));
+};
+
+void(entity target, float medkit_code, float medkit_durability = -1) moon_init_target_as_medkit =
+{
+	target.health = medkit_durability;
+	target.items = IT_SUPERHEALTH;
+
+	switch(medkit_code)
+	{
+	case MOON_MEDKIT_SMALL_TYPE:
+		setmodel(target, "maps/b_bh10.bsp");
+		target.noise = "items/r_item1.wav";
+		target.healtype = MOON_MEDKIT_SMALL_TYPE;
+		target.max_health = MOON_MEDKIT_SMALL_VALUE;
+		target.cost = MOON_MEDKIT_SMALL_COST;
+		target.targetname = MOON_MEDKIT_SMALL_DISPLAYNAME;
+		break;
+	case MOON_MEDKIT_NORMAL_TYPE:
+		setmodel(target, "maps/b_bh25.bsp");
+		target.noise = "items/health1.wav";
+		target.healtype = MOON_MEDKIT_NORMAL_TYPE;
+		target.max_health = MOON_MEDKIT_NORMAL_VALUE;
+		target.cost = MOON_MEDKIT_NORMAL_COST;
+		target.targetname = MOON_MEDKIT_NORMAL_DISPLAYNAME;
+		break;
+	case MOON_MEDKIT_MEGA_TYPE:
+		setmodel(target, "maps/b_bh100.bsp");
+		target.noise = "items/r_item2.wav";
+		target.healtype = MOON_MEDKIT_MEGA_TYPE;
+		target.max_health = MOON_MEDKIT_MEGA_VALUE;
+		target.cost = MOON_MEDKIT_MEGA_COST;
+		target.targetname = MOON_MEDKIT_MEGA_DISPLAYNAME;
+		break;
+	default:
+		target.max_health = 1; // Division by zero guard
+		dprint("Unknown medkit code {}\n", medkit_code);
+	}
+
+	// Adjust cost for spoiled medkits
+	target.healamount = ( (target.health > 0) ? target.health : target.max_health);
+	target.cost = (target.cost * (target.healamount / target.max_health));
+};
+
+void(entity who) find_trade_spot =
 {
 	local entity head;
 	local float r;
 
-	head = find(world, classname, "trade_spot");
-	while (head)
+	while ( (head = find(head, classname, MOON_TRADE_SPOT_CLASSNAME)) )
 	{
-		if ( head.netname == self.netname )
-		{
-			if ( head.free == FALSE )
-			{
-				head = find(head, classname, "trade_spot");
-				continue;
-			}
+		if ( head.netname != self.netname ) { continue; }
+		if ( head.free == FALSE ) { continue; }
+		if ( head.attack_finished >= time ) { continue; }
 
-			if ( head.attack_finished < time )
+		r = random();
+		switch(self.netname)
+		{
+		case MOON_TRADE_SHOP_ARMOR_NETNAME:
+			if ( r < 0.35 )
 			{
-				r = random();
-				if ( self.netname == "armor_trader" )
-				{
-					setmodel(head, "progs/armor.mdl");
-					if ( r < 0.35 )
-					{
-						head.skin = 0;
-						head.armorvalue = 100;
-						head.armortype = 0.3;
-						head.items = IT_ARMOR1;
-						head.cost = 50;
-					} else
-					if ( r < 0.75 )
-					{
-						head.skin = 1;
-						head.armorvalue = 150;
-						head.armortype = 0.6;
-						head.items = IT_ARMOR2;
-						head.cost = 100;
-					} else {
-						head.skin = 2;
-						head.armorvalue = 200;
-						head.armortype = 0.8;
-						head.items = IT_ARMOR3;
-						head.cost = 150;
-					}
-				} else
-				if ( self.netname == "health_trader" )
-				{
-					if ( r < 0.6 )
-					{
-						setmodel(head, "maps/b_bh10.bsp");
-						head.noise = "items/r_item1.wav";
-						head.healtype = MOON_MEDKIT_SMALL_TYPE;
-						head.healamount = MOON_MEDKIT_SMALL_VALUE;
-						head.cost = MOON_MEDKIT_SMALL_COST;
-						head.targetname = MOON_MEDKIT_SMALL_DISPLAYNAME;
-						head.items = IT_SUPERHEALTH;
-					} else
-					if ( r < 0.9 )
-					{
-						setmodel(head, "maps/b_bh25.bsp");
-						head.noise = "items/health1.wav";
-						head.healtype = MOON_MEDKIT_NORMAL_TYPE;
-						head.healamount = MOON_MEDKIT_NORMAL_VALUE;
-						head.cost = MOON_MEDKIT_NORMAL_COST;
-						head.targetname = MOON_MEDKIT_NORMAL_DISPLAYNAME;
-						head.items = IT_SUPERHEALTH;
-					} else {
-						setmodel(head, "maps/b_bh100.bsp");
-						head.noise = "items/r_item2.wav";
-						head.healtype = MOON_MEDKIT_MEGA_TYPE;
-						head.healamount = MOON_MEDKIT_MEGA_VALUE;
-						head.cost = MOON_MEDKIT_MEGA_COST;
-						head.targetname = MOON_MEDKIT_MEGA_DISPLAYNAME;
-						head.items = IT_SUPERHEALTH;
-					}
-				} else
-				if ( self.netname == "ammo_trader" )
-				{
-					head.cnt = MOON_ITEM_TRADE_SIGNOF_AMMO;
-					if ( r < 0.2 )
-					{
-						setmodel(head, "maps/b_shell0.bsp");
-						head.ammo_shells = ceil(MOON_AMMO_SHELLS_BASE + (random() * MOON_AMMO_SHELLS_RANDOM));
-						head.cost = ceil(head.ammo_shells * MOON_AMMO_SHELLS_COSTOFONE);
-						head.targetname = MOON_AMMO_SHELLS_DISPLAYNAME;
-					} else
-					if ( r < 0.4 )
-					{
-						setmodel(head, "maps/b_nail0.bsp");
-						head.ammo_nails = ceil(MOON_AMMO_NAILS_BASE + (random() * MOON_AMMO_NAILS_RANDOM));
-						head.cost = ceil(head.ammo_nails * MOON_AMMO_NAILS_COSTOFONE);
-						head.targetname = MOON_AMMO_NAILS_DISPLAYNAME;
-					} else
-					if ((r < 0.7))
-					{
-						setmodel(head, "maps/b_rock0.bsp");
-						head.ammo_rockets = ceil(MOON_AMMO_ROCKETS_BASE + (random() * MOON_AMMO_ROCKETS_RANDOM));
-						head.cost = ceil(head.ammo_rockets * MOON_AMMO_ROCKETS_COSTOFONE);
-						head.targetname = MOON_AMMO_ROCKETS_DISPLAYNAME;
-					} else {
-						setmodel(head, "maps/b_batt0.bsp");
-						head.ammo_cells = ceil(MOON_AMMO_CELLS_BASE + (random() * MOON_AMMO_CELLS_RANDOM));
-						head.cost = ceil(head.ammo_cells * MOON_AMMO_CELLS_COSTOFONE);
-						head.targetname = MOON_AMMO_CELLS_DISPLAYNAME;
-					}
-				} else
-				if ( self.netname == "weapon_trader" )
-				{
-					head.cnt = MOON_ITEM_TRADE_SIGNOF_WEAPON;
-					if ( r < 0.15 )
-					{
-						setmodel(head, "progs/g_shot.mdl");
-						head.ammo_shells = MOON_WEAPON_SUPERSHOTGUN_AMMO_SHOP;
-						head.cost = MOON_WEAPON_SUPERSHOTGUN_COST_SHOP;
-						head.targetname = MOON_WEAPON_SUPERSHOTGUN_DISPLAYNAME;
-						head.items = IT_SUPER_SHOTGUN;
-					} else
-					if ( r < 0.3 )
-					{
-						setmodel(head, "progs/g_nail.mdl");
-						head.ammo_nails = MOON_WEAPON_NAILGUN_AMMO_SHOP;
-						head.cost = MOON_WEAPON_NAILGUN_COST_SHOP;
-						head.targetname = MOON_WEAPON_NAILGUN_DISPLAYNAME;
-						head.items = IT_NAILGUN;
-					} else
-					if ( r < 0.45 )
-					{
-						setmodel(head, "progs/g_nail2.mdl");
-						head.ammo_nails = MOON_WEAPON_SUPERNAILGUN_AMMO_SHOP;
-						head.cost = MOON_WEAPON_SUPERNAILGUN_COST_SHOP;
-						head.targetname = MOON_WEAPON_SUPERNAILGUN_DISPLAYNAME;
-						head.items = IT_SUPER_NAILGUN;
-					} else
-					if ( r < 0.6 )
-					{
-						setmodel(head, "progs/g_rock.mdl");
-						head.ammo_rockets = MOON_WEAPON_GRENADELAUNCHER_AMMO_SHOP;
-						head.cost = MOON_WEAPON_GRENADELAUNCHER_COST_SHOP;
-						head.targetname = MOON_WEAPON_GRENADELAUNCHER_DISPLAYNAME;
-						head.items = IT_GRENADE_LAUNCHER;
-					} else
-					if ( r < 0.8 )
-					{
-						setmodel(head, "progs/g_rock2.mdl");
-						head.ammo_rockets = MOON_WEAPON_ROCKETLAUNCHER_AMMO_SHOP;
-						head.cost = MOON_WEAPON_ROCKETLAUNCHER_COST_SHOP;
-						head.targetname = MOON_WEAPON_ROCKETLAUNCHER_DISPLAYNAME;
-						head.items = IT_ROCKET_LAUNCHER;
-					} else {
-						setmodel(head, "progs/g_light.mdl");
-						head.ammo_cells = MOON_WEAPON_LIGHTNING_AMMO_SHOP;
-						head.cost = MOON_WEAPON_LIGHTNING_COST_SHOP;
-						head.targetname = MOON_WEAPON_LIGHTNING_DISPLAYNAME;
-						head.items = IT_LIGHTNING;
-					}
-				}
-				head.free = FALSE;
-				sound(head, CHAN_VOICE, "items/itembk2.wav", 1, ATTN_NORM);
+				moon_init_target_as_armor(head, MOON_ARMOR_GREEN_CODE);
+			} else
+			if ( r < 0.75 )
+			{
+				moon_init_target_as_armor(head, MOON_ARMOR_YELLOW_CODE);
+			} else {
+				moon_init_target_as_armor(head, MOON_ARMOR_RED_CODE);
 			}
+			break;
+		case MOON_TRADE_SHOP_HEALTH_NETNAME:
+			if ( r < 0.6 )
+			{
+				moon_init_target_as_medkit(head, MOON_MEDKIT_SMALL_TYPE);
+			} else
+			if ( r < 0.9 )
+			{
+				moon_init_target_as_medkit(head, MOON_MEDKIT_NORMAL_TYPE);
+			} else {
+				moon_init_target_as_medkit(head, MOON_MEDKIT_MEGA_TYPE);
+			}
+			break;
+		case MOON_TRADE_SHOP_AMMO_NETNAME:
+			head.cnt = MOON_ITEM_TRADE_SIGNOF_AMMO;
+			if ( r < 0.2 )
+			{
+				setmodel(head, "maps/b_shell0.bsp");
+				head.ammo_shells = ceil(MOON_AMMO_SHELLS_BASE + (random() * MOON_AMMO_SHELLS_RANDOM));
+				head.cost = ceil(head.ammo_shells * MOON_AMMO_SHELLS_COSTOFONE);
+				head.targetname = MOON_AMMO_SHELLS_DISPLAYNAME;
+			} else
+			if ( r < 0.4 )
+			{
+				setmodel(head, "maps/b_nail0.bsp");
+				head.ammo_nails = ceil(MOON_AMMO_NAILS_BASE + (random() * MOON_AMMO_NAILS_RANDOM));
+				head.cost = ceil(head.ammo_nails * MOON_AMMO_NAILS_COSTOFONE);
+				head.targetname = MOON_AMMO_NAILS_DISPLAYNAME;
+			} else
+			if ((r < 0.7))
+			{
+				setmodel(head, "maps/b_rock0.bsp");
+				head.ammo_rockets = ceil(MOON_AMMO_ROCKETS_BASE + (random() * MOON_AMMO_ROCKETS_RANDOM));
+				head.cost = ceil(head.ammo_rockets * MOON_AMMO_ROCKETS_COSTOFONE);
+				head.targetname = MOON_AMMO_ROCKETS_DISPLAYNAME;
+			} else {
+				setmodel(head, "maps/b_batt0.bsp");
+				head.ammo_cells = ceil(MOON_AMMO_CELLS_BASE + (random() * MOON_AMMO_CELLS_RANDOM));
+				head.cost = ceil(head.ammo_cells * MOON_AMMO_CELLS_COSTOFONE);
+				head.targetname = MOON_AMMO_CELLS_DISPLAYNAME;
+			}
+			break;
+		case MOON_TRADE_SHOP_WEAPON_NETNAME:
+			head.cnt = MOON_ITEM_TRADE_SIGNOF_WEAPON;
+			if ( r < 0.15 )
+			{
+				setmodel(head, "progs/g_shot.mdl");
+				head.ammo_shells = MOON_WEAPON_SUPERSHOTGUN_AMMO_SHOP;
+				head.cost = MOON_WEAPON_SUPERSHOTGUN_COST_SHOP;
+				head.targetname = MOON_WEAPON_SUPERSHOTGUN_DISPLAYNAME;
+				head.items = IT_SUPER_SHOTGUN;
+			} else
+			if ( r < 0.3 )
+			{
+				setmodel(head, "progs/g_nail.mdl");
+				head.ammo_nails = MOON_WEAPON_NAILGUN_AMMO_SHOP;
+				head.cost = MOON_WEAPON_NAILGUN_COST_SHOP;
+				head.targetname = MOON_WEAPON_NAILGUN_DISPLAYNAME;
+				head.items = IT_NAILGUN;
+			} else
+			if ( r < 0.45 )
+			{
+				setmodel(head, "progs/g_nail2.mdl");
+				head.ammo_nails = MOON_WEAPON_SUPERNAILGUN_AMMO_SHOP;
+				head.cost = MOON_WEAPON_SUPERNAILGUN_COST_SHOP;
+				head.targetname = MOON_WEAPON_SUPERNAILGUN_DISPLAYNAME;
+				head.items = IT_SUPER_NAILGUN;
+			} else
+			if ( r < 0.6 )
+			{
+				setmodel(head, "progs/g_rock.mdl");
+				head.ammo_rockets = MOON_WEAPON_GRENADELAUNCHER_AMMO_SHOP;
+				head.cost = MOON_WEAPON_GRENADELAUNCHER_COST_SHOP;
+				head.targetname = MOON_WEAPON_GRENADELAUNCHER_DISPLAYNAME;
+				head.items = IT_GRENADE_LAUNCHER;
+			} else
+			if ( r < 0.8 )
+			{
+				setmodel(head, "progs/g_rock2.mdl");
+				head.ammo_rockets = MOON_WEAPON_ROCKETLAUNCHER_AMMO_SHOP;
+				head.cost = MOON_WEAPON_ROCKETLAUNCHER_COST_SHOP;
+				head.targetname = MOON_WEAPON_ROCKETLAUNCHER_DISPLAYNAME;
+				head.items = IT_ROCKET_LAUNCHER;
+			} else {
+				setmodel(head, "progs/g_light.mdl");
+				head.ammo_cells = MOON_WEAPON_LIGHTNING_AMMO_SHOP;
+				head.cost = MOON_WEAPON_LIGHTNING_COST_SHOP;
+				head.targetname = MOON_WEAPON_LIGHTNING_DISPLAYNAME;
+				head.items = IT_LIGHTNING;
+			}
+			break;
 		}
-		head = find(head, classname, "trade_spot");
+		head.free = FALSE;
+		sound(head, CHAN_VOICE, "items/itembk2.wav", 1, ATTN_NORM);
 	}
 };
 
@@ -4108,9 +4138,7 @@ void() Cast_Slow = // TODO: clear this mess one day. Slow is Slow
 	dur = (LOGIC_DEFEND + rint((self.sc_redu_lvl * CL_DEADTIME)));
 	if ((self.mana < rm))
 	{
-		sprint_self("this spell requies ");
-		sprint_ftos(self, rm);
-		sprint_self(" mana\n");
+		sprint(self, "this spell requies {} mana, you have only {}\n", rm, mana);
 		return;
 	}
 	head = findradius(self.origin, rng);
@@ -4179,9 +4207,7 @@ void() Cast_Redu = // TODO: clear this mess one day. WTF is redu?
 	dur = (LOGIC_DEFEND + (self.sc_redu_lvl * H_MEGA));
 	if ((self.mana < rm))
 	{
-		sprint_self("this spell requies ");
-		sprint_ftos(self, rm);
-		sprint_self(" mana\n");
+		sprint(self, "this spell requies {} mana, you have only {}\n", rm, mana);
 		return;
 	}
 	head = findradius(self.origin, rng);
@@ -4267,9 +4293,7 @@ void() Cast_Brut = // TODO: clear this mess one day. Brutal? Damage amp
 	dur = (LOGIC_HUNTENEMY + (self.sc_brut_lvl * H_MEGA));
 	if ((self.mana < rm))
 	{
-		sprint_self("this spell requies ");
-		sprint_ftos(self, rm);
-		sprint_self(" mana\n");
+		sprint(self, "this spell requies {} mana, you have only {}\n", rm, mana);
 		return;
 	}
 	if ((self.scroll_time > time))
@@ -4558,7 +4582,7 @@ void(float nm) Cast = // TODO: clear this mess one day. Here input is Spell (scr
 	{
 		if ((self.sc_n1 <= WF_NORMAL))
 		{
-			sprint_self("no 1st scroll to cast\n");
+			sprint(self, "no 1st scroll to cast\n");
 			return;
 		}
 		CastN(self.sc_n1);
@@ -4567,7 +4591,7 @@ void(float nm) Cast = // TODO: clear this mess one day. Here input is Spell (scr
 	{
 		if ((self.sc_n2 <= WF_NORMAL))
 		{
-			sprint_self("no 2nd scroll to cast\n");
+			sprint(self, "no 2nd scroll to cast\n");
 			return;
 		}
 		CastN(self.sc_n2);
@@ -4576,7 +4600,7 @@ void(float nm) Cast = // TODO: clear this mess one day. Here input is Spell (scr
 	{
 		if ((self.sc_n3 <= WF_NORMAL))
 		{
-			sprint_self("no 3rd scroll to cast\n");
+			sprint(self, "no 3rd scroll to cast\n");
 			return;
 		}
 		CastN(self.sc_n3);
@@ -4585,7 +4609,7 @@ void(float nm) Cast = // TODO: clear this mess one day. Here input is Spell (scr
 	{
 		if ((self.sc_n4 <= WF_NORMAL))
 		{
-			sprint_self("no 4th scroll to cast\n");
+			sprint(self, "no 4th scroll to cast\n");
 			return;
 		}
 		CastN(self.sc_n4);
@@ -4594,7 +4618,7 @@ void(float nm) Cast = // TODO: clear this mess one day. Here input is Spell (scr
 	{
 		if ((self.sc_n5 <= WF_NORMAL))
 		{
-			sprint_self("no 5th scroll to cast\n");
+			sprint(self, "no 5th scroll to cast\n");
 			return;
 		}
 		CastN(self.sc_n5);
@@ -5029,7 +5053,7 @@ void() StartSpawning =
 	player_maxlevel = moon_get_max_player_level();
 	MonsterTable(self, player_maxlevel);
 
-	self.nextthink = (time + 0.3);
+	self.nextthink = (time + MOON_TIME_BETWEEN_MONSTER_SPAWN);
 	self.think = StartSpawning;
 };
 
@@ -6738,14 +6762,10 @@ void() mon_evade = // full of black magic
 		head = head.chain;
 	}
 	self.velocity = (self.strafe_vector * self.speed);
-	rint(vlen(self.velocity));
-	if ((rint(self.speed) > rint(self.speed)))
+
+	if ( rint(vlen(self.velocity)) > rint(self.speed) )
 	{
-		bprint("warning: monster speed overload. maxspeed: ");
-		bprint_ftos(self.speed);
-		bprint(". Current: ");
-		bprint_ftos(vlen(self.velocity));
-		bprint(".\n");
+		dprint("warning: monster speed overload. maxspeed: {}. Current: {}.\n", floor_ftos(self.speed), floor_ftos(vlen(self.velocity)));
 	}
 	if (!CanDamage(self.enemy, self))
 	{
@@ -7358,14 +7378,10 @@ void(float dist) mon_ai_run =
 			}
 		}
 		self.velocity = (vec * self.speed);
-		rint(vlen(self.velocity));
-		if ((rint(self.speed) > rint(self.speed)))
+
+		if ( rint(vlen(self.velocity)) > rint(self.speed) )
 		{
-			bprint("warning: monster speed overload. maxspeed: ");
-			bprint_ftos(self.speed);
-			bprint(". Current: ");
-			bprint_ftos(vlen(self.velocity));
-			bprint(".\n");
+			dprint("warning: monster speed overload. maxspeed: {}. Current: {}.\n", floor_ftos(self.speed), floor_ftos(vlen(self.velocity)));
 		}
 	}
 	if (self.enemy)

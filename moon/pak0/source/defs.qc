@@ -247,8 +247,9 @@ string (string s) precache_model = #20;
 void (entity client, string s) stuffcmd = #21;
 entity (vector org, float rad) findradius = #22;
 void(string s, ...) bprint = #0:ex_bprint;
+void(string s, ...) dprint = #0:ex_bprint; // For some reasons ex_dprint didnt work in KEX
+//void(string s, ...) dprint = #0:ex_dprint; // This could be done using IFDEF preprocessor switch
 void(entity client, string s, ...) sprint = #0:ex_sprint;
-void(string s, ...) dprint = #0:ex_dprint;
 string (float f) ftos = #26;
 string (vector v) vtos = #27;
 void () coredump = #28;
@@ -830,12 +831,31 @@ float MOON_EXP_FIRST_LEVEL = 40;
 float MOON_NEXTLEVEL_MORE_PLAYERLEVEL_TIMES = 40;
 float MOON_NEXTLEVEL_MORE_SCALING_FACTOR = 1.35;
 
-// Do not confuse MOON_ARMOR_ with MOON_ITEM_ARMOR, former is CyanYellowRed armor, latter is Magical Item
+// Do not confuse MOON_ARMOR_ with MOON_ITEM_ARMOR, former is GreenYellowRed armor, latter is Magical Item
 float MOON_ARMOR_MAX_SOFT = 255;
 float MOON_ARMOR_SHARD_GAIN = 5;
 float MOON_ARMOR_SHARD_TYPE = 0.3;
 string MOON_ARMOR_MARKET_NETNAME = "goody_armor";
 string MOON_ARMOR_MARKET_DISPLAYNAME = "spoiled armor";
+string MOON_ARMOR_MARKET_PREFIX = "damaged ";
+float MOON_ARMOR_GREEN_CODE = 8192; // IT_ARMOR1;
+float MOON_ARMOR_GREEN_SKIN = 0;
+float MOON_ARMOR_GREEN_DURABILITY = 100;
+float MOON_ARMOR_GREEN_RESISTANCE = 0.3;
+float MOON_ARMOR_GREEN_SHOP_COST = 50;
+string MOON_ARMOR_GREEN_DISPLAYNAME = "Green Armor";
+float MOON_ARMOR_YELLOW_CODE = 16384; // IT_ARMOR2;
+float MOON_ARMOR_YELLOW_SKIN = 1;
+float MOON_ARMOR_YELLOW_DURABILITY = 150;
+float MOON_ARMOR_YELLOW_RESISTANCE = 0.6;
+float MOON_ARMOR_YELLOW_SHOP_COST = 100;
+string MOON_ARMOR_YELLOW_DISPLAYNAME = "Yellow Armor";
+float MOON_ARMOR_RED_CODE = 32768; // IT_ARMOR3;
+float MOON_ARMOR_RED_SKIN = 2;
+float MOON_ARMOR_RED_DURABILITY = 200;
+float MOON_ARMOR_RED_RESISTANCE = 0.8;
+float MOON_ARMOR_RED_SHOP_COST = 150;
+string MOON_ARMOR_RED_DISPLAYNAME = "Red Armor";
 
 string MOON_PLAYER_CLASSNAME = "player";
 float MOON_PLAYER_HEALTH_INIT = 100;
@@ -881,6 +901,7 @@ float MOON_PHYSIC_VELOCITY_Y_LIMIT_HARD = 160;
 float MOON_TIME_TO_DISAPPEAR_NORMAL = 60;
 float MOON_TIME_TO_DISAPPEAR_IMPORTANT = 90;
 float MOON_TIME_ACTIVE_MENTAT = 90;
+float MOON_TIME_BETWEEN_MONSTER_SPAWN = 0.4; // was 0.3 but for Coop MP changed to 0.4
 
 string MOON_GATE_CLASSNAME = "gate";
 string MOON_HEART_CLASSNAME = "heart";
@@ -911,11 +932,24 @@ float MOON_GOLD_LOOT_BASE = 1;
 float MOON_GOLD_LOOT_LVLPERCENT = 5;
 float MOON_GOLD_LOOT_RANDOM = 60;
 
+string MOON_TRADE_SPOT_CLASSNAME = "trade_spot";	 // Item slot
+string MOON_TRADE_SHOP_AMMO_NETNAME = "ammo_trader";
+string MOON_TRADE_SHOP_ARMOR_NETNAME = "armor_trader";
+string MOON_TRADE_SHOP_HEALTH_NETNAME = "health_trader";
+string MOON_TRADE_SHOP_WEAPON_NETNAME = "weapon_trader";
+
 string MOON_SHOP_ITEM_CLASSNAME = "???????";	 // Base shop
 string MOON_MARKET_ITEM_CLASSNAME = "goody_ent"; // Black market
 
 float MOON_ITEM_NONE = 0;
 float MOON_ITEM_SOME = 1;
+
+float MOON_ITEM_MAGIC_CHANCE_PREFIX = 0.3;
+float MOON_ITEM_MAGIC_CHANCE_POSTFIX = 0.6; // if above this - both
+float MOON_ITEM_ARMOR_VS_RING_CHANCE = 0.5;
+
+float MOON_ITEM_TRADE_SIGNOF_AMMO 	= 2;
+float MOON_ITEM_TRADE_SIGNOF_WEAPON = 3;
 
 float MOON_ITEM_LVLTHRESHOLD_LOW    = 10;
 float MOON_ITEM_LVLTHRESHOLD_NORMAL = 20;
@@ -940,27 +974,20 @@ float MOON_ITEM_TRAIT_UPPERBOUND_POSTFIX_NORMAL = 13;
 float MOON_ITEM_TRAIT_UPPERBOUND_POSTFIX_HIGH 	= 16;
 float MOON_ITEM_TRAIT_UPPERBOUND_POSTFIX_EPIC 	= 17;
 
-float MOON_ITEM_MAGIC_CHANCE_PREFIX = 0.3;
-float MOON_ITEM_MAGIC_CHANCE_POSTFIX = 0.6; // if above this - both
-
-float MOON_ITEM_ARMOR_VS_RING_CHANCE = 0.5;
-
-float MOON_ITEM_TRADE_SIGNOF_AMMO 	= 2;
-float MOON_ITEM_TRADE_SIGNOF_WEAPON = 3;
 // MOON_ITEM_MEDKIT -> MOON_MEDKIT . Medkits can only be bought
-string MOON_MEDKIT_SMALL_DISPLAYNAME = "small Medkit";
 float MOON_MEDKIT_SMALL_TYPE		= 0;
 float MOON_MEDKIT_SMALL_VALUE		= 15;
 float MOON_MEDKIT_SMALL_COST		= 20;
-string MOON_MEDKIT_NORMAL_DISPLAYNAME = "Medkit";
+string MOON_MEDKIT_SMALL_DISPLAYNAME = "small Medkit";
 float MOON_MEDKIT_NORMAL_TYPE		= 1;
 float MOON_MEDKIT_NORMAL_VALUE		= 25;
 float MOON_MEDKIT_NORMAL_COST		= 30;
-string MOON_MEDKIT_MEGA_DISPLAYNAME = "Megapack";
+string MOON_MEDKIT_NORMAL_DISPLAYNAME = "Medkit";
 float MOON_MEDKIT_MEGA_TYPE			= 2;
 float MOON_MEDKIT_MEGA_VALUE		= 100;
 float MOON_MEDKIT_MEGA_COST			= 100;
 float MOON_MEDKIT_MEGA_OVERHEAL_SOFTLIMIT = 150;
+string MOON_MEDKIT_MEGA_DISPLAYNAME = "Megapack";
 string MOON_MEDKIT_MEGA_MARKET_NETNAME = "goody_mega";
 string MOON_MEDKIT_MEGA_MARKET_DISPLAYNAME = "degraded Megapack";
 
@@ -1103,6 +1130,7 @@ string MOON_MENTAT_SPEED_NETNAME = "accelerative drug";
 string MOON_MENTAT_SPEED_NAME = "accelerative drug";
 
 // // MAGIC ITEMS and EFFECTS //
+// MOON_ITEM_EFFECT -> MOON_ITEM
 string MOON_ITEM_MAGIC_CLASSNAME = "magicitem";
 string MOON_ITEM_ARMOR_NETNAME = "armor";
 string MOON_ITEM_ARMOR_DISPLAY = "armor";
@@ -1408,47 +1436,12 @@ string(float f) quick_ftos =
 	return ftos(f);
 };
 
-void(string s) sprint_self =
-{
-	sprint(self, s);
-};
-
-void(string s) sprint_other =
-{
-	sprint(other, s);
-};
-
-void(entity target, string s) sprintln =
-{
-	sprint(target, s);
-	sprint(target, "\n");
-};
-
-void(string s) sprintln_self =
-{
-	sprint(self, s);
-	sprint(self, "\n");
-};
-
-void(string s) sprintln_other =
-{
-	sprint(other, s);
-	sprint(other, "\n");
-};
-
 void(entity who, float f) sprint_ftos = // TODO: slowly get rid of it
 {
 	local string str;
 
 	str = ftos(floor(f));
 	sprint(who, str);
-};
-
-void(float f) bprint_ftos =
-{
-	local string str;
-	str = ftos(floor(f));
-	bprint(str);
 };
 
 float(float n1, float n2) percent =

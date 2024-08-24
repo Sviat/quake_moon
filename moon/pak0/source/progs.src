@@ -4,6 +4,7 @@
 
 sysdefs.qc
 defs.qc
+moon/mn_defs.qc
 subs.qc
 ai.qc
 combat.qc

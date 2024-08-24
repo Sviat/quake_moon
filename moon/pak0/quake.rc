@@ -40,6 +40,10 @@ bind mouse_misc2 "switchweapon 5 4";
 unbindkey p;
 bind p "map moon4";
 
+cl_displayMessages 1
+scr_printtime 5
+scr_maxlines 20
+
 // load the last saved configuration
 //exec kexengine.cfg
 

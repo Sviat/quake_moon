@@ -1,11 +1,4 @@
 //Decompiled code. Please respect the original copyright.
-string NAME_SERVER 		= "Server";
-string NAME_SETTINGS 	= "Settings";
-string NAME_GUARD 		= "Guardian";
-float CHAT_COLOR_TECHMSG = const_qex_color_white;
-float CHAT_COLOR_SELFMSG = const_qex_color_green;
-float CHAT_COLOR_BOTMSG  = const_qex_color_teal;
-float CHAT_COLOR_WARNING = const_qex_color_yellow;
 float H_ROTTEN    = 1;
 float H_MEGA      = 2;
 .float healamount;
@@ -270,7 +263,7 @@ void(string sender, float sender_color, string text) kex_chat_message_broad =
 {
 	WriteByte(MSG_ALL, svcqex_chat);
 	WriteByte(MSG_ALL, sender_color);
-	WriteByte(MSG_ALL, const_qex_color_teal);
+	WriteByte(MSG_ALL, CONST_QEX_COLOR_TEAL);
 	WriteString(MSG_ALL, sender);
 	WriteString(MSG_ALL, text);
 };
@@ -284,7 +277,7 @@ void(string sender, float sender_color, string text) kex_chat_message_self =
 	msg_entity = self;
 	WriteByte(MSG_ONE, svcqex_chat);
 	WriteByte(MSG_ONE, sender_color);
-	WriteByte(MSG_ONE, const_qex_color_white);
+	WriteByte(MSG_ONE, CONST_QEX_COLOR_WHITE);
 	WriteString(MSG_ONE, sender);
 	WriteString(MSG_ONE, text);
 
@@ -4982,7 +4975,7 @@ void() ToggleMode =
 						//sound(head, CHAN_VOICE, "moon/talk/stay2.wav", H_ROTTEN, ATTN_NORM); // missing file
 					}
 					head.mode = H_MEGA;
-					kex_chat_message_broad(NAME_GUARD, CHAT_COLOR_BOTMSG, "I will stay here\n");
+					kex_chat_message_broad(MOON_CHAT_NAME_GUARD, MOON_CHAT_COLOR_BOTMSG, "I will stay here\n");
 				}
 				else
 				{
@@ -4997,7 +4990,7 @@ void() ToggleMode =
 							//sound(head, CHAN_VOICE, "moon/talk/go2.wav", H_ROTTEN, ATTN_NORM); // missing file
 						}
 						head.mode = H_ROTTEN;
-						kex_chat_message_broad(NAME_GUARD, CHAT_COLOR_BOTMSG, "I'm coming\n");
+						kex_chat_message_broad(MOON_CHAT_NAME_GUARD, MOON_CHAT_COLOR_BOTMSG, "I'm coming\n");
 					}
 				}
 			}
@@ -5214,40 +5207,40 @@ void(float impulse_code) moon_handle_impulse_server =
 		if (sv_alwaysday == 0)
 		{
 			sv_alwaysday = 1;
-			kex_chat_message_broad(NAME_SERVER, CHAT_COLOR_TECHMSG, "alwaysday enabled\n");
+			kex_chat_message_broad(MOON_CHAT_NAME_SERVER, MOON_CHAT_COLOR_TECHMSG, "alwaysday enabled\n");
 		} else {
 			sv_alwaysday = 0;
-			kex_chat_message_broad(NAME_SERVER, CHAT_COLOR_TECHMSG, "alwaysday disabled\n");
+			kex_chat_message_broad(MOON_CHAT_NAME_SERVER, MOON_CHAT_COLOR_TECHMSG, "alwaysday disabled\n");
 		}
 		break;
 	case MOON_IMPULSE_CODE_NOSHAKE:
 		if (sv_noshake == 0)
 		{
 			sv_noshake = 1;
-			kex_chat_message_broad(NAME_SERVER, CHAT_COLOR_TECHMSG, "Earthquakes disabled\n");
+			kex_chat_message_broad(MOON_CHAT_NAME_SERVER, MOON_CHAT_COLOR_TECHMSG, "Earthquakes disabled\n");
 		} else {
 			sv_noshake = 0;
-			kex_chat_message_broad(NAME_SERVER, CHAT_COLOR_TECHMSG, "Earthquakes enabled\n");
+			kex_chat_message_broad(MOON_CHAT_NAME_SERVER, MOON_CHAT_COLOR_TECHMSG, "Earthquakes enabled\n");
 		}
 		break;
 	case MOON_IMPULSE_CODE_FASTMEAT:
 		if (sv_fastmeat > 0)
 		{
 			sv_fastmeat = 0;
-			kex_chat_message_broad(NAME_SERVER, CHAT_COLOR_TECHMSG, "fastmeat disabled\n");
+			kex_chat_message_broad(MOON_CHAT_NAME_SERVER, MOON_CHAT_COLOR_TECHMSG, "fastmeat disabled\n");
 		} else {
 			sv_fastmeat = 1;
-			kex_chat_message_broad(NAME_SERVER, CHAT_COLOR_TECHMSG, "fastmeat enabled\n");
+			kex_chat_message_broad(MOON_CHAT_NAME_SERVER, MOON_CHAT_COLOR_TECHMSG, "fastmeat enabled\n");
 		}
 		break;
 	case MOON_IMPULSE_CODE_SLOWMEAT:
 		if (sv_fastmeat < 0)
 		{
 			sv_fastmeat = 0;
-			kex_chat_message_broad(NAME_SERVER, CHAT_COLOR_TECHMSG, "slo-owmeat disabled\n");
+			kex_chat_message_broad(MOON_CHAT_NAME_SERVER, MOON_CHAT_COLOR_TECHMSG, "slo-owmeat disabled\n");
 		} else {
 			sv_fastmeat =-1;
-			kex_chat_message_broad(NAME_SERVER, CHAT_COLOR_TECHMSG, "slo-owmeat enabled\n");
+			kex_chat_message_broad(MOON_CHAT_NAME_SERVER, MOON_CHAT_COLOR_TECHMSG, "slo-owmeat enabled\n");
 		}
 		break;
 	case MOON_IMPULSE_CODE_CHEAT_QUAD:
@@ -5266,20 +5259,20 @@ void(float impulse_code) moon_handle_impulse_client =
 		if (self.cl_nohelp == 0)
 		{
 			self.cl_nohelp = 1;
-			kex_chat_message_self(NAME_SETTINGS, CHAT_COLOR_TECHMSG, "extra help enabled\n");
+			kex_chat_message_self(MOON_CHAT_NAME_SETTINGS, MOON_CHAT_COLOR_TECHMSG, "extra help enabled\n");
 		} else {
 			self.cl_nohelp = 0;
-			kex_chat_message_self(NAME_SETTINGS, CHAT_COLOR_TECHMSG, "extra help disabled\n");
+			kex_chat_message_self(MOON_CHAT_NAME_SETTINGS, MOON_CHAT_COLOR_TECHMSG, "extra help disabled\n");
 		}
 		break;
 	case MOON_IMPULSE_CODE_SHOWFPS:
 		if (self.cl_framtime == 0)
 		{
 			self.cl_framtime = 1;
-			kex_chat_message_self(NAME_SETTINGS, CHAT_COLOR_TECHMSG, "FPS count enabled\n");
+			kex_chat_message_self(MOON_CHAT_NAME_SETTINGS, MOON_CHAT_COLOR_TECHMSG, "FPS count enabled\n");
 		} else {
 			self.cl_framtime = 0;
-			kex_chat_message_self(NAME_SETTINGS, CHAT_COLOR_TECHMSG, "FPS count disabled\n");
+			kex_chat_message_self(MOON_CHAT_NAME_SETTINGS, MOON_CHAT_COLOR_TECHMSG, "FPS count disabled\n");
 		}
 		break;
 	default:
@@ -5558,16 +5551,16 @@ void() moon_bot_warn_enemy =
 	switch(r)
 	{
 	case 1:
-		kex_chat_message_broad(NAME_GUARD, CHAT_COLOR_BOTMSG, "INCOMING!!!\n");
+		kex_chat_message_broad(MOON_CHAT_NAME_GUARD, MOON_CHAT_COLOR_BOTMSG, "INCOMING!!!\n");
 		break;
 	case 2:
-		kex_chat_message_broad(NAME_GUARD, CHAT_COLOR_BOTMSG, "They are coming!\n");
+		kex_chat_message_broad(MOON_CHAT_NAME_GUARD, MOON_CHAT_COLOR_BOTMSG, "They are coming!\n");
 		break;
 	case 3:
-		kex_chat_message_broad(NAME_GUARD, CHAT_COLOR_BOTMSG, "I found enemy!\n");
+		kex_chat_message_broad(MOON_CHAT_NAME_GUARD, MOON_CHAT_COLOR_BOTMSG, "I found enemy!\n");
 		break;
 	case 4:
-		kex_chat_message_broad(NAME_GUARD, CHAT_COLOR_BOTMSG, "We are under attack!\n");
+		kex_chat_message_broad(MOON_CHAT_NAME_GUARD, MOON_CHAT_COLOR_BOTMSG, "We are under attack!\n");
 		break;
 	}
 };
@@ -5721,7 +5714,7 @@ void() bot_security_check =
 						self.show_hostile = (time + MON_REACTIONTIME);
 						self.action = LOGIC_HUNTENEMY;
 						self.action_time = WF_NORMAL;
-						kex_chat_message_broad(NAME_GUARD, CHAT_COLOR_BOTMSG, "I'm helping comrades\n");
+						kex_chat_message_broad(MOON_CHAT_NAME_GUARD, MOON_CHAT_COLOR_BOTMSG, "I'm helping comrades\n");
 						self.th_run();
 					}
 				}
@@ -6401,7 +6394,7 @@ void() SpawnBot =
 	newbot.nextthink = (time + MON_CAMPERCHANCE);
 	newbot.think = newbot.th_stand;
 
-	kex_chat_message_broad(NAME_GUARD, CHAT_COLOR_BOTMSG, "Ready to serve\n");
+	kex_chat_message_broad(MOON_CHAT_NAME_GUARD, MOON_CHAT_COLOR_BOTMSG, "Ready to serve\n");
 };
 
 void(entity e) GeneratePatrolTarget =

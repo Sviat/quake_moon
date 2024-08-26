@@ -1,3 +1,9 @@
+/// ReProjectMoon-specific source file
+/// Here go all common game (and logic) definitions
+/// MUST be prefixed with MOON_
+
+// TODO: one day may be split between technical and Game Design defs?
+
 #define CONST_QC_DISPLAY_MAX 999
 
 #define CONST_QC_SPRINT_A "\a"			// Black cell
@@ -72,39 +78,19 @@ float MOON_WALKMAN_VOLUME_MUSIC = 0.32;
 float MOON_WALKMAN_VOLUME_SHOP = 1;
 float MOON_WALKMAN_ATTEN_MUSIC = 0.42;
 float MOON_WALKMAN_ATTEN_SHOP = 1.0;
-float MOON_WALKMAN_DELAY_BETWEENTRACKS = 3; // in seconds
+float MOON_WALKMAN_DELAY_FIRSTTHINK_MIN     = 10; // in seconds
+float MOON_WALKMAN_DELAY_FIRSTTHINK_RANDOM  = 20; // in seconds
+float MOON_WALKMAN_DELAY_FIRSTTRACK_SHOP    =  1; // in seconds
+float MOON_WALKMAN_DELAY_FIRSTTRACK_GATE    = 32; // in seconds
+float MOON_WALKMAN_DELAY_BETWEENTHINKS      = 30; // in seconds
+float MOON_WALKMAN_DELAY_BETWEENTRACKS_SHOP = 12; // in seconds
+float MOON_WALKMAN_DELAY_BETWEENTRACKS_GATE =  3; // in seconds
 
 float MOON_PLAYER_MAX_LEVEL = 50;
 float MOON_HEART_MAX_LEVEL = 50;
 float MOON_EXP_FIRST_LEVEL = 40;
 float MOON_NEXTLEVEL_MORE_PLAYERLEVEL_TIMES = 40;
 float MOON_NEXTLEVEL_MORE_SCALING_FACTOR = 1.35;
-
-// Do not confuse MOON_ARMOR_ with MOON_ITEM_ARMOR, former is GreenYellowRed armor, latter is Magical Item
-float MOON_ARMOR_MAX_SOFT = 255;
-float MOON_ARMOR_SHARD_GAIN = 5;
-float MOON_ARMOR_SHARD_TYPE = 0.3;
-string MOON_ARMOR_MARKET_NETNAME = "goody_armor";
-string MOON_ARMOR_MARKET_DISPLAYNAME = "spoiled armor";
-string MOON_ARMOR_MARKET_PREFIX = "damaged ";
-float MOON_ARMOR_GREEN_CODE = 8192; // IT_ARMOR1;
-float MOON_ARMOR_GREEN_SKIN = 0;
-float MOON_ARMOR_GREEN_DURABILITY = 100;
-float MOON_ARMOR_GREEN_RESISTANCE = 0.3;
-float MOON_ARMOR_GREEN_SHOP_COST = 50;
-string MOON_ARMOR_GREEN_DISPLAYNAME = "Green Armor";
-float MOON_ARMOR_YELLOW_CODE = 16384; // IT_ARMOR2;
-float MOON_ARMOR_YELLOW_SKIN = 1;
-float MOON_ARMOR_YELLOW_DURABILITY = 150;
-float MOON_ARMOR_YELLOW_RESISTANCE = 0.6;
-float MOON_ARMOR_YELLOW_SHOP_COST = 100;
-string MOON_ARMOR_YELLOW_DISPLAYNAME = "Yellow Armor";
-float MOON_ARMOR_RED_CODE = 32768; // IT_ARMOR3;
-float MOON_ARMOR_RED_SKIN = 2;
-float MOON_ARMOR_RED_DURABILITY = 200;
-float MOON_ARMOR_RED_RESISTANCE = 0.8;
-float MOON_ARMOR_RED_SHOP_COST = 150;
-string MOON_ARMOR_RED_DISPLAYNAME = "Red Armor";
 
 string MOON_PLAYER_CLASSNAME = "player";
 float MOON_PLAYER_HEALTH_INIT = 100;
@@ -139,8 +125,8 @@ float MOON_STAT_HEALTH_PER_VITALITY = 2;
 float MOON_STAT_DAMAGE_PER_STRENGTH = 1.5;
 float MOON_STAT_MANA_PER_SANITY 	= 1; 	// Not finished
 float MOON_STAT_POWER_PER_INTUITION	= 0.5; 	// Not finished
-float MOON_STAT_MAXHEALTH_MIN = 1;
-float MOON_STAT_MAXMANA_MIN = 0;
+float MOON_STAT_MAXHEALTH_MIN       = 1;
+float MOON_STAT_MAXMANA_MIN         = 0;
 
 float MOON_PHYSIC_VELOCITY_X_LIMIT_SOFT = 150;
 float MOON_PHYSIC_VELOCITY_X_LIMIT_HARD = 160;
@@ -160,9 +146,10 @@ float MOON_HEART_HEALTH_REGEN_VALUE = 1;
 float MOON_HEART_HEALTH_REGEN_COOLDOWN = 1;
 
 string MOON_GUARD_CLASSNAME = "guard";
+string MOON_GUARD_DISPLAYNAME = "comrade";
 float MOON_GUARD_HEALTH_INIT = 100;
 float MOON_GUARD_HEALTH_GROW = 25;
-float MOON_GUARD_HEALTH_REGEN_VALUE = 1; // unused
+float MOON_GUARD_HEALTH_REGEN_VALUE = 1;    // unused
 float MOON_GUARD_HEALTH_REGEN_COOLDOWN = 1; // unused
 
 float MOON_CREEP_GOLD_PREFIX_CODE = 5;
@@ -182,13 +169,50 @@ float MOON_GOLD_LOOT_LVLPERCENT = 5;
 float MOON_GOLD_LOOT_RANDOM = 60;
 
 string MOON_TRADE_SPOT_CLASSNAME = "trade_spot";	 // Item slot
+float MOON_TRADE_SPOT_DELAY_INIT_MIN = 1;
+float MOON_TRADE_SPOT_DELAY_INIT_RANDOM = 15;
 string MOON_TRADE_SHOP_AMMO_NETNAME = "ammo_trader";
+float MOON_TRADE_SPOT_AMMO_DELAY_MIN = 24; // was 20, changed to 24 to have int division by 2,3,4
+float MOON_TRADE_SPOT_AMMO_DELAY_RANDOM = 16; // was 20, changed compensate above
 string MOON_TRADE_SHOP_ARMOR_NETNAME = "armor_trader";
+float MOON_TRADE_SPOT_ARMOR_DELAY_MIN = 20;
+float MOON_TRADE_SPOT_ARMOR_DELAY_RANDOM = 20;
 string MOON_TRADE_SHOP_HEALTH_NETNAME = "health_trader";
+float MOON_TRADE_SPOT_HEALTH_DELAY_MIN = 20;
+float MOON_TRADE_SPOT_HEALTH_DELAY_RANDOM = 20;
 string MOON_TRADE_SHOP_WEAPON_NETNAME = "weapon_trader";
+float MOON_TRADE_SPOT_WEAPON_DELAY_MIN = 20;
+float MOON_TRADE_SPOT_WEAPON_DELAY_RANDOM = 20;
 
+// TODO: find out what sale_ent is
 string MOON_SHOP_ITEM_CLASSNAME = "???????";	 // Base shop
 string MOON_MARKET_ITEM_CLASSNAME = "goody_ent"; // Black market
+
+// Do not confuse MOON_ARMOR_ with MOON_ITEM_ARMOR, former is GreenYellowRed armor, latter is Magical Item
+float MOON_ARMOR_MAX_SOFT = 255;
+float MOON_ARMOR_SHARD_GAIN = 5;
+float MOON_ARMOR_SHARD_TYPE = 0.3;
+string MOON_ARMOR_MARKET_NETNAME = "goody_armor";
+string MOON_ARMOR_MARKET_DISPLAYNAME = "spoiled armor";
+string MOON_ARMOR_MARKET_PREFIX = "damaged ";
+float MOON_ARMOR_GREEN_CODE = 8192; // IT_ARMOR1;
+float MOON_ARMOR_GREEN_SKIN = 0;
+float MOON_ARMOR_GREEN_DURABILITY = 100;
+float MOON_ARMOR_GREEN_RESISTANCE = 0.3;
+float MOON_ARMOR_GREEN_SHOP_COST = 50;
+string MOON_ARMOR_GREEN_DISPLAYNAME = "Green Armor";
+float MOON_ARMOR_YELLOW_CODE = 16384; // IT_ARMOR2;
+float MOON_ARMOR_YELLOW_SKIN = 1;
+float MOON_ARMOR_YELLOW_DURABILITY = 150;
+float MOON_ARMOR_YELLOW_RESISTANCE = 0.6;
+float MOON_ARMOR_YELLOW_SHOP_COST = 100;
+string MOON_ARMOR_YELLOW_DISPLAYNAME = "Yellow Armor";
+float MOON_ARMOR_RED_CODE = 32768; // IT_ARMOR3;
+float MOON_ARMOR_RED_SKIN = 2;
+float MOON_ARMOR_RED_DURABILITY = 200;
+float MOON_ARMOR_RED_RESISTANCE = 0.8;
+float MOON_ARMOR_RED_SHOP_COST = 150;
+string MOON_ARMOR_RED_DISPLAYNAME = "Red Armor";
 
 float MOON_ITEM_NONE = 0;
 float MOON_ITEM_SOME = 1;
@@ -259,7 +283,9 @@ float MOON_AMMO_MAX_ROCKET 	= 100;
 float MOON_AMMO_MAX_CELL 	= 100;
 // These ammo boxes can be bought in shop, on market or looted, need to update later
 string MOON_AMMO_MARKET_NETNAME = "goody_ammo";
+float MOON_AMMO_MARKET_ROCKET_VS_CELL_RATIO = 0.6;
 string MOON_AMMO_SHELLS_DISPLAYNAME = "shells";
+string MOON_AMMO_SHELLS_MODEL = "XXX";
 float MOON_AMMO_SHELLS_BASE = 10;
 float MOON_AMMO_SHELLS_RANDOM = 20;
 float MOON_AMMO_SHELLS_COSTOFONE = 0.7;
@@ -272,28 +298,42 @@ float MOON_AMMO_NAILS_COSTOFONE = 0.8;
 float MOON_AMMO_NAILS_LOOT_MIN = 11;	// was 6
 float MOON_AMMO_NAILS_LOOT_RANDOM = 30;	// was 35
 string MOON_AMMO_ROCKETS_DISPLAYNAME = "rockets";
+string MOON_AMMO_ROCKETS_MODEL = "maps/b_rock0.bsp";
 float MOON_AMMO_ROCKETS_BASE = 5;
 float MOON_AMMO_ROCKETS_RANDOM = 8;
 float MOON_AMMO_ROCKETS_COSTOFONE = 3;
 float MOON_AMMO_ROCKETS_LOOT_MIN = 1;
 float MOON_AMMO_ROCKETS_LOOT_RANDOM = 10;
+float MOON_AMMO_ROCKETS_MARKET_COSTOFONE = 6;
+float MOON_AMMO_ROCKETS_MARKET_MIN = 15;
+float MOON_AMMO_ROCKETS_MARKET_RANDOM = 10;
 string MOON_AMMO_CELLS_DISPLAYNAME = "cells";
+string MOON_AMMO_CELLS_MODEL = "maps/b_batt0.bsp";
 float MOON_AMMO_CELLS_BASE = 8;
 float MOON_AMMO_CELLS_RANDOM = 8;
 float MOON_AMMO_CELLS_COSTOFONE = 3.5;
 float MOON_AMMO_CELLS_LOOT_MIN = 5;	// was 2
 float MOON_AMMO_CELLS_LOOT_RANDOM = 13;	// was 16
+float MOON_AMMO_CELLS_MARKET_COSTOFONE = 8;
+float MOON_AMMO_CELLS_MARKET_MIN = 15;
+float MOON_AMMO_CELLS_MARKET_RANDOM = 7;
 
 // MOON_ITEM_WEAPON -> MOON_WEAPON . Weapons can be bought and looted
 string MOON_WEAPON_MARKET_NETNAME = "goody_weapon";
 
+// Starting weapons, so they are quite special in most regards
 string MOON_WEAPON_AXE_DISPLAYNAME = "Blood Seeker";
 string MOON_WEAPON_AXE_SHORTNAME = "ax";
+string MOON_WEAPON_AXE_MODEL_FPV = "progs/v_axe.mdl";
 string MOON_WEAPON_SHOTGUN_DISPLAYNAME = "Boomstick";
 string MOON_WEAPON_SHOTGUN_SHORTNAME = "shot";
+string MOON_WEAPON_SHOTGUN_MODEL_FPV = "progs/v_shot.mdl";
 
+// Obtainable through shop, market or looting
 string MOON_WEAPON_SUPERSHOTGUN_DISPLAYNAME = "Double-Boomstick";
 string MOON_WEAPON_SUPERSHOTGUN_SHORTNAME = "super shot";
+string MOON_WEAPON_SUPERSHOTGUN_MODEL_FPV = "progs/v_shot2.mdl";
+string MOON_WEAPON_SUPERSHOTGUN_MODEL_TPV = "progs/g_shot.mdl";
 float  MOON_WEAPON_SUPERSHOTGUN_COST_SHOP = 50;
 float  MOON_WEAPON_SUPERSHOTGUN_AMMO_SHOP = 5;
 float  MOON_WEAPON_SUPERSHOTGUN_AMMO_MARKET = 5;
@@ -302,6 +342,8 @@ float  MOON_WEAPON_SUPERSHOTGUN_AMMO_LOOT_RANDOM = 10;
 
 string MOON_WEAPON_NAILGUN_DISPLAYNAME = "Nailgun";
 string MOON_WEAPON_NAILGUN_SHORTNAME = "nail";
+string MOON_WEAPON_NAILGUN_MODEL_FPV = "progs/v_nail.mdl";
+string MOON_WEAPON_NAILGUN_MODEL_TPV = "progs/g_nail.mdl";
 float  MOON_WEAPON_NAILGUN_COST_SHOP = 100;
 float  MOON_WEAPON_NAILGUN_AMMO_SHOP = 30;
 float  MOON_WEAPON_NAILGUN_AMMO_MARKET = 30;
@@ -309,6 +351,8 @@ float  MOON_WEAPON_NAILGUN_AMMO_LOOT_MIN = 25;
 float  MOON_WEAPON_NAILGUN_AMMO_LOOT_RANDOM = 25;
 string MOON_WEAPON_SUPERNAILGUN_DISPLAYNAME = "Super Nailgun";
 string MOON_WEAPON_SUPERNAILGUN_SHORTNAME = "super nail";
+string MOON_WEAPON_SUPERNAILGUN_MODEL_FPV = "progs/v_nail2.mdl";
+string MOON_WEAPON_SUPERNAILGUN_MODEL_TPV = "progs/g_nail2.mdl";
 float  MOON_WEAPON_SUPERNAILGUN_COST_SHOP = 150;
 float  MOON_WEAPON_SUPERNAILGUN_AMMO_SHOP = 40;	// was 30 now 40
 float  MOON_WEAPON_SUPERNAILGUN_AMMO_MARKET = 40;
@@ -317,6 +361,8 @@ float  MOON_WEAPON_SUPERNAILGUN_AMMO_LOOT_RANDOM = 25;
 
 string MOON_WEAPON_GRENADELAUNCHER_DISPLAYNAME = "Grenade Launcher";
 string MOON_WEAPON_GRENADELAUNCHER_SHORTNAME = "gl";
+string MOON_WEAPON_GRENADELAUNCHER_MODEL_FPV = "progs/v_rock.mdl";
+string MOON_WEAPON_GRENADELAUNCHER_MODEL_TPV = "progs/g_rock.mdl";
 float  MOON_WEAPON_GRENADELAUNCHER_COST_SHOP = 250;
 float  MOON_WEAPON_GRENADELAUNCHER_AMMO_SHOP = 10;	// was 5 now 10
 float  MOON_WEAPON_GRENADELAUNCHER_AMMO_MARKET = 10;
@@ -324,6 +370,8 @@ float  MOON_WEAPON_GRENADELAUNCHER_AMMO_LOOT_MIN = 5;
 float  MOON_WEAPON_GRENADELAUNCHER_AMMO_LOOT_RANDOM = 10; // was 5 now 10
 string MOON_WEAPON_ROCKETLAUNCHER_DISPLAYNAME = "Rocket Launcher";
 string MOON_WEAPON_ROCKETLAUNCHER_SHORTNAME = "rl";
+string MOON_WEAPON_ROCKETLAUNCHER_MODEL_FPV = "progs/v_rock2.mdl";
+string MOON_WEAPON_ROCKETLAUNCHER_MODEL_TPV = "progs/g_rock2.mdl";
 float  MOON_WEAPON_ROCKETLAUNCHER_COST_SHOP = 350;
 float  MOON_WEAPON_ROCKETLAUNCHER_AMMO_SHOP = 5;
 float  MOON_WEAPON_ROCKETLAUNCHER_AMMO_MARKET = 5;
@@ -332,12 +380,17 @@ float  MOON_WEAPON_ROCKETLAUNCHER_AMMO_LOOT_RANDOM = 5;
 
 string MOON_WEAPON_LIGHTNING_DISPLAYNAME = "Thunderbolt";
 string MOON_WEAPON_LIGHTNING_SHORTNAME = "shaft";
+string MOON_WEAPON_LIGHTNING_MODEL_FPV = "progs/v_light.mdl";
+string MOON_WEAPON_LIGHTNING_MODEL_TPV = "progs/g_light.mdl";
 float  MOON_WEAPON_LIGHTNING_COST_SHOP = 500;
 float  MOON_WEAPON_LIGHTNING_AMMO_SHOP = 12;
 float  MOON_WEAPON_LIGHTNING_AMMO_MARKET = 12;
 float  MOON_WEAPON_LIGHTNING_AMMO_LOOT_MIN = 10;
 float  MOON_WEAPON_LIGHTNING_AMMO_LOOT_RANDOM = 5;
 
+// Additional weapons from different Packs?
+//
+//
 
 // MOON_ITEM_ELIXIR -> MOON_ELIXIR
 string MOON_ELIXIR_CLASSNAME = "elixir";	// Unused? goody_ent?
@@ -623,7 +676,7 @@ float MOON_MONSTER_WAVETIME_DELAY_SLOW   	= 45;
 float MOON_MONSTER_WAVETIME_RANDOM_FAST   	= 35;
 float MOON_MONSTER_WAVETIME_RANDOM_NORMAL 	= 30;
 float MOON_MONSTER_WAVETIME_RANDOM_SLOW   	= 20;
-float MOON_MONSTER_CORPSEDECAY_FACTOR   	= 3; // ~how many waves stays corpse
+float MOON_MONSTER_CORPSEDECAY_FACTOR   	= 2; // ~how many waves stays corpse
 
 float MOON_MONSTER_CODE_SOLDIER 	= 1;
 float MOON_MONSTER_CODE_ENFORCER 	= 2;
@@ -641,149 +694,3 @@ float MOON_MONSTER_BASELEVEL_MAGE 		= 8;
 float MOON_MONSTER_BASELEVEL_SHALRATH 	= 15;
 
 // // end of Monster related consts
-
-float(float min, float max) random_int = // result in [min, max] range. N.B! including both sides
-{
-	return rint( (random() * (max - min)) + min );
-};
-
-float(float value, float max) clamp =
-{
-	if (value > max) { return max; }
-	return value;
-};
-
-float(float min, float value, float max) clampd =
-{
-	if (value < min) { return min; }
-	if (value > max) { return max; }
-	return value;
-};
-
-void() flash_self =
-{
-	stuffcmd(self, "bf\n");
-};
-
-void(entity target) flash_other =
-{
-	stuffcmd(other, "bf\n");
-};
-
-void(entity target) flash_target =
-{
-	stuffcmd(target, "bf\n");
-};
-
-string(float f) floor_ftos =
-{
-	return ftos(floor(f));
-};
-
-string(float f) quick_ftos =
-{
-	return ftos(f);
-};
-
-void(entity who, float f) sprint_ftos = // TODO: slowly get rid of it
-{
-	local string str;
-
-	str = ftos(floor(f));
-	sprint(who, str);
-};
-
-float(float n1, float n2) percent =
-{
-	local float a;
-
-	a = rint(((n1 * n2) / 100));
-	return (a);
-};
-
-float() moon_get_max_player_level =
-{
-	local entity e;
-	local float maxlvl;
-
-	maxlvl = 0;
-	while ( (e = find(e, classname, MOON_PLAYER_CLASSNAME)) )
-	{
-		if ( e.lvl > maxlvl )
-		{
-			maxlvl = e.lvl;
-		}
-	}
-	return maxlvl;
-};
-
-float() moon_get_current_player_count =
-{
-	local entity e;
-	local float count;
-
-	count = 0;
-	while ( (e = find(e, classname, MOON_PLAYER_CLASSNAME)) )
-	{
-		if (e.prepared == TRUE)
-		{
-			count = count + 1;
-		}
-	}
-	return count;
-};
-
-float() moon_get_spawn_delay =
-{
-	float temp;
-	if ( sv_fastmeat > 0 )
-	{
-		temp = MOON_MONSTER_WAVETIME_DELAY_FAST + (random() * MOON_MONSTER_WAVETIME_RANDOM_FAST);
-		bprint("fastmeat {}-{}, delay: {}\n", quick_ftos(MOON_MONSTER_WAVETIME_DELAY_FAST), quick_ftos(MOON_MONSTER_WAVETIME_RANDOM_FAST), quick_ftos(temp));
-		return temp;
-	}
-
-	if ( sv_fastmeat < 0 )
-	{
-		temp = MOON_MONSTER_WAVETIME_DELAY_SLOW + (random() * MOON_MONSTER_WAVETIME_RANDOM_SLOW);
-		bprint("slowmeat {}-{}, delay: {}\n", quick_ftos(MOON_MONSTER_WAVETIME_DELAY_SLOW), quick_ftos(MOON_MONSTER_WAVETIME_RANDOM_SLOW), quick_ftos(temp));
-		return temp;
-	}
-
-	temp = MOON_MONSTER_WAVETIME_DELAY_NORMAL + (random() * MOON_MONSTER_WAVETIME_RANDOM_NORMAL);
-	bprint("justmeat {}-{}, delay: {}\n", quick_ftos(MOON_MONSTER_WAVETIME_DELAY_NORMAL), quick_ftos(MOON_MONSTER_WAVETIME_RANDOM_NORMAL), quick_ftos(temp));
-	return temp;
-};
-
-float() moon_get_despawn_delay =
-{
-	if ( sv_fastmeat > 0 )
-	{
-		return (MOON_MONSTER_WAVETIME_DELAY_FAST + MOON_MONSTER_WAVETIME_RANDOM_FAST) * MOON_MONSTER_CORPSEDECAY_FACTOR;
-	}
-
-	if ( sv_fastmeat < 0 )
-	{
-		return (MOON_MONSTER_WAVETIME_DELAY_SLOW + MOON_MONSTER_WAVETIME_RANDOM_SLOW) * MOON_MONSTER_CORPSEDECAY_FACTOR;
-	}
-
-	return (MOON_MONSTER_WAVETIME_DELAY_NORMAL + MOON_MONSTER_WAVETIME_RANDOM_NORMAL) * MOON_MONSTER_CORPSEDECAY_FACTOR;
-};
-
-void(entity e) AddToQue =
-{
-	local entity z;
-
-	z = spawn();
-	z.origin = e.origin;
-	z.angles = e.angles;
-	setmodel(z, e.model);
-	z.frame = e.frame;
-	z.colormap = e.colormap;
-	z.flags = e.flags;
-	z.movetype = MOVETYPE_TOSS;
-	z.solid = SOLID_NOT;
-	z.velocity = e.velocity;
-	z.think = SUB_Remove;
-	z.nextthink = time + moon_get_despawn_delay();
-};

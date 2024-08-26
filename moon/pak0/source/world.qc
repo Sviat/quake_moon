@@ -271,7 +271,7 @@ float modelindex_player;
 
 void() ClientBan =
 {
-	sprint(self, "you was banned. too late join, game already started\n");
+	bprint("{} was banned. Reason: too late to join, game already started\n", self.netname);
 	stuffcmd(self, "wait;wait;wait;disconnect\n");
 };
 
@@ -286,15 +286,15 @@ void() SetChangeParms =
 
 void() SetNewParms =
 {
-	parm1 = (IT_SHOTGUN | IT_AXE);
-	parm2 = 100;
-	parm3 = WF_NORMAL;
-	parm4 = 25;
-	parm5 = WF_NORMAL;
-	parm6 = WF_NORMAL;
-	parm7 = WF_NORMAL;
-	parm8 = CHSCAM_ON;
-	parm9 = WF_NORMAL;
+	parm1 = (IT_SHOTGUN | IT_AXE);	// .items
+	parm2 = 100;					// .health
+	parm3 = 0;						// .armorvalue
+	parm4 = 25;						// .ammo_shells
+	parm5 = 0;						// .ammo_nails
+	parm6 = 0;						// .ammo_rockets
+	parm7 = 0;						// .ammo_cells
+	parm8 = 1;						// .weapon
+	parm9 = 0;						// .armortype
 };
 
 void() DecodeLevelParms =
@@ -308,7 +308,7 @@ void() DecodeLevelParms =
 	self.ammo_rockets = parm6;
 	self.ammo_cells = parm7;
 	self.weapon = parm8;
-	self.armortype = (parm9 * MON_REFRESHTIME);
+	self.armortype = (parm9 * 0.01);
 };
 
 entity() FindIntermission =
@@ -387,7 +387,7 @@ void() execute_changelevel =
 	WriteByte(MSG_ALL, LOGIC_FINDDEFEND);
 	WriteByte(MSG_ALL, LOGIC_FINDDEFEND);
 	pos = FindIntermission();
-	h = find(world, classname, "player");
+	h = find(world, classname, "player"); // see below
 	while ((h != world))
 	{
 		h.view_ofs = VEC_ORIGIN;
@@ -400,7 +400,7 @@ void() execute_changelevel =
 		h.movetype = MOVETYPE_NONE;
 		h.modelindex = WF_NORMAL;
 		setorigin(h, pos.origin);
-		other = find(h, classname, "player");
+		other = find(h, classname, "player"); // WTF?
 	}
 	WriteByte(MSG_ALL, SVC_INTERMISSION);
 };
@@ -448,7 +448,7 @@ void() set_suicide_frame;
 
 void() respawn =
 {
-	AddToQue(self);
+	moon_add_to_queue(self);
 	setspawnparms(self);
 	PutClientInServer();
 };
@@ -834,11 +834,12 @@ void() CheckWaterJump =
 
 void() CheckCrosshair =
 {
-	if ((self.console_time > time))
+	if ( self.console_time > time )
 	{
 		return;
 	}
-	self.console_time = (time + MON_REACTIONTIME);
+	self.console_time = (time + 0.01);
+
 	traceline(self.origin, (self.origin + (v_forward * 1500)), 2, self);
 	if ( trace_ent.flags & FL_MONSTER )
 	{
@@ -850,7 +851,11 @@ void() CheckCrosshair =
 	} else
 	if ( trace_ent.classname == MOON_GUARD_CLASSNAME )
 	{
-		centerprint(self, "comrade");
+		centerprint(self, MOON_GUARD_DISPLAYNAME);
+	} else
+	if ( (trace_ent.classname == MOON_MARKET_ITEM_CLASSNAME) || (trace_ent.classname == MOON_ELIXIR_CLASSNAME) )
+	{
+		centerprint(self, "{}", trace_ent.netname);
 	} else {
 		centerprint(self, s_wiz);
 	}
@@ -858,35 +863,28 @@ void() CheckCrosshair =
 
 void() proc_health_magic_regen_time =
 {
-	if ((self.health_magic_regen_time > time))
+	local float bonus;
+
+	if ( self.health_magic_regen_time > time )
 	{
 		return;
 	}
-	if (((self.deadflag == DEAD_RESPAWNABLE) || (self.deadflag == DEAD_DEAD)))
+	self.health_magic_regen_time = (time + 1);
+
+	if ( (self.deadflag == DEAD_RESPAWNABLE) || (self.deadflag == DEAD_DEAD) )
 	{
 		return;
 	}
-	if (((self.health <= WF_NORMAL) || (self.health >= self.max_health)))
+	if ( (self.health <= 0) || (self.health >= self.max_health) )
 	{
 		return;
 	}
-	if ((self.magic_typeone == TE_WIZSPIKE))
+
+	bonus = moon_get_target_total_bonus_by_code(self, MOON_ITEM_REGEN_CODE);
+	if (bonus > 0)
 	{
-		T_Heal(self, self.magic_typeone_value, WF_NORMAL);
+		T_Heal(self, bonus);
 	}
-	if ((self.magic_typetwo == TE_WIZSPIKE))
-	{
-		T_Heal(self, self.magic_typetwo_value, WF_NORMAL);
-	}
-	if ((self.ring_typeone == TE_WIZSPIKE))
-	{
-		T_Heal(self, self.ring_typeone_value, WF_NORMAL);
-	}
-	if ((self.ring_typetwo == TE_WIZSPIKE))
-	{
-		T_Heal(self, self.ring_typetwo_value, WF_NORMAL);
-	}
-	self.health_magic_regen_time = (time + CHSCAM_ON);
 };
 
 void() regen_life =
@@ -978,10 +976,6 @@ void() check_spells =
 
 void() PlayerPreThink =
 {
-	//local float mspeed; // unused
-	//local float aspeed; // unused
-	//local float r; // unused
-
 	if ((cvar("sv_maxspeed") > 400))
 	{
 		cvar_set("sv_maxspeed", "400");
@@ -1020,12 +1014,10 @@ void() PlayerPreThink =
 	}
 	CheckCrosshair();
 	regen_life();
+	proc_health_magic_regen_time();
 	regen_mana();
 	check_spells();
-	if (((((self.magic_typeone == MOON_ITEM_REGEN_CODE) || (self.magic_typetwo == MOON_ITEM_REGEN_CODE)) || (self.ring_typetwo == MOON_ITEM_REGEN_CODE)) || (self.ring_typeone == MOON_ITEM_REGEN_CODE)))
-	{
-		proc_health_magic_regen_time();
-	}
+
 	if ((self.poisoned > time))
 	{
 		check_poison();

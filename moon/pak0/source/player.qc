@@ -542,7 +542,7 @@ void() PlayerDead =
 {
 	self.nextthink = CONTENT_EMPTY;
 	self.deadflag = DEAD_DEAD;
-	if ((self.classname == "guard"))
+	if ((self.classname == MOON_GUARD_CLASSNAME))
 	{
 		self.think = SUB_Remove;
 		self.nextthink = time + moon_get_despawn_delay();
@@ -630,7 +630,7 @@ void(string gibname, float dm) FakeThrowHead =
 };
 
 void() GibPlayer =
-{
+{ // TODO: R_ChainEntity: skinnum out of range (3) (model=progs/h_player.mdl)
 	ThrowHead("progs/h_player.mdl", self.health);
 	ThrowGib("progs/gib1.mdl", self.health);
 	ThrowGib("progs/gib2.mdl", self.health);
@@ -666,12 +666,12 @@ void() PlayerDie =
 
 	self.dead_time = (time + CL_DEADTIME);
 	self.items = (self.items - (self.items & IT_INVISIBILITY));
-	self.invisible_finished = WF_NORMAL;
-	self.invincible_finished = WF_NORMAL;
-	self.super_damage_finished = WF_NORMAL;
-	self.radsuit_finished = WF_NORMAL;
+	self.invisible_finished = 0;
+	self.invincible_finished = 0;
+	self.super_damage_finished = 0;
+	self.radsuit_finished = 0;
 	self.modelindex = modelindex_player;
-	if ((self.classname == "player"))
+	if ( self.classname == MOON_PLAYER_CLASSNAME )
 	{
 		DropBackpack();
 	}
@@ -697,9 +697,9 @@ void() PlayerDie =
 	}
 	DeathSound();
 	DropPLGold(self);
-	self.angles_x = WF_NORMAL;
-	self.angles_z = WF_NORMAL;
-	if ((self.weapon == IT_AXE))
+	self.angles_x = 0;
+	self.angles_z = 0;
+	if ( self.weapon == IT_AXE )
 	{
 		player_die_ax1();
 		return;
@@ -707,36 +707,19 @@ void() PlayerDie =
 	i = cvar("temp1");
 	if (!i)
 	{
-		i = (CHSCAM_ON + floor((random() * LOGIC_HUNTENEMY)));
+		i = ( 1 + floor(random() * 6) );
 	}
-	if ((i == CHSCAM_ON))
+	switch(i)
 	{
-		player_diea1();
-	}
-	else
-	{
-		if ((i == H_MEGA))
-		{
-			player_dieb1();
-		}
-		else
-		{
-			if ((i == LOGIC_FINDDEFEND))
-			{
-				player_diec1();
-			}
-			else
-			{
-				if ((i == LOGIC_DEFEND))
-				{
-					player_died1();
-				}
-				else
-				{
-					player_diee1();
-				}
-			}
-		}
+		case 1: player_diea1(); break;
+		case 2: player_dieb1(); break;
+		case 3: player_diec1(); break;
+		case 4: player_died1(); break;
+		case 5:
+		case 6:
+		case 7:
+			player_diee1();
+			break;
 	}
 };
 

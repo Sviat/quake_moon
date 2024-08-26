@@ -706,48 +706,48 @@ void() W_SetCurrentAmmo =
 	{
 	case IT_AXE:
 		self.currentammo = 0;
-		self.weaponmodel = "progs/v_axe.mdl";
+		self.weaponmodel = MOON_WEAPON_AXE_MODEL_FPV;
 		self.weaponframe = WF_NORMAL;
 		break;
 	case IT_SHOTGUN:
 		self.currentammo = self.ammo_shells;
-		self.weaponmodel = "progs/v_shot.mdl";
+		self.weaponmodel = MOON_WEAPON_SHOTGUN_MODEL_FPV;
 		self.weaponframe = WF_NORMAL;
 		self.items = (self.items | IT_SHELLS);
 		break;
 	case IT_SUPER_SHOTGUN:
 		self.currentammo = self.ammo_shells;
-		self.weaponmodel = "progs/v_shot2.mdl";
+		self.weaponmodel = MOON_WEAPON_SUPERSHOTGUN_MODEL_FPV;
 		self.weaponframe = WF_NORMAL;
 		self.items = (self.items | IT_SHELLS);
 		break;
 	case IT_NAILGUN:
 		self.currentammo = self.ammo_nails;
-		self.weaponmodel = "progs/v_nail.mdl";
+		self.weaponmodel = MOON_WEAPON_NAILGUN_MODEL_FPV;
 		self.weaponframe = WF_NORMAL;
 		self.items = (self.items | IT_NAILS);
 		break;
 	case IT_SUPER_NAILGUN:
 		self.currentammo = self.ammo_nails;
-		self.weaponmodel = "progs/v_nail2.mdl";
+		self.weaponmodel = MOON_WEAPON_SUPERNAILGUN_MODEL_FPV;
 		self.weaponframe = WF_NORMAL;
 		self.items = (self.items | IT_NAILS);
 		break;
 	case IT_GRENADE_LAUNCHER:
 		self.currentammo = self.ammo_rockets;
-		self.weaponmodel = "progs/v_rock.mdl";
+		self.weaponmodel = MOON_WEAPON_GRENADELAUNCHER_MODEL_FPV;
 		self.weaponframe = WF_NORMAL;
 		self.items = (self.items | IT_ROCKETS);
 		break;
 	case IT_ROCKET_LAUNCHER:
 		self.currentammo = self.ammo_rockets;
-		self.weaponmodel = "progs/v_rock2.mdl";
+		self.weaponmodel = MOON_WEAPON_ROCKETLAUNCHER_MODEL_FPV;
 		self.weaponframe = WF_NORMAL;
 		self.items = (self.items | IT_ROCKETS);
 		break;
 	case IT_LIGHTNING:
 		self.currentammo = self.ammo_cells;
-		self.weaponmodel = "progs/v_light.mdl";
+		self.weaponmodel = MOON_WEAPON_LIGHTNING_MODEL_FPV;
 		self.weaponframe = WF_NORMAL;
 		self.items = (self.items | IT_CELLS);
 		break;

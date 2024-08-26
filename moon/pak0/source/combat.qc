@@ -510,7 +510,7 @@ void(entity targ, entity inflictor, entity attacker, float damage) T_Damage =
 					}
 					if ((gh > WF_NORMAL))
 					{
-						T_Heal(attacker, gh, WF_NORMAL);
+						T_Heal(attacker, gh);
 					}
 				}
 			}

@@ -367,7 +367,7 @@ void() Mage_Cast =
 	if ((self.health < self.max_health))
 	{
 		sound(self, CHAN_VOICE, "moon/misc/cast.wav", START_OFF, ATTN_NORM);
-		T_Heal(self, GRD_PATROLTIME, WF_NORMAL);
+		T_Heal(self, GRD_PATROLTIME, WF_NORMAL); // TODO: use MonsterHeal function
 		self.mana = (self.mana - START_OFF);
 		self.scroll_heal_eff = (time + MON_BACKTIME);
 		self.scroll_time = ((time + MON_BACKTIME) + (self.rfr * SILENT));

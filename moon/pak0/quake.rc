@@ -40,9 +40,13 @@ bind mouse_misc2 "switchweapon 5 4";
 unbindkey p;
 bind p "map moon4";
 
+// Necessary to use text UI (QGlyphs)
 cl_displayMessages 1
-scr_printtime 5
+scr_usekfont 0
+
 scr_maxlines 20
+scr_printtime 5
+scr_centertime 1
 
 // load the last saved configuration
 //exec kexengine.cfg
@@ -71,6 +75,3 @@ alias pmc_fps "impulse 151"
 alias pm_use "impulse 192"
 alias pm_buy "impulse 194"
 alias pm_identify "impulse 196"
-
-// Necessary to use text UI (QGlyphs)
-scr_usekfont 0

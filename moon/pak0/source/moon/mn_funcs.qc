@@ -7,6 +7,7 @@ float(float weapon, float ammo) W_EnoughAmmoToShoot;
 float(entity target, float healamount, float ignore = 0) T_Heal;
 void() moon_wear_item;
 void() moon_print_inventory;
+void(entity target, float armor_code, float armor_durability = -1) moon_init_target_as_armor;
 float(entity target, float code) moon_get_target_total_bonus_by_code;
 // // end of Forward declarations
 
@@ -52,14 +53,6 @@ string(float f) floor_ftos =
 string(float f) quick_ftos =
 {
 	return ftos(f);
-};
-
-void(entity who, float f) sprint_ftos = // TODO: slowly get rid of it
-{
-	local string str;
-
-	str = ftos(floor(f));
-	sprint(who, str);
 };
 
 float(float n1, float n2) percent =

@@ -4,6 +4,19 @@ Created by Sanctus-Susanin
 https://steamcommunity.com/id/sanctorum/ (Steam) / @SanctusSusanin (Discord)
 -----------------------------
 
+ver 0.26k
+- Added display of item names in the store and black market, just like the names of players, guardian bots and monsters used to be shown before
+- During Moon Shake, the mine now works on its own
+- Rebalanced item refresh time in the store
+	- Ammo from 24 to 40 seconds (with more players than 1, the refresh time is even shorter)
+	- Medkits from 12 to 40 seconds
+	- Weapons from 24 to 50 seconds
+- Added code for future functionality of automatic distribution of skill points when leveling up.
+- Unified more messages in CUI from different objects.
+
+- Known issues:
+	- When playing over the internet, messages from bots in chat do not come through
+
 ver 0.25k
 - Major change: now monster waves scale with number of players (the more, the merier)
 	- It is not decided if Experience in future will be split between, currently it is granted to all

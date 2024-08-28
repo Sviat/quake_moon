@@ -149,3 +149,16 @@ void(entity e) moon_add_to_queue =
 	z.think = SUB_Remove;
 	z.nextthink = time + moon_get_despawn_delay();
 };
+
+// Replace kex_chat_message_X with console for two reasons:
+//   1) in case i ever decide to port on other Engine
+//   2) in MP matches nobody saw these messages for some reasons. May be name should of one of players, not some random bots
+void(string sender, float sender_color, string text) moon_chat_message_broad =
+{
+	bprint("{}: {}\n", sender, text);
+};
+
+void(string sender, float sender_color, string text) moon_chat_message_self =
+{
+	sprint(self, "{}: {}\n", sender, text);
+};

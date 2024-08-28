@@ -3,12 +3,30 @@
 /// No needs to prefix with moon_ Math functions
 
 // // Forward declarations:
+// ???
 float(float weapon, float ammo) W_EnoughAmmoToShoot;
 float(entity target, float healamount, float ignore = 0) T_Heal;
-void() moon_wear_item;
-void() moon_print_inventory;
 void(entity target, float armor_code, float armor_durability = -1) moon_init_target_as_armor;
 float(entity target, float code) moon_get_target_total_bonus_by_code;
+void() QuadCheat;
+void() Prepare;
+void() moon_set_map_moon4;
+float(entity emitter, float track) moon_walkman_play;
+
+// CUI
+void() moon_print_cmd_help;
+void() moon_print_character_status;
+void() moon_print_skills;
+void() moon_print_inventory;
+void() moon_identify_item;
+void() moon_buy_item;
+void() moon_wear_item;
+
+// Character
+void(entity target, float value) moon_raise_target_vitality;
+void(entity target, float value = 1) moon_raise_target_strength;
+void(entity target, float value) moon_raise_target_sanity;
+void(entity target, float value = 1) moon_raise_target_intuition;
 // // end of Forward declarations
 
 // FYI: QC random() function returns a value in [0, 1] range (INCLUSIVE)
@@ -97,24 +115,33 @@ float() moon_get_current_player_count =
 
 float() moon_get_spawn_delay =
 {
-	float temp;
+	float min;
+	float random_max;
+	float delay;
+
 	if ( sv_fastmeat > 0 )
 	{
-		temp = MOON_MONSTER_WAVETIME_DELAY_FAST + (random() * MOON_MONSTER_WAVETIME_RANDOM_FAST);
-		dprint("fastmeat {}-{}, delay: {}\n", quick_ftos(MOON_MONSTER_WAVETIME_DELAY_FAST), quick_ftos(MOON_MONSTER_WAVETIME_RANDOM_FAST), quick_ftos(temp));
-		return temp;
-	}
+		min = MOON_MONSTER_WAVETIME_DELAY_FAST;
+		random_max = MOON_MONSTER_WAVETIME_RANDOM_FAST;
 
+	} else
 	if ( sv_fastmeat < 0 )
 	{
-		temp = MOON_MONSTER_WAVETIME_DELAY_SLOW + (random() * MOON_MONSTER_WAVETIME_RANDOM_SLOW);
-		dprint("slowmeat {}-{}, delay: {}\n", quick_ftos(MOON_MONSTER_WAVETIME_DELAY_SLOW), quick_ftos(MOON_MONSTER_WAVETIME_RANDOM_SLOW), quick_ftos(temp));
-		return temp;
+		min = MOON_MONSTER_WAVETIME_DELAY_SLOW;
+		random_max = MOON_MONSTER_WAVETIME_DELAY_SLOW;
+	} else {
+		min = MOON_MONSTER_WAVETIME_DELAY_NORMAL;
+		random_max = MOON_MONSTER_WAVETIME_RANDOM_NORMAL;
 	}
 
-	temp = MOON_MONSTER_WAVETIME_DELAY_NORMAL + (random() * MOON_MONSTER_WAVETIME_RANDOM_NORMAL);
-	dprint("justmeat {}-{}, delay: {}\n", quick_ftos(MOON_MONSTER_WAVETIME_DELAY_NORMAL), quick_ftos(MOON_MONSTER_WAVETIME_RANDOM_NORMAL), quick_ftos(temp));
-	return temp;
+	delay = min + (random() * random_max);
+
+	if ( MOON_DEBUG & MOON_DEBUG_DPRINT_NEXTWAVE)
+	{
+		dprint("delay {}-{}, next in: {}\n", quick_ftos(min), quick_ftos(min+random_max), quick_ftos(delay));
+	} // debug wave timer
+
+	return delay;
 };
 
 float() moon_get_despawn_delay =
@@ -162,3 +189,4 @@ void(string sender, float sender_color, string text) moon_chat_message_self =
 {
 	sprint(self, "{}: {}\n", sender, text);
 };
+// //

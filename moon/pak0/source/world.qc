@@ -838,9 +838,9 @@ void() CheckCrosshair =
 	{
 		return;
 	}
-	self.console_time = (time + 0.11); // was (time + 0.01)
+	self.console_time = (time + MOON_TIME_PLUS_CROSSHAIRTRACE); // was (time + 0.01)
 
-	traceline(self.origin, (self.origin + (v_forward * 1500)), 2, self);
+	traceline(self.origin, (self.origin + (v_forward * MOON_PHYSIC_CROSSHAIRTRACE_MAXDIST)), 2, self);
 	if ( trace_ent.flags & FL_MONSTER )
 	{
 		centerprint(self, "{}{}{}{}{}", trace_ent.prefix_one, trace_ent.prefix_two, trace_ent.netname, trace_ent.prefix_three, trace_ent.prefix_four);
@@ -856,12 +856,15 @@ void() CheckCrosshair =
 		centerprint(self, MOON_GUARD_DISPLAYNAME);
 		return;
 	}
-	/*if ( trace_ent.classname != "worldspawn" )
+
+	if ( MOON_DEBUG & MOON_DEBUG_CPRINT_TRACEENT )
 	{
-		centerprint(self, "c:{} n:{} t:{}", trace_ent.classname, trace_ent.netname, trace_ent.targetname);
-		return;
-	}*/ // Debug tracer
-	centerprint(self, s_wiz);
+		if ( trace_ent.classname != "worldspawn" )
+		{
+			centerprint(self, "c:{} n:{} t:{}", trace_ent.classname, trace_ent.netname, trace_ent.targetname);
+			return;
+		}
+	} // debug entity tracer
 };
 
 void() proc_health_magic_regen_time =

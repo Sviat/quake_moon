@@ -1294,7 +1294,7 @@ void() ImpulseCommands =
 	{
 		CycleWeaponReverseCommand();
 	}
-	moonimpulse();
+	moon_handle_impulse();
 	self.impulse = 0;
 };
 

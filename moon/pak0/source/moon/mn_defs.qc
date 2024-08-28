@@ -27,7 +27,15 @@
 #define MOON_GLYPH_CENTERDOT_YELLOW "\x8E" // Yellow center dot
 #define MOON_GLYPH_REDARROW "\xFF"		// Red arrow pointing left
 
+// Debug flags set
+#define MOON_DEBUG_DPRINT_NONE 0        // dprint > /dev/null
+#define MOON_DEBUG_DPRINT_SOME 1        // dprint > bprint, occasional: debug sprint
+#define MOON_DEBUG_CPRINT_TRACEENT 2    // Every frame: centerprint target entity class, name and target
+#define MOON_DEBUG_DPRINT_NEXTWAVE 4    // Every wave: dprint time till next wave
+// //
+
 string MOON_VERSION = "0.26k";
+float MOON_DEBUG = MOON_DEBUG_DPRINT_NEXTWAVE;
 // // Impulse codes. First 19 keep for original Q1; limit is 255; so we should line up somewhere in between
 float MOON_IMPULSE_CODE_NOOP = 0;
 float MOON_IMPULSE_CODE_FIRST = 32;
@@ -128,12 +136,14 @@ float MOON_STAT_POWER_PER_INTUITION	= 0.5; 	// Not finished
 float MOON_STAT_MAXHEALTH_MIN       = 1;
 float MOON_STAT_MAXMANA_MIN         = 0;
 
+float MOON_PHYSIC_CROSSHAIRTRACE_MAXDIST = 1200; // was 1500
 float MOON_PHYSIC_ITEMSEARCH_RADIUS = 100;
 float MOON_PHYSIC_VELOCITY_X_LIMIT_SOFT = 150;
 float MOON_PHYSIC_VELOCITY_X_LIMIT_HARD = 160;
 float MOON_PHYSIC_VELOCITY_Y_LIMIT_SOFT = 150;
 float MOON_PHYSIC_VELOCITY_Y_LIMIT_HARD = 160;
 
+float MOON_TIME_PLUS_CROSSHAIRTRACE = 0.24; // was 0.01
 float MOON_TIME_TO_DISAPPEAR_NORMAL = 60;
 float MOON_TIME_TO_DISAPPEAR_IMPORTANT = 90;
 float MOON_TIME_ACTIVE_MENTAT = 90;

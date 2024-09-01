@@ -669,9 +669,33 @@ float MOON_ITEM_CONSUME_POSTFIX_NORMAL_CODE = 15;
 float MOON_ITEM_CONSUME_POSTFIX_NORMAL_FROM = 6;
 float MOON_ITEM_CONSUME_POSTFIX_NORMAL_TO = 13;
 
+// New effects addded after 0.21 beta:
+// Tiered effect codes needs different treating
+// Or whole table needs rearrangement
 float MOON_ITEM_REPAIR_CODE = 9;
 float MOON_ITEM_REPAIR_MARKET_COST_SCALE = 250;
 string MOON_ITEM_REPAIR_EFFECT		= "repair {} armor per second";
+string MOON_ITEM_REPAIR_PREFIX_LOW   	= "Durable ";
+float MOON_ITEM_REPAIR_PREFIX_LOW_FROM = 1;
+float MOON_ITEM_REPAIR_PREFIX_LOW_TO = 5; // last and first overlap intentionally
+string MOON_ITEM_REPAIR_PREFIX_NORMAL	= "Selfmaintaing ";
+float MOON_ITEM_REPAIR_PREFIX_NORMAL_FROM = 4;
+float MOON_ITEM_REPAIR_PREFIX_NORMAL_TO = 9;
+string MOON_ITEM_REPAIR_PREFIX_HIGH	    = "Living ";
+float MOON_ITEM_REPAIR_PREFIX_HIGH_FROM = 8;
+float MOON_ITEM_REPAIR_PREFIX_HIGH_TO = 13;
+string MOON_ITEM_REPAIR_PREFIX_EPIC	    = "Nanofiber ";
+float MOON_ITEM_REPAIR_PREFIX_EPIC_FROM = 12;
+float MOON_ITEM_REPAIR_PREFIX_EPIC_TO = 16;
+string MOON_ITEM_REPAIR_POSTFIX_LOW		= " of the Engineer";
+float MOON_ITEM_REPAIR_POSTFIX_LOW_FROM = 1;
+float MOON_ITEM_REPAIR_POSTFIX_LOW_TO = 6;
+string MOON_ITEM_REPAIR_POSTFIX_NORMAL 	= " of Complex Design";
+float MOON_ITEM_REPAIR_POSTFIX_NORMAL_FROM = 6;
+float MOON_ITEM_REPAIR_POSTFIX_NORMAL_TO = 11;
+string MOON_ITEM_REPAIR_POSTFIX_HIGH 	= " of Forgotten Technology";
+float MOON_ITEM_REPAIR_POSTFIX_HIGH_FROM = 11;
+float MOON_ITEM_REPAIR_POSTFIX_HIGH_TO = 16;
 
 // // last Effect's _CODE should not be greater than MOON_ITEM_TRAIT_MAX_EFFECT
 

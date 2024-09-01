@@ -4,6 +4,7 @@
 
 // // Forward declarations:
 // ???
+void(entity who) moon_spawn_drop_gold;
 float(float weapon, float ammo) W_EnoughAmmoToShoot;
 float(entity target, float healamount, float ignore = 0) T_Heal;
 void(entity target, float armor_code, float armor_durability = -1) moon_init_target_as_armor;

@@ -529,7 +529,6 @@ void() PlayerDie;
 void(float shotcount, vector dir, vector spread) FireBullets;
 .float num;
 float() FindWaypoint;
-void(entity who) DropGold;
 .float cost;
 .float free;
 .float gold;

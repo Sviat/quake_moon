@@ -59,102 +59,6 @@ float(entity e, float healamount) T_Mana =
 	return TRUE;
 };
 
-string(float digit) moon_gets_golden_digit =
-{
-	switch(floor(digit))
-	{
-		case 0: return ("\0");
-		case 1: return ("\1");
-		case 2: return ("\2");
-		case 3: return ("\3");
-		case 4: return ("\4");
-		case 5: return ("\5");
-		case 6: return ("\6");
-		case 7: return ("\7");
-		case 8: return ("\8");
-		case 9: return ("\9");
-		default:
-			dprint("<{}>", quick_ftos(digit)); // debug
-			return MOON_GLYPH_CENTERDOT_WHITE;
-	}
-};
-
-string(float digit) moon_gets_red_digit =
-{
-	switch(floor(digit))
-	{
-		case 0: return ("\xB0");
-		case 1: return ("\xB1");
-		case 2: return ("\xB2");
-		case 3: return ("\xB3");
-		case 4: return ("\xB4");
-		case 5: return ("\xB5");
-		case 6: return ("\xB6");
-		case 7: return ("\xB7");
-		case 8: return ("\xB8");
-		case 9: return ("\xB9");
-		default:
-			dprint("<{}>", quick_ftos(digit)); // debug
-			return MOON_GLYPH_CENTERDOT_WHITE;
-	}
-};
-
-// Refactor to pass another function for actual print (sprint, dprint, bprint)
-void(entity target, float number, string(float digit) color_func) moon_print_color_number =
-{
-	local float remainder;
-	local float digit_count;
-
-	digit_count = 1;
-	remainder = rint(number);
-	while(remainder >= 10)
-	{
-		digit_count = digit_count + 1;
-		remainder = remainder / 10;
-	}
-
-	local float multiplier;
-	multiplier = 1;
-	for(float i = 1; i < digit_count; ++i)
-	{
-		multiplier = multiplier * 10;
-	}
-
-	local float top_part;
-	remainder = rint(number);
-	while(digit_count > 1)
-	{
-		top_part = floor(remainder / multiplier);
-		remainder = remainder % multiplier;
-		multiplier = multiplier / 10;
-		digit_count = digit_count - 1;
-		//sprint(target, "{} {} {} {} \n", ftos(number), ftos(top_part), ftos(remainder), ftos(multiplier)); // keep for debug
-		sprint(target, color_func(top_part));
-	}
-	sprint(target, color_func(remainder));
-};
-
-void(entity target, float number) moon_print_golden_number =
-{
-	moon_print_color_number(target, number, moon_gets_golden_digit);
-};
-
-void(entity target, float number) moon_print_red_number =
-{
-	moon_print_color_number(target, number, moon_gets_red_digit);
-};
-
-void(entity target) moon_println_target_gold =
-{
-	moon_print_golden_number(target, target.gold);
-	sprint(target, "\n");
-};
-
-void() moon_broadcast_global_gold_bonus =
-{
-	bprint("Global gold income now +{}%\n", floor_ftos(up_gold_value));
-};
-
 void(entity target, float gain) moon_give_target_gold =
 {
 	target.gold = (target.gold + gain);
@@ -177,88 +81,6 @@ float(entity target, float cost) moon_pay_target_gold =
 	return TRUE;
 };
 
-void(entity target) moon_println_target_exp =
-{
-	sprint(target, "Level: {}, Exp {}{}/{}{}\n", floor_ftos(target.lvl), MOON_GLYPH_BRACKET_OPEN, floor_ftos(target.exp), floor_ftos(target.nextexp), MOON_GLYPH_BRACKET_CLOSE);
-};
-
-void(entity target) moon_print_mentat_offense =
-{
-	sprint(target, MOON_MENTAT_OFFENSE_NAME);
-	sprint(target, " (increase your damage by ");
-	moon_print_golden_number(target, MOON_MENTAT_OFFENSE_VALUE);
-	sprint(target, "%)");
-};
-
-void(entity target) moon_print_mentat_defense =
-{
-	sprint(target, MOON_MENTAT_DEFENSE_NAME);
-	sprint(target, " (decrease incoming damage by ");
-	moon_print_golden_number(target, MOON_MENTAT_DEFENSE_VALUE);
-	sprint(target, "%)");
-};
-
-void(entity target) moon_print_mentat_speed =
-{
-	sprint(target, MOON_MENTAT_SPEED_NAME);
-	sprint(target, " (increase your attack speed by ");
-	moon_print_golden_number(target, MOON_MENTAT_SPEED_VALUE_MIN);
-	sprint(target, "-");
-	moon_print_golden_number(target, MOON_MENTAT_SPEED_VALUE_MAX);
-	sprint(target, "%%)");
-};
-
-void(entity target, string prefix, string name, string postfix) moon_print_target_item_name =
-{
-	if (prefix != s_wiz)
-	{
-		sprint(target, prefix);
-	}
-	sprint(target, name);
-	if (postfix != s_wiz)
-	{
-		sprint(target, postfix);
-	}
-};
-
-void(entity target, entity owner) moon_println_target_magic_armor_name =
-{
-	if (owner.magic_prefixone != s_wiz)
-	{
-		sprint(target, owner.magic_prefixone);
-	}
-	sprint(target, MOON_ITEM_ARMOR_DISPLAY);
-	if (owner.magic_prefixtwo != s_wiz)
-	{
-		sprint(target, owner.magic_prefixtwo);
-	}
-	sprint(target, "\n");
-};
-
-void(entity target, entity owner) moon_println_target_magic_ring_name =
-{
-	if (owner.ring_prefixone != s_wiz)
-	{
-		sprint(target, owner.ring_prefixone);
-	}
-	sprint(target, MOON_ITEM_RING_DISPLAY);
-	if (owner.ring_prefixtwo != s_wiz)
-	{
-		sprint(target, owner.ring_prefixtwo);
-	}
-	sprint(target, "\n");
-};
-
-void(entity chat_target, entity value_target) moon_println_target_other_health =
-{
-	if (value_target.health < value_target.max_health)
-	{
-		moon_print_red_number(chat_target, value_target.health);
-		sprint(chat_target, "/");
-	}
-	sprint(chat_target, "{}\n", floor_ftos(value_target.max_health));
-};
-
 entity() moon_gimme_your_heart =
 {
 	local entity heart;
@@ -279,11 +101,7 @@ void() moon_broadcast_heart_state =
 	if ( heart != world )
 	{
 		bprint("\sHeart\s's life now ");
-		if (heart.health < heart.max_health)
-		{
-			bprint("{}\s/\s", floor_ftos(heart.health)); // Im too lazy to duplicate print_red_number for bprint
-		}
-		bprint("{}\n", floor_ftos(heart.max_health));
+		moon_println_all_other_health(heart);
 	}
 };
 
@@ -360,38 +178,6 @@ void(entity target, float value) moon_raise_target_sanity =
 void(entity target, float value = 1) moon_raise_target_intuition = // This is not necessary so far, but for consistency
 {
 	target.intu = (target.intu + value);
-};
-
-void(entity target, entity container) moon_print_target_container_ammo =
-{
-	local float had_any;
-
-	if ( container.ammo_shells )
-	{
-		sprint(target, " {} {}", floor_ftos(container.ammo_shells), MOON_AMMO_SHELLS_DISPLAYNAME);
-		had_any = TRUE;
-	}
-	if ( container.ammo_nails )
-	{
-		sprint(target, " {} {}", floor_ftos(container.ammo_nails), MOON_AMMO_NAILS_DISPLAYNAME);
-		had_any = TRUE;
-	}
-	if ( container.ammo_rockets )
-	{
-		sprint(target, " {} {}", floor_ftos(container.ammo_rockets), MOON_AMMO_ROCKETS_DISPLAYNAME);
-		had_any = TRUE;
-	}
-	if ( container.ammo_cells )
-	{
-		sprint(target, " {} {}", floor_ftos(container.ammo_cells), MOON_AMMO_CELLS_DISPLAYNAME);
-		had_any = TRUE;
-	}
-
-	if ( had_any != TRUE )
-	{
-		sprint(target, "\n");
-		sprint(target, "ERROR: garbage shop have incorrect item! Report this bug and item!\n");
-	}
 };
 
 void() SUB_regen =
@@ -701,6 +487,7 @@ void() weapon_touch =
 	remove(self);
 };
 
+// UNUSED?!
 void() weapon_supershotgun =
 {
 	precache_model("progs/g_shot.mdl");
@@ -712,6 +499,7 @@ void() weapon_supershotgun =
 	StartItem();
 };
 
+// UNUSED?!
 void() weapon_nailgun =
 {
 	precache_model("progs/g_nail.mdl");
@@ -723,6 +511,7 @@ void() weapon_nailgun =
 	StartItem();
 };
 
+// UNUSED?!
 void() weapon_supernailgun =
 {
 	precache_model("progs/g_nail2.mdl");
@@ -734,6 +523,7 @@ void() weapon_supernailgun =
 	StartItem();
 };
 
+// UNUSED?!
 void() weapon_grenadelauncher =
 {
 	precache_model("progs/g_rock.mdl");
@@ -745,6 +535,7 @@ void() weapon_grenadelauncher =
 	StartItem();
 };
 
+// UNUSED?!
 void() weapon_rocketlauncher =
 {
 	precache_model("progs/g_rock2.mdl");
@@ -756,6 +547,7 @@ void() weapon_rocketlauncher =
 	StartItem();
 };
 
+// UNUSED?!
 void() weapon_lightning =
 {
 	precache_model("progs/g_light.mdl");
@@ -1335,7 +1127,7 @@ void() do_earthquake =
 		e = find(e, classname, MOON_GOLD_MINE_CLASSNAME);
 		if (e != world)
 		{
-			DropGold(e);
+			moon_spawn_drop_gold(e);
 		}
 	}
 	self.think = do_earthquake;
@@ -2892,7 +2684,7 @@ void() derrick_think =
 		{
 			if ( head.health > 0 )
 			{
-				DropGold(self);
+				moon_spawn_drop_gold(self);
 				return;
 			}
 		}
@@ -2906,7 +2698,7 @@ void() derrick_think =
 		{
 			if ( head.health > 0 )
 			{
-				DropGold(self);
+				moon_spawn_drop_gold(self);
 				return;
 			}
 		}
@@ -7853,7 +7645,9 @@ void() moon_print_inventory =
 	float duration;
 	float did_print_section;
 
-	if ((((((self.wear_armor == MOON_ITEM_NONE) && (self.wear_ring == MOON_ITEM_NONE)) && (self.mentat_bonus == MOON_ITEM_NONE)) && (self.mentat_bonus2 == MOON_ITEM_NONE)) && (self.mentat_bonus3 == MOON_ITEM_NONE)))
+	if ( (self.wear_armor == MOON_ITEM_NONE) && (self.wear_ring == MOON_ITEM_NONE)
+	  && (self.mentat_bonus == MOON_ITEM_NONE) && (self.mentat_bonus2 == MOON_ITEM_NONE)
+	  && (self.mentat_bonus3 == MOON_ITEM_NONE) )
 	{
 		sprint(self, "you have \sno\s special items\n");
 		return;
@@ -8038,7 +7832,7 @@ void() UpgradeTouch =
 		sprint(other, MOON_ITEM_GLOBALGOLD_EFFECT, floor_ftos(bonus_value));
 
 		up_gold_value = up_gold_value + bonus_value;
-		moon_broadcast_global_gold_bonus();
+		moon_println_all_global_gold_bonus();
 		break;
 	case MOON_ITEM_HEART_CODE:
 		bonus_value = MOON_ITEM_HEART_BONUS_FLAT + (pl * MOON_ITEM_HEART_BONUS_LVLPERCENT) + (random() * MOON_ITEM_HEART_BONUS_RANDOM);
@@ -8710,10 +8504,9 @@ void(entity who) DropPLGold =
 	item.think = SUB_Remove;
 };
 
-void(entity who) DropGold =
+void(entity who) moon_spawn_drop_gold =
 {
 	local entity item;
-	local float bngld;
 	local float player_maxlvl;
 
 	player_maxlvl = moon_get_max_player_level();
@@ -8726,16 +8519,18 @@ void(entity who) DropGold =
 		item.origin = (who.origin - '0 0 24');
 		item.gold = ((MOON_GOLD_LOOT_BASE + (MOON_GOLD_LOOT_LVLPERCENT * player_maxlvl)) + (random() * MOON_GOLD_LOOT_RANDOM));
 	}
-	item.gold = ceil(item.gold);
 
+	// The stuff below is crazy. It increases gold amount with each applied factor.
+	// So it is multiplicative (SIC!) bonus, not additive!
+	// Proper way should be separating base gold and accumulating bonus, then applying it once
 	if ( who.prefix == MOON_CREEP_GOLD_PREFIX_CODE )
 	{
 		item.gold = (item.gold + percent(item.gold, who.prefix_value));
 	}
 	item.gold = (item.gold + percent(item.gold, up_gold_value));
-
-	bngld = moon_get_target_total_bonus_by_code(who.killer, MOON_ITEM_GOLD_CODE);
-	item.gold = (item.gold + percent(item.gold, bngld));
+	item.gold = (item.gold + percent(item.gold, moon_get_target_total_bonus_by_code(who.killer, MOON_ITEM_GOLD_CODE)));
+	// End of crazy shit
+	item.gold = ceil(item.gold);
 
 	item.velocity_z = 350;
 	item.velocity_x = (-100 + (random() * 200));
@@ -8744,14 +8539,14 @@ void(entity who) DropGold =
 	item.flags = FL_ITEM;
 	item.solid = SOLID_TRIGGER;
 	item.movetype = MOVETYPE_TOSS;
-	setmodel(item, "progs/gold.mdl");
+	setmodel(item, MOON_GOLD_BAG_MODEL);
 	setsize(item, '-16 -16 0', '16 16 56');
 	item.touch = GoldTouch;
 	item.nextthink = (time + MOON_TIME_TO_DISAPPEAR_NORMAL);
 	item.think = SUB_Remove;
 };
 
-void(entity who) DropAmmo =
+void(entity who) moon_spawn_drop_ammo =
 {
 	local entity item;
 
@@ -8764,23 +8559,28 @@ void(entity who) DropAmmo =
 	item.flags = FL_ITEM;
 	item.solid = SOLID_TRIGGER;
 	item.movetype = MOVETYPE_TOSS;
+
 	if ((random() < 0.3))
 	{
-		setmodel(item, "maps/b_shell0.bsp");
+		setmodel(item, MOON_AMMO_SHELLS_MODEL);
 		item.ammo_shells = ceil(MOON_AMMO_SHELLS_LOOT_MIN + (random() * MOON_AMMO_SHELLS_LOOT_RANDOM));
+		item.currentammo = item.ammo_shells;
 	} else
 	if ((random() < 0.6))
 	{
-		setmodel(item, "maps/b_nail0.bsp");
+		setmodel(item, MOON_AMMO_NAILS_MODEL);
 		item.ammo_nails = ceil(MOON_AMMO_NAILS_LOOT_MIN + (random() * MOON_AMMO_NAILS_LOOT_RANDOM));
+		item.currentammo = item.ammo_nails;
 	} else
 	if ((random() < 0.8))
 	{
-		setmodel(item, "maps/b_rock0.bsp");
+		setmodel(item, MOON_AMMO_ROCKETS_MODEL);
 		item.ammo_rockets = ceil(MOON_AMMO_ROCKETS_LOOT_MIN + (random() * MOON_AMMO_ROCKETS_LOOT_RANDOM));
+		item.currentammo = item.ammo_rockets;
 	} else {
-		setmodel(item, "maps/b_batt0.bsp");
+		setmodel(item, MOON_AMMO_CELLS_MODEL);
 		item.ammo_cells = ceil(MOON_AMMO_CELLS_LOOT_MIN + (random() * MOON_AMMO_CELLS_LOOT_RANDOM));
+		item.currentammo = item.ammo_cells;
 	}
 
 	setsize(item, '-16 -16 0', '16 16 56');
@@ -8823,7 +8623,7 @@ void() DropItem =
 
 	if ( self.prefix == MOON_CREEP_GOLD_PREFIX_CODE )
 	{
-		DropGold(self);
+		moon_spawn_drop_gold(self);
 		return;
 	}
 	if ((random() < 0.0035))
@@ -8852,12 +8652,12 @@ void() DropItem =
 		moon_spawn_drop_elixir(self);
 		return;
 	}
-	if ((random() < MON_MAGICCHANCE))
+	if ((random() < 0.03))
 	{
 		moon_spawn_drop_weapon(self);
 		return;
 	}
-	if ((random() < MON_MAGICCHANCE))
+	if ((random() < 0.03))
 	{
 		moon_spawn_drop_armor_shard(self);
 		return;
@@ -8867,19 +8667,19 @@ void() DropItem =
 		moon_spawn_drop_drug(self);
 		return;
 	}
-	if ((random() < MON_UNIQUECHANCE))
+	if ((random() < 0.04))
 	{
 		moon_spawn_drop_potion(self);
 		return;
 	}
-	if ((random() < MON_REACTIONTIME))
+	if ((random() < 0.2))
 	{
-		DropAmmo(self);
+		moon_spawn_drop_ammo(self);
 		return;
 	}
-	if ((random() < MON_BACKTIME))
+	if ((random() < 0.5))
 	{
-		DropGold(self);
+		moon_spawn_drop_gold(self);
 		return;
 	}
 };

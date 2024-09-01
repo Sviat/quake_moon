@@ -1,7 +1,8 @@
 /// ReProjectMoon-specific source file
 /// Here go all functions executed every frame or so inside game logic loop
 
-
+// If player was doing nothing this frame, we can try searching something around him
+//   and if there for some reasons Shop or Market items around - at least show name and cost
 void() moon_handle_impulse_noop =
 {
 	local entity selected;

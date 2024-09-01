@@ -518,9 +518,9 @@ string s_wiz;
 float LOGIC_STANDART = 0;
 float LOGIC_CAMPER   = 1;
 float LOGIC_HUNTER   = 2;
-.float mentat_bonus;
-.float mentat_bonus2;
-.float mentat_bonus3;
+.float mentat_bonus; // refactor out and change from TRUE/FALSE to time when off
+.float mentat_bonus2;// refactor out and change from TRUE/FALSE to time when off
+.float mentat_bonus3;// refactor out and change from TRUE/FALSE to time when off
 .float mode;
 .entity master;
 .float blockd;

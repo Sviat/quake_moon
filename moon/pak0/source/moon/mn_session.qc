@@ -14,6 +14,10 @@ void(entity target) moon_prepare_player_entity =
 	target.up_bullet = 0;
 	target.up_nail = 0;
 
+	target.mentat_offense_time = 0;
+	target.mentat_defense_time = 0;
+	target.mentat_attackspeed_time = 0;
+
 	target.prepared = TRUE;
 };
 

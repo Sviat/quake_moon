@@ -3473,7 +3473,7 @@ void() moon_print_skills =
 	sprint(self, "\n");
 
 	bonus = moon_get_target_bonus_damage(self);
-	if ((self.mentat_bonus == MOON_ITEM_SOME))
+	if ( self.mentat_offense_time > time )
 	{
 		bonus = (bonus + MOON_MENTAT_OFFENSE_VALUE);
 	}
@@ -6784,16 +6784,6 @@ void(entity e) GenegateCampTarget = // NOT TODAY
 	}
 };
 
-void(entity receiver) moon_println_target_own_magic_item_description =
-{
-	moon_println_target_magic_item_description(receiver, self);
-};
-
-void(entity receiver) moon_println_target_own_magic_ring_description =
-{
-	moon_println_target_magic_ring_description(receiver, self);
-};
-
 float(float level) moon_generate_trait_prefix_code =
 {
 	local float r;
@@ -7275,95 +7265,6 @@ void() moon_wear_item = // THIS NEEDS A CLEANING
 	} else {
 		sprint(self, "there are \sno\s items around\n");
 	}
-};
-
-void() moon_print_inventory =
-{
-	entity e;
-	float duration;
-	float did_print_section;
-
-	if ( (self.wear_armor == MOON_ITEM_NONE) && (self.wear_ring == MOON_ITEM_NONE)
-	  && (self.mentat_bonus == MOON_ITEM_NONE) && (self.mentat_bonus2 == MOON_ITEM_NONE)
-	  && (self.mentat_bonus3 == MOON_ITEM_NONE) )
-	{
-		sprint(self, "you have \sno\s special items\n");
-		return;
-	}
-
-	did_print_section = FALSE;
-	sprint(self, "==== your current items ====\n");
-	if ((self.mentat_bonus == MOON_ITEM_SOME))
-	{
-		moon_print_mentat_offense(self);
-
-		e = world; // reset iterator
-		while ( (e = find(e, classname, MOON_MENTAT_CLASSNAME)) )
-		{
-			if ( (e.owner == self) && (e.mentat_bonus == MOON_ITEM_SOME) )
-			{
-				duration = e.attack_finished - time;
-				sprint(self, " {}{}{}", MOON_GLYPH_BRACKET_OPEN, floor_ftos(duration), MOON_GLYPH_BRACKET_CLOSE);
-			}
-		}
-		sprint(self, "\n");
-		did_print_section = TRUE;
-	}
-	if ((self.mentat_bonus2 == MOON_ITEM_SOME))
-	{
-		moon_print_mentat_defense(self);
-
-		e = world; // reset iterator
-		while ( (e = find(e, classname, MOON_MENTAT_CLASSNAME)) )
-		{
-			if ( (e.owner == self) && (e.mentat_bonus2 == MOON_ITEM_SOME) )
-			{
-				duration = e.attack_finished - time;
-				sprint(self, " {}{}{}", MOON_GLYPH_BRACKET_OPEN, floor_ftos(duration), MOON_GLYPH_BRACKET_CLOSE);
-			}
-		}
-		sprint(self, "\n");
-		did_print_section = TRUE;
-	}
-	if ((self.mentat_bonus3 == MOON_ITEM_SOME))
-	{
-		moon_print_mentat_speed(self);
-
-		e = world; // reset iterator
-		while ( (e = find(e, classname, MOON_MENTAT_CLASSNAME)) )
-		{
-			if ( (e.owner == self) && (e.mentat_bonus3 == MOON_ITEM_SOME) )
-			{
-				duration = e.attack_finished - time;
-				sprint(self, " {}{}{}", MOON_GLYPH_BRACKET_OPEN, floor_ftos(duration), MOON_GLYPH_BRACKET_CLOSE);
-			}
-		}
-		sprint(self, "\n");
-		did_print_section = TRUE;
-	}
-
-	if ( self.wear_armor == MOON_ITEM_SOME )
-	{
-		if (did_print_section == TRUE)
-		{
-			sprint(self, "--------------------------\n");
-		}
-		sprint(self, CONST_QC_GLYPH_SELECTION);
-		moon_println_target_magic_armor_name(self, self);
-		moon_println_target_own_magic_item_description(self);
-	}
-
-	if ( self.wear_ring == MOON_ITEM_SOME )
-	{
-		if (did_print_section == TRUE)
-		{
-			sprint(self, "--------------------------\n");
-		}
-		sprint(self, CONST_QC_GLYPH_SELECTION);
-		moon_println_target_magic_ring_name(self, self);
-		moon_println_target_own_magic_ring_description(self);
-	}
-	sprint(self, "--------------------------\n");
 };
 
 void(entity who) DropMagicArmor =
@@ -7905,42 +7806,8 @@ void() GoldTouch =
 	remove(self);
 };
 
-void() mentat_think =
-{
-	if ( self.attack_finished < (time + 3) )
-	{
-		if ( self.cnt == 0 )
-		{
-			sprint(self.owner, "{} is fading\n", self.netname);
-		}
-		self.cnt = 1;
-	}
-
-	if ((((self.attack_finished < time) || (self.owner.health <= 0)) || (((self.owner.mentat_bonus + self.owner.mentat_bonus2) + self.owner.mentat_bonus3) == 0)))
-	{
-		if( self.mentat_bonus == MOON_ITEM_SOME )
-		{
-			self.owner.mentat_bonus = MOON_ITEM_NONE;
-		} else
-		if( self.mentat_bonus2 == MOON_ITEM_SOME )
-		{
-			self.owner.mentat_bonus2 = MOON_ITEM_NONE;
-		} else
-		if( self.mentat_bonus3 == MOON_ITEM_SOME )
-		{
-			self.owner.mentat_bonus3 = MOON_ITEM_NONE;
-		}
-		remove(self);
-	}
-
-	self.nextthink = (time + 1);
-	self.think = mentat_think;
-};
-
-void() MentatTouch = // this needs a serious rewrite
-{ // self - touched drug, other - player, e - other drugs
-	local entity e;
-
+void() MentatTouch =
+{ // self - touched drug, other - player
 	if ( other.classname != MOON_PLAYER_CLASSNAME ) { return; }
 	if ( other.health <= 0 ) { return; }
 
@@ -7952,81 +7819,20 @@ void() MentatTouch = // this needs a serious rewrite
 	case MOON_MENTAT_OFFENSE_CODE:
 		moon_print_mentat_offense(other);
 		sprint(other, "\n");
-		self.netname = MOON_MENTAT_OFFENSE_NETNAME;
-
-		// TL;DR: effectively this renews expiration time of previous drug of same time
-		while ( (e = find(e, classname, MOON_MENTAT_CLASSNAME)) )
-		{
-			if ( e.owner == other )
-			{
-				if ( e.mentat_bonus == MOON_ITEM_SOME )
-				{
-					e.attack_finished = (time + MOON_TIME_ACTIVE_MENTAT);
-					remove(self);
-					return;
-				}
-			}
-		}
-		e = world; // reset iterator
-		self.mentat_bonus = MOON_ITEM_SOME;
-		other.mentat_bonus = MOON_ITEM_SOME;
+		other.mentat_offense_time = (time + MOON_TIME_ACTIVE_MENTAT);
 		break;
 	case MOON_MENTAT_DEFENSE_CODE:
 		moon_print_mentat_defense(other);
 		sprint(other, "\n");
-		self.netname = MOON_MENTAT_DEFENSE_NETNAME;
-
-		// TL;DR: effectively this renews expiration time of previous drug of same time
-		while ( (e = find(e, classname, MOON_MENTAT_CLASSNAME)) )
-		{
-			if ( e.owner == other )
-			{
-				if ( e.mentat_bonus2 == MOON_ITEM_SOME )
-				{
-					e.attack_finished = (time + MOON_TIME_ACTIVE_MENTAT);
-					remove(self);
-					return;
-				}
-			}
-		}
-		e = world; // reset iterator
-		self.mentat_bonus2 = MOON_ITEM_SOME;
-		other.mentat_bonus2 = MOON_ITEM_SOME;
+		other.mentat_defense_time = (time + MOON_TIME_ACTIVE_MENTAT);
 		break;
 	case MOON_MENTAT_SPEED_CODE:
 		moon_print_mentat_speed(other);
 		sprint(other, "\n");
-		self.netname = MOON_MENTAT_SPEED_NETNAME;
-
-		// TL;DR: effectively this renews expiration time of previous drug of same time
-		while ( (e = find(e, classname, MOON_MENTAT_CLASSNAME)) )
-		{
-			if ( e.owner == other )
-			{
-				if ( e.mentat_bonus3 == MOON_ITEM_SOME )
-				{
-					e.attack_finished = (time + MOON_TIME_ACTIVE_MENTAT);
-					remove(self);
-					return;
-				}
-			}
-		}
-		e = world; // reset iterator
-		self.mentat_bonus3 = MOON_ITEM_SOME;
-		other.mentat_bonus3 = MOON_ITEM_SOME;
+		other.mentat_attackspeed_time = (time + MOON_TIME_ACTIVE_MENTAT);
 		break;
 	}
-
-	self.solid = SOLID_NOT;
-	setsize(self, VEC_ORIGIN, VEC_ORIGIN);
-	setmodel(self, string_null);
-	self.movetype = MOVETYPE_NONE;
-	self.touch = SUB_Null;
-	self.origin = VEC_ORIGIN;
-	self.owner = other;
-	self.attack_finished = (time + MOON_TIME_ACTIVE_MENTAT);
-	self.nextthink = (time + CHSCAM_ON);
-	self.think = mentat_think;
+	remove(self);
 };
 
 void(entity who) moon_spawn_drop_drug =
@@ -8035,7 +7841,7 @@ void(entity who) moon_spawn_drop_drug =
 
 	item = spawn();
 	item.origin = (who.origin - '0 0 24');
-	item.gold = (CHSCAM_ON + (random() * 125));
+	item.gold = (1 + (random() * 125)); // wtf?!
 	item.owner = who;
 	item.velocity_z = 300;
 	item.velocity_x = (-100 + (random() * 200));
@@ -8049,7 +7855,7 @@ void(entity who) moon_spawn_drop_drug =
 	item.skin = (item.prefix - 1);
 	setsize(item, '-16 -16 0', '16 16 56');
 	item.touch = MentatTouch;
-	item.nextthink = (time + 60);
+	item.nextthink = (time + MOON_TIME_TO_DISAPPEAR_NORMAL);
 	item.think = SUB_Remove;
 };
 

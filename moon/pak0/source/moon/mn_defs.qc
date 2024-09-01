@@ -138,6 +138,8 @@ float MOON_STAT_POWER_PER_INTUITION	= 0.5; 	// Not finished
 float MOON_STAT_MAXHEALTH_MIN       = 1;
 float MOON_STAT_MAXMANA_MIN         = 0;
 
+float MOON_RESIST_LIMIT_HARD = 75;  // in %, maximum possible damage reduction on single instance
+
 float MOON_PHYSIC_CROSSHAIRTRACE_MAXDIST = 1200; // was 1500
 float MOON_PHYSIC_ITEMSEARCH_RADIUS = 100;
 float MOON_PHYSIC_VELOCITY_X_LIMIT_SOFT = 150;
@@ -459,9 +461,13 @@ string MOON_MENTAT_DEFENSE_NETNAME = "defensive drug";
 string MOON_MENTAT_DEFENSE_NAME = "defensive drug";
 
 float MOON_MENTAT_SPEED_CODE = 3;
-float MOON_MENTAT_SPEED_VALUE_MIN  = 25;
-float MOON_MENTAT_SPEED_VALUE_NORM = 30;
-float MOON_MENTAT_SPEED_VALUE_MAX  = 35;
+float MOON_MENTAT_SPEED_VALUE_AXE  = 0.35;          // (default) time till next attack while under mentat
+float MOON_MENTAT_SPEED_VALUE_SHOTGUN  = 0.35;      //
+float MOON_MENTAT_SPEED_VALUE_SUPERSHOTGUN  = 0.55; //
+float MOON_MENTAT_SPEED_VALUE_NAILGUN  = 500;       // additional projectile speed
+float MOON_MENTAT_SPEED_VALUE_GRENADELAUNCHER = 0.45;//
+float MOON_MENTAT_SPEED_VALUE_ROCKETLAUNCHER = 0.65;//
+float MOON_MENTAT_SPEED_VALUE_LIGHTNING  = 200;     // additional ray trace distance
 string MOON_MENTAT_SPEED_NETNAME = "accelerative drug";
 string MOON_MENTAT_SPEED_NAME = "accelerative drug";
 

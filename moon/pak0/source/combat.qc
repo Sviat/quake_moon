@@ -152,10 +152,9 @@ void(entity targ, entity attacker) Killed =
 	self = oself;
 };
 
-void(entity targ, entity inflictor, entity attacker, float damage) T_Damage =
+void(entity targ, entity inflictor, entity attacker, float damage) T_Damage = // REFACTOR NEXT
 {
 	local vector dir;
-	//local entity oldself; // unused
 	local float save;
 	local float take;
 	local float bnresist;
@@ -172,100 +171,55 @@ void(entity targ, entity inflictor, entity attacker, float damage) T_Damage =
 	damage_attacker = attacker;
 	if ((attacker.super_damage_finished > time))
 	{
-		damage = (damage * LOGIC_DEFEND);
+		damage = (damage * 4);
 	}
 	if ((targ != attacker))
 	{
-		bnresist = WF_NORMAL;
-		if ((targ.magic_typeone == WF_EXTRASIZE))
+		bnresist = 0;
+		bnresist = (bnresist + moon_get_target_total_bonus_by_code(targ, MOON_ITEM_RESIST_CODE));
+		if ( targ.mentat_defense_time > time )
 		{
-			bnresist = (bnresist + targ.magic_typeone_value);
-		}
-		if ((targ.magic_typetwo == WF_EXTRASIZE))
-		{
-			bnresist = (bnresist + targ.magic_typetwo_value);
-		}
-		if ((targ.ring_typeone == WF_EXTRASIZE))
-		{
-			bnresist = (bnresist + targ.ring_typeone_value);
-		}
-		if ((targ.ring_typetwo == WF_EXTRASIZE))
-		{
-			bnresist = (bnresist + targ.ring_typetwo_value);
-		}
-		if ((targ.mentat_bonus == WF_EXTRASIZE))
-		{
-			bnresist = (bnresist + GRD_PATROLTIME);
+			bnresist = (bnresist + MOON_MENTAT_DEFENSE_VALUE);
 		}
 		if ((targ.scroll_shie_eff > time))
 		{
 			bnresist = (bnresist + 15);
 		}
-		if ((bnresist > 75))
+		if ( bnresist > MOON_RESIST_LIMIT_HARD )
 		{
-			bnresist = 75;
+			bnresist = MOON_RESIST_LIMIT_HARD;
 		}
-		if ((bnresist > WF_NORMAL))
+		if ( bnresist > 0 )
 		{
 			damage = (damage - rint(percent(damage, bnresist)));
 		}
-		bnamp = WF_NORMAL;
-		if ((attacker.magic_typeone == LOGIC_DEFEND))
+		bnamp = 0;
+		bnamp = (bnamp + moon_get_target_total_bonus_by_code(attacker, MOON_ITEM_DAMAGE_CODE));
+		if ( attacker.stre > 0 ) // may be add negative strength debuf too??
 		{
-			bnamp = (bnamp + attacker.magic_typeone_value);
+			bnamp = (bnamp + (attacker.stre * MOON_STAT_DAMAGE_PER_STRENGTH));
 		}
-		if ((attacker.magic_typetwo == LOGIC_DEFEND))
+		if ( attacker.mentat_offense_time > time )
 		{
-			bnamp = (bnamp + attacker.magic_typetwo_value);
-		}
-		if ((attacker.ring_typeone == LOGIC_DEFEND))
-		{
-			bnamp = (bnamp + attacker.ring_typeone_value);
-		}
-		if ((attacker.ring_typetwo == LOGIC_DEFEND))
-		{
-			bnamp = (bnamp + attacker.ring_typetwo_value);
-		}
-		if ((attacker.stre > WF_NORMAL))
-		{
-			bnamp = (bnamp + (attacker.stre * CL_DEADTIME));
-		}
-		if ((attacker.mentat_bonus == WF_DEFEND))
-		{
-			bnamp = (bnamp + GRD_PATROLTIME);
+			bnamp = (bnamp + MOON_MENTAT_OFFENSE_VALUE);
 		}
 		if ((attacker.scroll_brut_eff > time))
 		{
 			bnamp = ((bnamp + 50) + (attacker.sc_brut_lvl * KEY_MOVERIGHT));
 		}
-		if ((bnamp > WF_NORMAL))
+		if ((bnamp > 0))
 		{
 			damage = (damage + percent(damage, bnamp));
 		}
-		bnspike = WF_NORMAL;
-		if ((targ.magic_typeone == LOGIC_PATROL))
-		{
-			bnspike = (bnspike + targ.magic_typeone_value);
-		}
-		if ((targ.magic_typetwo == LOGIC_PATROL))
-		{
-			bnspike = (bnspike + targ.magic_typetwo_value);
-		}
-		if ((targ.ring_typeone == LOGIC_PATROL))
-		{
-			bnspike = (bnspike + targ.ring_typeone_value);
-		}
-		if ((targ.ring_typetwo == LOGIC_PATROL))
-		{
-			bnspike = (bnspike + targ.ring_typetwo_value);
-		}
-		if ((bnspike > WF_NORMAL))
+		bnspike = 0;
+		bnspike = (bnspike + moon_get_target_total_bonus_by_code(targ, MOON_ITEM_RETALATE_CODE));
+		if ((bnspike > 0))
 		{
 			if ((attacker.flags & FL_MONSTER))
 			{
-				if ((attacker.ability != WF_EXTRASIZE))
+				if ((attacker.ability != 2))
 				{
-					if ((attacker.health > WF_NORMAL))
+					if ((attacker.health > 0))
 					{
 						bnspike = percent(damage, bnspike);
 						T_Damage(attacker, targ, targ, bnspike);
@@ -273,37 +227,16 @@ void(entity targ, entity inflictor, entity attacker, float damage) T_Damage =
 				}
 			}
 		}
-		bnheal = WF_NORMAL;
-		if ((attacker.magic_typeone == LOGIC_HUNTENEMY))
+		bnheal = 0;
+		bnheal = (bnheal + moon_get_target_total_bonus_by_code(attacker, MOON_ITEM_VAMPIR_CODE));
+		if ( bnheal > 0 )
 		{
-			bnheal = (bnheal + attacker.magic_typeone_value);
-		}
-		if ((attacker.magic_typetwo == LOGIC_HUNTENEMY))
-		{
-			bnheal = (bnheal + attacker.magic_typetwo_value);
-		}
-		if ((attacker.ring_typeone == LOGIC_HUNTENEMY))
-		{
-			bnheal = (bnheal + attacker.ring_typeone_value);
-		}
-		if ((attacker.ring_typetwo == LOGIC_HUNTENEMY))
-		{
-			bnheal = (bnheal + attacker.ring_typetwo_value);
-		}
-		if ((bnheal > WF_NORMAL))
-		{
-			if ((attacker.health < attacker.max_health))
+			if ( attacker.health > 0 )
 			{
-				if ((attacker.health > WF_NORMAL))
+				if ( targ.flags & FL_MONSTER )
 				{
-					if ((targ.flags & FL_MONSTER))
-					{
-						attacker.health = (attacker.health + percent(damage, bnheal));
-						if ((attacker.health > attacker.max_health))
-						{
-							attacker.health = attacker.max_health;
-						}
-					}
+					bnheal = percent(damage, bnheal);
+					T_Heal(attacker, bnheal);
 				}
 			}
 		}

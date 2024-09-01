@@ -181,11 +181,7 @@ void(entity target) moon_print_mentat_defense =
 void(entity target) moon_print_mentat_speed =
 {
 	sprint(target, MOON_MENTAT_SPEED_NAME);
-	sprint(target, " (increase your attack speed by ");
-	moon_print_golden_number(target, MOON_MENTAT_SPEED_VALUE_MIN);
-	sprint(target, "-");
-	moon_print_golden_number(target, MOON_MENTAT_SPEED_VALUE_MAX);
-	sprint(target, "%%)");
+	sprint(target, " (improve weapon attack or projectile speed)");
 };
 
 void(entity target, string prefix, string name, string postfix) moon_print_target_item_name =
@@ -305,6 +301,78 @@ void(entity target, entity item) moon_println_target_magic_ring_description =
 		moon_println_target_magic_effect(target, item.ring_typeone, item.ring_typeone_value);
 		moon_println_target_magic_effect(target, item.ring_typetwo, item.ring_typetwo_value);
 	}
+};
+
+void(entity target) moon_println_target_own_magic_item_description =
+{
+	moon_println_target_magic_item_description(target, self);
+};
+
+void(entity target) moon_println_target_own_magic_ring_description =
+{
+	moon_println_target_magic_ring_description(target, self);
+};
+
+void() moon_print_inventory =
+{
+	float duration;
+	float did_print_section;
+
+	if ( (self.wear_armor == MOON_ITEM_NONE) && (self.wear_ring == MOON_ITEM_NONE)
+	  && (self.mentat_offense_time <= time)
+	  && (self.mentat_defense_time <= time)
+	  && (self.mentat_attackspeed_time <= time ) )
+	{
+		sprint(self, "you have \sno\s special items\n");
+		return;
+	}
+
+	did_print_section = FALSE;
+	sprint(self, "==== your current items ====\n");
+	if ( self.mentat_offense_time > time )
+	{
+		moon_print_mentat_offense(self);
+		duration = self.mentat_offense_time - time;
+		sprint(self, " {}{}{}\n", MOON_GLYPH_BRACKET_OPEN, floor_ftos(duration), MOON_GLYPH_BRACKET_CLOSE);
+		did_print_section = TRUE;
+	}
+	if ( self.mentat_defense_time > time )
+	{
+		moon_print_mentat_defense(self);
+		duration = self.mentat_defense_time - time;
+		sprint(self, " {}{}{}\n", MOON_GLYPH_BRACKET_OPEN, floor_ftos(duration), MOON_GLYPH_BRACKET_CLOSE);
+		did_print_section = TRUE;
+	}
+	if ( self.mentat_attackspeed_time > time )
+	{
+		moon_print_mentat_speed(self);
+		duration = self.mentat_attackspeed_time - time;
+		sprint(self, " {}{}{}\n", MOON_GLYPH_BRACKET_OPEN, floor_ftos(duration), MOON_GLYPH_BRACKET_CLOSE);
+		did_print_section = TRUE;
+	}
+
+	if ( self.wear_armor == MOON_ITEM_SOME )
+	{
+		if (did_print_section == TRUE)
+		{
+			sprint(self, "--------------------------\n");
+		}
+		sprint(self, CONST_QC_GLYPH_SELECTION);
+		moon_println_target_magic_armor_name(self, self);
+		moon_println_target_own_magic_item_description(self);
+	}
+
+	if ( self.wear_ring == MOON_ITEM_SOME )
+	{
+		if (did_print_section == TRUE)
+		{
+			sprint(self, "--------------------------\n");
+		}
+		sprint(self, CONST_QC_GLYPH_SELECTION);
+		moon_println_target_magic_ring_name(self, self);
+		moon_println_target_own_magic_ring_description(self);
+	}
+	sprint(self, "--------------------------\n");
 };
 
 void() moon_print_character_status =

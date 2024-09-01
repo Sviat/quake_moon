@@ -534,30 +534,30 @@ void() PutClientInServer =
 	self.takedamage = DAMAGE_AIM;
 	self.solid = SOLID_SLIDEBOX;
 	self.movetype = MOVETYPE_WALK;
-	self.show_hostile = WF_NORMAL;
-	self.health_magic_regen_time = WF_NORMAL;
-	if ((self.max_health <= WF_NORMAL))
+	self.show_hostile = 0;
+	self.health_magic_regen_time = 0;
+	if ((self.max_health <= 0))
 	{
 		self.max_health = MOON_PLAYER_HEALTH_INIT;
 	}
 	self.flags = FL_CLIENT;
-	self.super_damage_finished = WF_NORMAL;
-	self.gold = WF_NORMAL;
-	self.radsuit_finished = WF_NORMAL;
-	self.invisible_finished = WF_NORMAL;
-	self.invincible_finished = WF_NORMAL;
-	self.effects = WF_NORMAL;
-	self.invincible_time = WF_NORMAL;
-	self.mentat_bonus = WF_NORMAL;
-	self.mentat_bonus2 = WF_NORMAL;
-	self.mentat_bonus3 = WF_NORMAL;
+	self.super_damage_finished = 0;
+	self.gold = 0;
+	self.radsuit_finished = 0;
+	self.invisible_finished = 0;
+	self.invincible_finished = 0;
+	self.effects = 0;
+	self.invincible_time = 0;
+	self.mentat_offense_time = 0;
+	self.mentat_defense_time = 0;
+	self.mentat_attackspeed_time = 0;
 	DecodeLevelParms();
 	W_SetCurrentAmmo();
-	self.attack_finished = (time + MON_CAMPERCHANCE);
+	self.attack_finished = (time + 0.5); // was 0.1
 	self.th_pain = player_pain;
 	self.th_die = PlayerDie;
 	self.deadflag = DEAD_NO;
-	self.pausetime = WF_NORMAL;
+	self.pausetime = 0;
 	self.origin = (spot.origin + '0 0 1');
 	self.angles = spot.angles;
 	self.fixangle = TRUE;
@@ -571,7 +571,7 @@ void() PutClientInServer =
 	makevectors(self.angles);
 	spawn_tfog((self.origin + (v_forward * GRD_PATROLTIME)));
 	spawn_tdeath(self.origin, self);
-	if ((self.point > WF_NORMAL))
+	if ((self.point > 0))
 	{
 		self.items = (self.items + IT_KEY1);
 	}

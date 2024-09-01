@@ -416,11 +416,11 @@ void() W_FireLightning =
 	self.ammo_cells = (self.ammo_cells - 1);
 	self.currentammo = self.ammo_cells; // Fixed
 	org = (self.origin + '0 0 16');
-	if ((self.mentat_bonus3 == MOON_ITEM_SOME))
+	if ( self.mentat_attackspeed_time > time )
 	{
-		traceline(org, (org + (v_forward * 800)), TRUE, self);
+		traceline(org, (org + ( v_forward * (600+MOON_MENTAT_SPEED_VALUE_LIGHTNING) )), TRUE, self);
 	} else {
-		traceline(org, (org + (v_forward * 600)), TRUE, self);
+		traceline(org, (org + ( v_forward * 600 )), TRUE, self);
 	}
 	WriteByte(MSG_BROADCAST, SVC_TEMPENTITY);
 	WriteByte(MSG_BROADCAST, TE_LIGHTNING2);
@@ -515,13 +515,13 @@ void(vector org, vector dir) launch_spike =
 	setsize(newmis, VEC_ORIGIN, VEC_ORIGIN);
 	setorigin(newmis, org);
 	spds = 1000;
-	if ((self.mentat_bonus3 == CHSCAM_ON))
+	if ( self.mentat_attackspeed_time > time )
 	{
-		spds = (spds + GRD_FIGHTDIST);
+		spds = (spds + MOON_MENTAT_SPEED_VALUE_NAILGUN);
 	}
 	if ((self.up_nail >= 1)) // Re-use same param for both Upgrade and Extra capacity
 	{
-		spds = (spds + GRD_FIGHTDIST);
+		spds = (spds + 500);
 	}
 	newmis.velocity = (dir * spds);
 };
@@ -551,9 +551,9 @@ void(vector org, vector dir) launch_sspike =
 	setsize(newmis, VEC_ORIGIN, VEC_ORIGIN);
 	setorigin(newmis, org);
 	spds = 1000;
-	if ((self.mentat_bonus3 == CHSCAM_ON))
+	if ( self.mentat_attackspeed_time > time )
 	{
-		spds = (spds + GRD_FIGHTDIST);
+		spds = (spds + MOON_MENTAT_SPEED_VALUE_NAILGUN);
 	}
 	if ((self.up_nail >= 1)) // Re-use same param for both Upgrade and Extra capacity
 	{
@@ -875,101 +875,70 @@ void() W_Attack =
 				}
 			}
 		}
-		if ((self.mentat_bonus3 == CHSCAM_ON))
+		if ( self.mentat_attackspeed_time > time )
 		{
-			self.attack_finished = (time + GRD_DEFENDCHANCE);
+			self.attack_finished = (time + MOON_MENTAT_SPEED_VALUE_AXE);
+		} else {
+			self.attack_finished = (time + 0.5);
 		}
-		else
-		{
-			self.attack_finished = (time + MON_BACKTIME);
-		}
-	}
-	else
+	} else
+	if ((self.weapon == IT_SHOTGUN))
 	{
-		if ((self.weapon == IT_SHOTGUN))
+		player_shot1();
+		W_FireShotgun();
+		if ( self.mentat_attackspeed_time > time )
 		{
-			player_shot1();
-			W_FireShotgun();
-			if ((self.mentat_bonus3 == CHSCAM_ON))
-			{
-				self.attack_finished = (time + GRD_DEFENDCHANCE);
-			}
-			else
-			{
-				self.attack_finished = (time + MON_BACKTIME);
-			}
+			self.attack_finished = (time + MOON_MENTAT_SPEED_VALUE_SHOTGUN);
+		} else {
+			self.attack_finished = (time + 0.5);
 		}
-		else
+	} else
+	if ((self.weapon == IT_SUPER_SHOTGUN))
+	{
+		player_shot1();
+		W_FireSuperShotgun();
+		if ( self.mentat_attackspeed_time > time )
 		{
-			if ((self.weapon == IT_SUPER_SHOTGUN))
-			{
-				player_shot1();
-				W_FireSuperShotgun();
-				if ((self.mentat_bonus3 == CHSCAM_ON))
-				{
-					self.attack_finished = (time + 0.55);
-				}
-				else
-				{
-					self.attack_finished = (time + 0.7);
-				}
-			}
-			else
-			{
-				if ((self.weapon == IT_NAILGUN))
-				{
-					player_nail1();
-				}
-				else
-				{
-					if ((self.weapon == IT_SUPER_NAILGUN))
-					{
-						player_nail1();
-					}
-					else
-					{
-						if ((self.weapon == IT_GRENADE_LAUNCHER))
-						{
-							player_rocket1();
-							W_FireGrenade();
-							if ((self.mentat_bonus3 == CHSCAM_ON))
-							{
-								self.attack_finished = (time + 0.45);
-							}
-							else
-							{
-								self.attack_finished = (time + 0.6);
-							}
-						}
-						else
-						{
-							if ((self.weapon == IT_ROCKET_LAUNCHER))
-							{
-								player_rocket1();
-								W_FireRocket();
-								if ((self.mentat_bonus3 == CHSCAM_ON))
-								{
-									self.attack_finished = (time + 0.65);
-								}
-								else
-								{
-									self.attack_finished = (time + 0.8);
-								}
-							}
-							else
-							{
-								if ((self.weapon == IT_LIGHTNING))
-								{
-									player_light1();
-									self.attack_finished = (time + MON_CAMPERCHANCE);
-									sound(self, CHAN_AUTO, "weapons/lstart.wav", CHSCAM_ON, ATTN_NORM);
-								}
-							}
-						}
-					}
-				}
-			}
+			self.attack_finished = (time + MOON_MENTAT_SPEED_VALUE_SUPERSHOTGUN);
+		} else {
+			self.attack_finished = (time + 0.7);
 		}
+	} else
+	if ((self.weapon == IT_NAILGUN))
+	{
+		player_nail1();
+	} else
+	if ((self.weapon == IT_SUPER_NAILGUN))
+	{
+		player_nail1();
+	} else
+	if ((self.weapon == IT_GRENADE_LAUNCHER))
+	{
+		player_rocket1();
+		W_FireGrenade();
+		if ( self.mentat_attackspeed_time > time )
+		{
+			self.attack_finished = (time + MOON_MENTAT_SPEED_VALUE_GRENADELAUNCHER);
+		} else {
+			self.attack_finished = (time + 0.6);
+		}
+	} else
+	if ((self.weapon == IT_ROCKET_LAUNCHER))
+	{
+		player_rocket1();
+		W_FireRocket();
+		if ( self.mentat_attackspeed_time > time )
+		{
+			self.attack_finished = (time + MOON_MENTAT_SPEED_VALUE_ROCKETLAUNCHER);
+		} else {
+			self.attack_finished = (time + 0.8);
+		}
+	} else
+	if ((self.weapon == IT_LIGHTNING))
+	{
+		player_light1();
+		self.attack_finished = (time + MON_CAMPERCHANCE);
+		sound(self, CHAN_AUTO, "weapons/lstart.wav", CHSCAM_ON, ATTN_NORM);
 	}
 };
 

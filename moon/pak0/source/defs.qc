@@ -518,9 +518,6 @@ string s_wiz;
 float LOGIC_STANDART = 0;
 float LOGIC_CAMPER   = 1;
 float LOGIC_HUNTER   = 2;
-.float mentat_bonus; // refactor out and change from TRUE/FALSE to time when off
-.float mentat_bonus2;// refactor out and change from TRUE/FALSE to time when off
-.float mentat_bonus3;// refactor out and change from TRUE/FALSE to time when off
 .float mode;
 .entity master;
 .float blockd;
@@ -537,7 +534,7 @@ float() FindWaypoint;
 .float nextexp;
 .float misspeed;
 .float shootframe;
-.float ability;
+.float ability; // da fack
 .float enchanced;
 .float prepared;
 .float cold_time;

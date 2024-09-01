@@ -5652,33 +5652,17 @@ void() SpawnBot =
 	{
 		bprint(MOON_ARMOR_GREEN_DISPLAYNAME);
 	}
+	bprint("({}).\n", floor_ftos(newbot.armorvalue));
 
-	bprint("({}). Weapons: Shot", quick_ftos(newbot.armorvalue));
-	if ( newbot.items & IT_SUPER_SHOTGUN )
-	{
-		bprint(", Supershot");
-	}
-	if ( newbot.items & IT_NAILGUN )
-	{
-		bprint(", Nail");
-	}
-	if ( newbot.items & IT_SUPER_NAILGUN )
-	{
-		bprint(", Supernail");
-	}
-	if ( newbot.items & IT_GRENADE_LAUNCHER )
-	{
-		bprint(", GL");
-	}
-	if ( newbot.items & IT_ROCKET_LAUNCHER )
-	{
-		bprint(", RL");
-	}
-	if ( newbot.items & IT_LIGHTNING )
-	{
-		bprint(", Shaft");
-	}
+	bprint("Weapons: Shot");
+	if ( newbot.items & IT_SUPER_SHOTGUN ) 		{ bprint(", Supershot"); }
+	if ( newbot.items & IT_NAILGUN ) 			{ bprint(", Nail"); }
+	if ( newbot.items & IT_SUPER_NAILGUN ) 		{ bprint(", Supernail"); }
+	if ( newbot.items & IT_GRENADE_LAUNCHER ) 	{ bprint(", GL"); }
+	if ( newbot.items & IT_ROCKET_LAUNCHER ) 	{ bprint(", RL"); }
+	if ( newbot.items & IT_LIGHTNING ) 			{ bprint(", Shaft"); }
 	bprint(".\n");
+
 	newbot.th_stand = bot_ai_stand;
 	newbot.th_run = bot_run1;
 	newbot.th_die = PlayerDie;
@@ -8436,7 +8420,7 @@ void(float experience) moon_grant_all_exp =
 	}
 };
 
-void() GiveExp =
+void() GiveExp = // this used in so many monster classes
 {
-	moon_grant_all_exp(self.exp);
+	moon_grant_all_exp(self.exp); // so easier to put a wrapper here
 };

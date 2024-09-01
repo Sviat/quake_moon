@@ -1,6 +1,25 @@
 /// ReProjectMoon-specific source file
 /// Here go all functions executed every frame or so inside game logic loop
 
+void() moon_cheat_quad = // Debug only. Remove before release
+{
+	if (!(MOON_DEBUG & MOON_DEBUG_CHEATS_ON) ) { return; }
+
+	self.super_time = 1;
+	self.super_damage_finished = (time + 30);
+	self.items = (self.items | IT_QUAD);
+	sprint(self, "KILL KILL @_@ KILL KILL\n");
+};
+
+void() moon_cheat_gold = // Debug only. Remove before release
+{
+	if (!(MOON_DEBUG & MOON_DEBUG_CHEATS_ON) ) { return; }
+
+	self.gold = 9999;
+	flash_self();
+	sprint(self, "MONEY MONEY MONEY $_$ MONEY MONEY MONEY\n");
+};
+
 // If player was doing nothing this frame, we can try searching something around him
 //   and if there for some reasons Shop or Market items around - at least show name and cost
 void() moon_handle_impulse_noop =
@@ -162,7 +181,10 @@ void(float impulse_code) moon_handle_impulse_server =
 		}
 		break;
 	case MOON_IMPULSE_CODE_CHEAT_QUAD:
-		QuadCheat();
+		moon_cheat_quad();
+		break;
+	case MOON_IMPULSE_CODE_CHEAT_GOLD:
+		moon_cheat_gold();
 		break;
 	default:
 		dprint("Unhandled impulse code for SERVER settings {}\n", impulse_code);

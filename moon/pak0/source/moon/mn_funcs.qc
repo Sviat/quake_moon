@@ -9,7 +9,6 @@ float(float weapon, float ammo) W_EnoughAmmoToShoot;
 float(entity target, float healamount, float ignore = 0) T_Heal;
 void(entity target, float armor_code, float armor_durability = -1) moon_init_target_as_armor;
 float(entity target, float code) moon_get_target_total_bonus_by_code;
-void() QuadCheat;
 void() Prepare;
 void() moon_set_map_moon4;
 float(entity emitter, float track) moon_walkman_play;

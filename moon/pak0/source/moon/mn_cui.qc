@@ -306,3 +306,39 @@ void(entity target, entity item) moon_println_target_magic_ring_description =
 		moon_println_target_magic_effect(target, item.ring_typetwo, item.ring_typetwo_value);
 	}
 };
+
+void() moon_print_character_status =
+{
+	local entity heart;
+	heart = find(world, classname, MOON_HEART_CLASSNAME);
+    if ( heart == world ) { return; }
+
+	sprint(self, "======= Status =======\n");
+	sprint(self, "\sHeart\s's Life: ");
+	moon_println_target_other_health(self, heart);
+	sprint(self, "Monsters Killed: {}\n", floor_ftos(self.mosterskilled));
+	moon_println_target_exp(self);
+	sprint(self, "Gold: ");
+	moon_println_target_gold(self);
+	sprint(self, "----------------------\n");
+};
+
+void() moon_print_cmd_help =
+{
+	sprint(self, "======= help on game commands =======\n");
+	sprint(self, "general prefix: `pm_`, server-side settings: `pms_`, client-side: `pmc_`\n");
+	sprint(self, "{}| use `pm_identify` (v) command to get a description of item nearby.\n", quick_ftos(MOON_IMPULSE_CODE_ITEM_IDENTIFY));
+	sprint(self, "{}| use `pm_buy` (f) command to buy closest item in the shop.\n", quick_ftos(MOON_IMPULSE_CODE_ITEM_BUY));
+	sprint(self, "{}| use `pm_use` (e) command pick up closest magical item.\n", quick_ftos(MOON_IMPULSE_CODE_ITEM_PICKUP));
+	sprint(self, " {}| {}| use `pm_skill\1`/`pm_skill\2` raise skills\n", quick_ftos(MOON_IMPULSE_CODE_UPSKILL_VITALITY), quick_ftos(MOON_IMPULSE_CODE_UPSKILL_STRENGTH));
+	sprint(self, " {}| use `pm_character` (c) command to view character screen.\n", quick_ftos(MOON_IMPULSE_CODE_PRINT_STATUS));
+	sprint(self, " {}| use `pm_stats` (t) command to view screen with your stats.\n", quick_ftos(MOON_IMPULSE_CODE_PRINT_STAT));
+	sprint(self, " {}| use `pm_inventory` (x) command to view inventory screen.\n", quick_ftos(MOON_IMPULSE_CODE_PRINT_INVENTORY));
+	sprint(self, "{}|{}| use `pms_fastmeat`/`pms_slowmeat` to grind faster or slower\n", quick_ftos(MOON_IMPULSE_CODE_FASTMEAT), quick_ftos(MOON_IMPULSE_CODE_SLOWMEAT));
+	sprint(self, "{}| use `pms_alwaysday` to shine bright\n", quick_ftos(MOON_IMPULSE_CODE_ALWAYSDAY));
+	sprint(self, "{}| use `pms_noshake` to earth without quake\n", quick_ftos(MOON_IMPULSE_CODE_NOSHAKE));
+	sprint(self, "{}| use `pmc_nohelp` to reduce amount of hints\n", quick_ftos(MOON_IMPULSE_CODE_NOHELP));
+	sprint(self, "{}| use `pmc_fps` to show Framerate\n", quick_ftos(MOON_IMPULSE_CODE_SHOWFPS));
+	sprint(self, "use `map moon4` or `restartserver` to restart this map\n");
+	sprint(self, "-------------------------------------\n");
+};

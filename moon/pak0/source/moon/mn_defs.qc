@@ -32,10 +32,11 @@
 #define MOON_DEBUG_DPRINT_SOME 1        // dprint > bprint, occasional: debug sprint
 #define MOON_DEBUG_CPRINT_TRACEENT 2    // Every frame: centerprint target entity class, name and target
 #define MOON_DEBUG_DPRINT_NEXTWAVE 4    // Every wave: dprint time till next wave
+#define MOON_DEBUG_CHEATS_ON 8          // Allow the use of cheats
 // //
 
-string MOON_VERSION = "0.26k";
-float MOON_DEBUG = MOON_DEBUG_DPRINT_NEXTWAVE;
+string MOON_VERSION = "0.27k";
+float MOON_DEBUG = MOON_DEBUG_DPRINT_NEXTWAVE | MOON_DEBUG_CHEATS_ON;
 // // Impulse codes. First 19 keep for original Q1; limit is 255; so we should line up somewhere in between
 float MOON_IMPULSE_CODE_NOOP = 0;
 float MOON_IMPULSE_CODE_FIRST = 32;
@@ -56,7 +57,8 @@ float MOON_IMPULSE_CODE_ALWAYSDAY = 101;
 float MOON_IMPULSE_CODE_FASTMEAT = 102;
 float MOON_IMPULSE_CODE_SLOWMEAT = 103;
 float MOON_IMPULSE_CODE_NOSHAKE = 104;
-float MOON_IMPULSE_CODE_CHEAT_QUAD = 127;
+float MOON_IMPULSE_CODE_CHEAT_QUAD = 126;
+float MOON_IMPULSE_CODE_CHEAT_GOLD = 127;
 float MOON_IMPULSE_CODE_LAST_SETTING_SERVER = 127;
 // Code range CLIENT settings 128..159
 float MOON_IMPULSE_CODE_FIRST_SETTING_CLIENT = 128;

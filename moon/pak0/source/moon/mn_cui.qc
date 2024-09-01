@@ -244,3 +244,65 @@ void(entity target, entity container) moon_print_target_container_ammo =
 		sprint(target, "ERROR: garbage shop have incorrect item! Report this bug and item!\n");
 	}
 };
+
+void(entity target, float effect_code, float effect_value) moon_println_target_magic_effect =
+{
+	switch(effect_code)
+	{
+	case MOON_ITEM_HEALTH_CODE:
+        sprint(target, MOON_ITEM_HEALTH_EFFECT, floor_ftos(effect_value));
+		break;
+	case MOON_ITEM_RESIST_CODE:
+        sprint(target, MOON_ITEM_RESIST_EFFECT, floor_ftos(effect_value));
+		break;
+	case MOON_ITEM_GOLD_CODE:
+        sprint(target, MOON_ITEM_GOLD_EFFECT, floor_ftos(effect_value));
+		break;
+	case MOON_ITEM_DAMAGE_CODE:
+        sprint(target, MOON_ITEM_DAMAGE_EFFECT, floor_ftos(effect_value));
+		break;
+	case MOON_ITEM_RETALATE_CODE:
+        sprint(target, MOON_ITEM_RETALATE_EFFECT, floor_ftos(effect_value));
+		break;
+	case MOON_ITEM_VAMPIR_CODE:
+        sprint(target, MOON_ITEM_VAMPIR_EFFECT, floor_ftos(effect_value));
+		break;
+	case MOON_ITEM_REGEN_CODE:
+        sprint(target, MOON_ITEM_REGEN_EFFECT, floor_ftos(effect_value));
+		break;
+	case MOON_ITEM_CONSUME_CODE:
+        sprint(target, MOON_ITEM_CONSUME_EFFECT, floor_ftos(effect_value));
+		break;
+	case MOON_ITEM_REPAIR_CODE:
+        sprint(target, MOON_ITEM_REPAIR_EFFECT, floor_ftos(effect_value));
+		break;
+	default:
+		dprint("Unknown effect code {}\n", effect_code);
+		return; // Avoid newline
+    }
+
+    sprint(target, "\n");
+};
+
+// This is called magic item, not magic armor, since sometimes rings properties are stored in common fields of magic_X
+void(entity target, entity item) moon_println_target_magic_item_description =
+{
+	if (item.magic_typeone == item.magic_typetwo)
+	{
+		moon_println_target_magic_effect(target, item.magic_typeone, item.magic_typeone_value + item.magic_typetwo_value);
+	} else {
+		moon_println_target_magic_effect(target, item.magic_typeone, item.magic_typeone_value);
+		moon_println_target_magic_effect(target, item.magic_typetwo, item.magic_typetwo_value);
+	}
+};
+
+void(entity target, entity item) moon_println_target_magic_ring_description =
+{
+	if (item.ring_typeone == item.ring_typetwo)
+	{
+		moon_println_target_magic_effect(target, item.ring_typeone, item.ring_typeone_value + item.ring_typetwo_value);
+	} else {
+		moon_println_target_magic_effect(target, item.ring_typeone, item.ring_typeone_value);
+		moon_println_target_magic_effect(target, item.ring_typetwo, item.ring_typetwo_value);
+	}
+};

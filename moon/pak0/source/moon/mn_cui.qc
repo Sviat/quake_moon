@@ -243,6 +243,8 @@ void(entity target, entity container) moon_print_target_container_ammo =
 
 void(entity target, float effect_code, float effect_value) moon_println_target_magic_effect =
 {
+	if (!effect_code) { return; }
+
 	switch(effect_code)
 	{
 	case MOON_ITEM_HEALTH_CODE:

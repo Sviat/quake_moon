@@ -213,7 +213,7 @@ void() ShalMissileTouch =
 	s_explode1();
 };
 
-void(entity e, float enc) spawn_shalrath =
+entity(entity e, float enc) spawn_shalrath =
 {
 	local entity m;
 	local entity spot;
@@ -222,7 +222,7 @@ void(entity e, float enc) spawn_shalrath =
 	spot = MonterSpawnPoint();
 	if ((spot == world))
 	{
-		return;
+		return world;
 	}
 	m = spawn();
 	m.solid = SOLID_SLIDEBOX;
@@ -352,6 +352,7 @@ void(entity e, float enc) spawn_shalrath =
 	m.attack_finished = time;
 	makevectors(m.angles);
 	spawn_tdeath(m.origin, m);
+	return m;
 };
 
 void() Mage_Cast =
@@ -609,7 +610,7 @@ void() mage_die =
 	}
 };
 
-void(entity e, float enc) spawn_mage =
+entity(entity e, float enc) spawn_mage =
 {
 	local entity m;
 	local entity spot;
@@ -618,7 +619,7 @@ void(entity e, float enc) spawn_mage =
 	spot = MonterSpawnPoint();
 	if ((spot == world))
 	{
-		return;
+		return world;
 	}
 	m = spawn();
 	m.solid = SOLID_SLIDEBOX;
@@ -696,6 +697,7 @@ void(entity e, float enc) spawn_mage =
 	m.th_run = mage_run;
 	m.th_missile = mage_fire;
 	m.th_die = mage_die;
+	return m;
 };
 
 void() T_LaserTouch =
@@ -1013,7 +1015,7 @@ void() enf_die =
 	}
 };
 
-void(entity spawner, float enc) spawn_enforcer =
+entity(entity spawner, float enc) spawn_enforcer =
 {
 	local entity m;
 	local entity spot;
@@ -1026,7 +1028,7 @@ void(entity spawner, float enc) spawn_enforcer =
 	spot = MonterSpawnPoint();
 	if ((spot == world))
 	{
-		return;
+		return world;
 	}
 	m = spawn();
 	m.solid = SOLID_SLIDEBOX;
@@ -1155,4 +1157,5 @@ void(entity spawner, float enc) spawn_enforcer =
 	m.attack_finished = time;
 	makevectors(m.angles);
 	spawn_tdeath(m.origin, m);
+	return m;
 };

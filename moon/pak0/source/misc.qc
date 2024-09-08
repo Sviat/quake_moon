@@ -548,7 +548,7 @@ void() ogre_melee =
 {
 };
 
-void(entity e, float enc) spawn_ogre =
+entity(entity e, float enc) spawn_ogre =
 {
 	local entity m;
 	local entity spot;
@@ -557,7 +557,7 @@ void(entity e, float enc) spawn_ogre =
 	spot = MonterSpawnPoint();
 	if ((spot == world))
 	{
-		return;
+		return world;
 	}
 	m = spawn();
 	m.solid = SOLID_SLIDEBOX;
@@ -680,6 +680,7 @@ void(entity e, float enc) spawn_ogre =
 	m.th_run = ogre_run;
 	m.th_die = ogre_die;
 	m.th_missile = ogre_fire;
+	return m;
 };
 
 void() snake_stand =
@@ -864,7 +865,7 @@ void() snake_die =
 	}
 };
 
-void(entity e, float enc) spawn_snake =
+entity(entity e, float enc) spawn_snake =
 {
 	local entity m;
 	local entity spot;
@@ -873,7 +874,7 @@ void(entity e, float enc) spawn_snake =
 	spot = MonterSpawnPoint();
 	if ((spot == world))
 	{
-		return;
+		return world;
 	}
 	m = spawn();
 	m.solid = SOLID_SLIDEBOX;
@@ -993,4 +994,5 @@ void(entity e, float enc) spawn_snake =
 	makevectors(m.angles);
 	spawn_tfog((m.origin + (v_forward * GRD_PATROLTIME)));
 	spawn_tdeath(m.origin, m);
+	return m;
 };

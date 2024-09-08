@@ -1590,7 +1590,7 @@ void() spider_die =
 	}
 };
 
-void(entity e, float enc) spawn_spider =
+entity(entity e, float enc) spawn_spider =
 {
 	local entity m;
 	local entity spot;
@@ -1599,7 +1599,7 @@ void(entity e, float enc) spawn_spider =
 	spot = MonterSpawnPoint();
 	if ((spot == world))
 	{
-		return;
+		return world;
 	}
 	m = spawn();
 	m.solid = SOLID_SLIDEBOX;
@@ -1718,6 +1718,7 @@ void(entity e, float enc) spawn_spider =
 	m.shootframe = FALSE;
 	makevectors(m.angles);
 	spawn_tdeath(m.origin, m);
+	return m;
 };
 
 void() army_stand =
@@ -1976,7 +1977,7 @@ void() army_die =
 	}
 };
 
-void(entity e, float enc) spawn_soldier =
+entity(entity e, float enc) spawn_soldier =
 {
 	local entity m;
 	local entity spot;
@@ -1986,7 +1987,7 @@ void(entity e, float enc) spawn_soldier =
 	spot = MonterSpawnPoint();
 	if ((spot == world))
 	{
-		return;
+		return world;
 	}
 	m = spawn();
 	m.solid = SOLID_SLIDEBOX;
@@ -2159,6 +2160,7 @@ void(entity e, float enc) spawn_soldier =
 	m.th_run = army_run;
 	m.th_missile = army_fire;
 	m.th_die = army_die;
+	return m;
 };
 
 void() less_stand =

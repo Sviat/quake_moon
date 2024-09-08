@@ -32,6 +32,11 @@ bind mouse_right "pm_buy";
 unbindkey mouse_middle;
 bind mouse_middle "impulse 1";
 
+unbindkey mouse4;
+bind mouse4 "kill";
+unbindkey mouse5;
+bind mouse5 "impulse 7";
+
 unbindkey mouse_misc1;
 bind mouse_misc1 "kill";
 unbindkey mouse_misc2;
@@ -46,10 +51,7 @@ scr_usekfont 0
 
 scr_maxlines 20
 scr_printtime 5
-scr_centertime 1
-
-// load the last saved configuration
-//exec kexengine.cfg
+scr_centertime 2
 
 // run a user script file if present
 exec autoexec.cfg

@@ -77,7 +77,7 @@ float(entity target, float cost) moon_pay_target_gold =
 	}
 	target.gold = (target.gold - cost);
 
-	sprint(target, "You paid {} gold, {} left\n", floor_ftos(cost), floor_ftos(target.gold));
+	sprint(target, "You paid {0} gold, {1} left\n", floor_ftos(cost), floor_ftos(target.gold));
 	return TRUE;
 };
 
@@ -158,7 +158,7 @@ void(entity target, float value) moon_raise_target_max_mana =
 	}
 };
 
-void(entity target, float value) moon_raise_target_vitality =
+void(entity target, float value = 1) moon_raise_target_vitality =
 {
 	target.vit = (target.vit + value);
 	moon_raise_target_max_health(target, (value*MOON_STAT_HEALTH_PER_VITALITY));
@@ -169,7 +169,7 @@ void(entity target, float value = 1) moon_raise_target_strength = // This is not
 	target.stre = (target.stre + value);
 };
 
-void(entity target, float value) moon_raise_target_sanity =
+void(entity target, float value = 1) moon_raise_target_sanity =
 {
 	target.wiz = (target.wiz + value);
 	moon_raise_target_max_mana(target, (value*MOON_STAT_MANA_PER_SANITY));
@@ -581,19 +581,19 @@ void() ammo_touch =
 	flash_target(other);
 	if (self.ammo_shells)
 	{
-		sprint(other, "You picked up {} {}\n", floor_ftos(self.ammo_shells), MOON_AMMO_SHELLS_DISPLAYNAME);
+		sprint(other, "You picked up {0} {1}\n", floor_ftos(self.ammo_shells), MOON_AMMO_SHELLS_DISPLAYNAME);
 	}
 	if (self.ammo_nails)
 	{
-		sprint(other, "You picked up {} {}\n", floor_ftos(self.ammo_nails), MOON_AMMO_NAILS_DISPLAYNAME);
+		sprint(other, "You picked up {0} {1}\n", floor_ftos(self.ammo_nails), MOON_AMMO_NAILS_DISPLAYNAME);
 	}
 	if (self.ammo_rockets)
 	{
-		sprint(other, "You picked up {} {}\n", floor_ftos(self.ammo_rockets), MOON_AMMO_ROCKETS_DISPLAYNAME);
+		sprint(other, "You picked up {0} {1}\n", floor_ftos(self.ammo_rockets), MOON_AMMO_ROCKETS_DISPLAYNAME);
 	}
 	if (self.ammo_cells)
 	{
-		sprint(other, "You picked up {} {}\n", floor_ftos(self.ammo_cells), MOON_AMMO_CELLS_DISPLAYNAME);
+		sprint(other, "You picked up {0} {1}\n", floor_ftos(self.ammo_cells), MOON_AMMO_CELLS_DISPLAYNAME);
 	}
 	sound(other, CHAN_ITEM, "weapons/lock4.wav", 1, ATTN_NORM);
 
@@ -804,19 +804,19 @@ void() BackpackTouch =
 	sprint(other, "You get {} with ", self.netname);
 	if (self.ammo_shells)
 	{
-		sprint(other, " {} {}", floor_ftos(self.ammo_shells), MOON_AMMO_SHELLS_DISPLAYNAME);
+		sprint(other, " {0} {1}", floor_ftos(self.ammo_shells), MOON_AMMO_SHELLS_DISPLAYNAME);
 	}
 	if (self.ammo_nails)
 	{
-		sprint(other, " {} {}", floor_ftos(self.ammo_nails), MOON_AMMO_NAILS_DISPLAYNAME);
+		sprint(other, " {0} {1}", floor_ftos(self.ammo_nails), MOON_AMMO_NAILS_DISPLAYNAME);
 	}
 	if (self.ammo_rockets)
 	{
-		sprint(other, " {} {}", floor_ftos(self.ammo_rockets), MOON_AMMO_ROCKETS_DISPLAYNAME);
+		sprint(other, " {0} {1}", floor_ftos(self.ammo_rockets), MOON_AMMO_ROCKETS_DISPLAYNAME);
 	}
 	if (self.ammo_cells)
 	{
-		sprint(other, " {} {}", floor_ftos(self.ammo_cells), MOON_AMMO_CELLS_DISPLAYNAME);
+		sprint(other, " {0} {1}", floor_ftos(self.ammo_cells), MOON_AMMO_CELLS_DISPLAYNAME);
 	}
 	sprint(other, "\n");
 	sound(other, CHAN_ITEM, "weapons/pkup.wav", 1, ATTN_NORM);
@@ -2557,8 +2557,7 @@ void() moon_buy_item_market =
 			break;
 		case MOON_ITEM_ARMOR_NETNAME:
 		case MOON_ITEM_RING_NETNAME:
-			other = selected;
-			moon_wear_item();
+			moon_target_wear_magic_item(self, selected);
 			break;
 	}
 
@@ -2603,7 +2602,7 @@ void() moon_identify_item_market =
 		} else
 		if ( selected.netname == MOON_AMMO_MARKET_NETNAME )
 		{
-			sprint(self, "{} {}", floor_ftos(selected.currentammo), selected.targetname);
+			sprint(self, "{0} {1}", floor_ftos(selected.currentammo), selected.targetname);
 		} else
 		if ( selected.netname == MOON_WEAPON_MARKET_NETNAME )
 		{
@@ -3111,27 +3110,31 @@ void(entity trader) find_trade_spot =
 			head.cnt = MOON_ITEM_TRADE_SIGNOF_AMMO;
 			if ( r < 0.1 ) 	// was 0.2
 			{
-				setmodel(head, "maps/b_shell0.bsp");
+				setmodel(head, MOON_AMMO_SHELLS_MODEL);
 				head.ammo_shells = ceil(MOON_AMMO_SHELLS_BASE + (random() * MOON_AMMO_SHELLS_RANDOM));
+				head.currentammo = head.ammo_shells;
 				head.cost = ceil(head.ammo_shells * MOON_AMMO_SHELLS_COSTOFONE);
 				head.targetname = MOON_AMMO_SHELLS_DISPLAYNAME;
 			} else
 			if ( r < 0.4 )	// was 0.4
 			{
-				setmodel(head, "maps/b_nail0.bsp");
+				setmodel(head, MOON_AMMO_NAILS_MODEL);
 				head.ammo_nails = ceil(MOON_AMMO_NAILS_BASE + (random() * MOON_AMMO_NAILS_RANDOM));
+				head.currentammo = head.ammo_nails;
 				head.cost = ceil(head.ammo_nails * MOON_AMMO_NAILS_COSTOFONE);
 				head.targetname = MOON_AMMO_NAILS_DISPLAYNAME;
 			} else
 			if ((r < 0.7))	// was 0.7
 			{
-				setmodel(head, "maps/b_rock0.bsp");
+				setmodel(head, MOON_AMMO_ROCKETS_MODEL);
 				head.ammo_rockets = ceil(MOON_AMMO_ROCKETS_BASE + (random() * MOON_AMMO_ROCKETS_RANDOM));
+				head.currentammo = head.ammo_rockets;
 				head.cost = ceil(head.ammo_rockets * MOON_AMMO_ROCKETS_COSTOFONE);
 				head.targetname = MOON_AMMO_ROCKETS_DISPLAYNAME;
 			} else {
-				setmodel(head, "maps/b_batt0.bsp");
+				setmodel(head, MOON_AMMO_CELLS_MODEL);
 				head.ammo_cells = ceil(MOON_AMMO_CELLS_BASE + (random() * MOON_AMMO_CELLS_RANDOM));
+				head.currentammo = head.ammo_cells;
 				head.cost = ceil(head.ammo_cells * MOON_AMMO_CELLS_COSTOFONE);
 				head.targetname = MOON_AMMO_CELLS_DISPLAYNAME;
 			}
@@ -3140,46 +3143,52 @@ void(entity trader) find_trade_spot =
 			head.cnt = MOON_ITEM_TRADE_SIGNOF_WEAPON;
 			if ( r < 0.15 )
 			{
-				setmodel(head, "progs/g_shot.mdl");
+				setmodel(head, MOON_WEAPON_SUPERSHOTGUN_MODEL_TPV);
 				head.ammo_shells = MOON_WEAPON_SUPERSHOTGUN_AMMO_SHOP;
+				head.currentammo = head.ammo_shells;
 				head.cost = MOON_WEAPON_SUPERSHOTGUN_COST_SHOP;
 				head.targetname = MOON_WEAPON_SUPERSHOTGUN_DISPLAYNAME;
 				head.items = IT_SUPER_SHOTGUN;
 			} else
 			if ( r < 0.3 )
 			{
-				setmodel(head, "progs/g_nail.mdl");
+				setmodel(head, MOON_WEAPON_NAILGUN_MODEL_TPV);
 				head.ammo_nails = MOON_WEAPON_NAILGUN_AMMO_SHOP;
+				head.currentammo = head.ammo_nails;
 				head.cost = MOON_WEAPON_NAILGUN_COST_SHOP;
 				head.targetname = MOON_WEAPON_NAILGUN_DISPLAYNAME;
 				head.items = IT_NAILGUN;
 			} else
 			if ( r < 0.45 )
 			{
-				setmodel(head, "progs/g_nail2.mdl");
+				setmodel(head, MOON_WEAPON_SUPERNAILGUN_MODEL_TPV);
 				head.ammo_nails = MOON_WEAPON_SUPERNAILGUN_AMMO_SHOP;
+				head.currentammo = head.ammo_nails;
 				head.cost = MOON_WEAPON_SUPERNAILGUN_COST_SHOP;
 				head.targetname = MOON_WEAPON_SUPERNAILGUN_DISPLAYNAME;
 				head.items = IT_SUPER_NAILGUN;
 			} else
 			if ( r < 0.6 )
 			{
-				setmodel(head, "progs/g_rock.mdl");
+				setmodel(head, MOON_WEAPON_GRENADELAUNCHER_MODEL_TPV);
 				head.ammo_rockets = MOON_WEAPON_GRENADELAUNCHER_AMMO_SHOP;
+				head.currentammo = head.ammo_rockets;
 				head.cost = MOON_WEAPON_GRENADELAUNCHER_COST_SHOP;
 				head.targetname = MOON_WEAPON_GRENADELAUNCHER_DISPLAYNAME;
 				head.items = IT_GRENADE_LAUNCHER;
 			} else
 			if ( r < 0.8 )
 			{
-				setmodel(head, "progs/g_rock2.mdl");
+				setmodel(head, MOON_WEAPON_ROCKETLAUNCHER_MODEL_TPV);
 				head.ammo_rockets = MOON_WEAPON_ROCKETLAUNCHER_AMMO_SHOP;
+				head.currentammo = head.ammo_rockets;
 				head.cost = MOON_WEAPON_ROCKETLAUNCHER_COST_SHOP;
 				head.targetname = MOON_WEAPON_ROCKETLAUNCHER_DISPLAYNAME;
 				head.items = IT_ROCKET_LAUNCHER;
 			} else {
-				setmodel(head, "progs/g_light.mdl");
+				setmodel(head, MOON_WEAPON_LIGHTNING_MODEL_TPV);
 				head.ammo_cells = MOON_WEAPON_LIGHTNING_AMMO_SHOP;
+				head.currentammo = head.ammo_cells;
 				head.cost = MOON_WEAPON_LIGHTNING_COST_SHOP;
 				head.targetname = MOON_WEAPON_LIGHTNING_DISPLAYNAME;
 				head.items = IT_LIGHTNING;
@@ -3312,7 +3321,7 @@ void() moon_buy_item =
 			}
 			T_Heal(self, selected.healamount, 0);
 		}
-		sprint(self, "You bought {} and healed +{}HP\n", selected.targetname, floor_ftos(selected.healamount));
+		sprint(self, "You bought {0} and healed {1}HP\n", selected.targetname, floor_ftos(selected.healamount));
 		sound(self, CHAN_ITEM, selected.noise, 1, ATTN_NORM);
 		selected.attack_finished = (time + MOON_TRADE_SPOT_HEALTH_DELAY_MIN + (random() * MOON_TRADE_SPOT_HEALTH_DELAY_RANDOM));
 	} else
@@ -3325,11 +3334,10 @@ void() moon_buy_item =
 		self.ammo_cells = (self.ammo_cells + selected.ammo_cells);
 		moon_limit_target_ammo(self);
 
-		// TODO: use .currentammo instead
-		sprint(self, "You bought {} {}\n", floor_ftos(selected.ammo_shells + selected.ammo_nails + selected.ammo_rockets + selected.ammo_cells), selected.targetname);
+		sprint(self, "You bought {0} {1}\n", floor_ftos(selected.currentammo), selected.targetname);
 		sound(self, CHAN_ITEM, "weapons/lock4.wav", 1, ATTN_NORM);
 		tempf = MOON_TRADE_SPOT_AMMO_DELAY_MIN / clampd(1, moon_get_current_player_count(), 4);
-		selected.attack_finished = (time + tempf + (random() * MOON_TRADE_SPOT_AMMO_DELAY_RANDOM));
+		selected.attack_finished = (time + tempf + (random() * MOON_TRADE_SPOT_AMMO_DELAY_RANDOM)); // Ammo respawn at shop faster the more players in game
 
 		if ( self.weapon == best )
 		{
@@ -3403,45 +3411,31 @@ void() moon_identify_item =
 	}
 
 	sprint(self, "====== identified item ======\n");
-	if ((selected.items & IT_ARMOR1))
+	if ( selected.items & IT_ARMOR1 )
 	{
 		sprint(self, MOON_ARMOR_GREEN_DISPLAYNAME);
 	}
-	if ((selected.items & IT_ARMOR2))
+	if ( selected.items & IT_ARMOR2 )
 	{
 		sprint(self, MOON_ARMOR_YELLOW_DISPLAYNAME);
 	}
-	if ((selected.items & IT_ARMOR3))
+	if ( selected.items & IT_ARMOR3 )
 	{
 		sprint(self, MOON_ARMOR_RED_DISPLAYNAME);
 	}
-	if ( selected.cnt == MOON_ITEM_TRADE_SIGNOF_AMMO )
-	{
-		if (selected.ammo_shells)
-		{
-			sprint(self, "Box of {} shells", floor_ftos(selected.ammo_shells));
-		}
-		if (selected.ammo_nails)
-		{
-			sprint(self, "Box of {} nails", floor_ftos(selected.ammo_nails));
-		}
-		if (selected.ammo_rockets)
-		{
-			sprint(self, "Box of {} rockets", floor_ftos(selected.ammo_rockets));
-		}
-		if (selected.ammo_cells)
-		{
-			sprint(self, "Box of {} cells", floor_ftos(selected.ammo_cells));
-		}
-	} else
-	if (selected.cnt == MOON_ITEM_TRADE_SIGNOF_WEAPON )
-	{
-		sprint(self, selected.targetname);
-	}
-
 	if ( selected.items & IT_SUPERHEALTH )
 	{
-		sprint(self, "{} +{}", selected.targetname, floor_ftos(selected.healamount));
+		sprint(self, "{0} +{1}", selected.targetname, floor_ftos(selected.healamount));
+	}
+
+	if ( selected.cnt == MOON_ITEM_TRADE_SIGNOF_AMMO )
+	{
+		sprint(self, "Box of");
+		moon_print_target_container_ammo(self, selected);
+	} else
+	if ( selected.cnt == MOON_ITEM_TRADE_SIGNOF_WEAPON )
+	{
+		sprint(self, selected.targetname);
 	}
 	sprint(self, ". Cost: {}\n", floor_ftos(selected.cost));
 };
@@ -3459,7 +3453,7 @@ void() moon_print_skills =
 	sprint(self, "    |\n");
 
 	bonus = moon_get_target_bonus_health(self);
-	sprint(self, "| vitality: {} ({}", quick_ftos(self.vit), quick_ftos(self.max_health));
+	sprint(self, "| vitality: {0} ({1}", quick_ftos(self.vit), quick_ftos(self.max_health));
 
 	if ((bonus > 0))
 	{
@@ -3478,7 +3472,7 @@ void() moon_print_skills =
 		bonus = (bonus + MOON_MENTAT_OFFENSE_VALUE);
 	}
 
-	sprint(self, "| strength: {} ({}%", quick_ftos(self.stre), quick_ftos((self.stre * MOON_STAT_DAMAGE_PER_STRENGTH) + 100));
+	sprint(self, "| strength: {0} ({1}%", quick_ftos(self.stre), quick_ftos((self.stre * MOON_STAT_DAMAGE_PER_STRENGTH) + 100));
 	if (bonus > 0)
 	{
 		sprint(self, " (+{}%)", quick_ftos(bonus));
@@ -4111,8 +4105,7 @@ string(float level) moon_get_monster_level_prefix =
 {
 	if ( level < 0 )
 	{
-		dprint("ERROR IN moon_get_monster_level_prefix(...): provided level is negative.\n");
-		return string_null;
+		return "n00bie ";
 	}
 	switch(level)
 	{
@@ -4261,6 +4254,7 @@ void(entity spawner, float l) MonsterTable = // rename later to moon_spawn_monst
 	local float gen;
 	local float shift;
 	local float shifted_lvl;
+	local entity monster;
 
 	shift = rint(random() * 3);
 	shifted_lvl = l - shift;
@@ -4270,29 +4264,31 @@ void(entity spawner, float l) MonsterTable = // rename later to moon_spawn_monst
 	switch(gen)	// TODO: split/refactor spawn_X functions to handle only specific to X stuff there
 	{
 	case MOON_MONSTER_CODE_SOLDIER:
-		spawn_soldier(spawner, clampd(0, shifted_lvl - MOON_MONSTER_BASELEVEL_SOLDIER, 50) );
+		monster = spawn_soldier(spawner, clampd(0, shifted_lvl - MOON_MONSTER_BASELEVEL_SOLDIER, 50) );
 		break;
 	case MOON_MONSTER_CODE_ENFORCER:
-		spawn_enforcer(spawner, clampd(0, shifted_lvl - MOON_MONSTER_BASELEVEL_ENFORCER, 50));
+		monster = spawn_enforcer(spawner, clampd(0, shifted_lvl - MOON_MONSTER_BASELEVEL_ENFORCER, 50));
 		break;
 	case MOON_MONSTER_CODE_SPIDER:
-		spawn_spider(spawner, clampd(0, shifted_lvl - MOON_MONSTER_BASELEVEL_SPIDER, 50));
+		monster = spawn_spider(spawner, clampd(0, shifted_lvl - MOON_MONSTER_BASELEVEL_SPIDER, 50));
 		break;
 	case MOON_MONSTER_CODE_OGRE:
-		spawn_ogre(spawner, clampd(0, shifted_lvl - MOON_MONSTER_BASELEVEL_OGRE, 50));
+		monster = spawn_ogre(spawner, clampd(0, shifted_lvl - MOON_MONSTER_BASELEVEL_OGRE, 50));
 		break;
 	case MOON_MONSTER_CODE_SNAKE:
-		spawn_snake(spawner, clampd(0, shifted_lvl - MOON_MONSTER_BASELEVEL_SNAKE, 50));
+		monster = spawn_snake(spawner, clampd(0, shifted_lvl - MOON_MONSTER_BASELEVEL_SNAKE, 50));
 		break;
 	case MOON_MONSTER_CODE_MAGE:
-		spawn_mage(spawner, clampd(0, shifted_lvl - MOON_MONSTER_BASELEVEL_MAGE, 50));
+		monster = spawn_mage(spawner, clampd(0, shifted_lvl - MOON_MONSTER_BASELEVEL_MAGE, 50));
 		break;
 	case MOON_MONSTER_CODE_SHALRATH:
-		spawn_shalrath(spawner, clampd(0, shifted_lvl - MOON_MONSTER_BASELEVEL_SHALRATH, 50));
+		monster = spawn_shalrath(spawner, clampd(0, shifted_lvl - MOON_MONSTER_BASELEVEL_SHALRATH, 50));
 		break;
 	default:
 		dprint("ERROR IN MonsterTable(...): gen spawns null monster\n");
+		return;
 	}
+	moon_debug_println_object_name(monster); // Debug only
 };
 
 float SVC_SETVIEWPORT    = 5;
@@ -5930,7 +5926,7 @@ void() mon_evade = // full of black magic
 
 	if ( rint(vlen(self.velocity)) > rint(self.speed) )
 	{
-		dprint("warning: monster speed overload. maxspeed: {}. Current: {}.\n", floor_ftos(self.speed), floor_ftos(vlen(self.velocity)));
+		dprint("warning: monster speed overload. maxspeed: {0}. Current: {1}.\n", floor_ftos(self.speed), floor_ftos(vlen(self.velocity)));
 	}
 	if (!CanDamage(self.enemy, self))
 	{
@@ -6271,7 +6267,7 @@ void() CheckCurse = // TODO: implement one day
 	}
 };
 
-void() mon_think =
+void() mon_think = // Some stack overflow detected on FTE engine here (mon_think -> army_run -> mon_ai_run -> army_stand -> mon_ai_stand -> army_run)
 {
 	if (gameover)
 	{
@@ -6310,7 +6306,7 @@ void() mon_think =
 	{
 		if (FindWaypoint())
 		{
-			self.th_run();
+			self.th_run(); // Infinite loop possibility: run from stand
 		}
 	}
 };
@@ -6328,7 +6324,7 @@ void() mon_ai_stand =
 		{
 			self.ideal_yaw = vectoyaw((self.goalentity.origin - self.origin));
 			self.currentammo = 1; // Sign of ???
-			self.th_run();
+			self.th_run(); // Infinite loop possibility: run from stand
 			return;
 		}
 		mon_think();
@@ -6340,7 +6336,7 @@ void() mon_ai_stand =
 				{
 					self.camp_time = CONTENT_EMPTY;
 					self.currentammo = 1; // Sign of ???
-					self.th_run();
+					self.th_run(); // Infinite loop possibility: run from stand
 					return;
 				}
 			}
@@ -6544,7 +6540,7 @@ void(float dist) mon_ai_run =
 
 		if ( rint(vlen(self.velocity)) > rint(self.speed) )
 		{
-			dprint("warning: monster speed overload. maxspeed: {}. Current: {}.\n", floor_ftos(self.speed), floor_ftos(vlen(self.velocity)));
+			dprint("warning: monster speed overload. maxspeed: {0}. Current: {1}.\n", floor_ftos(self.speed), floor_ftos(vlen(self.velocity)));
 		}
 	}
 	if (self.enemy)
@@ -7113,7 +7109,112 @@ void() MagicItemTouch =
 	}
 };
 
-void() moon_wear_item = // THIS NEEDS A CLEANING
+void(entity target, float effect_code, float effect_value) moon_handle_magic_effect_lost_max_health =
+{
+	if ( effect_code == MOON_ITEM_HEALTH_CODE )
+	{
+		target.max_health = (target.max_health - effect_value);
+		if (!(target.items & IT_SUPERHEALTH) )
+		{
+			if ( target.health > target.max_health )
+			{
+				target.health = target.max_health;
+			}
+		}
+	}
+};
+
+void(entity target, entity selected) moon_target_wear_magic_item =
+{
+	sprint(target, "You put on ");
+	if ( selected.netname == MOON_ITEM_ARMOR_NETNAME )
+	{
+		if ( target.wear_armor == MOON_ITEM_SOME )
+		{
+			moon_handle_magic_effect_lost_max_health(target, target.magic_typeone, target.magic_typeone_value);
+			moon_handle_magic_effect_lost_max_health(target, target.magic_typetwo, target.magic_typetwo_value);
+			target.magic_typeone = 0;
+			target.magic_typeone_value = 0;
+			target.magic_prefixone = s_wiz;
+			target.magic_typetwo = 0;
+			target.magic_typetwo_value = 0;
+			target.magic_prefixtwo = s_wiz;
+		}
+		selected.magic_prefixone = selected.prefix_one;
+		selected.magic_prefixtwo = selected.prefix_two;
+		sound(target, CHAN_ITEM, "items/armor1.wav", 1, ATTN_NORM);
+		target.wear_armor = MOON_ITEM_SOME;
+		if ( selected.magic_typeone > 0 )
+		{
+			target.magic_typeone = selected.magic_typeone;
+			target.magic_typeone_value = selected.magic_typeone_value;
+			target.magic_prefixone = selected.magic_prefixone;
+			if ( selected.magic_typeone == MOON_ITEM_HEALTH_CODE )
+			{
+				moon_raise_target_max_health(target, selected.magic_typeone_value);
+			}
+		}
+		if ( selected.magic_typetwo > 0 )
+		{
+			target.magic_typetwo = selected.magic_typetwo;
+			target.magic_typetwo_value = selected.magic_typetwo_value;
+			target.magic_prefixtwo = selected.magic_prefixtwo;
+			if ( selected.magic_typetwo == MOON_ITEM_HEALTH_CODE )
+			{
+				moon_raise_target_max_health(target, selected.magic_typetwo_value);
+			}
+		}
+		moon_print_target_item_name(target, selected.magic_prefixone, selected.netname, selected.magic_prefixtwo);
+		sprint(target, "\n");
+	} else
+	if ( selected.netname == MOON_ITEM_RING_NETNAME )
+	{
+		if ( target.wear_ring == MOON_ITEM_SOME )
+		{
+			moon_handle_magic_effect_lost_max_health(target, target.ring_typeone, target.ring_typeone_value);
+			moon_handle_magic_effect_lost_max_health(target, target.ring_typetwo, target.ring_typetwo_value);
+			target.ring_typeone = 0;
+			target.ring_typeone_value = 0;
+			target.ring_prefixone = s_wiz;
+			target.ring_typetwo = 0;
+			target.ring_typetwo_value = 0;
+			target.ring_prefixtwo = s_wiz;
+		}
+		selected.ring_prefixone = selected.prefix_one;
+		selected.ring_prefixtwo = selected.prefix_two;
+		selected.ring_typeone = selected.magic_typeone;
+		selected.ring_typetwo = selected.magic_typetwo;
+		selected.ring_typeone_value = selected.magic_typeone_value;
+		selected.ring_typetwo_value = selected.magic_typetwo_value;
+		sound(target, CHAN_ITEM, "moon/items/ring.wav", 1, ATTN_NORM);
+		target.wear_ring = MOON_ITEM_SOME;
+		if ( selected.ring_typeone > 0 )
+		{
+			target.ring_typeone = selected.ring_typeone;
+			target.ring_typeone_value = selected.ring_typeone_value;
+			target.ring_prefixone = selected.ring_prefixone;
+			if ( selected.ring_typeone == MOON_ITEM_HEALTH_CODE )
+			{
+				moon_raise_target_max_health(target, selected.ring_typeone_value);
+			}
+		}
+		if ( selected.ring_typetwo > 0 )
+		{
+			target.ring_typetwo = selected.ring_typetwo;
+			target.ring_typetwo_value = selected.ring_typetwo_value;
+			target.ring_prefixtwo = selected.ring_prefixtwo;
+			if ( selected.ring_typetwo == MOON_ITEM_HEALTH_CODE )
+			{
+				moon_raise_target_max_health(target, selected.ring_typetwo_value);
+			}
+		}
+		moon_print_target_item_name(target, selected.ring_prefixone, selected.netname, selected.ring_prefixtwo);
+		sprint(target, "\n");
+	}
+	flash_self();
+};
+
+void() moon_self_pickup_magic_item_and_clear =
 {
 	local entity head;
 	local entity selected;
@@ -7128,143 +7229,13 @@ void() moon_wear_item = // THIS NEEDS A CLEANING
 			selected = head;
 		}
 	}
-	if ( other.classname == MOON_TRADE_MARKET_SPOT_CLASSNAME )
+	if ( selected == world )
 	{
-		selected = other;
+		sprint(self, "there are \sno\s magic items around\n");
+		return;
 	}
-	if ( selected != world )
-	{
-		if ( selected.netname == MOON_ITEM_ARMOR_NETNAME )
-		{
-			if ( self.wear_armor == MOON_ITEM_SOME )
-			{
-				if ( self.magic_typeone == MOON_ITEM_HEALTH_CODE )
-				{
-					self.max_health = (self.max_health - self.magic_typeone_value);
-				}
-				if ( self.magic_typetwo == MOON_ITEM_HEALTH_CODE )
-				{
-					self.max_health = (self.max_health - self.magic_typetwo_value);
-				}
-				if (!(self.items & IT_SUPERHEALTH))
-				{
-					if ( self.health > self.max_health )
-					{
-						self.health = self.max_health;
-					}
-				}
-				self.wear_armor = MOON_ITEM_NONE;
-				self.magic_typeone = 0;
-				self.magic_typeone_value = 0;
-				self.magic_prefixone = s_wiz;
-				self.magic_typetwo = 0;
-				self.magic_typetwo_value = 0;
-				self.magic_prefixtwo = s_wiz;
-			}
-			selected.magic_prefixone = selected.prefix_one;
-			selected.magic_prefixtwo = selected.prefix_two;
-			sound(self, CHAN_ITEM, "items/armor1.wav", 1, ATTN_NORM);
-			self.wear_armor = MOON_ITEM_SOME;
-			if ( selected.magic_typeone > 0 )
-			{
-				self.magic_typeone = selected.magic_typeone;
-				self.magic_typeone_value = selected.magic_typeone_value;
-				self.magic_prefixone = selected.magic_prefixone;
-				if ( selected.magic_typeone == MOON_ITEM_HEALTH_CODE )
-				{
-					moon_raise_target_max_health(self, selected.magic_typeone_value);
-				}
-			}
-			if ( selected.magic_typetwo > 0 )
-			{
-				self.magic_typetwo = selected.magic_typetwo;
-				self.magic_typetwo_value = selected.magic_typetwo_value;
-				self.magic_prefixtwo = selected.magic_prefixtwo;
-				if ( selected.magic_typetwo == MOON_ITEM_HEALTH_CODE )
-				{
-					moon_raise_target_max_health(self, selected.magic_typetwo_value);
-				}
-			}
-			sprint(self, "\n");
-			if ((selected.classname == MOON_TRADE_MARKET_SPOT_CLASSNAME))
-			{
-				sprint(self, "You bought ");
-			} else {
-				sprint(self, "You put on ");
-			}
-			moon_print_target_item_name(self, selected.magic_prefixone, selected.netname, selected.magic_prefixtwo);
-			sprint(self, "\n");
-		} else
-		if ( selected.netname == MOON_ITEM_RING_NETNAME )
-		{
-			if ( self.wear_ring == MOON_ITEM_SOME )
-			{
-				if ((self.ring_typeone == MOON_ITEM_HEALTH_CODE))
-				{
-					self.max_health = (self.max_health - self.ring_typeone_value);
-				}
-				if ((self.ring_typetwo == MOON_ITEM_HEALTH_CODE))
-				{
-					self.max_health = (self.max_health - self.ring_typetwo_value);
-				}
-				if (!(self.items & IT_SUPERHEALTH))
-				{
-					if ( self.health > self.max_health )
-					{
-						self.health = self.max_health;
-					}
-				}
-				self.wear_ring = MOON_ITEM_NONE;
-				self.ring_typeone = 0;
-				self.ring_typeone_value = 0;
-				self.ring_prefixone = s_wiz;
-				self.ring_typetwo = 0;
-				self.ring_typetwo_value = 0;
-				self.ring_prefixtwo = s_wiz;
-			}
-			selected.ring_prefixone = selected.prefix_one;
-			selected.ring_prefixtwo = selected.prefix_two;
-			selected.ring_typeone = selected.magic_typeone;
-			selected.ring_typetwo = selected.magic_typetwo;
-			selected.ring_typeone_value = selected.magic_typeone_value;
-			selected.ring_typetwo_value = selected.magic_typetwo_value;
-			sound(self, CHAN_ITEM, "moon/items/ring.wav", 1, ATTN_NORM);
-			self.wear_ring = MOON_ITEM_SOME;
-			if ((selected.ring_typeone > 0))
-			{
-				self.ring_typeone = selected.ring_typeone;
-				self.ring_typeone_value = selected.ring_typeone_value;
-				self.ring_prefixone = selected.ring_prefixone;
-				if ((selected.ring_typeone == MOON_ITEM_HEALTH_CODE))
-				{
-					moon_raise_target_max_health(self, selected.ring_typeone_value);
-				}
-			}
-			if ((selected.ring_typetwo > 0))
-			{
-				self.ring_typetwo = selected.ring_typetwo;
-				self.ring_typetwo_value = selected.ring_typetwo_value;
-				self.ring_prefixtwo = selected.ring_prefixtwo;
-				if ((selected.ring_typetwo == MOON_ITEM_HEALTH_CODE))
-				{
-					moon_raise_target_max_health(self, selected.ring_typetwo_value);
-				}
-			}
-			sprint(self, "\n");
-			if ( selected.classname == MOON_TRADE_MARKET_SPOT_CLASSNAME )
-			{
-				sprint(self, "You bought ");
-			} else {
-				sprint(self, "You put on ");
-			}
-			moon_print_target_item_name(self, selected.ring_prefixone, selected.netname, selected.ring_prefixtwo);
-			sprint(self, "\n");
-		}
-		flash_self();
-		remove(selected);
-	} else {
-		sprint(self, "there are \sno\s items around\n");
-	}
+	moon_target_wear_magic_item(self, selected);
+	remove(selected);
 };
 
 void(entity who) DropMagicArmor =
@@ -7438,7 +7409,7 @@ void() HPTouch =
 
 	if ((other.health < other.max_health))
 	{
-		sprint(other, "You get {} and receive {} health\n", self.netname, floor_ftos(self.healamount));
+		sprint(other, "You get {0} and receive {1} health\n", self.netname, floor_ftos(self.healamount));
 	} else {
 		sprint(other, "You wasted {}\n", self.netname);
 	}

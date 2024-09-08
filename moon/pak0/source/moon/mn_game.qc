@@ -39,7 +39,7 @@ void() moon_handle_impulse_noop =
 	}
 	if ( (selected != world) && (selected.targetname != s_wiz) )
 	{
-		centerprint(self, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n{} ({} gold)", selected.targetname, floor_ftos(selected.cost));
+		centerprint(self, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n{0} ({1} gold)", selected.targetname, floor_ftos(selected.cost));
 		return;
 	}
 
@@ -55,7 +55,7 @@ void() moon_handle_impulse_noop =
 	}
 	if ( (selected != world) && (selected.targetname != s_wiz) )
 	{
-		centerprint(self, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n{} ({} gold)", selected.targetname, floor_ftos(selected.cost));
+		centerprint(self, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n{0} ({1} gold)", selected.targetname, floor_ftos(selected.cost));
 		return;
 	}
 };
@@ -225,7 +225,7 @@ void(float impulse_code) moon_handle_impulse_trace =
 	switch(impulse_code)
 	{
 	case MOON_IMPULSE_CODE_ITEM_PICKUP:
-		moon_wear_item();
+		moon_self_pickup_magic_item_and_clear();
 		break;
 	case MOON_IMPULSE_CODE_ITEM_BUY:
 		moon_buy_item();
@@ -276,6 +276,6 @@ void() moon_handle_impulse =
 	{
 		moon_handle_impulse_trace(self.impulse);
 	} else {
-		dprint("Impulse code {} out of Project Moon's range {}-{}\n", self.impulse, MOON_IMPULSE_CODE_FIRST, MOON_IMPULSE_CODE_LAST);
+		dprint("Impulse code {0} out of Project Moon's range {1}-{2}\n", self.impulse, MOON_IMPULSE_CODE_FIRST, MOON_IMPULSE_CODE_LAST);
 	}
 };

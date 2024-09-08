@@ -841,9 +841,14 @@ void() CheckCrosshair =
 	self.console_time = (time + MOON_TIME_PLUS_CROSSHAIRTRACE); // was (time + 0.01)
 
 	traceline(self.origin, (self.origin + (v_forward * MOON_PHYSIC_CROSSHAIRTRACE_MAXDIST)), 2, self);
+	if ( trace_ent.classname == MOON_HEART_CLASSNAME )
+	{
+		centerprint(self, MOON_HEART_DISPLAYNAME);
+		return;
+	}
 	if ( trace_ent.flags & FL_MONSTER )
 	{
-		centerprint(self, "{}{}{}{}{}", trace_ent.prefix_one, trace_ent.prefix_two, trace_ent.netname, trace_ent.prefix_three, trace_ent.prefix_four);
+		centerprint(self, "{0}{1}{2}{3}{4}", trace_ent.prefix_one, trace_ent.prefix_two, trace_ent.netname, trace_ent.prefix_three, trace_ent.prefix_four);
 		return;
 	}
 	if ( trace_ent.classname == MOON_PLAYER_CLASSNAME )
@@ -861,7 +866,7 @@ void() CheckCrosshair =
 	{
 		if ( trace_ent.classname != "worldspawn" )
 		{
-			centerprint(self, "c:{} n:{} t:{}", trace_ent.classname, trace_ent.netname, trace_ent.targetname);
+			centerprint(self, "c:{0} n:{1} t:{2}", trace_ent.classname, trace_ent.netname, trace_ent.targetname);
 			return;
 		}
 	} // debug entity tracer

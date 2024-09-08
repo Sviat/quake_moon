@@ -13,6 +13,16 @@ void() Prepare;
 void() moon_set_map_moon4;
 float(entity emitter, float track) moon_walkman_play;
 
+// Waves
+void(entity e, float enc) spawn_knight; // unused so far
+entity(entity e, float enc) spawn_soldier;
+entity(entity e, float enc) spawn_enforcer;
+entity(entity e, float enc) spawn_spider;
+entity(entity e, float enc) spawn_ogre;
+entity(entity e, float enc) spawn_snake;
+entity(entity e, float enc) spawn_mage;
+entity(entity e, float enc) spawn_shalrath;
+
 // CUI
 void() moon_print_cmd_help;
 void() moon_print_character_status;
@@ -20,13 +30,15 @@ void() moon_print_skills;
 void() moon_print_inventory;
 void() moon_identify_item;
 void() moon_buy_item;
-void() moon_wear_item;
 
 // Character
-void(entity target, float value) moon_raise_target_vitality;
+void(entity target, float value = 1) moon_raise_target_vitality;
 void(entity target, float value = 1) moon_raise_target_strength;
-void(entity target, float value) moon_raise_target_sanity;
+void(entity target, float value = 1) moon_raise_target_sanity;
 void(entity target, float value = 1) moon_raise_target_intuition;
+
+void() moon_self_pickup_magic_item_and_clear;
+void(entity target, entity selected) moon_target_wear_magic_item;
 // // end of Forward declarations
 
 // FYI: QC random() function returns a value in [0, 1] range (INCLUSIVE)
@@ -138,7 +150,7 @@ float() moon_get_spawn_delay =
 
 	if ( MOON_DEBUG & MOON_DEBUG_DPRINT_NEXTWAVE)
 	{
-		dprint("delay {}-{}, next in: {}\n", quick_ftos(min), quick_ftos(min+random_max), quick_ftos(delay));
+		dprint("Next wave in: {0} (delay {1}-{2})\n", floor_ftos(delay), quick_ftos(min), quick_ftos(min+random_max));
 	} // debug wave timer
 
 	return delay;
@@ -177,16 +189,26 @@ void(entity e) moon_add_to_queue =
 	z.nextthink = time + moon_get_despawn_delay();
 };
 
+void(entity object) moon_debug_println_object_name =
+{
+	if ( object == world ) { return; }
+
+	if ( MOON_DEBUG & MOON_DEBUG_DPRINT_SPAWNED_NAMES)
+	{
+		bprint("Spawned {0}{1}{2}{3}{4}\n", object.prefix_one, object.prefix_two, object.netname, object.prefix_three, object.prefix_four);
+	}
+};
+
 // Replace kex_chat_message_X with console for two reasons:
 //   1) in case i ever decide to port on other Engine
 //   2) in MP matches nobody saw these messages for some reasons. May be name should of one of players, not some random bots
 void(string sender, float sender_color, string text) moon_chat_message_broad =
 {
-	bprint("{}: {}\n", sender, text);
+	bprint("{0}: {1}\n", sender, text);
 };
 
 void(string sender, float sender_color, string text) moon_chat_message_self =
 {
-	sprint(self, "{}: {}\n", sender, text);
+	sprint(self, "{0}: {1}\n", sender, text);
 };
 // //

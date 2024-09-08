@@ -16,7 +16,7 @@ string(float digit) moon_gets_golden_digit =
 		case 8: return ("\8");
 		case 9: return ("\9");
 		default:
-			dprint("<{}>", quick_ftos(digit)); // debug
+			dprint("<{}>", quick_ftos(digit));
 			return MOON_GLYPH_CENTERDOT_WHITE;
 	}
 };
@@ -36,7 +36,7 @@ string(float digit) moon_gets_red_digit =
 		case 8: return ("\xB8");
 		case 9: return ("\xB9");
 		default:
-			dprint("<{}>", quick_ftos(digit)); // debug
+			dprint("<{}>", quick_ftos(digit));
 			return MOON_GLYPH_CENTERDOT_WHITE;
 	}
 };
@@ -159,7 +159,7 @@ void(entity value_target) moon_println_all_other_health =
 
 void(entity target) moon_println_target_exp =
 {
-	sprint(target, "Level: {}, Exp {}{}/{}{}\n", floor_ftos(target.lvl), MOON_GLYPH_BRACKET_OPEN, floor_ftos(target.exp), quick_ftos(ceil(target.nextexp)), MOON_GLYPH_BRACKET_CLOSE);
+	sprint(target, "Level: {0}, Exp {1}{2}/{3}{4}\n", floor_ftos(target.lvl), MOON_GLYPH_BRACKET_OPEN, floor_ftos(target.exp), quick_ftos(ceil(target.nextexp)), MOON_GLYPH_BRACKET_CLOSE);
 };
 
 void(entity target) moon_print_mentat_offense =
@@ -205,7 +205,7 @@ void(entity target, entity owner) moon_println_target_magic_armor_name =
 
 void(entity target, entity owner) moon_println_target_magic_ring_name =
 {
-    moon_print_target_item_name(target, owner.magic_prefixone, MOON_ITEM_RING_DISPLAY, owner.magic_prefixtwo);
+    moon_print_target_item_name(target, owner.ring_prefixone, MOON_ITEM_RING_DISPLAY, owner.ring_prefixtwo);
 	sprint(target, "\n");
 };
 
@@ -215,29 +215,29 @@ void(entity target, entity container) moon_print_target_container_ammo =
 
 	if ( container.ammo_shells )
 	{
-		sprint(target, " {} {}", floor_ftos(container.ammo_shells), MOON_AMMO_SHELLS_DISPLAYNAME);
+		sprint(target, " {0} {1}", floor_ftos(container.ammo_shells), MOON_AMMO_SHELLS_DISPLAYNAME);
 		had_any = TRUE;
 	}
 	if ( container.ammo_nails )
 	{
-		sprint(target, " {} {}", floor_ftos(container.ammo_nails), MOON_AMMO_NAILS_DISPLAYNAME);
+		sprint(target, " {0} {1}", floor_ftos(container.ammo_nails), MOON_AMMO_NAILS_DISPLAYNAME);
 		had_any = TRUE;
 	}
 	if ( container.ammo_rockets )
 	{
-		sprint(target, " {} {}", floor_ftos(container.ammo_rockets), MOON_AMMO_ROCKETS_DISPLAYNAME);
+		sprint(target, " {0} {1}", floor_ftos(container.ammo_rockets), MOON_AMMO_ROCKETS_DISPLAYNAME);
 		had_any = TRUE;
 	}
 	if ( container.ammo_cells )
 	{
-		sprint(target, " {} {}", floor_ftos(container.ammo_cells), MOON_AMMO_CELLS_DISPLAYNAME);
+		sprint(target, " {0} {1}", floor_ftos(container.ammo_cells), MOON_AMMO_CELLS_DISPLAYNAME);
 		had_any = TRUE;
 	}
 
 	if ( had_any != TRUE )
 	{
 		sprint(target, "\n");
-		sprint(target, "ERROR: garbage shop have incorrect item! Report this bug and item!\n");
+		sprint(target, "ERROR: container have no ammo! Report this bug and item!\n");
 	}
 };
 
@@ -335,21 +335,21 @@ void() moon_print_inventory =
 	{
 		moon_print_mentat_offense(self);
 		duration = self.mentat_offense_time - time;
-		sprint(self, " {}{}{}\n", MOON_GLYPH_BRACKET_OPEN, floor_ftos(duration), MOON_GLYPH_BRACKET_CLOSE);
+		sprint(self, " {0}{1}{2}\n", MOON_GLYPH_BRACKET_OPEN, floor_ftos(duration), MOON_GLYPH_BRACKET_CLOSE);
 		did_print_section = TRUE;
 	}
 	if ( self.mentat_defense_time > time )
 	{
 		moon_print_mentat_defense(self);
 		duration = self.mentat_defense_time - time;
-		sprint(self, " {}{}{}\n", MOON_GLYPH_BRACKET_OPEN, floor_ftos(duration), MOON_GLYPH_BRACKET_CLOSE);
+		sprint(self, " {0}{1}{2}\n", MOON_GLYPH_BRACKET_OPEN, floor_ftos(duration), MOON_GLYPH_BRACKET_CLOSE);
 		did_print_section = TRUE;
 	}
 	if ( self.mentat_attackspeed_time > time )
 	{
 		moon_print_mentat_speed(self);
 		duration = self.mentat_attackspeed_time - time;
-		sprint(self, " {}{}{}\n", MOON_GLYPH_BRACKET_OPEN, floor_ftos(duration), MOON_GLYPH_BRACKET_CLOSE);
+		sprint(self, " {0}{1}{2}\n", MOON_GLYPH_BRACKET_OPEN, floor_ftos(duration), MOON_GLYPH_BRACKET_CLOSE);
 		did_print_section = TRUE;
 	}
 
@@ -400,11 +400,11 @@ void() moon_print_cmd_help =
 	sprint(self, "{}| use `pm_identify` (v) command to get a description of item nearby.\n", quick_ftos(MOON_IMPULSE_CODE_ITEM_IDENTIFY));
 	sprint(self, "{}| use `pm_buy` (f) command to buy closest item in the shop.\n", quick_ftos(MOON_IMPULSE_CODE_ITEM_BUY));
 	sprint(self, "{}| use `pm_use` (e) command pick up closest magical item.\n", quick_ftos(MOON_IMPULSE_CODE_ITEM_PICKUP));
-	sprint(self, " {}| {}| use `pm_skill\1`/`pm_skill\2` raise skills\n", quick_ftos(MOON_IMPULSE_CODE_UPSKILL_VITALITY), quick_ftos(MOON_IMPULSE_CODE_UPSKILL_STRENGTH));
+	sprint(self, " {0}| {1}| use `pm_skill\1`/`pm_skill\2` raise skills\n", quick_ftos(MOON_IMPULSE_CODE_UPSKILL_VITALITY), quick_ftos(MOON_IMPULSE_CODE_UPSKILL_STRENGTH));
 	sprint(self, " {}| use `pm_character` (c) command to view character screen.\n", quick_ftos(MOON_IMPULSE_CODE_PRINT_STATUS));
 	sprint(self, " {}| use `pm_stats` (t) command to view screen with your stats.\n", quick_ftos(MOON_IMPULSE_CODE_PRINT_STAT));
 	sprint(self, " {}| use `pm_inventory` (x) command to view inventory screen.\n", quick_ftos(MOON_IMPULSE_CODE_PRINT_INVENTORY));
-	sprint(self, "{}|{}| use `pms_fastmeat`/`pms_slowmeat` to grind faster or slower\n", quick_ftos(MOON_IMPULSE_CODE_FASTMEAT), quick_ftos(MOON_IMPULSE_CODE_SLOWMEAT));
+	sprint(self, "{0}|{1}| use `pms_fastmeat`/`pms_slowmeat` to grind faster or slower\n", quick_ftos(MOON_IMPULSE_CODE_FASTMEAT), quick_ftos(MOON_IMPULSE_CODE_SLOWMEAT));
 	sprint(self, "{}| use `pms_alwaysday` to shine bright\n", quick_ftos(MOON_IMPULSE_CODE_ALWAYSDAY));
 	sprint(self, "{}| use `pms_noshake` to earth without quake\n", quick_ftos(MOON_IMPULSE_CODE_NOSHAKE));
 	sprint(self, "{}| use `pmc_nohelp` to reduce amount of hints\n", quick_ftos(MOON_IMPULSE_CODE_NOHELP));

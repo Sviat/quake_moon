@@ -28,15 +28,16 @@
 #define MOON_GLYPH_REDARROW "\xFF"		// Red arrow pointing left
 
 // Debug flags set
-#define MOON_DEBUG_DPRINT_NONE 0        // dprint > /dev/null
-#define MOON_DEBUG_DPRINT_SOME 1        // dprint > bprint, occasional: debug sprint
-#define MOON_DEBUG_CPRINT_TRACEENT 2    // Every frame: centerprint target entity class, name and target
-#define MOON_DEBUG_DPRINT_NEXTWAVE 4    // Every wave: dprint time till next wave
-#define MOON_DEBUG_CHEATS_ON 8          // Allow the use of cheats
+#define MOON_DEBUG_DPRINT_NONE 0            // dprint > /dev/null
+#define MOON_DEBUG_DPRINT_SOME 1            // dprint > bprint, occasional: debug sprint
+#define MOON_DEBUG_CPRINT_TRACEENT 2        // Every frame: centerprint target entity class, name and target
+#define MOON_DEBUG_DPRINT_NEXTWAVE 4        // Every wave: dprint time till next wave
+#define MOON_DEBUG_DPRINT_SPAWNED_NAMES 8   // Every wave: dprint name of each spawned monster
+#define MOON_DEBUG_CHEATS_ON 16             // Allow the use of cheats
 // //
 
 string MOON_VERSION = "0.27k";
-float MOON_DEBUG = MOON_DEBUG_DPRINT_NEXTWAVE | MOON_DEBUG_CHEATS_ON;
+float MOON_DEBUG = MOON_DEBUG_DPRINT_NEXTWAVE | MOON_DEBUG_DPRINT_SPAWNED_NAMES | MOON_DEBUG_CHEATS_ON;
 // // Impulse codes. First 19 keep for original Q1; limit is 255; so we should line up somewhere in between
 float MOON_IMPULSE_CODE_NOOP = 0;
 float MOON_IMPULSE_CODE_FIRST = 32;
@@ -156,6 +157,7 @@ float MOON_TIME_BETWEEN_ITEMSCANS = 1.28;
 
 string MOON_GATE_CLASSNAME = "gate";
 string MOON_HEART_CLASSNAME = "heart";
+string MOON_HEART_DISPLAYNAME = MOON_GLYPH_REDSQUARE" \sDONT\s "MOON_GLYPH_REDSQUARE;
 float MOON_HEART_HEALTH_INIT = 200;
 float MOON_HEART_HEALTH_GROW = 10;
 float MOON_HEART_HEALTH_REGEN_VALUE = 1;

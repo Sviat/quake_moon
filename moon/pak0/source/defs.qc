@@ -292,6 +292,9 @@ string (string s) precache_sound2 = #76;
 string (string s) precache_file2 = #77;
 void (entity e) setspawnparms = #78;
 
+// Plays a sound that only "client" can hear. Useful for announcers...
+void localsound( entity client, string sample ) = #0:ex_localsound;
+
 // Debug rendering functions. KEX QuakeC
 void draw_point( vector point, float colormap, float lifetime, float depthtest ) = #0:ex_draw_point;
 void draw_line( vector start, vector end, float colormap, float lifetime, float depthtest ) = #0:ex_draw_line;
@@ -374,9 +377,6 @@ float LOGIC_DEFEND    = 4;
 float LOGIC_PATROL    = 5;
 float LOGIC_HUNTENEMY = 6;
 .float guard_chat_incoming;
-float sv_fastmeat;
-float sv_alwaysday;
-float sv_noshake;
 .float acc;
 .float hst;
 .float rfr;
@@ -459,7 +459,6 @@ void(string gibname, float dm) ThrowGib;
 .float next_poison;
 .float min_attack_dist;
 void() game_brain;
-string s_wiz;
 .float postenemy_time;
 .vector postenemy_org;
 .float postenemy_org_x;
@@ -541,8 +540,6 @@ float() FindWaypoint;
 .float strafe_vector_x;
 .float strafe_vector_y;
 .float strafe_vector_z;
-float up_alert; // Re-use same param for both Upgrade and Extra health
-float up_gold_value;
 .float up_bullet; // Re-use same param for both Upgrade and Extra capacity
 .float up_nail; // Re-use same param for both Upgrade and Extra capacity
 .float thinkrefresh;
@@ -553,7 +550,6 @@ float up_gold_value;
 float WF_NORMAL    = 0;
 float WF_DEFEND    = 1;
 float WF_EXTRASIZE = 2;
-float waypoints_ok;
 .float point;
 .float skl_expl;
 .float skl_rgn;

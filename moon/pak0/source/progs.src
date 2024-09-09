@@ -5,6 +5,7 @@
 sysdefs.qc
 defs.qc
 moon/mn_defs.qc
+moon/mn_globals.qc
 moon/mn_entity.qc
 moon/mn_funcs.qc
 moon/mn_init.qc

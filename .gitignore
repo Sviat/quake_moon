@@ -1,3 +1,5 @@
 fteqccgui64.exe
-/moon/pak0/source/progs.lno
-/moon/pak0/source/progs.dat
+/.vscode
+/moon/pak0/progs.lno
+/moon/pak0/progs.dat
+*.7z

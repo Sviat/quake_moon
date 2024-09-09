@@ -9,7 +9,6 @@ float(float weapon, float ammo) W_EnoughAmmoToShoot;
 float(entity target, float healamount, float ignore = 0) T_Heal;
 void(entity target, float armor_code, float armor_durability = -1) moon_init_target_as_armor;
 float(entity target, float code) moon_get_target_total_bonus_by_code;
-void() Prepare;
 void() moon_set_map_moon4;
 float(entity emitter, float track) moon_walkman_play;
 
@@ -111,18 +110,7 @@ float() moon_get_max_player_level =
 
 float() moon_get_current_player_count =
 {
-	local entity e;
-	local float count;
-
-	count = 0;
-	while ( (e = find(e, classname, MOON_PLAYER_CLASSNAME)) )
-	{
-		if (e.prepared == TRUE)
-		{
-			count = count + 1;
-		}
-	}
-	return count;
+	return gl_playercount;
 };
 
 float() moon_get_spawn_delay =

@@ -2871,6 +2871,7 @@ void() moon_set_map_moon4 = // nothing to do here until all other problems are d
 	jesus_brain();
 	sale_brain();
 	walkman_brain();
+	moon_reset_globals();
 	waypoints_ok = TRUE;
 };
 

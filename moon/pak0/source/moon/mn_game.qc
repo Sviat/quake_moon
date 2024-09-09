@@ -242,7 +242,7 @@ void() moon_handle_impulse =
 {
 	if ( self.prepared == FALSE )
 	{
-		Prepare();
+		moon_init_self_player();
 	}
 
 	if ( self.impulse == MOON_IMPULSE_CODE_NOOP )

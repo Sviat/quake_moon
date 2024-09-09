@@ -220,6 +220,11 @@ void() worldspawn =
 	lightstyle(SVC_SETVIEWANGLES, "mmamammmmammamamaaamammma");
 	lightstyle(TE_TELEPORT, "abcdefghijklmnopqrrqponmlkjihgfedcba");
 	lightstyle(63, "a");
+
+	if ( waypoints_ok == FALSE )
+	{
+		moon_set_map_moon4();
+	}
 };
 
 void() StartFrame =
@@ -524,13 +529,11 @@ void() PutClientInServer =
 {
 	local entity spot;
 
+	if ( self.think == ClientBan ) { return; }
+
 	spot = SelectSpawnPoint();
 	self.velocity = VEC_ORIGIN;
 	self.classname = MOON_PLAYER_CLASSNAME;
-	if ((self.think == ClientBan))
-	{
-		return;
-	}
 	self.takedamage = DAMAGE_AIM;
 	self.solid = SOLID_SLIDEBOX;
 	self.movetype = MOVETYPE_WALK;
@@ -1235,22 +1238,22 @@ void() PlayerPostThink =
 
 void() ClientConnect =
 {
-	local entity e;
+	local float player_maxlevel;
 
+	player_maxlevel = moon_get_max_player_level();
+	if ( player_maxlevel > 0 ) // May be allow late joins?
+	{
+		bprint(self.netname);
+		bprint(" was kicked. Reason: too late (you still can join after map restart)\n");
+		self.think = ClientBan;
+		self.nextthink = (time + 2);
+		return;
+	}
+
+	gl_playercount = gl_playercount + 1;
 	bprint(self.netname);
 	bprint(" entered the game\n");
-	e = find(world, classname, "player");
-	while (e)
-	{
-		if ((e.exp > 0))
-		{
-			bprint(self.netname);
-			bprint(" banned. too late join. (can join only after map restart)\n");
-			self.think = ClientBan;
-			self.nextthink = (time + H_MEGA);
-		}
-		e = find(e, classname, "player");
-	}
+
 	if (intermission_running)
 	{
 		ExitIntermission();
@@ -1263,11 +1266,14 @@ void() ClientDisconnect =
 	{
 		return;
 	}
+
+	gl_playercount = gl_playercount - 1;
 	bprint(self.netname);
-	bprint(" left the game with ");
+	bprint(" left the game on ");
 	bprint(ftos(self.frags));
-	bprint(" frags\n");
-	sound(self, CHAN_BODY, "player/tornoff2.wav", CHSCAM_ON, ATTN_NONE);
+	bprint(" level\n");
+	sound(self, CHAN_BODY, "player/tornoff2.wav", 1, ATTN_NONE);
+	self.classname = "player_disconnected";
 	set_suicide_frame();
 };
 

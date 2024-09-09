@@ -1,6 +1,15 @@
 /// ReProjectMoon-specific source file
 /// Here go all functions that regulate game session: map change, win/lose, (dis)connect etc
 
+void() moon_reset_globals =
+{
+	gl_playercount = 0;
+	sv_alwaysday = 0;
+	sv_fastmeat = 0;
+	sv_noshake = 0;
+	up_alert = 0;
+};
+
 void(entity target) moon_prepare_player_entity =
 {
 	target.lvl = 0;
@@ -21,7 +30,7 @@ void(entity target) moon_prepare_player_entity =
 	target.prepared = TRUE;
 };
 
-void() Prepare =
+void() moon_init_self_player = // happens with first impulse check
 {
 	if ( mapname != "moon4" )
 	{
@@ -30,17 +39,7 @@ void() Prepare =
 		return;
 	}
 
-	sv_alwaysday = 0;
-	sv_fastmeat = 0;
-	sv_noshake = 0;
-	up_alert = 0;
-
-	moon_prepare_player_entity(self);
-
-	if ( waypoints_ok == FALSE )
-	{
-		moon_set_map_moon4();
-	}
+	moon_prepare_player_entity(self); // extract to PutClientInServer
 
 	sprint(self, "Project MOON. Original v0.21beta created by \s3d[Power]\s\n");
 	sprint(self, "ReProject MOON. Remake v{} on \sKEX Engine\s by \sSanctus-Susanin\s\n", MOON_VERSION);

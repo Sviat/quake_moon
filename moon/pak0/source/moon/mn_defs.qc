@@ -36,7 +36,7 @@
 #define MOON_DEBUG_CHEATS_ON 16             // Allow the use of cheats
 // //
 
-string MOON_VERSION = "0.27k";
+string MOON_VERSION = "0.27kf";
 float MOON_DEBUG = MOON_DEBUG_DPRINT_NEXTWAVE | MOON_DEBUG_DPRINT_SPAWNED_NAMES | MOON_DEBUG_CHEATS_ON;
 // // Impulse codes. First 19 keep for original Q1; limit is 255; so we should line up somewhere in between
 float MOON_IMPULSE_CODE_NOOP = 0;

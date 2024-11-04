@@ -4,6 +4,12 @@ Created by Sanctus-Susanin
 https://steamcommunity.com/id/sanctorum/ (Steam) / @SanctusSusanin (Discord)
 -----------------------------
 
+ver 0.27kf
+- First version to at least somehow work anywhere except KEX (on FTE)
+- First version to appear at the Quake Enhanced Add-on Server mod repository
+- Mechanically not very different from 0.26k, but has better technical state
+- Fixed player count counting
+
 ver 0.26k
 - Added display of item names in the store and black market, just like the names of players, guardian bots and monsters used to be shown before
 - During Moon Shake, the mine now works on its own
@@ -60,7 +66,7 @@ ver 0.21 beta
 - AI of guards has been improved. They now try not to shoot at players.
 - Offensive drug now gives +20% damage.
 - Defensive drug now gives +20% to defense.
-- In the stats view (button “s”), now also shows how much +% damage and how many HP dods artifacts contain (also drugs are taken into account).
+- In the stats view (button ï¿½sï¿½), now also shows how much +% damage and how many HP dods artifacts contain (also drugs are taken into account).
 - Black market trading has been revitalized a bit.
 - Now if the game ends, it really ends!
 
@@ -71,11 +77,11 @@ ver 0.20 beta
 - Heart gains an additional 8 HP each time players are leveled.
 - Heart now regenerates 1HP per 1 second.
 - Added new Book of Treasure (global gold income increased). Gives an additional % to gold from both monsters and mines.
-- Added new book “Book of Immortaly (heart life increased)”. Adds HP to the heart. These two new books drop more often than the others.
+- Added new book ï¿½Book of Immortaly (heart life increased)ï¿½. Adds HP to the heart. These two new books drop more often than the others.
 - Changed some item prefixes.
 - Artifacts are now sold on the black market!
 - Slightly changed the formula for calculating gold drops. Now amoung does not grow with such a wild progression from level to level.
-- Hints like “use this command for that” are not written from level 4.
+- Hints like ï¿½use this command for thatï¿½ are not written from level 4.
 - Fixed: the black market does not buy mega if the player's life is more than 250.
 - Since there is no magic yet, removed potion of magic, and magic skill
 - Previously, at level up, for 1 strenght it gave +2%damage amplify, now it gives +1.5% damage amplify.

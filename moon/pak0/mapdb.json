@@ -2,7 +2,8 @@
   "episodes": [
     {
       "dir": "moon",
-      "name": "ReProject MOON"
+      "name": "ReProject MOON",
+      "map": "moon4"
     }
   ],
   "maps": [

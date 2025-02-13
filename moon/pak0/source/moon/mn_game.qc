@@ -279,3 +279,15 @@ void() moon_handle_impulse =
 		dprint("Impulse code {0} out of Project Moon's range {1}-{2}\n", self.impulse, MOON_IMPULSE_CODE_FIRST, MOON_IMPULSE_CODE_LAST);
 	}
 };
+
+void() moon_normalize_difficulty =
+{
+	if ( skill < MOON_DIFFICULTY_MIN )
+	{
+		skill = MOON_DIFFICULTY_MIN;
+	}
+	if ( skill > MOON_DIFFICULTY_MAX )
+	{
+		skill = MOON_DIFFICULTY_MAX;
+	}
+};

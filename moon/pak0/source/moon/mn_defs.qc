@@ -76,6 +76,9 @@ float MOON_IMPULSE_CODE_LAST_TRACE = 223;
 float MOON_IMPULSE_CODE_LAST = 234;
 // //
 
+float MOON_DIFFICULTY_MIN = 0; // easy
+float MOON_DIFFICULTY_MAX = 3; // nightmare
+
 string MOON_CHAT_NAME_SERVER 	= "Server";
 string MOON_CHAT_NAME_SETTINGS 	= "Settings";
 string MOON_CHAT_NAME_GUARD 	= "Guardian";

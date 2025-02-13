@@ -5,6 +5,8 @@ Mod is best described as Hero Tower Defense FPS. The point of the game is to sur
 
 Read ``moon/Description.txt`` for more details.
 
+Original developed between beginning of 2000 and 26.01.2003
+
 ### Naming
 
 Original was a very early beta and had many issues with consistency.

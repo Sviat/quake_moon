@@ -20,7 +20,7 @@ void(float offset) hknight_shot =
 	setmodel(newmis, "progs/k_spike.mdl");
 	setsize(newmis, VEC_ORIGIN, VEC_ORIGIN);
 	newmis.velocity = (vec * 300);
-	sound(self, CHAN_WEAPON, "hknight/attack1.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_WEAPON, "hknight/attack1.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 };
 
 void() CheckForCharge =
@@ -55,11 +55,11 @@ void() CheckContinueCharge =
 	}
 	if ((random() > MON_BACKTIME))
 	{
-		sound(self, CHAN_WEAPON, "knight/sword2.wav", START_OFF, ATTN_NORM);
+		sound(self, CHAN_WEAPON, "knight/sword2.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 	}
 	else
 	{
-		sound(self, CHAN_WEAPON, "knight/sword1.wav", START_OFF, ATTN_NORM);
+		sound(self, CHAN_WEAPON, "knight/sword1.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 	}
 };
 
@@ -253,7 +253,7 @@ void() hknight_run8 = [ 36, hknight_run1 ]
 
 void() hknight_pain1 = [ 37, hknight_pain2 ]
 {
-	sound(self, CHAN_VOICE, "hknight/pain1.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_VOICE, "hknight/pain1.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 };
 
 void() hknight_pain2 = [ 38, hknight_pain3 ]
@@ -367,14 +367,14 @@ void() hknight_die =
 {
 	if ((self.health < -40))
 	{
-		sound(self, CHAN_VOICE, "player/udeath.wav", START_OFF, ATTN_NORM);
+		sound(self, CHAN_VOICE, "player/udeath.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 		ThrowHead("progs/h_hellkn.mdl", self.health);
 		ThrowGib("progs/gib1.mdl", self.health);
 		ThrowGib("progs/gib2.mdl", self.health);
 		ThrowGib("progs/gib3.mdl", self.health);
 		return;
 	}
-	sound(self, CHAN_VOICE, "hknight/death1.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_VOICE, "hknight/death1.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 	if ((random() > MON_BACKTIME))
 	{
 		hknight_die1();
@@ -932,7 +932,7 @@ void() hk_idle_sound =
 {
 	if ((random() < MON_REACTIONTIME))
 	{
-		sound(self, CHAN_VOICE, "hknight/idle.wav", START_OFF, ATTN_NORM);
+		sound(self, CHAN_VOICE, "hknight/idle.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 	}
 };
 
@@ -942,7 +942,7 @@ void(entity attacker, float damage) hknight_pain =
 	{
 		return;
 	}
-	sound(self, CHAN_VOICE, "hknight/pain1.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_VOICE, "hknight/pain1.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 	if (((time - self.pain_finished) > SVC_SETVIEWPORT))
 	{
 		hknight_pain1();

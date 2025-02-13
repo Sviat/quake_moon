@@ -116,7 +116,7 @@ void() shal_die =
 	GiveExp();
 	if ((self.health < -90))
 	{
-		sound(self, CHAN_VOICE, "player/udeath.wav", START_OFF, ATTN_NORM);
+		sound(self, CHAN_VOICE, "player/udeath.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 		ThrowHead("progs/h_shal.mdl", self.health);
 		ThrowGib("progs/gib1.mdl", self.health);
 		ThrowGib("progs/gib2.mdl", self.health);
@@ -124,7 +124,7 @@ void() shal_die =
 		MonsterDead();
 		return;
 	}
-	sound(self, CHAN_VOICE, "shalrath/death.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_VOICE, "shalrath/death.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 	shal_death1();
 };
 void() ShalMissileTouch;
@@ -147,7 +147,7 @@ void() shal_fire =
 		flytime = MON_CAMPERCHANCE;
 	}
 	self.effects = (self.effects | EF_MUZZLEFLASH);
-	sound(self, CHAN_WEAPON, "shalrath/attack.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_WEAPON, "shalrath/attack.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 	missile = spawn();
 	missile.owner = self;
 	missile.solid = SOLID_BBOX;
@@ -200,7 +200,7 @@ void() ShalMissileTouch =
 		return;
 	}
 	T_RadiusDamage(self, self.owner, GRD_DEFENDTIME, world);
-	sound(self, CHAN_WEAPON, "weapons/r_exp3.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_WEAPON, "weapons/r_exp3.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 	WriteByte(MSG_BROADCAST, SVC_TEMPENTITY);
 	WriteByte(MSG_BROADCAST, TE_EXPLOSION);
 	WriteCoord(MSG_BROADCAST, self.origin_x);
@@ -367,7 +367,7 @@ void() Mage_Cast =
 	}
 	if ((self.health < self.max_health))
 	{
-		sound(self, CHAN_VOICE, "moon/misc/cast.wav", START_OFF, ATTN_NORM);
+		sound(self, CHAN_VOICE, "moon/misc/cast.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 		T_Heal(self, GRD_PATROLTIME, WF_NORMAL); // TODO: use MonsterHeal function
 		self.mana = (self.mana - START_OFF);
 		self.scroll_heal_eff = (time + MON_BACKTIME);
@@ -377,7 +377,7 @@ void() Mage_Cast =
 	{
 		if ((self.scroll_shie_eff < time))
 		{
-			sound(self, CHAN_VOICE, "moon/misc/cast.wav", START_OFF, ATTN_NORM);
+			sound(self, CHAN_VOICE, "moon/misc/cast.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 			self.mana = (self.mana - LOGIC_FINDDEFEND);
 			self.scroll_shie_eff = (time + SVC_SETVIEWANGLES);
 			self.scroll_time = (((time + START_OFF) + (random() * START_OFF)) + (self.rfr * 2));
@@ -462,7 +462,7 @@ void() mage_fire =
 	self.shootframe = TRUE;
 	self.walkframe = WF_NORMAL;
 	self.effects = (self.effects | EF_MUZZLEFLASH);
-	sound(self, CHAN_WEAPON, "moon/monsters/f_mage.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_WEAPON, "moon/monsters/f_mage.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 	missile = spawn();
 	missile.owner = self;
 	missile.solid = SOLID_BBOX;
@@ -583,7 +583,7 @@ void() mage_die =
 	GiveExp();
 	if ((self.health < -45))
 	{
-		sound(self, CHAN_VOICE, "player/udeath.wav", START_OFF, ATTN_NORM);
+		sound(self, CHAN_VOICE, "player/udeath.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 		ThrowHead("progs/skull.mdl", self.health);
 		ThrowGib("progs/bone.mdl", self.health);
 		ThrowGib("progs/bone.mdl", self.health);
@@ -594,11 +594,11 @@ void() mage_die =
 	self.solid = SOLID_NOT;
 	if ((random() < MON_BACKTIME))
 	{
-		sound(self, CHAN_VOICE, "moon/monsters/d_mage.wav", START_OFF, ATTN_NORM);
+		sound(self, CHAN_VOICE, "moon/monsters/d_mage.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 	}
 	else
 	{
-		sound(self, CHAN_VOICE, "moon/monsters/d_mage2.wav", START_OFF, ATTN_NORM);
+		sound(self, CHAN_VOICE, "moon/monsters/d_mage2.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 	}
 	if ((random() < MON_BACKTIME))
 	{
@@ -805,7 +805,7 @@ void() enforcer_fire =
 	self.effects = (self.effects | EF_MUZZLEFLASH);
 	makevectors(self.angles);
 	org = (((self.origin + (v_forward * MON_CAMPTIME)) + (v_right * 6.5)) + '0 0 14');
-	sound(self, CHAN_WEAPON, "enforcer/enfire.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_WEAPON, "enforcer/enfire.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 	t = (vlen((self.enemy.origin - org)) / self.misspeed);
 	vec = self.enemy.velocity;
 	vec_z = WF_NORMAL;
@@ -996,7 +996,7 @@ void() enf_die =
 	GiveExp();
 	if ((self.health < -35))
 	{
-		sound(self, CHAN_VOICE, "player/udeath.wav", START_OFF, ATTN_NORM);
+		sound(self, CHAN_VOICE, "player/udeath.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 		ThrowHead("progs/h_mega.mdl", self.health);
 		ThrowGib("progs/gib1.mdl", self.health);
 		ThrowGib("progs/gib2.mdl", self.health);
@@ -1004,7 +1004,7 @@ void() enf_die =
 		MonsterDead();
 		return;
 	}
-	sound(self, CHAN_VOICE, "enforcer/death1.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_VOICE, "enforcer/death1.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 	if ((random() > MON_BACKTIME))
 	{
 		enf_die1();

@@ -226,7 +226,7 @@ void() dog_atta3 = [ 2, dog_atta4 ]
 
 void() dog_atta4 = [ 3, dog_atta5 ]
 {
-	sound(self, CHAN_VOICE, "dog/dattack1.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_VOICE, "dog/dattack1.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 	dog_bite();
 };
 
@@ -392,7 +392,7 @@ void() dog_painb16 = [ 47, dog_run1 ]
 
 void(entity attacker, float damage) dog_pain =
 {
-	sound(self, CHAN_VOICE, "dog/dpain1.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_VOICE, "dog/dpain1.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 	if ((random() > MON_BACKTIME))
 	{
 		dog_pain1();
@@ -479,14 +479,14 @@ void() dog_die =
 {
 	if ((self.health < -35))
 	{
-		sound(self, CHAN_VOICE, "player/udeath.wav", START_OFF, ATTN_NORM);
+		sound(self, CHAN_VOICE, "player/udeath.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 		ThrowGib("progs/gib3.mdl", self.health);
 		ThrowGib("progs/gib3.mdl", self.health);
 		ThrowGib("progs/gib3.mdl", self.health);
 		ThrowHead("progs/h_dog.mdl", self.health);
 		return;
 	}
-	sound(self, CHAN_VOICE, "dog/ddeath.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_VOICE, "dog/ddeath.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 	self.solid = SOLID_NOT;
 	if ((random() > MON_BACKTIME))
 	{
@@ -653,11 +653,11 @@ void() ZombieGrenadeTouch =
 	if (other.takedamage)
 	{
 		T_Damage(other, self, self.owner, SVC_SETVIEWANGLES);
-		sound(self, CHAN_WEAPON, "zombie/z_hit.wav", START_OFF, ATTN_NORM);
+		sound(self, CHAN_WEAPON, "zombie/z_hit.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 		remove(self);
 		return;
 	}
-	sound(self, CHAN_WEAPON, "zombie/z_miss.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_WEAPON, "zombie/z_miss.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 	self.velocity = VEC_ORIGIN;
 	self.avelocity = VEC_ORIGIN;
 	self.touch = SUB_Remove;
@@ -673,7 +673,7 @@ void() zomb_fire =
 	self.shootframe = TRUE;
 	self.walkframe = WF_NORMAL;
 	self.attack_finished = (time + 0.9);
-	sound(self, CHAN_WEAPON, "zombie/z_shot1.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_WEAPON, "zombie/z_shot1.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 	st = '-10 -22 30';
 	missile = spawn();
 	missile.owner = self;
@@ -726,7 +726,7 @@ void() zomb_die =
 	self.solid = SOLID_NOT;
 	if ((self.health < -35))
 	{
-		sound(self, CHAN_VOICE, "zombie/z_gib.wav", START_OFF, ATTN_NORM);
+		sound(self, CHAN_VOICE, "zombie/z_gib.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 		ThrowHead("progs/h_zombie.mdl", self.health);
 		ThrowGib("progs/gib1.mdl", self.health);
 		ThrowGib("progs/gib2.mdl", self.health);
@@ -736,11 +736,11 @@ void() zomb_die =
 	}
 	if ((random() < MON_BACKTIME))
 	{
-		sound(self, CHAN_VOICE, "zombie/z_pain.wav", START_OFF, ATTN_NORM);
+		sound(self, CHAN_VOICE, "zombie/z_pain.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 	}
 	else
 	{
-		sound(self, CHAN_VOICE, "zombie/z_pain1.wav", START_OFF, ATTN_NORM);
+		sound(self, CHAN_VOICE, "zombie/z_pain1.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 	}
 	self.walkframe = WF_NORMAL;
 	if ((random() < MON_BACKTIME))

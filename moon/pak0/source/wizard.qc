@@ -131,7 +131,7 @@ void() Wiz_FastFire =
 		makevectors(self.enemy.angles);
 		dst = (self.enemy.origin - (13 * self.movedir));
 		vec = normalize((dst - self.origin));
-		sound(self, CHAN_WEAPON, "wizard/wattack.wav", START_OFF, ATTN_NORM);
+		sound(self, CHAN_WEAPON, "wizard/wattack.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 		launch_spike(self.origin, vec);
 		newmis.velocity = (vec * 600);
 		newmis.owner = self.owner;
@@ -146,7 +146,7 @@ void() Wiz_StartFast =
 {
 	local entity missile;
 
-	sound(self, CHAN_WEAPON, "wizard/wattack.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_WEAPON, "wizard/wattack.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 	self.v_angle = self.angles;
 	makevectors(self.angles);
 	missile = spawn();
@@ -457,7 +457,7 @@ void() wiz_death1 = [ 46, wiz_death2 ]
 	self.velocity_y = (-200 + (400 * random()));
 	self.velocity_z = (100 + (100 * random()));
 	self.flags = (self.flags - (self.flags & FL_ONGROUND));
-	sound(self, CHAN_VOICE, "wizard/wdeath.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_VOICE, "wizard/wdeath.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 };
 
 void() wiz_death2 = [ 47, wiz_death3 ]
@@ -493,7 +493,7 @@ void() wiz_die =
 {
 	if ((self.health < -40))
 	{
-		sound(self, CHAN_VOICE, "player/udeath.wav", START_OFF, ATTN_NORM);
+		sound(self, CHAN_VOICE, "player/udeath.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 		ThrowHead("progs/h_wizard.mdl", self.health);
 		ThrowGib("progs/gib2.mdl", self.health);
 		ThrowGib("progs/gib2.mdl", self.health);
@@ -505,7 +505,7 @@ void() wiz_die =
 
 void(entity attacker, float damage) Wiz_Pain =
 {
-	sound(self, CHAN_VOICE, "wizard/wpain.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_VOICE, "wizard/wpain.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 	if (((random() * 70) > damage))
 	{
 		return;

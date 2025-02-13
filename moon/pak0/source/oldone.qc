@@ -346,7 +346,7 @@ void() finale_2 =
 	WriteCoord(MSG_BROADCAST, o_x);
 	WriteCoord(MSG_BROADCAST, o_y);
 	WriteCoord(MSG_BROADCAST, o_z);
-	sound(shub, CHAN_VOICE, "misc/r_tele1.wav", START_OFF, ATTN_NORM);
+	sound(shub, CHAN_VOICE, "misc/r_tele1.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 	self.nextthink = (time + 2);
 	self.think = finale_3;
 };
@@ -354,7 +354,7 @@ void() finale_2 =
 void() finale_3 =
 {
 	shub.think = old_thrash1;
-	sound(shub, CHAN_VOICE, "boss2/death.wav", START_OFF, ATTN_NORM);
+	sound(shub, CHAN_VOICE, "boss2/death.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 	lightstyle(WF_NORMAL, "abcdefghijklmlkjihgfedcb");
 };
 
@@ -367,7 +367,7 @@ void() finale_4 =
 	local float r;
 	local entity n;
 
-	sound(self, CHAN_VOICE, "boss2/pop2.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_VOICE, "boss2/pop2.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 	oldo = self.origin;
 	z = DOOR_SILVER_KEY;
 	while ((z <= 144))

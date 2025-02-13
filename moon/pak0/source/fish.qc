@@ -185,7 +185,7 @@ void() f_run1 = [ 39, f_run2 ]
 	ai_run(12);
 	if ((random() < MON_BACKTIME))
 	{
-		sound(self, CHAN_VOICE, "fish/idle.wav", START_OFF, ATTN_NORM);
+		sound(self, CHAN_VOICE, "fish/idle.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 	}
 };
 
@@ -243,7 +243,7 @@ void() fish_melee =
 	{
 		return;
 	}
-	sound(self, CHAN_VOICE, "fish/bite.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_VOICE, "fish/bite.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 	ldmg = ((random() + random()) * LOGIC_FINDDEFEND);
 	T_Damage(self.enemy, self, self, ldmg);
 };
@@ -340,7 +340,7 @@ void() f_attack18 = [ 17, f_run1 ]
 
 void() f_death1 = [ 18, f_death2 ]
 {
-	sound(self, CHAN_VOICE, "fish/death.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_VOICE, "fish/death.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 };
 
 void() f_death2 = [ 19, f_death3 ]

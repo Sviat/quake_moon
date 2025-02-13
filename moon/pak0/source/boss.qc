@@ -16,12 +16,12 @@ void() boss_face =
 
 void() boss_rise1 = [ 0, boss_rise2 ]
 {
-	sound(self, CHAN_WEAPON, "boss1/out1.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_WEAPON, "boss1/out1.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 };
 
 void() boss_rise2 = [ 1, boss_rise3 ]
 {
-	sound(self, CHAN_VOICE, "boss1/sight1.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_VOICE, "boss1/sight1.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 };
 
 void() boss_rise3 = [ 2, boss_rise4 ]
@@ -476,7 +476,7 @@ void() boss_shockc10 = [ 105, boss_death1 ]
 
 void() boss_death1 = [ 48, boss_death2 ]
 {
-	sound(self, CHAN_VOICE, "boss1/death.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_VOICE, "boss1/death.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 };
 
 void() boss_death2 = [ 49, boss_death3 ]
@@ -509,7 +509,7 @@ void() boss_death8 = [ 55, boss_death9 ]
 
 void() boss_death9 = [ 56, boss_death10 ]
 {
-	sound(self, CHAN_BODY, "boss1/out1.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_BODY, "boss1/out1.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 	WriteByte(MSG_BROADCAST, SVC_TEMPENTITY);
 	WriteByte(MSG_BROADCAST, TE_LAVASPLASH);
 	WriteCoord(MSG_BROADCAST, self.origin_x);
@@ -660,7 +660,7 @@ void() lightning_use =
 	le1.nextthink = CONTENT_EMPTY;
 	le2.nextthink = CONTENT_EMPTY;
 	lightning_end = (time + START_OFF);
-	sound(self, CHAN_VOICE, "misc/power.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_VOICE, "misc/power.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 	lightning_fire();
 	self = find(world, classname, "monster_boss");
 	if (!self)
@@ -670,7 +670,7 @@ void() lightning_use =
 	self.enemy = activator;
 	if (((le1.state == STATE_TOP) && (self.health > WF_NORMAL)))
 	{
-		sound(self, CHAN_VOICE, "boss1/pain.wav", START_OFF, ATTN_NORM);
+		sound(self, CHAN_VOICE, "boss1/pain.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 		self.health = (self.health - 1);
 		if ((self.health >= 2))
 		{

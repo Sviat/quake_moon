@@ -316,7 +316,7 @@ void(entity attacker, float damage) demon1_pain =
 		return;
 	}
 	self.pain_finished = (time + START_OFF);
-	sound(self, CHAN_VOICE, "demon/dpain1.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_VOICE, "demon/dpain1.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 	if (((random() * 200) > damage))
 	{
 		return;
@@ -326,7 +326,7 @@ void(entity attacker, float damage) demon1_pain =
 
 void() demon1_die1 = [ 45, demon1_die2 ]
 {
-	sound(self, CHAN_VOICE, "demon/ddeath.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_VOICE, "demon/ddeath.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 };
 
 void() demon1_die2 = [ 46, demon1_die3 ]
@@ -366,7 +366,7 @@ void() demon_die =
 {
 	if ((self.health < -80))
 	{
-		sound(self, CHAN_VOICE, "player/udeath.wav", START_OFF, ATTN_NORM);
+		sound(self, CHAN_VOICE, "player/udeath.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 		ThrowHead("progs/h_demon.mdl", self.health);
 		ThrowGib("progs/gib1.mdl", self.health);
 		ThrowGib("progs/gib1.mdl", self.health);
@@ -463,7 +463,7 @@ float() DemonCheckAttack =
 	if (CheckDemonJump())
 	{
 		self.attack_state = AS_MISSILE;
-		sound(self, CHAN_VOICE, "demon/djump.wav", START_OFF, ATTN_NORM);
+		sound(self, CHAN_VOICE, "demon/djump.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 		return (TRUE);
 	}
 	return (FALSE);
@@ -485,7 +485,7 @@ void(float side) Demon_Melee =
 	{
 		return;
 	}
-	sound(self, CHAN_WEAPON, "demon/dhit2.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_WEAPON, "demon/dhit2.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 	ldmg = (SVC_SETVIEWANGLES + (SVC_SETVIEWPORT * random()));
 	T_Damage(self.enemy, self, self, ldmg);
 	makevectors(self.angles);
@@ -589,7 +589,7 @@ void() sham_run =
 
 void() sham_smash1 = [ 35, sham_smash2 ]
 {
-	sound(self, CHAN_VOICE, "shambler/melee1.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_VOICE, "shambler/melee1.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 	ai_charge(SILENT);
 };
 
@@ -654,7 +654,7 @@ void() sham_smash10 = [ 44, sham_smash11 ]
 	}
 	ldmg = (((random() + random()) + random()) * GRD_DEFENDTIME);
 	T_Damage(self.enemy, self, self, ldmg);
-	sound(self, CHAN_VOICE, "shambler/smack.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_VOICE, "shambler/smack.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 	SpawnMeatSpray((self.origin + (v_forward * DOOR_SILVER_KEY)), ((crandom() * 100) * v_right));
 	SpawnMeatSpray((self.origin + (v_forward * DOOR_SILVER_KEY)), ((crandom() * 100) * v_right));
 };
@@ -686,7 +686,7 @@ void(float side) ShamClaw =
 	}
 	ldmg = (((random() + random()) + random()) * GRD_PATROLTIME);
 	T_Damage(self.enemy, self, self, ldmg);
-	sound(self, CHAN_VOICE, "shambler/smack.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_VOICE, "shambler/smack.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 	if (side)
 	{
 		makevectors(self.angles);
@@ -696,7 +696,7 @@ void(float side) ShamClaw =
 
 void() sham_swingl1 = [ 56, sham_swingl2 ]
 {
-	sound(self, CHAN_VOICE, "shambler/melee2.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_VOICE, "shambler/melee2.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 	ai_charge(SVC_SETVIEWPORT);
 };
 
@@ -747,7 +747,7 @@ void() sham_swingl9 = [ 64, sham_run1 ]
 
 void() sham_swingr1 = [ 47, sham_swingr2 ]
 {
-	sound(self, CHAN_VOICE, "shambler/melee1.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_VOICE, "shambler/melee1.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 	ai_charge(START_OFF);
 };
 
@@ -840,7 +840,7 @@ void() CastLightning =
 	WriteCoord(MSG_BROADCAST, trace_endpos_y);
 	WriteCoord(MSG_BROADCAST, trace_endpos_z);
 	LightningDamage(org, trace_endpos, self, SVC_SETVIEWANGLES);
-	sound(self, CHAN_WEAPON, "weapons/lhit.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_WEAPON, "weapons/lhit.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 	if ((random() < MON_CAMPERCHANCE))
 	{
 		self.attack_finished = ((time + START_OFF) + random());
@@ -851,7 +851,7 @@ void() sham_startfire =
 {
 	local entity o;
 
-	sound(self, CHAN_WEAPON, "shambler/sattck1.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_WEAPON, "shambler/sattck1.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 	self.shootframe = TRUE;
 	self.walkframe = WF_NORMAL;
 	self.effects = (self.effects | EF_MUZZLEFLASH);
@@ -870,7 +870,7 @@ void() sham_startfire =
 void() sham_magic1 = [ 65, sham_magic2 ]
 {
 	ai_face();
-	sound(self, CHAN_WEAPON, "shambler/sattck1.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_WEAPON, "shambler/sattck1.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 };
 
 void() sham_magic2 = [ 66, sham_magic3 ]
@@ -900,7 +900,7 @@ void() sham_magic6 = [ 70, sham_magic9 ]
 {
 	remove(self.owner);
 	CastLightning();
-	sound(self, CHAN_WEAPON, "shambler/sboom.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_WEAPON, "shambler/sboom.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 };
 
 void() sham_magic9 = [ 73, sham_magic10 ]
@@ -1001,7 +1001,7 @@ void() sham_die =
 	self.solid = SOLID_NOT;
 	if ((self.health < -60))
 	{
-		sound(self, CHAN_VOICE, "player/udeath.wav", START_OFF, ATTN_NORM);
+		sound(self, CHAN_VOICE, "player/udeath.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 		ThrowHead("progs/h_shams.mdl", self.health);
 		ThrowGib("progs/gib1.mdl", self.health);
 		ThrowGib("progs/gib2.mdl", self.health);
@@ -1009,7 +1009,7 @@ void() sham_die =
 		MonsterDead();
 		return;
 	}
-	sound(self, CHAN_VOICE, "shambler/sdeath.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_VOICE, "shambler/sdeath.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 	sham_death1();
 };
 
@@ -1205,7 +1205,7 @@ void() knight_die =
 	GiveExp();
 	if ((self.health < -40))
 	{
-		sound(self, CHAN_VOICE, "player/udeath.wav", START_OFF, ATTN_NORM);
+		sound(self, CHAN_VOICE, "player/udeath.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 		ThrowHead("progs/h_knight.mdl", self.health);
 		ThrowGib("progs/gib1.mdl", self.health);
 		ThrowGib("progs/gib2.mdl", self.health);
@@ -1213,7 +1213,7 @@ void() knight_die =
 		MonsterDead();
 		return;
 	}
-	sound(self, CHAN_VOICE, "knight/kdeath.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_VOICE, "knight/kdeath.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 	if ((random() < MON_BACKTIME))
 	{
 		knight_die1();
@@ -1240,7 +1240,7 @@ void() knight_atk =
 	}
 	self.walkframe = WF_NORMAL;
 	self.shootframe = START_OFF;
-	sound(self, CHAN_WEAPON, "knight/sword1.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_WEAPON, "knight/sword1.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 	ldmg = (((random() + random()) + random()) * LOGIC_FINDDEFEND);
 	T_Damage(self.enemy, self, self, ldmg);
 	self.attack_finished = ((time + MON_CAMPERCHANCE) + self.rfr);
@@ -1485,7 +1485,7 @@ void() spid_deathb8 = [ 27, spid_deathb8 ]
 
 void() spider_attack =
 {
-	sound(self, CHAN_VOICE, "moon/monsters/f_spider.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_VOICE, "moon/monsters/f_spider.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 	SpiderMissile((self.enemy.origin - (v_right * DOOR_SILVER_KEY)));
 	SpiderMissile((self.enemy.origin + (v_up * DOOR_GOLD_KEY)));
 	SpiderMissile((self.enemy.origin + (v_right * DOOR_SILVER_KEY)));
@@ -1571,7 +1571,7 @@ void() spider_die =
 	GiveExp();
 	if ((self.health < -60))
 	{
-		sound(self, CHAN_VOICE, "player/udeath.wav", START_OFF, ATTN_NORM);
+		sound(self, CHAN_VOICE, "player/udeath.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 		ThrowHead("progs/h_spider.mdl", self.health);
 		ThrowGib("progs/spid_gib.mdl", self.health);
 		ThrowGib("progs/spid_gib.mdl", self.health);
@@ -1579,7 +1579,7 @@ void() spider_die =
 		MonsterDead();
 		return;
 	}
-	sound(self, CHAN_VOICE, "moon/monsters/d_spider.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_VOICE, "moon/monsters/d_spider.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 	if ((random() < MON_BACKTIME))
 	{
 		spid_death1();
@@ -1957,7 +1957,7 @@ void() army_die =
 	GiveExp();
 	if ((self.health < -35))
 	{
-		sound(self, CHAN_VOICE, "player/udeath.wav", START_OFF, ATTN_NORM);
+		sound(self, CHAN_VOICE, "player/udeath.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 		ThrowHead("progs/h_guard.mdl", self.health);
 		ThrowGib("progs/gib1.mdl", self.health);
 		ThrowGib("progs/gib2.mdl", self.health);
@@ -1966,7 +1966,7 @@ void() army_die =
 		return;
 	}
 	self.solid = SOLID_NOT;
-	sound(self, CHAN_VOICE, "soldier/death1.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_VOICE, "soldier/death1.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 	if ((random() < MON_BACKTIME))
 	{
 		army_die1();
@@ -2329,7 +2329,7 @@ void() less_cdie12 = [ 43, less_cdie13 ]
 
 void() less_cdie13 = [ 44, less_cdie13 ]
 {
-	sound(self, CHAN_VOICE, "player/udeath.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_VOICE, "player/udeath.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 	ThrowHead("progs/h_mon5.mdl", self.health);
 	ThrowGib("progs/gib1.mdl", self.health);
 	ThrowGib("progs/gib2.mdl", self.health);
@@ -2343,7 +2343,7 @@ void() less_die =
 	GiveExp();
 	if ((self.health < -50))
 	{
-		sound(self, CHAN_VOICE, "player/udeath.wav", START_OFF, ATTN_NORM);
+		sound(self, CHAN_VOICE, "player/udeath.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
 		ThrowHead("progs/h_mon5.mdl", self.health);
 		ThrowGib("progs/gib1.mdl", self.health);
 		ThrowGib("progs/gib2.mdl", self.health);
@@ -2352,7 +2352,7 @@ void() less_die =
 		return;
 	}
 	self.solid = SOLID_NOT;
-	//sound(self, CHAN_VOICE, "moon/headless/die1.wav", START_OFF, ATTN_NORM); // missing "moon/headless/die1.wav"
+	//sound(self, CHAN_VOICE, "moon/headless/die1.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM); // missing "moon/headless/die1.wav"
 	if ((random() < MON_BACKTIME))
 	{
 		less_die1();

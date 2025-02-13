@@ -887,13 +887,13 @@ void() sham_magic3 = [ 67, sham_magic4 ]
 void() sham_magic4 = [ 68, sham_magic5 ]
 {
 	self.effects = (self.effects | EF_MUZZLEFLASH);
-	self.owner.frame = START_OFF;
+	self.owner.frame = 1;
 };
 
 void() sham_magic5 = [ 69, sham_magic6 ]
 {
 	self.effects = (self.effects | EF_MUZZLEFLASH);
-	self.owner.frame = SILENT;
+	self.owner.frame = 2;
 };
 
 void() sham_magic6 = [ 70, sham_magic9 ]
@@ -1283,12 +1283,12 @@ void(entity e, float enc) spawn_knight =
 	}
 	if ((random() < MON_UNIQUECHANCE))
 	{
-		unique = rint(((random() * DOOR_DONT_LINK) + START_OFF));
+		unique = rint(((random() * DOOR_DONT_LINK) + 1));
 	}
-	if ((unique == START_OFF))
+	if ((unique == 1))
 	{
-		m.skin = WF_NORMAL;
-		m.ability = START_OFF;
+		m.skin = 0;
+		m.ability = 1;
 		m.items = IT_QUAD;
 		m.super_damage_finished = (time + 999);
 		m.effects = (m.effects | EF_DIMLIGHT);
@@ -1296,25 +1296,25 @@ void(entity e, float enc) spawn_knight =
 	}
 	else
 	{
-		if ((unique == SILENT))
+		if ((unique == 2))
 		{
-			m.skin = START_OFF;
-			m.ability = SILENT;
+			m.skin = 1;
+			m.ability = 2;
 			m.prefix_one = "iron ";
 		}
 		else
 		{
-			if ((unique == LOGIC_FINDDEFEND))
+			if ((unique == 3))
 			{
-				m.skin = SILENT;
-				m.ability = LOGIC_FINDDEFEND;
+				m.skin = 2;
+				m.ability = 3;
 				m.prefix_one = "stone ";
 			}
 			else
 			{
 				if ((unique == DOOR_DONT_LINK))
 				{
-					m.skin = LOGIC_FINDDEFEND;
+					m.skin = 3;
 					m.ability = DOOR_DONT_LINK;
 					m.prefix_one = "blood ";
 				}
@@ -1349,9 +1349,9 @@ void(entity e, float enc) spawn_knight =
 			}
 		}
 	}
-	if ((unique >= START_OFF))
+	if ((unique >= 1))
 	{
-		m.exp = (m.exp * SILENT);
+		m.exp = (m.exp * 2);
 	}
 	m.origin = spot.origin;
 	m.nextthink = (time + (random() * MON_BACKTIME));
@@ -1362,7 +1362,7 @@ void(entity e, float enc) spawn_knight =
 	makevectors(m.angles);
 	spawn_tfog((m.origin + (v_forward * GRD_PATROLTIME)));
 	spawn_tdeath(m.origin, m);
-	e.count = (e.count - START_OFF);
+	e.count = (e.count - 1);
 	m.th_stand = knight_stand;
 	m.th_run = knight_run;
 	m.th_missile = knight_atk;
@@ -1513,7 +1513,7 @@ void() spidspk_touch =
 	}
 	if (other.takedamage)
 	{
-		if ((self.poisoned == START_OFF))
+		if ((self.poisoned == 1))
 		{
 			spawn_touchpoison(TE_LIGHTNING3);
 		}
@@ -1522,12 +1522,12 @@ void() spidspk_touch =
 			spawn_touchblood(TE_LIGHTNING3);
 		}
 		T_Damage(other, self, self.owner, TE_LIGHTNING3);
-		if ((self.owner.poison == START_OFF))
+		if ((self.owner.poison == 1))
 		{
 			if ((other.flags & FL_CLIENT))
 			{
-				other.poisoned = ((time + rint((self.owner.lvl / SILENT))) + DOOR_DONT_LINK);
-				other.poison_dmg = (START_OFF + rint((self.owner.lvl / SVC_SETVIEWPORT)));
+				other.poisoned = ((time + rint((self.owner.lvl / 2))) + DOOR_DONT_LINK);
+				other.poison_dmg = (1 + rint((self.owner.lvl / SVC_SETVIEWPORT)));
 			}
 		}
 	}
@@ -2089,7 +2089,7 @@ entity(entity e, float enc) spawn_soldier =
 		}
 		else
 		{
-			if ((enc >= SILENT))
+			if ((enc >= 2))
 			{
 				zz = random();
 				m.health = (MON_CAMPTIME + (enc * GRD_PATROLTIME));
@@ -2192,8 +2192,8 @@ void() less_stand =
 			{
 				self.walkframe = WF_NORMAL;
 			}
-			self.frame = (SILENT + self.walkframe);
-			self.walkframe = (self.walkframe + START_OFF);
+			self.frame = (2 + self.walkframe);
+			self.walkframe = (self.walkframe + 1);
 			self.framtime = (time + MON_CAMPERCHANCE);
 		}
 	}
@@ -2214,7 +2214,7 @@ void() less_run =
 				self.walkframe = WF_NORMAL;
 			}
 			self.frame = (26 + self.walkframe);
-			self.walkframe = (self.walkframe + START_OFF);
+			self.walkframe = (self.walkframe + 1);
 			if ((self.walkframe <= DOOR_DONT_LINK))
 			{
 				self.framtime = (time + MON_REFRESHTIME);

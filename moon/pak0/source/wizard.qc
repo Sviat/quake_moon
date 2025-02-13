@@ -160,7 +160,7 @@ void() Wiz_StartFast =
 	missile.movedir = v_right;
 	missile = spawn();
 	missile.owner = self;
-	missile.nextthink = (time + START_OFF);
+	missile.nextthink = (time + 1);
 	setsize(missile, VEC_ORIGIN, VEC_ORIGIN);
 	setorigin(missile, (((self.origin + '0 0 30') + (v_forward * 14)) + (v_right * -14)));
 	missile.enemy = self.enemy;
@@ -176,14 +176,14 @@ void() Wiz_idlesound =
 	wr = (random() * SVC_SETVIEWPORT);
 	if ((self.waitmin < time))
 	{
-		self.waitmin = (time + SILENT);
+		self.waitmin = (time + 2);
 		if ((wr > 4.5))
 		{
-			sound(self, CHAN_VOICE, "wizard/widle1.wav", START_OFF, ATTN_IDLE);
+			sound(self, CHAN_VOICE, "wizard/widle1.wav", 1, ATTN_IDLE);
 		}
 		if ((wr < CL_DEADTIME))
 		{
-			sound(self, CHAN_VOICE, "wizard/widle2.wav", START_OFF, ATTN_IDLE);
+			sound(self, CHAN_VOICE, "wizard/widle2.wav", 1, ATTN_IDLE);
 		}
 	}
 	return;

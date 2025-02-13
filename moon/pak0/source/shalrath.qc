@@ -10,19 +10,19 @@ void() shal_stand =
 			if ((self.walkframe >= DOOR_GOLD_KEY))
 			{
 				self.shootframe = FALSE;
-				self.walkframe = WF_NORMAL;
+				self.walkframe = 0;
 			}
-			self.frame = (WF_NORMAL + self.walkframe);
-			self.walkframe = (self.walkframe + START_OFF);
-			if ((self.walkframe == START_OFF))
+			self.frame = (WF_NORMAL + self.walkframe); // WTF?!
+			self.walkframe = (self.walkframe + 1);
+			if ((self.walkframe == 1))
 			{
 				self.framtime = (time + MON_REFRESHTIME);
 			}
-			if ((self.walkframe == SILENT))
+			if ((self.walkframe == 2))
 			{
 				self.framtime = (time + 0.015);
 			}
-			if ((self.walkframe == LOGIC_FINDDEFEND))
+			if ((self.walkframe == 3))
 			{
 				self.framtime = (time + 0.02);
 			}
@@ -181,7 +181,7 @@ void() ShalHome =
 		return;
 	}
 	dir = normalize((vtemp - self.origin));
-	if ((skill == LOGIC_FINDDEFEND))
+	if ((skill == MOON_DIFFICULTY_MAX))
 	{
 		self.velocity = (dir * 350);
 	}
@@ -237,7 +237,7 @@ entity(entity e, float enc) spawn_shalrath =
 	m.skin = WF_NORMAL;
 	m.misspeed = 700;
 	GetMonsterPrefixLevel(m, enc);
-	if ((enc == WF_NORMAL))
+	if ( enc == 0 )
 	{
 		m.health = 300;
 		m.exp = 14;
@@ -245,7 +245,7 @@ entity(entity e, float enc) spawn_shalrath =
 	}
 	else
 	{
-		if ((enc == START_OFF))
+		if ( enc == 1 )
 		{
 			m.health = 320;
 			m.exp = 15;
@@ -253,7 +253,7 @@ entity(entity e, float enc) spawn_shalrath =
 		}
 		else
 		{
-			if ((enc >= SILENT))
+			if ( enc >= 2 )
 			{
 				m.health = (320 + (enc * 25));
 				m.exp = (14 + (enc * DOOR_DONT_LINK));
@@ -271,12 +271,12 @@ entity(entity e, float enc) spawn_shalrath =
 	}
 	if ((random() < MON_UNIQUECHANCE))
 	{
-		unique = rint(((random() * DOOR_DONT_LINK) + START_OFF));
+		unique = rint(((random() * DOOR_DONT_LINK) + 1));
 	}
-	if ((unique == START_OFF))
+	if ((unique == 1))
 	{
-		m.skin = WF_NORMAL;
-		m.ability = START_OFF;
+		m.skin = 0;
+		m.ability = 1;
 		m.items = IT_QUAD;
 		m.super_damage_finished = (time + 999);
 		m.effects = (m.effects | EF_DIMLIGHT);
@@ -284,25 +284,25 @@ entity(entity e, float enc) spawn_shalrath =
 	}
 	else
 	{
-		if ((unique == SILENT))
+		if ((unique == 2))
 		{
-			m.skin = START_OFF;
-			m.ability = SILENT;
+			m.skin = 1;
+			m.ability = 2;
 			m.prefix_one = "iron ";
 		}
 		else
 		{
-			if ((unique == LOGIC_FINDDEFEND))
+			if ((unique == 3))
 			{
-				m.skin = SILENT;
-				m.ability = LOGIC_FINDDEFEND;
+				m.skin = 2;
+				m.ability = 3;
 				m.prefix_one = "stone ";
 			}
 			else
 			{
 				if ((unique == DOOR_DONT_LINK))
 				{
-					m.skin = LOGIC_FINDDEFEND;
+					m.skin = 3;
 					m.ability = DOOR_DONT_LINK;
 					m.prefix_one = "blood ";
 				}
@@ -371,7 +371,7 @@ void() Mage_Cast =
 		T_Heal(self, GRD_PATROLTIME, WF_NORMAL); // TODO: use MonsterHeal function
 		self.mana = (self.mana - START_OFF);
 		self.scroll_heal_eff = (time + MON_BACKTIME);
-		self.scroll_time = ((time + MON_BACKTIME) + (self.rfr * SILENT));
+		self.scroll_time = ((time + MON_BACKTIME) + (self.rfr * 2));
 	}
 	else
 	{
@@ -380,7 +380,7 @@ void() Mage_Cast =
 			sound(self, CHAN_VOICE, "moon/misc/cast.wav", START_OFF, ATTN_NORM);
 			self.mana = (self.mana - LOGIC_FINDDEFEND);
 			self.scroll_shie_eff = (time + SVC_SETVIEWANGLES);
-			self.scroll_time = (((time + START_OFF) + (random() * START_OFF)) + (self.rfr * SILENT));
+			self.scroll_time = (((time + START_OFF) + (random() * START_OFF)) + (self.rfr * 2));
 		}
 	}
 };
@@ -630,7 +630,7 @@ entity(entity e, float enc) spawn_mage =
 	m.view_ofs = '0 0 25'; // TODO: fix for each of them
 	m.netname = "mage";
 	GetMonsterPrefixLevel(m, enc);
-	if ((enc == WF_NORMAL))
+	if ((enc == 0))
 	{
 		m.health = 140;
 		m.exp = 12;
@@ -639,7 +639,7 @@ entity(entity e, float enc) spawn_mage =
 	}
 	else
 	{
-		if ((enc >= START_OFF))
+		if ((enc >= 1))
 		{
 			m.health = (140 + (enc * 15));
 			m.exp = (12 + (enc * DOOR_DONT_LINK));
@@ -651,14 +651,14 @@ entity(entity e, float enc) spawn_mage =
 			m.misspeed = (650 + (enc * MON_CAMPTIME));
 		}
 	}
-	if ((random() < (MON_UNIQUECHANCE / SILENT)))
+	if ((random() < (MON_UNIQUECHANCE / 2)))
 	{
-		unique = rint(((random() * START_OFF) + START_OFF));
+		unique = rint(((random() * 1) + 1));
 	}
-	if ((unique == START_OFF))
+	if ((unique == 1))
 	{
-		m.skin = WF_NORMAL;
-		m.ability = START_OFF;
+		m.skin = 0;
+		m.ability = 1;
 		m.items = IT_QUAD;
 		m.super_damage_finished = (time + 999);
 		m.effects = (m.effects | EF_DIMLIGHT);
@@ -666,7 +666,7 @@ entity(entity e, float enc) spawn_mage =
 	}
 	else
 	{
-		if ((unique == SILENT))
+		if ((unique == 2))
 		{
 			m.ability = SVC_SETVIEWPORT;
 			m.speed = 450;
@@ -676,12 +676,12 @@ entity(entity e, float enc) spawn_mage =
 	}
 	if ((random() < MON_CAMPERCHANCE))
 	{
-		if ((unique == WF_NORMAL))
+		if ((unique == 0))
 		{
 			GenegateCampTarget(m);
 		}
 	}
-	if ((unique >= START_OFF))
+	if ((unique >= 1))
 	{
 		m.exp = (m.exp * 1.25);
 	}
@@ -1035,14 +1035,14 @@ entity(entity spawner, float enc) spawn_enforcer =
 	m.movetype = MOVETYPE_STEP;
 	setmodel(m, "progs/monster1.mdl");
 	setsize(m, VEC_HULL_MIN, '16 16 40');
-	m.enchanced = WF_NORMAL;
+	m.enchanced = 0;
 	m.speed = 240;
 	m.view_ofs = '0 0 25'; // TODO: fix for each of them
 	m.netname = "enforcer";
-	m.skin = WF_NORMAL;
+	m.skin = 0;
 	m.misspeed = 800;
 	GetMonsterPrefixLevel(m, enc);
-	if ((enc == WF_NORMAL))
+	if ((enc == 0))
 	{
 		m.health = 80;
 		m.exp = SVC_SETVIEWANGLES;
@@ -1050,7 +1050,7 @@ entity(entity spawner, float enc) spawn_enforcer =
 	}
 	else
 	{
-		if ((enc == START_OFF))
+		if ((enc == 1))
 		{
 			m.health = MENTAT_TIME;
 			m.exp = 12;
@@ -1058,7 +1058,7 @@ entity(entity spawner, float enc) spawn_enforcer =
 		}
 		else
 		{
-			if ((enc >= SILENT))
+			if ((enc >= 2))
 			{
 				m.health = (80 + (enc * 25));
 				m.exp = (SVC_SETVIEWANGLES + (enc * DOOR_DONT_LINK));
@@ -1069,19 +1069,19 @@ entity(entity spawner, float enc) spawn_enforcer =
 				if ((random() > 0.6))
 				{
 					m.netname = "twin enforcer";
-					m.enchanced = START_OFF;
+					m.enchanced = 1;
 				}
 			}
 		}
 	}
 	if ((random() < MON_UNIQUECHANCE))
 	{
-		unique = rint(((random() * DOOR_DONT_LINK) + START_OFF));
+		unique = rint(((random() * DOOR_DONT_LINK) + 1));
 	}
-	if ((unique == START_OFF))
+	if ((unique == 1))
 	{
-		m.skin = WF_NORMAL;
-		m.ability = START_OFF;
+		m.skin = 0;
+		m.ability = 1;
 		m.items = IT_QUAD;
 		m.super_damage_finished = (time + 999);
 		m.effects = (m.effects | EF_DIMLIGHT);
@@ -1089,25 +1089,25 @@ entity(entity spawner, float enc) spawn_enforcer =
 	}
 	else
 	{
-		if ((unique == SILENT))
+		if ((unique == 2))
 		{
-			m.skin = START_OFF;
-			m.ability = SILENT;
+			m.skin = 1;
+			m.ability = 2;
 			m.prefix_one = "iron ";
 		}
 		else
 		{
-			if ((unique == LOGIC_FINDDEFEND))
+			if ((unique == 3))
 			{
-				m.skin = SILENT;
-				m.ability = LOGIC_FINDDEFEND;
+				m.skin = 2;
+				m.ability = 3;
 				m.prefix_one = "stone ";
 			}
 			else
 			{
 				if ((unique == DOOR_DONT_LINK))
 				{
-					m.skin = LOGIC_FINDDEFEND;
+					m.skin = 3;
 					m.ability = DOOR_DONT_LINK;
 					m.prefix_one = "blood ";
 				}
@@ -1127,7 +1127,7 @@ entity(entity spawner, float enc) spawn_enforcer =
 	if ((random() < MON_MAGICCHANCE))
 	{
 		GetPrefix(m);
-		if ((m.skin == WF_NORMAL))
+		if ((m.skin == 0))
 		{
 			m.skin = DOOR_DONT_LINK;
 		}
@@ -1136,13 +1136,13 @@ entity(entity spawner, float enc) spawn_enforcer =
 	{
 		if ((random() < MON_CAMPERCHANCE))
 		{
-			if ((unique == WF_NORMAL))
+			if ((unique == 0))
 			{
 				GenegateCampTarget(m);
 			}
 		}
 	}
-	if ((unique > WF_NORMAL))
+	if ((unique > 0))
 	{
 		m.exp = (m.exp * 1.25);
 	}

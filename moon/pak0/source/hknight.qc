@@ -427,22 +427,22 @@ void() hknight_magica8 = [ 86, hknight_magica9 ]
 
 void() hknight_magica9 = [ 87, hknight_magica10 ]
 {
-	hknight_shot(WF_NORMAL);
+	hknight_shot(0);
 };
 
 void() hknight_magica10 = [ 88, hknight_magica11 ]
 {
-	hknight_shot(START_OFF);
+	hknight_shot(1);
 };
 
 void() hknight_magica11 = [ 89, hknight_magica12 ]
 {
-	hknight_shot(SILENT);
+	hknight_shot(2);
 };
 
 void() hknight_magica12 = [ 90, hknight_magica13 ]
 {
-	hknight_shot(LOGIC_FINDDEFEND);
+	hknight_shot(3);
 };
 
 void() hknight_magica13 = [ 91, hknight_magica14 ]
@@ -497,22 +497,22 @@ void() hknight_magicb8 = [ 100, hknight_magicb9 ]
 
 void() hknight_magicb9 = [ 101, hknight_magicb10 ]
 {
-	hknight_shot(WF_NORMAL);
+	hknight_shot(0);
 };
 
 void() hknight_magicb10 = [ 102, hknight_magicb11 ]
 {
-	hknight_shot(START_OFF);
+	hknight_shot(1);
 };
 
 void() hknight_magicb11 = [ 103, hknight_magicb12 ]
 {
-	hknight_shot(SILENT);
+	hknight_shot(2);
 };
 
 void() hknight_magicb12 = [ 104, hknight_magicb13 ]
 {
-	hknight_shot(LOGIC_FINDDEFEND);
+	hknight_shot(3);
 };
 
 void() hknight_magicb13 = [ 105, hknight_run1 ]
@@ -557,22 +557,22 @@ void() hknight_magicc7 = [ 161, hknight_magicc8 ]
 
 void() hknight_magicc8 = [ 162, hknight_magicc9 ]
 {
-	hknight_shot(WF_NORMAL);
+	hknight_shot(0);
 };
 
 void() hknight_magicc9 = [ 163, hknight_magicc10 ]
 {
-	hknight_shot(START_OFF);
+	hknight_shot(1);
 };
 
 void() hknight_magicc10 = [ 164, hknight_magicc11 ]
 {
-	hknight_shot(SILENT);
+	hknight_shot(2);
 };
 
 void() hknight_magicc11 = [ 165, hknight_run1 ]
 {
-	hknight_shot(LOGIC_FINDDEFEND);
+	hknight_shot(3);
 };
 
 void() hknight_char_a1 = [ 63, hknight_char_a2 ]
@@ -960,26 +960,20 @@ float hknight_type;
 
 void() hknight_melee =
 {
-	hknight_type = (hknight_type + START_OFF);
-	sound(self, CHAN_WEAPON, "hknight/slash1.wav", START_OFF, ATTN_NORM);
-	if ((hknight_type == START_OFF))
+	hknight_type = (hknight_type + 1);
+	sound(self, CHAN_WEAPON, "hknight/slash1.wav", 1, ATTN_NORM);
+	switch( hknight_type )
 	{
-		hknight_slice1();
-	}
-	else
-	{
-		if ((hknight_type == SILENT))
-		{
+		case 1:
+			hknight_slice1();
+			break;
+		case 2:
 			hknight_smash1();
-		}
-		else
-		{
-			if ((hknight_type == LOGIC_FINDDEFEND))
-			{
-				hknight_watk1();
-				hknight_type = WF_NORMAL;
-			}
-		}
+			break;
+		case 3:
+			hknight_watk1();
+			hknight_type = 0;
+			break;
 	}
 };
 

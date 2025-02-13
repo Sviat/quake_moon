@@ -347,7 +347,7 @@ void() finale_2 =
 	WriteCoord(MSG_BROADCAST, o_y);
 	WriteCoord(MSG_BROADCAST, o_z);
 	sound(shub, CHAN_VOICE, "misc/r_tele1.wav", START_OFF, ATTN_NORM);
-	self.nextthink = (time + SILENT);
+	self.nextthink = (time + 2);
 	self.think = finale_3;
 };
 

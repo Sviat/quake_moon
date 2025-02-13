@@ -611,25 +611,25 @@ entity(entity e, float enc) spawn_ogre =
 	}
 	else
 	{
-		if ((unique == SILENT))
+		if ((unique == 2))
 		{
 			m.skin = CHSCAM_ON;
-			m.ability = SILENT;
+			m.ability = 2;
 			m.prefix_one = "iron ";
 		}
 		else
 		{
-			if ((unique == LOGIC_FINDDEFEND))
+			if ((unique == 3))
 			{
-				m.skin = SILENT;
-				m.ability = LOGIC_FINDDEFEND;
+				m.skin = 2;
+				m.ability = 3;
 				m.prefix_one = "stone ";
 			}
 			else
 			{
 				if ((unique == DOOR_DONT_LINK))
 				{
-					m.skin = LOGIC_FINDDEFEND;
+					m.skin = 3;
 					m.ability = DOOR_DONT_LINK;
 					m.prefix_one = "blood ";
 				}
@@ -904,19 +904,19 @@ entity(entity e, float enc) spawn_snake =
 			}
 			if ((random() > 0.6))
 			{
-				m.black_spike = START_OFF;
+				m.black_spike = 1;
 				m.netname = "pulse snake";
 			}
 		}
 	}
 	if ((random() < MON_UNIQUECHANCE))
 	{
-		unique = rint(((random() * DOOR_DONT_LINK) + START_OFF));
+		unique = rint(((random() * DOOR_DONT_LINK) + 1));
 	}
-	if ((unique == START_OFF))
+	if ((unique == 1))
 	{
-		m.skin = WF_NORMAL;
-		m.ability = START_OFF;
+		m.skin = 0;
+		m.ability = 1;
 		m.items = IT_QUAD;
 		m.super_damage_finished = (time + 999);
 		m.effects = (m.effects | EF_DIMLIGHT);
@@ -924,25 +924,25 @@ entity(entity e, float enc) spawn_snake =
 	}
 	else
 	{
-		if ((unique == SILENT))
+		if ((unique == 2))
 		{
-			m.skin = START_OFF;
-			m.ability = SILENT;
+			m.skin = 1;
+			m.ability = 2;
 			m.prefix_one = "iron ";
 		}
 		else
 		{
-			if ((unique == LOGIC_FINDDEFEND))
+			if ((unique == 3))
 			{
-				m.skin = SILENT;
-				m.ability = LOGIC_FINDDEFEND;
+				m.skin = 2;
+				m.ability = 3;
 				m.prefix_one = "stone ";
 			}
 			else
 			{
 				if ((unique == DOOR_DONT_LINK))
 				{
-					m.skin = LOGIC_FINDDEFEND;
+					m.skin = 3;
 					m.ability = DOOR_DONT_LINK;
 					m.prefix_one = "blood ";
 				}
@@ -977,7 +977,7 @@ entity(entity e, float enc) spawn_snake =
 			}
 		}
 	}
-	if ((unique >= START_OFF))
+	if ((unique >= 1))
 	{
 		m.exp = (m.exp * 1.25);
 	}

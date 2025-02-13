@@ -784,7 +784,7 @@ void(entity e) spawn_zombie =
 	makevectors(m.angles);
 	spawn_tfog((m.origin + (v_forward * GRD_PATROLTIME)));
 	spawn_tdeath(m.origin, m);
-	e.count = (e.count - START_OFF);
+	e.count = (e.count - 1);
 	m.think = walkmonster_start;
 	m.nextthink = time;
 	m.th_stand = zomb_stand;

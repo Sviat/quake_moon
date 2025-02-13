@@ -536,7 +536,7 @@ void(vector p) boss_missile =
 	offang = vectoangles((self.enemy.origin - self.origin));
 	makevectors(offang);
 	org = (((self.origin + (p_x * v_forward)) + (p_y * v_right)) + (p_z * '0 0 1'));
-	if ((skill > START_OFF))
+	if ( skill > 1 )
 	{
 		t = (vlen((self.enemy.origin - org)) / 300);
 		vec = self.enemy.velocity;
@@ -554,7 +554,7 @@ void(vector p) boss_missile =
 	setsize(newmis, VEC_ORIGIN, VEC_ORIGIN);
 	newmis.velocity = (vec * 300);
 	newmis.touch = T_MissileTouch;
-	sound(self, CHAN_WEAPON, "boss1/throw.wav", START_OFF, ATTN_NORM);
+	sound(self, CHAN_WEAPON, "boss1/throw.wav", 1, ATTN_NORM);
 	if ((self.enemy.health <= WF_NORMAL))
 	{
 		boss_idle1();
@@ -568,13 +568,13 @@ void() boss_awake =
 	self.takedamage = DAMAGE_NO;
 	setmodel(self, "progs/boss.mdl");
 	setsize(self, '-128 -128 -24', '128 128 256');
-	if ((skill == WF_NORMAL))
+	if ( skill == MOON_DIFFICULTY_MIN )
 	{
-		self.health = START_OFF;
+		self.health = 1;
 	}
 	else
 	{
-		self.health = LOGIC_FINDDEFEND;
+		self.health = 3;
 	}
 	self.enemy = activator;
 	WriteByte(MSG_BROADCAST, SVC_TEMPENTITY);
@@ -671,14 +671,14 @@ void() lightning_use =
 	if (((le1.state == STATE_TOP) && (self.health > WF_NORMAL)))
 	{
 		sound(self, CHAN_VOICE, "boss1/pain.wav", START_OFF, ATTN_NORM);
-		self.health = (self.health - START_OFF);
-		if ((self.health >= SILENT))
+		self.health = (self.health - 1);
+		if ((self.health >= 2))
 		{
 			boss_shocka1();
 		}
 		else
 		{
-			if ((self.health == START_OFF))
+			if ((self.health == 1))
 			{
 				boss_shockb1();
 			}

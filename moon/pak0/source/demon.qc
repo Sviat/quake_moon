@@ -915,7 +915,7 @@ void() sham_magic10 = [ 74, sham_magic11 ]
 
 void() sham_magic11 = [ 75, sham_magic12 ]
 {
-	if ((skill == LOGIC_FINDDEFEND))
+	if ((skill == MOON_DIFFICULTY_MAX))
 	{
 		CastLightning();
 	}

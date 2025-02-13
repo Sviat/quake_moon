@@ -218,7 +218,7 @@ void() SUB_UseTargets =
 void(float normal) SUB_AttackFinished =
 {
 	self.cnt = WF_NORMAL;
-	if ((skill != LOGIC_FINDDEFEND))
+	if ((skill != MOON_DIFFICULTY_MAX))
 	{
 		self.attack_finished = (time + normal);
 	}
@@ -227,7 +227,7 @@ float(entity targ) visible;
 
 void(void() thinkst) SUB_CheckRefire =
 {
-	if ((skill != LOGIC_FINDDEFEND))
+	if ((skill != MOON_DIFFICULTY_MAX))
 	{
 		return;
 	}

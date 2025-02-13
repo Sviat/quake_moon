@@ -10,13 +10,12 @@ void() monster_death_use =
 
 void() walkmonster_start_go =
 {
-	//local string stemp; // unused
-	//local entity etemp; // unused
+	moon_normalize_difficulty();
 
 	self.max_health = self.health;
 	self.origin_z = (self.origin_z + CHSCAM_ON);
 	droptofloor();
-	if (!walkmove(WF_NORMAL, WF_NORMAL))
+	if (!walkmove(0, 0))
 	{
 		dprint("walkmonster in wall at: ");
 		dprint(vtos(self.origin));
@@ -33,15 +32,7 @@ void() walkmonster_start_go =
 		self.min_attack_dist = 3000;
 	}
 	self.view_ofs = '0 0 25';
-	if ((skill < WF_NORMAL))
-	{
-		skill = WF_NORMAL;
-	}
-	if ((skill > LOGIC_FINDDEFEND))
-	{
-		skill = LOGIC_FINDDEFEND;
-	}
-	self.acc = (LOGIC_FINDDEFEND - skill);
+	self.acc = (MOON_DIFFICULTY_MAX - skill);
 	self.hst = (MON_BACKTIME - (skill / KEY_MOVERIGHT));
 	self.rfr = (0.6 - (skill / SVC_SETVIEWPORT));
 	self.mx_speed = self.speed;

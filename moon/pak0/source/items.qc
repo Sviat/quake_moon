@@ -4200,11 +4200,31 @@ float(float level) moon_get_monster_wave_size_for_level =
 	return random_int(5, 11);
 };
 
+float(float count, float difficulty) moon_clamp_monster_wave_size_for_difficulty =
+{
+	if ( difficulty <= MOON_DIFFICULTY_MIN )
+	{
+		if ( count > 3 )
+		{
+			return 3;
+		}
+	}
+	if ( difficulty >= MOON_DIFFICULTY_MAX )
+	{
+		if ( count < 3 )
+		{
+			return 3;
+		}
+	}
+	return count;
+};
+
 float(float level, float player_count) moon_get_monster_wave_size =
 {
 	local float wave;
 
 	wave = moon_get_monster_wave_size_for_level(level);
+	wave = moon_clamp_monster_wave_size_for_difficulty(wave, skill);
 	if ( player_count > 1 )
 	{
 		wave = wave + moon_get_monster_wave_size_for_level(level - 1);

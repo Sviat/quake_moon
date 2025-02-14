@@ -7,10 +7,15 @@
 void(entity who) moon_spawn_drop_gold;
 float(float weapon, float ammo) W_EnoughAmmoToShoot;
 float(entity target, float healamount, float ignore = 0) T_Heal;
+void(entity inflictor, entity attacker, float damage, entity ignore) T_RadiusDamage;
 void(entity target, float armor_code, float armor_durability = -1) moon_init_target_as_armor;
 float(entity target, float code) moon_get_target_total_bonus_by_code;
 void() moon_set_map_moon4;
 float(entity emitter, float track) moon_walkman_play;
+
+// Monster logic
+void() moon_monster_apply_effect_self;
+void(entity who) moon_particle_heal;
 
 // Waves
 void(entity e, float enc) spawn_knight; // unused so far

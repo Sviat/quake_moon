@@ -99,7 +99,7 @@ void() flymonster_start =
 {
 	self.nextthink = (self.nextthink + (random() * MON_BACKTIME));
 	self.think = flymonster_start_go;
-	total_monsters = (total_monsters + CHSCAM_ON);
+	// total_monsters = (total_monsters + 1); // Moon can count monsters itself
 };
 
 void() swimmonster_start_go =
@@ -110,7 +110,7 @@ void() swimmonster_start_go =
 		return;
 	}
 	self.takedamage = DAMAGE_AIM;
-	total_monsters = (total_monsters + CHSCAM_ON);
+	// total_monsters = (total_monsters + 1); // Moon can count monsters itself
 	self.ideal_yaw = (self.angles * '0 1 0');
 	if (!self.yaw_speed)
 	{
@@ -145,5 +145,5 @@ void() swimmonster_start =
 {
 	self.nextthink = (self.nextthink + (random() * MON_BACKTIME));
 	self.think = swimmonster_start_go;
-	total_monsters = (total_monsters + CHSCAM_ON);
+	// total_monsters = (total_monsters + 1); // Moon can count monsters itself
 };

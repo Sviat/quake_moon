@@ -446,5 +446,5 @@ void() monster_oldone =
 	self.th_pain = nopain;
 	self.th_die = finale_1;
 	shub = self;
-	total_monsters = (total_monsters + START_OFF);
+	total_monsters = (total_monsters + 1); // Moon can count monsters itself
 };

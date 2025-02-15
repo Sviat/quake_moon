@@ -519,7 +519,7 @@ void() boss_death9 = [ 56, boss_death10 ]
 
 void() boss_death10 = [ 56, boss_death10 ]
 {
-	killed_monsters = (killed_monsters + START_OFF);
+	// killed_monsters = (killed_monsters + 1); // Moon can count monsters itself
 	WriteByte(MSG_ALL, SVC_KILLEDMONSTER);
 	SUB_UseTargets();
 	remove(self);
@@ -602,7 +602,7 @@ void() monster_boss =
 	precache_sound("boss1/throw.wav");
 	precache_sound("boss1/pain.wav");
 	precache_sound("boss1/death.wav");
-	total_monsters = (total_monsters + START_OFF);
+	// total_monsters = (total_monsters + 1); // Moon can count monsters itself
 	self.use = boss_awake;
 };
 entity le1;

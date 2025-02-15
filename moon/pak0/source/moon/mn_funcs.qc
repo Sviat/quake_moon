@@ -1,6 +1,6 @@
 /// ReProjectMoon-specific source file
 /// Here go all common functions related to random, ftos and similar
-/// No needs to prefix with moon_ Math functions
+/// No needs to prefix Math functions with moon_
 
 // // Forward declarations:
 // ???
@@ -12,12 +12,14 @@ void(entity target, float armor_code, float armor_durability = -1) moon_init_tar
 float(entity target, float code) moon_get_target_total_bonus_by_code;
 void() moon_set_map_moon4;
 float(entity emitter, float track) moon_walkman_play;
+void(entity target, float delay = 0) moon_queue_target_for_removal;
 
 // Monster logic
 void() moon_monster_apply_effect_self;
 void(entity who) moon_particle_heal;
 
 // Waves
+entity(entity spawner, float level) moon_spawn_monster_entity {return world;};
 void(entity e, float enc) spawn_knight; // unused so far
 entity(entity e, float enc) spawn_soldier;
 entity(entity e, float enc) spawn_enforcer;

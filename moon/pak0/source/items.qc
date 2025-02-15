@@ -3670,18 +3670,19 @@ float(float lvl) MonsterGenType =
 	return random_int(MOON_MONSTER_CODE_SOLDIER, MOON_MONSTER_CODE_SHALRATH);
 };
 
-void(entity spawner, float l) MonsterTable = // rename later to moon_spawn_monster
+void(entity spawner, float player_level) moon_spawn_monster =
 {
 	local float gen;
-	local float shift;
+	local float random_shift;
 	local float shifted_lvl;
 	local entity monster;
 
-	shift = rint(random() * 3);
-	shifted_lvl = l - shift;
+	random_shift = rint(random() * 3);
+	shifted_lvl = player_level - random_shift;
 
 	spawner.count = (spawner.count - 1);
-	gen = MonsterGenType(l);
+	gen = MonsterGenType(player_level);
+	// moon_spawn_monster_entity();
 	switch(gen)	// TODO: split/refactor spawn_X functions to handle only specific to X stuff there
 	{
 	case MOON_MONSTER_CODE_SOLDIER:
@@ -3706,7 +3707,7 @@ void(entity spawner, float l) MonsterTable = // rename later to moon_spawn_monst
 		monster = spawn_shalrath(spawner, clampd(0, shifted_lvl - MOON_MONSTER_BASELEVEL_SHALRATH, 50));
 		break;
 	default:
-		dprint("ERROR IN MonsterTable(...): gen spawns null monster\n");
+		dprint("ERROR IN moon_spawn_monster(...): gen spawns null monster\n");
 		return;
 	}
 	moon_debug_println_object_name(monster); // Debug only
@@ -3945,15 +3946,14 @@ void() StartSpawning =
 	if (gameover) { return; }
 	if ( self.count <= 0 )
 	{
-		remove(self);
+		moon_queue_target_for_removal(self);
 		return;
 	}
 
 	player_maxlevel = moon_get_max_player_level();
-	MonsterTable(self, player_maxlevel);
+	moon_spawn_monster(self, player_maxlevel);
 
 	self.nextthink = (time + MOON_TIME_BETWEEN_MONSTER_SPAWN);
-	self.think = StartSpawning;
 };
 
 void(float mon_count) SpawnMoster =

@@ -1,6 +1,13 @@
 /// ReProjectMoon-specific source file
 /// Here go all functions executed every frame or so inside game logic loop
 
+// Curently there is not much to do, but for future
+void(entity target, float delay = 0) moon_queue_target_for_removal
+{
+	target.nextthink = time + delay;
+	target.think = SUB_Remove;
+};
+
 void() moon_cheat_quad = // Debug only. Remove before release
 {
 	if (!(MOON_DEBUG & MOON_DEBUG_CHEATS_ON) ) { return; }

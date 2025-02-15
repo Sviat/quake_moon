@@ -8,6 +8,13 @@ void(entity target, float delay = 0) moon_queue_target_for_removal
 	target.think = SUB_Remove;
 };
 
+void(entity monster, float delay = 0) moon_queue_monster_for_removal
+{
+	moon_queue_target_for_removal(monster, delay);
+	self.solid = SOLID_NOT;
+	killed_monsters = killed_monsters + 1;
+};
+
 void() moon_cheat_quad = // Debug only. Remove before release
 {
 	if (!(MOON_DEBUG & MOON_DEBUG_CHEATS_ON) ) { return; }

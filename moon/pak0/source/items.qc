@@ -3683,6 +3683,7 @@ void(entity spawner, float player_level) moon_spawn_monster =
 	spawner.count = (spawner.count - 1);
 	gen = MonsterGenType(player_level);
 	// moon_spawn_monster_entity();
+	total_monsters = total_monsters + 1;
 	switch(gen)	// TODO: split/refactor spawn_X functions to handle only specific to X stuff there
 	{
 	case MOON_MONSTER_CODE_SOLDIER:
@@ -4084,9 +4085,7 @@ void() MoonPreThink =
 
 void() MonsterDead =
 {
-	self.solid = SOLID_NOT;
-	self.think = SUB_Remove;
-	self.nextthink = time + moon_get_despawn_delay();
+	moon_queue_monster_for_removal(self, moon_get_despawn_delay());
 };
 
 void() moon_make_chat_noise =

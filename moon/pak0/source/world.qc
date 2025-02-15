@@ -1241,7 +1241,7 @@ void() ClientConnect =
 	local float player_maxlevel;
 
 	player_maxlevel = moon_get_max_player_level();
-	if ( player_maxlevel > 0 ) // May be allow late joins?
+	if ( player_maxlevel > 1 ) // May be allow late joins?
 	{
 		bprint(self.netname);
 		bprint(" was kicked. Reason: too late (you still can join after map restart)\n");

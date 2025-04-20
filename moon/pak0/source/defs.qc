@@ -77,13 +77,13 @@ vector VEC_HULL_MIN    	= '-16 -16 -24';
 vector VEC_HULL_MAX    	= '16 16 32';
 vector VEC_HULL2_MIN    = '-32 -32 -24';
 vector VEC_HULL2_MAX    = '32 32 64';
-float SVC_TEMPENTITY    = 23;
-float SVC_KILLEDMONSTER = 27;
-float SVC_FOUNDSECRET	= 28;
-float SVC_INTERMISSION	= 30;
-float SVC_FINALE    	= 31;
-float SVC_CDTRACK    	= 32;
-float SVC_SELLSCREEN    = 33;
+// float SVC_TEMPENTITY    = 23; // see 3rd/defs_kex.qc
+// float SVC_KILLEDMONSTER = 27;
+// float SVC_FOUNDSECRET	= 28;
+// float SVC_INTERMISSION	= 30;
+// float SVC_FINALE    	= 31;
+// float SVC_CDTRACK    	= 32;
+// float SVC_SELLSCREEN    = 33;
 float TE_SPIKE			= 0;
 float TE_SUPERSPIKE    	= 1;
 float TE_GUNSHOT    	= 2;
@@ -295,17 +295,6 @@ void (entity e) setspawnparms = #78;
 // Plays a sound that only "client" can hear. Useful for announcers...
 void localsound( entity client, string sample ) = #0:ex_localsound;
 
-// Debug rendering functions. KEX QuakeC
-void draw_point( vector point, float colormap, float lifetime, float depthtest ) = #0:ex_draw_point;
-void draw_line( vector start, vector end, float colormap, float lifetime, float depthtest ) = #0:ex_draw_line;
-void draw_arrow( vector start, vector end, float colormap, float size, float lifetime, float depthtest ) = #0:ex_draw_arrow;
-void draw_ray( vector start, vector direction, float length, float colormap, float size, float lifetime, float depthtest ) = #0:ex_draw_ray;
-void draw_circle( vector origin, float radius, float colormap, float lifetime, float depthtest ) = #0:ex_draw_circle;
-void draw_bounds( vector min, vector max, float colormap, float lifetime, float depthtest ) = #0:ex_draw_bounds;
-void draw_worldtext( string s, vector origin, float size, float lifetime, float depthtest ) = #0:ex_draw_worldtext;
-void draw_sphere( vector origin, float radius, float colormap, float lifetime, float depthtest ) = #0:ex_draw_sphere;
-void draw_cylinder( vector origin, float halfHeight, float radius, float colormap, float lifetime, float depthtest ) = #0:ex_draw_cylinder;
-
 void(vector tdest, float tspeed, void() func) SUB_CalcMove;
 void(entity ent, vector tdest, float tspeed, void() func) SUB_CalcMoveEnt;
 void(vector destangle, float tspeed, void() func) SUB_CalcAngleMove;
@@ -382,10 +371,6 @@ float LOGIC_HUNTENEMY = 6;
 .float rfr;
 .float keys;
 .float oldkeys;
-.float stre;	// Strength
-.float vit;		// Vitality
-.float wiz;		// Sanity; recovered in KEK port;
-.float intu;	// Intuition; new stat in KEK port; naming kept in line with original
 .float melee;
 .float mana;
 .float max_mana;
@@ -413,8 +398,6 @@ float LOGIC_HUNTENEMY = 6;
 .float scroll_time;
 .float mx_speed;
 void() execute_changelevel;
-void(entity e) moon_generate_magic_prefix;
-void(entity e) moon_generate_magic_postfix;
 void() MagicItemTouch;
 void() M_FireShotgun;
 void(vector org) M_FireSuperNail;
@@ -477,27 +460,6 @@ void() game_brain;
 .float black_spike;
 .float next_mesg_time;
 .entity mesg_inflictor;
-.float wear_armor;
-.float magic_typeone;
-.float magic_typeone_value;
-.string magic_prefixone;
-.float magic_typetwo;
-.float magic_typetwo_value;
-.string magic_prefixtwo;
-.float wear_ring;
-.float ring_typeone;
-.float ring_typeone_value;
-.string ring_prefixone;
-.float ring_typetwo;
-.float ring_typetwo_value;
-.string ring_prefixtwo;
-.float prefix;
-.float prefix_value;
-.string prefix_one;
-.string prefix_two;
-.string prefix_three;
-.string prefix_four;
-
 .string gatename;
 .float framtime;
 .float nextyaw;
@@ -519,9 +481,6 @@ void(float shotcount, vector dir, vector spread) FireBullets;
 float() FindWaypoint;
 .float cost;
 .float free;
-.float gold;
-.float exp;
-.float lvl;
 .float nextexp;
 .float misspeed;
 .float shootframe;
@@ -540,8 +499,6 @@ float() FindWaypoint;
 .float strafe_vector_x;
 .float strafe_vector_y;
 .float strafe_vector_z;
-.float up_bullet; // Re-use same param for both Upgrade and Extra capacity
-.float up_nail; // Re-use same param for both Upgrade and Extra capacity
 .float thinkrefresh;
 .float nextfind_time;
 .float line;
@@ -550,59 +507,3 @@ float() FindWaypoint;
 float WF_NORMAL    = 0;
 float WF_DEFEND    = 1;
 float WF_EXTRASIZE = 2;
-.float point;
-.float skl_expl;
-.float skl_rgn;
-.float rgn_time;
-.float health_magic_regen_time;
-.float rgnm_time;
-
-// // Copied from https://github.com/fte-team/fteqw/blob/1f9f3635f0aef3b2eed6b40e35fcf6223c6ad533/engine/common/protocol.h#L362
-//QuakeEx(aka: rerelease) svcs.
-//	these are not really documented anywhere. we're trying to stick with protocol 15 (because that's the only documented protocol it supports properly thanks to demos)
-//	however we still need some special case svcs
-//  (there's also some problematic c2s differences too)
-#define svcqex_updateping			46	// [byte] slot, [signed_qe] ping
-#define svcqex_updatesocial			47	// [byte] slot, 8 bytes of unknown
-#define svcqex_updateplinfo			48	// [byte] slot, [leb128] health, [leb128] armour
-#define svcqex_locprint				49	// uses qe's localised string formatting, otherwise treat as svc_print.
-#define svcqex_servervars			50	// [leb128] changedvalues, [???] value...
-#define svcqex_seq					51	// [leb128] input sequence ack
-#define svcqex_achievement			52	// [string] codename
-#define svcqex_chat					53	// [byte] svcqex_chat, [byte] playercolour, [byte] textcolour, [string] playername, [string] chattext // new from FTE
-#define svcqex_levelcompleted		54
-#define svcqex_backtolobby			55
-#define svcqex_localsound			56
-#define svcqex_prompt				57
-#define svcqex_loccenterprint		58	// [string] codename
-// //
-#define CONST_QEX_COLOR_WHITE 0
-#define CONST_QEX_COLOR_GREEN 1
-#define CONST_QEX_COLOR_TEAL 2
-#define CONST_QEX_COLOR_YELLOW 3
-
-//[byte] svcqex_chat, [byte] playercolour, [byte] textcolour, [string] playername, [string] chattext
-void(string sender, float sender_color, string text) kex_chat_message_broad =
-{
-	WriteByte(MSG_ALL, svcqex_chat);
-	WriteByte(MSG_ALL, sender_color);
-	WriteByte(MSG_ALL, CONST_QEX_COLOR_TEAL);
-	WriteString(MSG_ALL, sender);
-	WriteString(MSG_ALL, text);
-};
-
-//[byte] svcqex_chat, [byte] playercolour, [byte] textcolour, [string] playername, [string] chattext
-void(string sender, float sender_color, string text) kex_chat_message_self =
-{
-	local entity bak_entity;
-	bak_entity = msg_entity;
-
-	msg_entity = self;
-	WriteByte(MSG_ONE, svcqex_chat);
-	WriteByte(MSG_ONE, sender_color);
-	WriteByte(MSG_ONE, CONST_QEX_COLOR_WHITE);
-	WriteString(MSG_ONE, sender);
-	WriteString(MSG_ONE, text);
-
-	msg_entity = bak_entity;
-};

@@ -1,9 +1,8 @@
 /// ReProjectMoon-specific source file
 /// Here go all common game (and logic) definitions
-/// MUST be prefixed with MOON_
-
 // TODO: one day may be split between technical and Game Design defs?
 
+/// These are engine consts, declared just to remember
 #define CONST_QC_DISPLAY_MAX 999
 
 #define CONST_QC_SPRINT_A "\a"			// Black cell
@@ -16,6 +15,12 @@
 #define CONST_QC_SPRINT_S_OPEN "\s"		// Also red text, but why two different codes?
 #define CONST_QC_SPRINT_S_CLOSE "\s"
 
+#define CONST_QC_COLLISION_WITH_EVERYTHING 0
+#define CONST_QC_COLLISION_WITH_SOLID 1
+#define CONST_QC_COLLISION_WITH_MONSTER_WIDE 2
+
+/// All below MUST be prefixed with MOON_
+// Glyphs
 #define MOON_GLYPH_WHITECELL "\x0B"		// White cell, should be cursor
 #define MOON_GLYPH_SELECTION "\x0D"		// Red triangle
 #define MOON_GLYPH_BRACKET_OPEN "\x10"	// Red [, also x90
@@ -27,6 +32,15 @@
 #define MOON_GLYPH_CENTERDOT_YELLOW "\x8E" // Yellow center dot
 #define MOON_GLYPH_REDARROW "\xFF"		// Red arrow pointing left
 
+// Consts for traits with Locked->Unlocked->Level1->...->LevelN progression
+#define MOON_CONST_LOCKED -1
+#define MOON_CONST_UNLOCKED 0 // anything above this is the Level of that property
+
+#define MOON_CONST_AXE_NOT 0
+#define MOON_CONST_AXE_HIT 1
+#define MOON_CONST_AXE_CRIPPLE 2 // added
+
+
 // Debug flags set
 #define MOON_DEBUG_DPRINT_NONE 0            // dprint > /dev/null
 #define MOON_DEBUG_DPRINT_SOME 1            // dprint > bprint, occasional: debug sprint
@@ -34,12 +48,30 @@
 #define MOON_DEBUG_DPRINT_NEXTWAVE 4        // Every wave: dprint time till next wave
 #define MOON_DEBUG_DPRINT_SPAWNED_NAMES 8   // Every wave: dprint name of each spawned monster
 #define MOON_DEBUG_CHEATS_ON 16             // Allow the use of cheats
+// Traits later be used in playable classes
+#define MOON_TRAIT_CPRINT_SEE_ALLY_HP 32     // Show ally (heart, guard) HP on crosshair
+#define MOON_TRAIT_CPRINT_SEE_MONSTER_HP 64  // Show monster HP on crosshair
 // //
 
-string MOON_VERSION = "0.27kf";
-float MOON_DEBUG = MOON_DEBUG_DPRINT_NEXTWAVE | MOON_DEBUG_DPRINT_SPAWNED_NAMES | MOON_DEBUG_CHEATS_ON;
+string MOON_VERSION = "0.29kf";
+float MOON_DEBUG = MOON_DEBUG_DPRINT_SPAWNED_NAMES | MOON_DEBUG_CHEATS_ON | MOON_TRAIT_CPRINT_SEE_ALLY_HP;
 // // Impulse codes. First 19 keep for original Q1; limit is 255; so we should line up somewhere in between
 float MOON_IMPULSE_CODE_NOOP = 0;
+// Code range WEAPONS 1..8 - Quake defaults
+float QC_IMPULSE_CODE_WEAPON_AXE = 1;
+float QC_IMPULSE_CODE_WEAPON_SHOTGUN = 2;
+float QC_IMPULSE_CODE_WEAPON_SUPER_SHOTGUN = 3;
+float QC_IMPULSE_CODE_WEAPON_NAILGUN = 4;
+float QC_IMPULSE_CODE_WEAPON_SUPER_NAILGUN = 5;
+float QC_IMPULSE_CODE_WEAPON_GRENADE_LAUNCHER = 6;
+float QC_IMPULSE_CODE_WEAPON_ROCKET_LAUNCHER = 7;
+float QC_IMPULSE_CODE_WEAPON_LIGHTNING = 8;
+// Code range for rest Quake defaults
+float QC_IMPULSE_CODE_CHEAT_COMMAND = 9;
+float QC_IMPULSE_CODE_CYCLE_WEAPON_FORTH = 10;
+float QC_IMPULSE_CODE_SERVER_FLAGS = 11;
+float QC_IMPULSE_CODE_CYCLE_WEAPON_BACK = 12;
+
 float MOON_IMPULSE_CODE_FIRST = 32;
 // Code range CLI UI 32..95
 float MOON_IMPULSE_CODE_FIRST_CLI_UI = 32;
@@ -110,6 +142,7 @@ float MOON_NEXTLEVEL_MORE_SCALING_FACTOR = 1.35;
 
 string MOON_PLAYER_CLASSNAME = "player";
 float MOON_PLAYER_HEALTH_INIT = 100;
+float MOON_PLAYER_HEALTH_REGEN_COOLDOWN = 1; // in seconds
 float MOON_PLAYER_MANA_INIT = 35;	// may be change later
 float MOON_PLAYER_GOLD_INIT = 300;
 float MOON_PLAYER_LEVEL_GROW_FAST 	= 35;
@@ -118,6 +151,7 @@ float MOON_PLAYER_LEVEL_GROW_NORMAL = 40;
 float MOON_PLAYER_POINT_GROW_NORMAL = 4;
 float MOON_PLAYER_LEVEL_GROW_SLOW 	= 50; // unnecessary, just for consistency
 float MOON_PLAYER_POINT_GROW_SLOW 	= 3;
+float MOON_PLAYER_LEVEL_NOMOREHELP = 4;
 
 // Play-able classes are referred as "Chars" to not confuse with class keyword/property
 string MOON_CHAR_RANGER_CLASS = "default";		// Default, manual Level-up
@@ -159,10 +193,15 @@ float MOON_TIME_TO_DISAPPEAR_IMPORTANT = 90;
 float MOON_TIME_ACTIVE_MENTAT = 90;
 float MOON_TIME_BETWEEN_MONSTER_SPAWN = 0.4; // was 0.3 but for Coop MP changed to 0.4
 float MOON_TIME_BETWEEN_ITEMSCANS = 1.28;
+float MOON_TIME_BETWEEN_FAILED_CHECKS = 4.21;
 
 string MOON_GATE_CLASSNAME = "gate";
+string MOON_GATE_ENTRY_DISPLAYNAME = "Entrance Gate";
+
 string MOON_HEART_CLASSNAME = "heart";
-string MOON_HEART_DISPLAYNAME = MOON_GLYPH_REDSQUARE" \sDONT\s "MOON_GLYPH_REDSQUARE;
+string MOON_HEART_DISPLAYNAME = "Castle Heart";
+string MOON_HEART_MODEL = "progs/heart.mdl";
+string MOON_HEART_AIMLABEL = MOON_GLYPH_REDSQUARE" \sDONT\s "MOON_GLYPH_REDSQUARE;
 float MOON_HEART_HEALTH_INIT = 200;
 float MOON_HEART_HEALTH_GROW = 10;
 float MOON_HEART_HEALTH_REGEN_VALUE = 1;
@@ -172,8 +211,8 @@ string MOON_GUARD_CLASSNAME = "guard";
 string MOON_GUARD_DISPLAYNAME = "comrade";
 float MOON_GUARD_HEALTH_INIT = 100;
 float MOON_GUARD_HEALTH_GROW = 25;
-float MOON_GUARD_HEALTH_REGEN_VALUE = 1;    // unused
-float MOON_GUARD_HEALTH_REGEN_COOLDOWN = 1; // unused
+float MOON_GUARD_HEALTH_REGEN_VALUE = 1;
+float MOON_GUARD_HEALTH_REGEN_COOLDOWN = 5;
 
 float MOON_CREEP_GOLD_PREFIX_CODE = 5;
 float MOON_CREEP_BOMB_PREFIX_CODE = 6;
@@ -321,8 +360,8 @@ float MOON_ITEM_POTION_BIG_RANDOM 		= 100;
 // Player backpack soft limits
 float MOON_AMMO_MAX_SHELL 	= 100;	// Initial max, before any upgrades
 float MOON_AMMO_MAX_NAIL 	= 200;	// Initial max, before any upgrades
-float MOON_AMMO_MAX_ROCKET 	= 100;
-float MOON_AMMO_MAX_CELL 	= 100;
+float MOON_AMMO_MAX_ROCKET 	= 100;	// Initial max, before any upgrades
+float MOON_AMMO_MAX_CELL 	= 100;	// Initial max, before any upgrades
 // These ammo boxes can be bought in shop, on market or looted, need to update later
 string MOON_AMMO_MARKET_NETNAME = "goody_ammo";
 float MOON_AMMO_MARKET_ROCKET_VS_CELL_RATIO = 0.6;
@@ -361,6 +400,28 @@ float MOON_AMMO_CELLS_MARKET_COSTOFONE = 8;
 float MOON_AMMO_CELLS_MARKET_MIN = 15;
 float MOON_AMMO_CELLS_MARKET_RANDOM = 7;
 
+// General properties (dmg, speed, distance)
+// Ammo properties that shared for all weapons using it
+float MOON_WEAPON_DAMAGEPER_SLASH = 25;         // Axe, adjusted for up_axe default -1 lowering damage
+float MOON_WEAPON_DAMAGEPER_BULLET = 10;        // Shot&Supershot
+float MOON_WEAPON_DAMAGEPER_NAIL = 9;           // Nailgun
+float MOON_WEAPON_DAMAGEPER_SUPERNAIL = 18;     // Supernailgun
+float MOON_WEAPON_PROJECTILESPEED_NAIL = 1000;  // Nail&Supernail
+float MOON_WEAPON_DAMAGEPER_ROCKET_BASE = 100;  // RL
+float MOON_WEAPON_DAMAGEPER_ROCKET_RANDOM = 20; // RL
+float MOON_WEAPON_DAMAGEPER_SPLASH = 120;       // GL&RL
+float MOON_WEAPON_DAMAGEPER_CELL = 30;          // Shaft
+float MOON_WEAPON_DAMAGEPER_CELL_DISCHARGE = 35;// Shaft in water
+float MOON_WEAPON_DAMAGEPER_SHAMBLERSHOT = 10;  // Shambler
+
+float MOON_WEAPON_DAMAGE_BONUSRADIUS_SPLASH = 40; // GL&RL
+float MOON_WEAPON_DAMAGE_SPLASH_MULT_SELF = 0.5;// GL&RL
+float MOON_WEAPON_DAMAGE_SPLASH_MULT_SHAMBLER = 0.5; // GL&RL
+float MOON_WEAPON_DISTANCE_AXE = 64;            // Axe
+float MOON_WEAPON_DISTANCE_LIGHTNING = 600;     // Shaft
+float MOON_WEAPON_PIERCING_LIGHTNING_NONE = 0;  // Guardian's Shaft
+float MOON_WEAPON_PIERCING_LIGHTNING_SOME = 4;  // Player's Shaft
+
 // MOON_ITEM_WEAPON -> MOON_WEAPON . Weapons can be bought and looted
 string MOON_WEAPON_MARKET_NETNAME = "goody_weapon";
 
@@ -368,15 +429,21 @@ string MOON_WEAPON_MARKET_NETNAME = "goody_weapon";
 string MOON_WEAPON_AXE_DISPLAYNAME = "Blood Seeker";
 string MOON_WEAPON_AXE_SHORTNAME = "ax";
 string MOON_WEAPON_AXE_MODEL_FPV = "progs/v_axe.mdl";
+float  MOON_WEAPON_AXE_COOLDOWN = 0.5;
+
 string MOON_WEAPON_SHOTGUN_DISPLAYNAME = "Boomstick";
 string MOON_WEAPON_SHOTGUN_SHORTNAME = "shot";
 string MOON_WEAPON_SHOTGUN_MODEL_FPV = "progs/v_shot.mdl";
+float  MOON_WEAPON_SHOTGUN_SALVO_SIZE = 1;
+float  MOON_WEAPON_SHOTGUN_COOLDOWN = 0.5;
 
 // Obtainable through shop, market or looting
 string MOON_WEAPON_SUPERSHOTGUN_DISPLAYNAME = "Double-Boomstick";
 string MOON_WEAPON_SUPERSHOTGUN_SHORTNAME = "super shot";
 string MOON_WEAPON_SUPERSHOTGUN_MODEL_FPV = "progs/v_shot2.mdl";
 string MOON_WEAPON_SUPERSHOTGUN_MODEL_TPV = "progs/g_shot.mdl";
+float  MOON_WEAPON_SUPERSHOTGUN_SALVO_SIZE = 2;
+float  MOON_WEAPON_SUPERSHOTGUN_COOLDOWN = 0.7;
 float  MOON_WEAPON_SUPERSHOTGUN_COST_SHOP = 50;
 float  MOON_WEAPON_SUPERSHOTGUN_AMMO_SHOP = 5;
 float  MOON_WEAPON_SUPERSHOTGUN_AMMO_MARKET = 5;
@@ -387,6 +454,8 @@ string MOON_WEAPON_NAILGUN_DISPLAYNAME = "Nailgun";
 string MOON_WEAPON_NAILGUN_SHORTNAME = "nail";
 string MOON_WEAPON_NAILGUN_MODEL_FPV = "progs/v_nail.mdl";
 string MOON_WEAPON_NAILGUN_MODEL_TPV = "progs/g_nail.mdl";
+float  MOON_WEAPON_NAILGUN_SALVO_SIZE = 1;
+float  MOON_WEAPON_NAILGUN_COOLDOWN = 0.2;
 float  MOON_WEAPON_NAILGUN_COST_SHOP = 100;
 float  MOON_WEAPON_NAILGUN_AMMO_SHOP = 30;
 float  MOON_WEAPON_NAILGUN_AMMO_MARKET = 30;
@@ -396,6 +465,8 @@ string MOON_WEAPON_SUPERNAILGUN_DISPLAYNAME = "Super Nailgun";
 string MOON_WEAPON_SUPERNAILGUN_SHORTNAME = "super nail";
 string MOON_WEAPON_SUPERNAILGUN_MODEL_FPV = "progs/v_nail2.mdl";
 string MOON_WEAPON_SUPERNAILGUN_MODEL_TPV = "progs/g_nail2.mdl";
+float  MOON_WEAPON_SUPERNAILGUN_SALVO_SIZE = 2;
+float  MOON_WEAPON_SUPERNAILGUN_COOLDOWN = 0.2;
 float  MOON_WEAPON_SUPERNAILGUN_COST_SHOP = 150;
 float  MOON_WEAPON_SUPERNAILGUN_AMMO_SHOP = 40;	// was 30 now 40
 float  MOON_WEAPON_SUPERNAILGUN_AMMO_MARKET = 40;
@@ -406,6 +477,8 @@ string MOON_WEAPON_GRENADELAUNCHER_DISPLAYNAME = "Grenade Launcher";
 string MOON_WEAPON_GRENADELAUNCHER_SHORTNAME = "gl";
 string MOON_WEAPON_GRENADELAUNCHER_MODEL_FPV = "progs/v_rock.mdl";
 string MOON_WEAPON_GRENADELAUNCHER_MODEL_TPV = "progs/g_rock.mdl";
+float  MOON_WEAPON_GRENADELAUNCHER_SALVO_SIZE = 1;
+float  MOON_WEAPON_GRENADELAUNCHER_COOLDOWN = 0.6;
 float  MOON_WEAPON_GRENADELAUNCHER_COST_SHOP = 250;
 float  MOON_WEAPON_GRENADELAUNCHER_AMMO_SHOP = 10;	// was 5 now 10
 float  MOON_WEAPON_GRENADELAUNCHER_AMMO_MARKET = 10;
@@ -415,6 +488,8 @@ string MOON_WEAPON_ROCKETLAUNCHER_DISPLAYNAME = "Rocket Launcher";
 string MOON_WEAPON_ROCKETLAUNCHER_SHORTNAME = "rl";
 string MOON_WEAPON_ROCKETLAUNCHER_MODEL_FPV = "progs/v_rock2.mdl";
 string MOON_WEAPON_ROCKETLAUNCHER_MODEL_TPV = "progs/g_rock2.mdl";
+float  MOON_WEAPON_ROCKETLAUNCHER_SALVO_SIZE = 1;
+float  MOON_WEAPON_ROCKETLAUNCHER_COOLDOWN = 0.8;
 float  MOON_WEAPON_ROCKETLAUNCHER_COST_SHOP = 350;
 float  MOON_WEAPON_ROCKETLAUNCHER_AMMO_SHOP = 5;
 float  MOON_WEAPON_ROCKETLAUNCHER_AMMO_MARKET = 5;
@@ -425,6 +500,8 @@ string MOON_WEAPON_LIGHTNING_DISPLAYNAME = "Thunderbolt";
 string MOON_WEAPON_LIGHTNING_SHORTNAME = "shaft";
 string MOON_WEAPON_LIGHTNING_MODEL_FPV = "progs/v_light.mdl";
 string MOON_WEAPON_LIGHTNING_MODEL_TPV = "progs/g_light.mdl";
+float  MOON_WEAPON_LIGHTNING_SALVO_SIZE = 1;
+float  MOON_WEAPON_LIGHTNING_COOLDOWN = 0.1;
 float  MOON_WEAPON_LIGHTNING_COST_SHOP = 500;
 float  MOON_WEAPON_LIGHTNING_AMMO_SHOP = 12;
 float  MOON_WEAPON_LIGHTNING_AMMO_MARKET = 12;
@@ -467,14 +544,14 @@ float MOON_MENTAT_DEFENSE_VALUE = 20;
 string MOON_MENTAT_DEFENSE_NETNAME = "defensive drug";
 string MOON_MENTAT_DEFENSE_NAME = "defensive drug";
 
-float MOON_MENTAT_SPEED_CODE = 3;
-float MOON_MENTAT_SPEED_VALUE_AXE  = 0.35;          // (default) time till next attack while under mentat
-float MOON_MENTAT_SPEED_VALUE_SHOTGUN  = 0.35;      //
-float MOON_MENTAT_SPEED_VALUE_SUPERSHOTGUN  = 0.55; //
-float MOON_MENTAT_SPEED_VALUE_NAILGUN  = 500;       // additional projectile speed
-float MOON_MENTAT_SPEED_VALUE_GRENADELAUNCHER = 0.45;//
-float MOON_MENTAT_SPEED_VALUE_ROCKETLAUNCHER = 0.65;//
-float MOON_MENTAT_SPEED_VALUE_LIGHTNING  = 200;     // additional ray trace distance
+float MOON_MENTAT_SPEED_CODE = 3; // TODO: change this mentat to Player speed, not weapon
+float MOON_MENTAT_SPEED_VALUE_AXE  = 0.5;               // attack cooldown multiplier, was 0.7
+float MOON_MENTAT_SPEED_VALUE_SHOTGUN  = 0.7;           // attack cooldown multiplier
+float MOON_MENTAT_SPEED_VALUE_SUPERSHOTGUN  = 0.785;    // attack cooldown multiplier
+float MOON_MENTAT_SPEED_VALUE_NAILGUN  = 500;           // additional projectile speed
+float MOON_MENTAT_SPEED_VALUE_GRENADELAUNCHER = 0.75;   // attack cooldown multiplier
+float MOON_MENTAT_SPEED_VALUE_ROCKETLAUNCHER = 0.8125;  // attack cooldown multiplier
+float MOON_MENTAT_SPEED_VALUE_LIGHTNING  = 200;         // additional ray trace distance
 string MOON_MENTAT_SPEED_NETNAME = "accelerative drug";
 string MOON_MENTAT_SPEED_NAME = "accelerative drug";
 
@@ -638,6 +715,7 @@ float MOON_ITEM_VAMPIR_POSTFIX_LOW_TO = 10;
 
 float MOON_ITEM_REGEN_CODE = 7;
 float MOON_ITEM_REGEN_MARKET_COST_SCALE = 500;
+float MOON_ITEM_REGEN_COOLDOWN = 1; // in seconds
 string MOON_ITEM_REGEN_EFFECT  		= "replenish {} health every second";
 string MOON_ITEM_REGEN_PREFIX_LOW   	= "Vein ";
 float MOON_ITEM_REGEN_PREFIX_LOW_FROM = 1;
@@ -715,11 +793,29 @@ float MOON_ITEM_REPAIR_POSTFIX_HIGH_TO = 16;
 // // last Effect's _CODE should not be greater than MOON_ITEM_TRAIT_MAX_EFFECT
 
 // // list of Upgrades
-// These things cannot and should be attached to Items, hence new Code sequence
-float MOON_ITEM_GATEALERT_CODE = 1;
+// These things cannot and should be attached to Items, hence new Code sequence.
+// Global - Castle - One continuous code span
+float MOON_ITEM_GLOBALGOLD_CODE = 11;
+float MOON_ITEM_GLOBALGOLD_BONUS_FLAT 	= 5;
+float MOON_ITEM_GLOBALGOLD_BONUS_LVLPERCENT = 0.5;
+float MOON_ITEM_GLOBALGOLD_BONUS_RANDOM = 7;
+string MOON_ITEM_GLOBALGOLD_EFFECT 		= "Book of Treasures (global gold income increase by {}%)\n";
+float MOON_ITEM_GATEALERT_CODE = 12;
 string MOON_ITEM_GATEALERT_EFFECT  		= "Book of \sRed\s Alert (gate gives a signal when killed)\n";
 string MOON_ITEM_GATEALERT_SIDEEFFECT 	= "Book of \sRed\s Gate (+10 max health to Gate)\n";
 float MOON_ITEM_GATEALERT_SIDEEFFECT_BONUS = 10;
+float MOON_ITEM_HEART_CODE = 13;
+float MOON_ITEM_HEART_BONUS_FLAT 		= 5;
+float MOON_ITEM_HEART_BONUS_LVLPERCENT 	= 0.25;
+float MOON_ITEM_HEART_BONUS_RANDOM 		= 5;
+string MOON_ITEM_HEART_EFFECT 			= "Book of Immortality (\sHeart\s life increased by {})\n";
+float MOON_ITEM_GUARDIAN_CODE = 14;
+string MOON_ITEM_GUARDIAN_EFFECT 		= "Book of Blind Guardian (guardian joins your army)\n";
+// Personal - Ammo/Weapons - One continuous code span
+float MOON_ITEM_MELEEUP_CODE = 1;
+string MOON_ITEM_MELEEUP_EFFECT 		= "Book of Bruce Lee (your axe cripples)\n";
+string MOON_ITEM_MELEEUP_SIDEEFFECT 	= "Book of Me Lee (+5 melee damage)\n";
+float MOON_ITEM_MELEEUP_SIDEEFFECT_BONUS= 5;
 float MOON_ITEM_SHELLUP_CODE = 2;
 string MOON_ITEM_SHELLUP_EFFECT 		= "Book of Shell Shock (your shell attack now stronger and more concentrated)\n";
 string MOON_ITEM_SHELLUP_SIDEEFFECT 	= "Book of PowerShell (+10 max shell capacity)\n";
@@ -727,25 +823,28 @@ float MOON_ITEM_SHELLUP_SIDEEFFECT_BONUS= 10;
 float MOON_ITEM_NAILUP_CODE = 3;
 string MOON_ITEM_NAILUP_EFFECT 			= "Book of Nail Polish (your nails attack now faster)\n";
 string MOON_ITEM_NAILUP_SIDEEFFECT 		= "9 Inch Book of Nails (+20 max nail capacity)\n";
+float MOON_ITEM_NAILUP_EFFECT_BONUS     = 500;
 float MOON_ITEM_NAILUP_SIDEEFFECT_BONUS = 20;
-float MOON_ITEM_STATUP_CODE = 4;
+float MOON_ITEM_ROCKUP_CODE = 4;
+string MOON_ITEM_ROCKUP_EFFECT 			= "Book of Miss Silo (your launchers launch faster)\n";
+string MOON_ITEM_ROCKUP_SIDEEFFECT 		= "Book of Miss Silo V2 (+1 max rocket capacity)\n";
+float MOON_ITEM_ROCKUP_EFFECT_BONUS = 0.7;
+float MOON_ITEM_ROCKUP_SIDEEFFECT_BONUS = 1;
+float MOON_ITEM_CELLUP_CODE = 5;
+string MOON_ITEM_CELLUP_EFFECT 			= "Book of Chain Lighting (your lighting jumps twice)\n";
+string MOON_ITEM_CELLUP_SIDEEFFECT 		= "Book of Dura Cell (+1 max cell capacity)\n";
+float MOON_ITEM_CELLUP_EFFECT_CHAIN_DISTANCE = 512; // PoT, max distance to next target
+float MOON_ITEM_CELLUP_EFFECT_CHAIN_JUMPS = 2; // max number of jumps
+float MOON_ITEM_CELLUP_EFFECT_CHAIN_COOLDOWN = 0.01; // should be small enough, to allow continued firing, but non-zero, so lightning non bouncing between 2 same targets
+float MOON_ITEM_CELLUP_SIDEEFFECT_BONUS = 1;
+float MOON_ITEM_STATUP_CODE = 6;
 float MOON_ITEM_STATUP_BONUS 			= 5;
 string MOON_ITEM_STATUP_EFFECT 			= "Book of High Five (you get \5 stats points)\n";
-float MOON_ITEM_GUARDIAN_CODE = 5;
-string MOON_ITEM_GUARDIAN_EFFECT 		= "Book of Blind Guardian (guardian joins your army)\n";
-float MOON_ITEM_GLOBALGOLD_CODE = 6;
-float MOON_ITEM_GLOBALGOLD_BONUS_FLAT 	= 5;
-float MOON_ITEM_GLOBALGOLD_BONUS_LVLPERCENT = 0.5;
-float MOON_ITEM_GLOBALGOLD_BONUS_RANDOM = 7;
-string MOON_ITEM_GLOBALGOLD_EFFECT 		= "Book of Treasures (global gold income increase by {}%)\n";
-float MOON_ITEM_HEART_CODE = 7;
-float MOON_ITEM_HEART_BONUS_FLAT 		= 5;
-float MOON_ITEM_HEART_BONUS_LVLPERCENT 	= 0.25;
-float MOON_ITEM_HEART_BONUS_RANDOM 		= 5;
-string MOON_ITEM_HEART_EFFECT 			= "Book of Immortality (\sHeart\s life increased by {})\n";
 // // end of list of Upgrades
 
 // // Monster related consts
+string MOON_MONSTER_CLASSNAME = "monster";
+
 float MOON_MONSTER_FISRTWAVETIME_DELAY		= 30; // for the first wave Host has no chance to use fast/slowmeat
 float MOON_MONSTER_FISRTWAVETIME_RANDOM		= 30;
 float MOON_MONSTER_WAVETIME_DELAY_FAST   	= 15;

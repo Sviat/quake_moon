@@ -373,7 +373,7 @@ void(entity targ, entity inflictor, entity attacker, float damage) T_Damage = //
 					spk = percent(take, GRD_PATROLTIME);
 					if ((spk > WF_NORMAL))
 					{
-						T_Damage(attacker, self, self, spk);
+						T_Damage(attacker, targ, targ, spk);
 					}
 				}
 				if ((targ.ability == LOGIC_FINDDEFEND))
@@ -381,7 +381,7 @@ void(entity targ, entity inflictor, entity attacker, float damage) T_Damage = //
 					if ((random() < MON_BACKTIME))
 					{
 						take = WF_NORMAL;
-						if ((self.invincible_sound < time))
+						if ((targ.invincible_sound < time))
 						{
 							if ((random() < MON_BACKTIME))
 							{
@@ -391,14 +391,14 @@ void(entity targ, entity inflictor, entity attacker, float damage) T_Damage = //
 							{
 								sound(targ, CHAN_ITEM, "moon/misc/stone2.wav", WF_DEFEND, ATTN_NORM);
 							}
-							self.invincible_sound = (time + WF_DEFEND);
+							targ.invincible_sound = (time + WF_DEFEND);
 						}
 					}
 				}
 			}
 		}
 	}
-	if ((attacker.ability == LOGIC_DEFEND))
+	if ((attacker.ability == 4))
 	{
 		if ((attacker.flags & FL_MONSTER))
 		{
@@ -465,7 +465,7 @@ void(entity targ, entity inflictor, entity attacker, float damage) T_Damage = //
 			if (!(attacker.flags & FL_MONSTER))
 			{
 				targ.enemy = attacker;
-				targ.show_hostile = (time + self.hst);
+				targ.show_hostile = (time + targ.hst);
 			}
 		}
 	}
@@ -477,34 +477,32 @@ void(entity inflictor, entity attacker, float damage, entity ignore) T_RadiusDam
 	local entity head;
 	local vector org;
 
-	head = findradius(inflictor.origin, (damage + GRD_DEFENDTIME));
+	head = findradius(inflictor.origin, (damage + MOON_WEAPON_DAMAGE_BONUSRADIUS_SPLASH));
 	while (head)
 	{
 		if ((head != ignore))
 		{
 			if (head.takedamage)
 			{
-				org = (head.origin + ((head.mins + head.maxs) * MON_BACKTIME));
-				points = (MON_BACKTIME * vlen((inflictor.origin - org)));
-				if ((points < WF_NORMAL))
+				org = (head.origin + ((head.mins + head.maxs) * 0.5));
+				points = (0.5 * vlen((inflictor.origin - org)));
+				if ((points < 0))
 				{
-					points = WF_NORMAL;
+					points = 0;
 				}
 				points = (damage - points);
 				if ((head == attacker))
 				{
-					points = (points * MON_BACKTIME);
+					points = (points * MOON_WEAPON_DAMAGE_SPLASH_MULT_SELF);
 				}
-				if ((points > WF_NORMAL))
+				if ((points > 0))
 				{
 					if (CanDamage(head, inflictor))
 					{
 						if ((head.classname == "monster_shambler"))
 						{
-							T_Damage(head, inflictor, attacker, (points * MON_BACKTIME));
-						}
-						else
-						{
+							T_Damage(head, inflictor, attacker, (points * MOON_WEAPON_DAMAGE_SPLASH_MULT_SHAMBLER));
+						} else {
 							T_Damage(head, inflictor, attacker, points);
 						}
 					}

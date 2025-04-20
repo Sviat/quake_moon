@@ -22,7 +22,7 @@ void() W_Precache =
 
 float() crandom =
 {
-	return ((H_MEGA * (random() - MON_BACKTIME)));
+	return ((2 * (random() - 0.5)));
 };
 
 void() W_FireAxe =
@@ -32,21 +32,24 @@ void() W_FireAxe =
 
 	makevectors(self.v_angle);
 	source = (self.origin + '0 0 16');
-	traceline(source, (source + (v_forward * KEY_LOOKUP)), FALSE, self);
-	if ((trace_fraction == CHSCAM_ON))
+	traceline(source, (source + (v_forward * MOON_WEAPON_DISTANCE_AXE)), FALSE, self);
+	if ( trace_fraction == 1 )
 	{
 		return;
 	}
-	org = (trace_endpos - (v_forward * LOGIC_DEFEND));
+
+	org = (trace_endpos - (v_forward * 4));
 	if (trace_ent.takedamage)
 	{
-		trace_ent.axhitme = CHSCAM_ON;
 		SpawnBlood(org, VEC_ORIGIN, GRD_PATROLTIME);
-		T_Damage(trace_ent, self, self, GRD_PATROLTIME);
-	}
-	else
-	{
-		sound(self, CHAN_WEAPON, "player/axhit2.wav", CHSCAM_ON, ATTN_NORM);
+		trace_ent.axhitme = MOON_CONST_AXE_HIT;
+		if ( self.up_axe >= MOON_CONST_UNLOCKED )
+		{
+			trace_ent.axhitme = MOON_CONST_AXE_CRIPPLE;
+		}
+		T_Damage(trace_ent, self, self, MOON_WEAPON_DAMAGEPER_SLASH + (self.up_axe * MOON_ITEM_MELEEUP_SIDEEFFECT_BONUS));
+	} else {
+		sound(self, CHAN_WEAPON, "player/axhit2.wav", 1, ATTN_NORM);
 		WriteByte(MSG_BROADCAST, SVC_TEMPENTITY);
 		WriteByte(MSG_BROADCAST, TE_GUNSHOT);
 		WriteCoord(MSG_BROADCAST, org_x);
@@ -69,7 +72,6 @@ vector() wall_velocity =
 void(vector org, vector vel) SpawnMeatSpray =
 {
 	local entity missile;
-	//local entity mpuff; // unused
 
 	missile = spawn();
 	missile.owner = self;
@@ -79,7 +81,7 @@ void(vector org, vector vel) SpawnMeatSpray =
 	missile.velocity = vel;
 	missile.velocity_z = ((missile.velocity_z + 250) + (50 * random()));
 	missile.avelocity = '3000 1000 2000';
-	missile.nextthink = (time + CHSCAM_ON);
+	missile.nextthink = (time + 1);
 	missile.think = SUB_Remove;
 	setmodel(missile, "progs/zom_gib.mdl");
 	setsize(missile, VEC_ORIGIN, VEC_ORIGIN);
@@ -108,7 +110,7 @@ void(float damage) spawn_touchblood =
 {
 	local vector vel;
 
-	if ((other.green_blood == CHSCAM_ON))
+	if ( other.green_blood == TRUE )
 	{
 		spawn_touchpoison(damage);
 		return;
@@ -127,7 +129,7 @@ float multi_damage;
 void() ClearMultiDamage =
 {
 	multi_ent = world;
-	multi_damage = WF_NORMAL;
+	multi_damage = 0;
 };
 
 void() ApplyMultiDamage =
@@ -145,14 +147,13 @@ void(entity hit, float damage) AddMultiDamage =
 	{
 		return;
 	}
-	if ((hit != multi_ent))
+
+	if ( hit != multi_ent )
 	{
 		ApplyMultiDamage();
 		multi_damage = damage;
 		multi_ent = hit;
-	}
-	else
-	{
+	} else {
 		multi_damage = (multi_damage + damage);
 	}
 };
@@ -163,23 +164,19 @@ void(float damage, vector dir) TraceAttack =
 	local vector org;
 
 	vel = normalize(((dir + (v_up * crandom())) + (v_right * crandom())));
-	vel = (vel + (H_MEGA * trace_plane_normal));
+	vel = (vel + (2 * trace_plane_normal));
 	vel = (vel * 200);
-	org = (trace_endpos - (dir * LOGIC_DEFEND));
+	org = (trace_endpos - (dir * 4));
 	if (trace_ent.takedamage)
 	{
-		if ((trace_ent.green_blood == CHSCAM_ON))
+		if ( trace_ent.green_blood == TRUE )
 		{
-			SpawnPoison(org, (vel * MON_REACTIONTIME), damage);
-		}
-		else
-		{
-			SpawnBlood(org, (vel * MON_REACTIONTIME), damage);
+			SpawnPoison(org, (vel * 0.2), damage);
+		} else {
+			SpawnBlood(org, (vel * 0.2), damage);
 		}
 		AddMultiDamage(trace_ent, damage);
-	}
-	else
-	{
+	} else {
 		WriteByte(MSG_BROADCAST, SVC_TEMPENTITY);
 		WriteByte(MSG_BROADCAST, TE_GUNSHOT);
 		WriteCoord(MSG_BROADCAST, org_x);
@@ -196,16 +193,17 @@ void(float shotcount, vector dir, vector spread) FireBullets =
 	makevectors(self.v_angle);
 	src = (self.origin + (v_forward * SVC_SETVIEWANGLES));
 	src_z = (self.absmin_z + (self.size_z * 0.7));
+
 	ClearMultiDamage();
-	while ((shotcount > WF_NORMAL))
+	while ( shotcount > 0 )
 	{
 		direction = ((dir + ((crandom() * spread_x) * v_right)) + ((crandom() * spread_y) * v_up));
-		traceline(src, (src + (direction * IT_CELLS)), FALSE, self);
-		if ((trace_fraction != CHSCAM_ON))
+		traceline(src, (src + (direction * 2048)), FALSE, self);
+		if ((trace_fraction != 1))
 		{
 			TraceAttack(LOGIC_DEFEND, direction);
 		}
-		shotcount = (shotcount - CHSCAM_ON);
+		shotcount = (shotcount - 1);
 	}
 	ApplyMultiDamage();
 };
@@ -216,14 +214,15 @@ void() W_FireShotgun =
 
 	sound(self, CHAN_WEAPON, "weapons/guncock.wav", 1, ATTN_NORM);
 	self.punchangle_x = CONTENT_SOLID;
-	self.ammo_shells = (self.ammo_shells - 1);
+	self.ammo_shells = (self.ammo_shells - MOON_WEAPON_SHOTGUN_SALVO_SIZE);
 	self.currentammo = self.ammo_shells; // Fixed
 	dir = aim(self, 100000);
-	if ((self.up_bullet >= 1)) // Re-use same param for both Upgrade and Extra capacity
+
+	if ( self.up_bullet == MOON_CONST_LOCKED ) // Re-use same param for both Upgrade and Extra capacity
 	{
-		FireBullets(7, dir, '0.02 0.02 0');
-	} else {
 		FireBullets(6, dir, '0.04 0.04 0');
+	} else {
+		FireBullets(7, dir, '0.02 0.02 0');
 	}
 };
 
@@ -231,21 +230,23 @@ void() W_FireSuperShotgun =
 {
 	local vector dir;
 
-	if ((self.currentammo == 1))
+	if ( self.currentammo < MOON_WEAPON_SUPERSHOTGUN_SALVO_SIZE )
 	{
 		W_FireShotgun();
 		return;
 	}
+
 	sound(self, CHAN_WEAPON, "weapons/shotgn2.wav", 1, ATTN_NORM);
-	self.punchangle_x = CONTENT_SLIME;
-	self.ammo_shells = (self.ammo_shells - 2);
+	self.punchangle_x = -4;
+	self.ammo_shells = (self.ammo_shells - MOON_WEAPON_SUPERSHOTGUN_SALVO_SIZE);
 	self.currentammo = self.ammo_shells; // Fixed
 	dir = aim(self, 100000);
-	if ((self.up_bullet >= 1)) // Re-use same param for both Upgrade and Extra capacity
+
+	if ( self.up_bullet == MOON_CONST_LOCKED ) // Re-use same param for both Upgrade and Extra capacity
 	{
-		FireBullets(16, dir, '0.06 0.04 0');
-	} else {
 		FireBullets(14, dir, '0.14 0.08 0');
+	} else {
+		FireBullets(16, dir, '0.06 0.04 0');
 	}
 };
 
@@ -296,16 +297,18 @@ void() T_MissileTouch =
 		remove(self);
 		return;
 	}
-	damg = (100 + (random() * GRD_PATROLTIME));
+
+	damg = (MOON_WEAPON_DAMAGEPER_ROCKET_BASE + (random() * MOON_WEAPON_DAMAGEPER_ROCKET_RANDOM));
 	if (other.health)
 	{
 		if ((other.classname == "monster_shambler"))
 		{
-			damg = (damg * MON_BACKTIME);
+			damg = (damg * 0.5);
 		}
 		T_Damage(other, self, self.owner, damg);
 	}
-	T_RadiusDamage(self, self.owner, 120, other);
+
+	T_RadiusDamage(self, self.owner, MOON_WEAPON_DAMAGEPER_SPLASH, other);
 	self.origin = (self.origin - (KEY_MOVERIGHT * normalize(self.velocity)));
 	WriteByte(MSG_BROADCAST, SVC_TEMPENTITY);
 	WriteByte(MSG_BROADCAST, TE_EXPLOSION);
@@ -319,15 +322,14 @@ void() T_MissileTouch =
 void() W_FireRocket =
 {
 	local entity missile;
-	//local entity mpuff; // unused
 
 	sound(self, CHAN_WEAPON, "weapons/sgun1.wav", 1, ATTN_NORM);
-	self.ammo_rockets = (self.ammo_rockets - 1);
+	self.ammo_rockets = (self.ammo_rockets - MOON_WEAPON_ROCKETLAUNCHER_SALVO_SIZE);
 	self.currentammo = self.ammo_rockets; // Fixed
 	self.punchangle_x = CONTENT_SOLID;
 	missile = spawn();
 	missile.owner = self;
-	traceline((self.origin + '0 0 16'), (('0 0 16' + self.origin) + (v_forward * IT_CELLS)), FALSE, self);
+	traceline((self.origin + '0 0 16'), (('0 0 16' + self.origin) + (v_forward * 2048)), FALSE, self);
 	ExplodeAlert(missile, trace_endpos);
 	missile.movetype = MOVETYPE_FLYMISSILE;
 	missile.solid = SOLID_BBOX;
@@ -345,98 +347,227 @@ void() W_FireRocket =
 	setorigin(missile, ((self.origin + (v_forward * KEY_MOVERIGHT)) + '0 0 16'));
 };
 
-void(vector p1, vector p2, entity from, float damage) LightningDamage =
+void(vector source, vector destination, entity target, entity attacker, entity inflictor, float damage) LightningDamageSparks =
 {
-	local entity e1;
-	local entity e2;
+	local entity target_second;
 	local vector f;
 
-	f = (p2 - p1);
+	// WTF Black magic
+	f = (destination - source);
 	normalize(f);
-	f_x = (WF_NORMAL - f_y);
+	f_x = (0 - f_y);
 	f_y = f_x;
-	f_z = WF_NORMAL;
-	f = (f * KEY_MOVEFORWARD);
-	e2 = world;
-	e1 = world;
-	traceline(p1, p2, FALSE, self);
+	f_z = 0;
+	f = (f * 16);
+	// end of WTF Black magic
+
+	traceline((source + f), (destination + f), CONST_QC_COLLISION_WITH_EVERYTHING, inflictor);
+	target_second = trace_ent;
+	if ( (trace_ent != target) && (trace_ent.takedamage) )
+	{
+		particle(trace_endpos, '0 0 100', 225, (damage * 4));
+		T_Damage(trace_ent, inflictor, attacker, damage);
+	}
+
+	traceline((source - f), (destination - f), CONST_QC_COLLISION_WITH_EVERYTHING, inflictor);
+	if ( (trace_ent != target) && (trace_ent != target_second) && (trace_ent.takedamage) )
+	{
+		particle(trace_endpos, '0 0 100', 225, (damage * 4));
+		T_Damage(trace_ent, inflictor, attacker, damage);
+	}
+};
+
+entity(vector source, vector destination, entity attacker, entity inflictor, float damage, float bolt_type, float piercing_strength = 0) moon_trace_lightning_bolt =
+{
+	local entity object_hit;
+
+	if ( attacker.t_width < time )
+	{
+		sound(attacker, CHAN_WEAPON, "weapons/lhit.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
+		attacker.t_width = (time + 0.6);
+	}
+
+	traceline(source, destination, CONST_QC_COLLISION_WITH_MONSTER_WIDE, inflictor);
+	object_hit = trace_ent;
+
+	WriteByte(MSG_BROADCAST, SVC_TEMPENTITY);
+	WriteByte(MSG_BROADCAST, bolt_type);
+	WriteEntity(MSG_BROADCAST, inflictor);
+	WriteCoord(MSG_BROADCAST, source_x);
+	WriteCoord(MSG_BROADCAST, source_y);
+	WriteCoord(MSG_BROADCAST, source_z);
+	WriteCoord(MSG_BROADCAST, trace_endpos_x);
+	WriteCoord(MSG_BROADCAST, trace_endpos_y);
+	WriteCoord(MSG_BROADCAST, trace_endpos_z);
+
 	if (trace_ent.takedamage)
 	{
-		particle(trace_endpos, '0 0 100', 225, (damage * LOGIC_DEFEND));
-		T_Damage(trace_ent, from, from, damage);
-		if ((self.classname == "player"))
+		particle(trace_endpos, '0 0 100', 225, (damage * 4));
+		T_Damage(trace_ent, attacker, attacker, damage);
+		if ( (attacker.classname == MOON_PLAYER_CLASSNAME) && (trace_ent.classname == MOON_PLAYER_CLASSNAME) )
 		{
-			if ((other.classname == "player"))
-			{
-				trace_ent.velocity_z = (trace_ent.velocity_z + 400);
-			}
+			trace_ent.velocity_z = trace_ent.velocity_z + 400;
 		}
 	}
-	e1 = trace_ent;
-	traceline((p1 + f), (p2 + f), FALSE, self);
-	if (((trace_ent != e1) && trace_ent.takedamage))
+
+	if ( piercing_strength > 0 )
 	{
-		particle(trace_endpos, '0 0 100', 225, (damage * LOGIC_DEFEND));
-		T_Damage(trace_ent, from, from, damage);
+		LightningDamageSparks(source, trace_endpos + (v_forward * piercing_strength), object_hit, attacker, attacker, damage);
 	}
-	e2 = trace_ent;
-	traceline((p1 - f), (p2 - f), FALSE, self);
-	if ((((trace_ent != e1) && (trace_ent != e2)) && trace_ent.takedamage))
+
+	return object_hit;
+};
+
+entity(vector source, vector destination, entity attacker) moon_trace_lightning_bolt_shambler =
+{
+	return moon_trace_lightning_bolt(source, destination, attacker, attacker, MOON_WEAPON_DAMAGEPER_SHAMBLERSHOT, TE_LIGHTNING1, MOON_WEAPON_PIERCING_LIGHTNING_NONE);
+};
+
+entity(vector source, vector destination, entity attacker, entity inflictor, float piercing_strength = 0) moon_trace_lightning_bolt_shaft =
+{
+	return moon_trace_lightning_bolt(source, destination, attacker, inflictor, (MOON_WEAPON_DAMAGEPER_CELL/2), TE_LIGHTNING2, piercing_strength);
+};
+
+void(entity attacker, entity target, float max_distance, float jump_count = 0) moon_trace_lightning_bolt_chain =
+{
+	local entity head;
+	local entity target_next;
+	local entity target_alternative;
+	local entity target_desperate;
+	local float temp_dist;
+	local float min_dist_enemy;
+	local float min_dist_friend;
+	local float min_dist_heart;
+
+	attacker.lightning_chained_time = time + MOON_ITEM_CELLUP_EFFECT_CHAIN_COOLDOWN; // just to not bounce back to unsuspecting player
+	target.lightning_chained_time = time + MOON_ITEM_CELLUP_EFFECT_CHAIN_COOLDOWN;
+
+	if ( jump_count <= 0 )
 	{
-		particle(trace_endpos, '0 0 100', 225, (damage * LOGIC_DEFEND));
-		T_Damage(trace_ent, from, from, damage);
+		// dprint("ChainLightning: {0} used all jumps\n", target.netname);
+		return;
 	}
+
+	target_next = world;
+	target_alternative = world;
+	target_desperate = world;
+
+	min_dist_enemy = max_distance;
+	min_dist_friend = max_distance;
+	min_dist_heart = max_distance;
+	head = findradius(target.origin, max_distance);
+	while (head)
+	{
+		if ( (!head.takedamage) || (head.health <= 0) || (time < head.lightning_chained_time) )
+		{
+			head = head.chain;
+			continue;
+		}
+		if (!moon_can_trace_object(target, head) )
+		{
+			head = head.chain;
+			continue;
+		}
+
+		temp_dist = vlen(head.origin - target.origin);
+
+		if ( (head.flags & FL_MONSTER) || (head.classname == MOON_MONSTER_CLASSNAME) )
+		{
+			if (min_dist_enemy > temp_dist)
+			{
+				min_dist_enemy = temp_dist;
+				target_next = head;
+			}
+		}
+
+		if ( (head.classname == MOON_GUARD_CLASSNAME) || (head.classname == MOON_PLAYER_CLASSNAME) )
+		{
+			if (min_dist_friend > temp_dist)
+			{
+				min_dist_friend = temp_dist;
+				target_alternative = head;
+			}
+		}
+
+		if ( (head.classname == MOON_HEART_CLASSNAME) )
+		{
+			if (min_dist_heart > temp_dist)
+			{
+				min_dist_heart = temp_dist;
+				target_desperate = head;
+			}
+		}
+
+		head = head.chain;
+	}
+
+	if (target_next == world)
+	{
+		target_next = target_alternative;
+	}
+	if (target_next == world)
+	{
+		target_next = target_desperate;
+	}
+	if (target_next == world)
+	{
+		// dprint("ChainLightning: no body around\n");
+		return;
+	}
+	// dprint("ChainLightning: {0} zaps {1}, jumps left {2}\n", target.netname, target_next.netname, floor_ftos(jump_count-1));
+
+	moon_trace_lightning_bolt_shaft(target.origin, ((target_next.absmin + target_next.absmax) * 0.5), attacker, target, MOON_WEAPON_PIERCING_LIGHTNING_NONE); // do actual damage
+
+	moon_trace_lightning_bolt_chain(attacker, target_next, (max_distance/2), (jump_count-1)); // Recursive dive
 };
 
 void() W_FireLightning =
 {
 	local vector org;
 	local float cells;
+	local float distance;
+	local entity target_hit;
 
-	if ((self.ammo_cells < 1))
+	if ( self.ammo_cells < MOON_WEAPON_LIGHTNING_SALVO_SIZE )
 	{
 		self.weapon = W_BestWeapon();
 		W_SetCurrentAmmo();
 		return;
 	}
-	if ((self.waterlevel > 1))
+
+	if ( self.waterlevel > 1 )
 	{
 		cells = self.ammo_cells;
 		self.ammo_cells = 0;
 		W_SetCurrentAmmo();
-		T_RadiusDamage(self, self, (35 * cells), world);
+		T_RadiusDamage(self, self, (MOON_WEAPON_DAMAGEPER_CELL_DISCHARGE * cells), world);
 		return;
 	}
-	if ((self.t_width < time))
-	{
-		sound(self, CHAN_WEAPON, "weapons/lhit.wav", 1, ATTN_NORM);
-		self.t_width = (time + 0.6);
-	}
+
 	self.punchangle_x = CONTENT_SOLID;
-	self.ammo_cells = (self.ammo_cells - 1);
+	self.ammo_cells = (self.ammo_cells - MOON_WEAPON_LIGHTNING_SALVO_SIZE);
 	self.currentammo = self.ammo_cells; // Fixed
+
 	org = (self.origin + '0 0 16');
+
 	if ( self.mentat_attackspeed_time > time )
 	{
-		traceline(org, (org + ( v_forward * (600+MOON_MENTAT_SPEED_VALUE_LIGHTNING) )), TRUE, self);
+		distance = MOON_WEAPON_DISTANCE_LIGHTNING + MOON_MENTAT_SPEED_VALUE_LIGHTNING;
 	} else {
-		traceline(org, (org + ( v_forward * 600 )), TRUE, self);
+		distance = MOON_WEAPON_DISTANCE_LIGHTNING;
 	}
-	WriteByte(MSG_BROADCAST, SVC_TEMPENTITY);
-	WriteByte(MSG_BROADCAST, TE_LIGHTNING2);
-	WriteEntity(MSG_BROADCAST, self);
-	WriteCoord(MSG_BROADCAST, org_x);
-	WriteCoord(MSG_BROADCAST, org_y);
-	WriteCoord(MSG_BROADCAST, org_z);
-	WriteCoord(MSG_BROADCAST, trace_endpos_x);
-	WriteCoord(MSG_BROADCAST, trace_endpos_y);
-	WriteCoord(MSG_BROADCAST, trace_endpos_z);
-	LightningDamage(self.origin, (trace_endpos + (v_forward * LOGIC_DEFEND)), self, MON_CAMPTIME);
+
+	target_hit = moon_trace_lightning_bolt_shaft(org, (org + ( v_forward * distance )), self, self, MOON_WEAPON_PIERCING_LIGHTNING_SOME);
+
+	if ( (self.up_cell >= MOON_CONST_UNLOCKED) && (target_hit != world) && (target_hit.takedamage) )
+	{
+		moon_trace_lightning_bolt_chain(self, target_hit, MOON_ITEM_CELLUP_EFFECT_CHAIN_DISTANCE, MOON_ITEM_CELLUP_EFFECT_CHAIN_JUMPS);
+	}
 };
 
 void() GrenadeExplode =
 {
-	T_RadiusDamage(self, self.owner, 120, world);
+	T_RadiusDamage(self, self.owner, MOON_WEAPON_DAMAGEPER_SPLASH, world);
 	WriteByte(MSG_BROADCAST, SVC_TEMPENTITY);
 	WriteByte(MSG_BROADCAST, TE_EXPLOSION);
 	WriteCoord(MSG_BROADCAST, self.origin_x);
@@ -466,9 +597,8 @@ void() GrenadeTouch =
 void() W_FireGrenade =
 {
 	local entity missile;
-	//local entity mpuff; // unused
 
-	self.ammo_rockets = (self.ammo_rockets - 1);
+	self.ammo_rockets = (self.ammo_rockets - MOON_WEAPON_GRENADELAUNCHER_SALVO_SIZE);
 	self.currentammo = self.ammo_rockets; // Fixed
 	sound(self, CHAN_WEAPON, "weapons/grenade.wav", 1, ATTN_NORM);
 	self.punchangle_x = CONTENT_SOLID;
@@ -514,14 +644,14 @@ void(vector org, vector dir) launch_spike =
 	setmodel(newmis, "progs/spike.mdl");
 	setsize(newmis, VEC_ORIGIN, VEC_ORIGIN);
 	setorigin(newmis, org);
-	spds = 1000;
+	spds = MOON_WEAPON_PROJECTILESPEED_NAIL;
 	if ( self.mentat_attackspeed_time > time )
 	{
 		spds = (spds + MOON_MENTAT_SPEED_VALUE_NAILGUN);
 	}
-	if ((self.up_nail >= 1)) // Re-use same param for both Upgrade and Extra capacity
+	if ( self.up_nail >= MOON_CONST_UNLOCKED )
 	{
-		spds = (spds + 500);
+		spds = (spds + MOON_ITEM_NAILUP_EFFECT_BONUS);
 	}
 	newmis.velocity = (dir * spds);
 };
@@ -543,21 +673,19 @@ void(vector org, vector dir) launch_sspike =
 	{
 		setmodel(newmis, "progs/s_spikeb.mdl");
 		newmis.black_spike = CHSCAM_ON;
-	}
-	else
-	{
+	} else {
 		setmodel(newmis, "progs/s_spike.mdl");
 	}
 	setsize(newmis, VEC_ORIGIN, VEC_ORIGIN);
 	setorigin(newmis, org);
-	spds = 1000;
+	spds = MOON_WEAPON_PROJECTILESPEED_NAIL;
 	if ( self.mentat_attackspeed_time > time )
 	{
 		spds = (spds + MOON_MENTAT_SPEED_VALUE_NAILGUN);
 	}
-	if ((self.up_nail >= 1)) // Re-use same param for both Upgrade and Extra capacity
+	if ( self.up_nail >= MOON_CONST_UNLOCKED )
 	{
-		spds = (spds + GRD_FIGHTDIST);
+		spds = (spds + MOON_ITEM_NAILUP_EFFECT_BONUS);
 	}
 	newmis.velocity = (dir * spds);
 };
@@ -565,11 +693,10 @@ void(vector org, vector dir) launch_sspike =
 void() W_FireSuperSpikes =
 {
 	local vector dir;
-	//local entity old; // unused
 
-	sound(self, CHAN_WEAPON, "weapons/spike2.wav", CHSCAM_ON, ATTN_NORM);
-	self.attack_finished = (time + MON_REACTIONTIME);
-	self.ammo_nails = (self.ammo_nails - 2);
+	sound(self, CHAN_WEAPON, "weapons/spike2.wav", 1, ATTN_NORM);
+	self.attack_finished = (time + MOON_WEAPON_SUPERNAILGUN_COOLDOWN);
+	self.ammo_nails = (self.ammo_nails - MOON_WEAPON_SUPERNAILGUN_SALVO_SIZE);
 	self.currentammo = self.ammo_nails; // Fixed
 	dir = aim(self, 1000);
 	launch_sspike((self.origin + '0 0 16'), dir);
@@ -579,23 +706,23 @@ void() W_FireSuperSpikes =
 void(float ox) W_FireSpikes =
 {
 	local vector dir;
-	//local entity old; // unused
 
 	makevectors(self.v_angle);
-	if (((self.ammo_nails >= 2) && (self.weapon == IT_SUPER_NAILGUN)))
+	if (((self.ammo_nails >= MOON_WEAPON_SUPERNAILGUN_SALVO_SIZE) && (self.weapon == IT_SUPER_NAILGUN)))
 	{
 		W_FireSuperSpikes();
 		return;
 	}
-	if ((self.ammo_nails < 1))
+	if ((self.ammo_nails < MOON_WEAPON_NAILGUN_SALVO_SIZE))
 	{
 		self.weapon = W_BestWeapon();
 		W_SetCurrentAmmo();
 		return;
 	}
+
 	sound(self, CHAN_WEAPON, "weapons/rocket1i.wav", 1, ATTN_NORM);
-	self.attack_finished = (time + MON_REACTIONTIME);
-	self.ammo_nails = (self.ammo_nails - 1);
+	self.attack_finished = (time + MOON_WEAPON_NAILGUN_COOLDOWN);
+	self.ammo_nails = (self.ammo_nails - MOON_WEAPON_NAILGUN_SALVO_SIZE);
 	self.currentammo = self.ammo_nails; // Fixed
 	dir = aim(self, 1000);
 	launch_spike(((self.origin + '0 0 16') + (v_right * ox)), dir);
@@ -605,8 +732,6 @@ void(float ox) W_FireSpikes =
 
 void() spike_touch =
 {
-	//local float rand; // unused
-
 	if ((other == self.owner))
 	{
 		return;
@@ -622,8 +747,8 @@ void() spike_touch =
 	}
 	if (other.takedamage)
 	{
-		spawn_touchblood(TE_LIGHTNING3);
-		T_Damage(other, self, self.owner, TE_LIGHTNING3);
+		spawn_touchblood(MOON_WEAPON_DAMAGEPER_NAIL);
+		T_Damage(other, self, self.owner, MOON_WEAPON_DAMAGEPER_NAIL);
 	}
 	else
 	{
@@ -670,8 +795,8 @@ void() superspike_touch =
 	}
 	if (other.takedamage)
 	{
-		spawn_touchblood(18);
-		T_Damage(other, self, self.owner, 18);
+		spawn_touchblood(MOON_WEAPON_DAMAGEPER_SUPERNAIL);
+		T_Damage(other, self, self.owner, MOON_WEAPON_DAMAGEPER_SUPERNAIL);
 		if ((self.black_spike == CHSCAM_ON))
 		{
 			dir = (other.origin - (self.origin * MON_BACKTIME));
@@ -757,7 +882,7 @@ void() W_SetCurrentAmmo =
 		self.weaponframe = WF_NORMAL;
 	}
 
-	if ((self.speed & CHSCAM_ON))
+	if ( self.speed & CHSCAM_ON )
 	{
 		self.weaponmodel = s_wiz;
 	}
@@ -818,18 +943,20 @@ float() W_BestWeapon =
 
 float() W_CheckNoAmmo =
 {
-	if ((self.currentammo > 0))
+	if ( self.currentammo > 0 )
 	{
-		return (TRUE);
+		return TRUE;
 	}
-	if ((self.weapon == IT_AXE))
+	if ( self.weapon == IT_AXE )
 	{
-		return (TRUE);
+		return TRUE;
 	}
+
 	self.weapon = W_BestWeapon();
 	W_SetCurrentAmmo();
-	return (FALSE);
+	return FALSE;
 };
+
 void() player_axe1;
 void() player_axeb1;
 void() player_axec1;
@@ -839,184 +966,189 @@ void() player_nail1;
 void() player_light1;
 void() player_rocket1;
 
-void() W_Attack =
+void() W_Attack = // Player attack handling
 {
 	local float r;
+	local float delay;
 
 	if (!W_CheckNoAmmo())
 	{
 		return;
 	}
 	makevectors(self.v_angle);
-	self.show_hostile = (time + CHSCAM_ON);
-	if ((self.weapon == IT_AXE))
+	self.show_hostile = (time + 1);
+
+	switch(self.weapon)
 	{
-		sound(self, CHAN_WEAPON, "weapons/ax1.wav", CHSCAM_ON, ATTN_NORM);
+	case IT_AXE:
+		sound(self, CHAN_WEAPON, "weapons/ax1.wav", 1, ATTN_NORM);
 		r = random();
-		if ((r < 0.25))
+		if ( r < 0.25 )
 		{
 			player_axe1();
-		}
-		else
-		{
-			if ((r < MON_BACKTIME))
+		} else {
+			if ( r < 0.5 )
 			{
 				player_axeb1();
-			}
-			else
-			{
-				if ((r < 0.75))
+			} else {
+				if ( r < 0.75 )
 				{
 					player_axec1();
-				}
-				else
-				{
+				} else {
 					player_axed1();
 				}
 			}
 		}
+
+		delay = MOON_WEAPON_AXE_COOLDOWN;
 		if ( self.mentat_attackspeed_time > time )
 		{
-			self.attack_finished = (time + MOON_MENTAT_SPEED_VALUE_AXE);
-		} else {
-			self.attack_finished = (time + 0.5);
+			delay = delay * MOON_MENTAT_SPEED_VALUE_AXE;
 		}
-	} else
-	if ((self.weapon == IT_SHOTGUN))
-	{
+		break;
+	case IT_SHOTGUN:
 		player_shot1();
 		W_FireShotgun();
+
+		delay = MOON_WEAPON_SHOTGUN_COOLDOWN;
 		if ( self.mentat_attackspeed_time > time )
 		{
-			self.attack_finished = (time + MOON_MENTAT_SPEED_VALUE_SHOTGUN);
-		} else {
-			self.attack_finished = (time + 0.5);
+			delay = delay * MOON_MENTAT_SPEED_VALUE_SHOTGUN;
 		}
-	} else
-	if ((self.weapon == IT_SUPER_SHOTGUN))
-	{
+		break;
+	case IT_SUPER_SHOTGUN:
 		player_shot1();
 		W_FireSuperShotgun();
+
+		delay = MOON_WEAPON_SUPERSHOTGUN_COOLDOWN;
 		if ( self.mentat_attackspeed_time > time )
 		{
-			self.attack_finished = (time + MOON_MENTAT_SPEED_VALUE_SUPERSHOTGUN);
-		} else {
-			self.attack_finished = (time + 0.7);
+			delay = delay * MOON_MENTAT_SPEED_VALUE_SUPERSHOTGUN;
 		}
-	} else
-	if ((self.weapon == IT_NAILGUN))
-	{
+		break;
+	case IT_NAILGUN:
 		player_nail1();
-	} else
-	if ((self.weapon == IT_SUPER_NAILGUN))
-	{
+		delay = MOON_WEAPON_NAILGUN_COOLDOWN;
+		break;
+	case IT_SUPER_NAILGUN:
 		player_nail1();
-	} else
-	if ((self.weapon == IT_GRENADE_LAUNCHER))
-	{
+		delay = MOON_WEAPON_SUPERNAILGUN_COOLDOWN;
+		break;
+	case IT_GRENADE_LAUNCHER:
 		player_rocket1();
 		W_FireGrenade();
+
+		delay = MOON_WEAPON_GRENADELAUNCHER_COOLDOWN;
 		if ( self.mentat_attackspeed_time > time )
 		{
-			self.attack_finished = (time + MOON_MENTAT_SPEED_VALUE_GRENADELAUNCHER);
-		} else {
-			self.attack_finished = (time + 0.6);
+			delay = delay * MOON_MENTAT_SPEED_VALUE_GRENADELAUNCHER;
 		}
-	} else
-	if ((self.weapon == IT_ROCKET_LAUNCHER))
-	{
+		if ( self.up_rocket >= MOON_CONST_UNLOCKED )
+		{
+			delay = delay * MOON_ITEM_ROCKUP_EFFECT_BONUS;
+		}
+		break;
+	case IT_ROCKET_LAUNCHER:
 		player_rocket1();
 		W_FireRocket();
+
+		delay = MOON_WEAPON_ROCKETLAUNCHER_COOLDOWN;
 		if ( self.mentat_attackspeed_time > time )
 		{
-			self.attack_finished = (time + MOON_MENTAT_SPEED_VALUE_ROCKETLAUNCHER);
-		} else {
-			self.attack_finished = (time + 0.8);
+			delay = delay * MOON_MENTAT_SPEED_VALUE_ROCKETLAUNCHER;
 		}
-	} else
-	if ((self.weapon == IT_LIGHTNING))
-	{
+		if ( self.up_rocket >= MOON_CONST_UNLOCKED )
+		{
+			delay = delay * MOON_ITEM_ROCKUP_EFFECT_BONUS;
+		}
+		break;
+	case IT_LIGHTNING:
 		player_light1();
-		self.attack_finished = (time + MON_CAMPERCHANCE);
-		sound(self, CHAN_AUTO, "weapons/lstart.wav", CHSCAM_ON, ATTN_NORM);
+		sound(self, CHAN_AUTO, "weapons/lstart.wav", 1, ATTN_NORM);
+		delay = MOON_WEAPON_LIGHTNING_COOLDOWN;
+		break;
+	default:
+		delay = 0;
 	}
+
+	self.attack_finished = time + delay;
 };
 
 void() W_ChangeWeapon =
 {
-	local float it;
-	local float am;
+	local float no_ammo;
 	local float fl;
 
-	it = self.items;
-	am = 0;
+	no_ammo = FALSE;
 	switch(self.impulse)
 	{
-	case 1:
+	case QC_IMPULSE_CODE_WEAPON_AXE:
 		fl = IT_AXE;
 		break;
-	case 2:
+	case QC_IMPULSE_CODE_WEAPON_SHOTGUN:
 		fl = IT_SHOTGUN;
-		if ((self.ammo_shells < 1))
+		if ( self.ammo_shells < MOON_WEAPON_SHOTGUN_SALVO_SIZE )
 		{
-			am = 1;
+			no_ammo = TRUE;
 		}
 		break;
-	case 3:
+	case QC_IMPULSE_CODE_WEAPON_SUPER_SHOTGUN:
 		fl = IT_SUPER_SHOTGUN;
-		if ((self.ammo_shells < 2))
+		if ( self.ammo_shells < MOON_WEAPON_SUPERSHOTGUN_SALVO_SIZE )
 		{
-			am = 1;
+			no_ammo = TRUE;
 		}
 		break;
-	case 4:
+	case QC_IMPULSE_CODE_WEAPON_NAILGUN:
 		fl = IT_NAILGUN;
-		if ((self.ammo_nails < 1))
+		if ( self.ammo_nails < MOON_WEAPON_NAILGUN_SALVO_SIZE )
 		{
-			am = 1;
+			no_ammo = TRUE;
 		}
 		break;
-	case 5:
+	case QC_IMPULSE_CODE_WEAPON_SUPER_NAILGUN:
 		fl = IT_SUPER_NAILGUN;
-		if ((self.ammo_nails < 2))
+		if ( self.ammo_nails < MOON_WEAPON_SUPERNAILGUN_SALVO_SIZE )
 		{
-			am = 1;
+			no_ammo = TRUE;
 		}
 		break;
-	case 6:
+	case QC_IMPULSE_CODE_WEAPON_GRENADE_LAUNCHER:
 		fl = IT_GRENADE_LAUNCHER;
-		if ((self.ammo_rockets < 1))
+		if ( self.ammo_rockets < MOON_WEAPON_GRENADELAUNCHER_SALVO_SIZE )
 		{
-			am = 1;
+			no_ammo = TRUE;
 		}
 		break;
-	case 7:
+	case QC_IMPULSE_CODE_WEAPON_ROCKET_LAUNCHER:
 		fl = IT_ROCKET_LAUNCHER;
-		if ((self.ammo_rockets < 1))
+		if ( self.ammo_rockets < MOON_WEAPON_ROCKETLAUNCHER_SALVO_SIZE )
 		{
-			am = 1;
+			no_ammo = TRUE;
 		}
 		break;
-	case 8:
+	case QC_IMPULSE_CODE_WEAPON_LIGHTNING:
 		fl = IT_LIGHTNING;
-		if ((self.ammo_cells < 1))
+		if ( self.ammo_cells < MOON_WEAPON_LIGHTNING_SALVO_SIZE )
 		{
-			am = 1;
+			no_ammo = TRUE;
 		}
 		break;
 	}
 
-	self.impulse = 0;
+	self.impulse = MOON_IMPULSE_CODE_NOOP;
 	if (!(self.items & fl))
 	{
 		sprint(self, "no weapon.\n");
 		return;
 	}
-	if (am)
+
+	if (no_ammo)
 	{
 		sprint(self, "not enough ammo.\n");
 		return;
 	}
+
 	self.weapon = fl;
 	W_SetCurrentAmmo();
 };
@@ -1236,45 +1368,48 @@ void() CycleWeaponReverseCommand =
 	}
 };
 
-void() ServerflagsCommand =
+void() ServerflagsCommand = // WTF?!
 {
 	serverflags = ((serverflags * 2) + 1);
 };
 
 void() ImpulseCommands =
 {
-	if (((self.impulse >= 1) && (self.impulse <= 8)))
+	if ( (self.impulse >= QC_IMPULSE_CODE_WEAPON_AXE) && (self.impulse <= QC_IMPULSE_CODE_WEAPON_LIGHTNING) )
 	{
 		W_ChangeWeapon();
 	}
-	if ((self.impulse == 9))
+	if ((self.impulse == QC_IMPULSE_CODE_CHEAT_COMMAND))
 	{
 		CheatCommand();
 	}
-	if ((self.impulse == 10))
+	if ((self.impulse == QC_IMPULSE_CODE_CYCLE_WEAPON_FORTH))
 	{
 		CycleWeaponCommand();
 	}
-	if ((self.impulse == 11))
+	if ((self.impulse == QC_IMPULSE_CODE_SERVER_FLAGS))
 	{
 		ServerflagsCommand();
 	}
-	if ((self.impulse == 12))
+	if ((self.impulse == QC_IMPULSE_CODE_CYCLE_WEAPON_BACK))
 	{
 		CycleWeaponReverseCommand();
 	}
+
 	moon_handle_impulse();
-	self.impulse = 0;
+
+	self.impulse = MOON_IMPULSE_CODE_NOOP;
 };
 
 void() W_WeaponFrame =
 {
-	if ((time < self.attack_finished))
+	if ( time < self.attack_finished )
 	{
 		return;
 	}
+
 	ImpulseCommands();
-	if (self.button0)
+	if ( self.button0 )
 	{
 		SuperDamageSound();
 		W_Attack();
@@ -1283,32 +1418,30 @@ void() W_WeaponFrame =
 
 void() SuperDamageSound =
 {
-	if ((self.super_damage_finished > time))
+	if ( self.super_damage_finished > time )
 	{
-		if ((self.super_sound < time))
+		if ( self.super_sound < time )
 		{
-			self.super_sound = (time + CHSCAM_ON);
-			sound(self, CHAN_BODY, "items/damage3.wav", CHSCAM_ON, ATTN_NORM);
+			self.super_sound = (time + 1);
+			sound(self, CHAN_BODY, "items/damage3.wav", 1, ATTN_NORM);
 		}
 	}
-	return;
 };
 
 vector(vector dir) ModAcc =
 {
-	if ((self.acc >= LOGIC_FINDDEFEND))
+	if ( self.acc >= 3 )
 	{
 		return (dir);
 	}
-	dir = (dir + (((LOGIC_FINDDEFEND - self.acc) * crandom()) * '0.06 0 0'));
-	dir = (dir + (((LOGIC_FINDDEFEND - self.acc) * crandom()) * '0 0.06 0'));
+	dir = (dir + (((3 - self.acc) * random_nzc()) * '0.06 0 0'));
+	dir = (dir + (((3 - self.acc) * random_nzc()) * '0 0.06 0'));
 	return (dir);
 };
 
 void() M_FireGrenade =
 {
 	local entity missile;
-	//local entity mpuff; // unused
 	local vector vec;
 	local vector src;
 	local vector org;
@@ -1320,7 +1453,7 @@ void() M_FireGrenade =
 	self.shootframe = TRUE;
 	self.walkframe = WF_NORMAL;
 	self.effects = (self.effects | EF_MUZZLEFLASH);
-	sound(self, CHAN_WEAPON, "weapons/grenade.wav", CHSCAM_ON, ATTN_NORM);
+	sound(self, CHAN_WEAPON, "weapons/grenade.wav", 1, ATTN_NORM);
 	self.misspeed = 600;
 	missile = spawn();
 	missile.owner = self;
@@ -1328,9 +1461,10 @@ void() M_FireGrenade =
 	missile.solid = SOLID_BBOX;
 	missile.classname = "grenade";
 	makevectors(self.angles);
+
 	src = ((self.origin + (v_right * -8)) + '0 0 16');
 	org = self.enemy.origin;
-	if ((self.classname == "guard"))
+	if ( self.classname == MOON_GUARD_CLASSNAME )
 	{
 		src = (self.origin + '0 0 16');
 		if ((self.enemy.classname == "spider"))
@@ -1338,15 +1472,15 @@ void() M_FireGrenade =
 			org = (self.enemy.origin - '0 0 16');
 		}
 	}
+
 	if ((vlen(self.enemy.velocity) <= 160))
 	{
 		vlen((org - src));
 		t = (vlen((org - src)) / (self.misspeed * H_MEGA));
-	}
-	else
-	{
+	} else {
 		t = (vlen((org - src)) / self.misspeed);
 	}
+
 	vec = self.enemy.velocity;
 	vec_z = WF_NORMAL;
 	d = (org + (t * vec));
@@ -1368,7 +1502,7 @@ void() M_FireGrenade =
 	setsize(missile, VEC_ORIGIN, VEC_ORIGIN);
 	setorigin(missile, src);
 	self.attack_finished = ((time + 0.7) + self.rfr);
-	if ((self.ability == CHSCAM_ON))
+	if ( self.ability == 1 )
 	{
 		SuperDamageSound();
 	}
@@ -1394,7 +1528,7 @@ void() HomingMissile =
 			vtemp = (self.enemy.origin + '0 0 5');
 		}
 	}
-	if ((self.enemy.health < CHSCAM_ON))
+	if ( self.enemy.health < 1 )
 	{
 		T_MissileTouch();
 		return;
@@ -1403,7 +1537,7 @@ void() HomingMissile =
 	dir = normalize((vtemp - self.origin));
 	self.velocity = (dir * 800);
 	self.angles = vectoangles(self.velocity);
-	self.nextthink = (time + MON_CAMPERCHANCE);
+	self.nextthink = (time + 0.1);
 	self.think = HomingMissile;
 };
 
@@ -1412,13 +1546,12 @@ void() M_FireHomeMissile =
 	local entity missile;
 	local vector dir;
 	local float dist;
-	//local float flytime; // unused
 
 	dir = normalize(((self.enemy.origin + '0 0 10') - self.origin));
 	dist = vlen((self.enemy.origin - self.origin));
 	self.effects = (self.effects | EF_MUZZLEFLASH);
-	sound(self, CHAN_WEAPON, "weapons/sgun1.wav", CHSCAM_ON, ATTN_NORM);
-	if ((self.ability == CHSCAM_ON))
+	sound(self, CHAN_WEAPON, "weapons/sgun1.wav", 1, ATTN_NORM);
+	if ( self.ability == 1 )
 	{
 		SuperDamageSound();
 	}
@@ -1428,21 +1561,20 @@ void() M_FireHomeMissile =
 	missile.movetype = MOVETYPE_FLYMISSILE;
 	setmodel(missile, "progs/missile.mdl");
 	setsize(missile, VEC_ORIGIN, VEC_ORIGIN);
-	missile.origin = ((self.origin + '0 0 16') + (v_forward * KEY_MOVERIGHT));
+	missile.origin = ((self.origin + '0 0 16') + (v_forward * 8));
 	missile.velocity = (dir * 1000);
 	missile.angles = vectoangles(missile.velocity);
 	missile.avelocity = VEC_ORIGIN;
-	missile.nextthink = (time + MON_CAMPERCHANCE);
+	missile.nextthink = (time + 0.1);
 	missile.think = HomingMissile;
 	missile.enemy = self.enemy;
 	missile.touch = T_MissileTouch;
-	self.attack_finished = (((time + CHSCAM_ON) + (random() / SVC_SETVIEWANGLES)) + self.rfr);
+	self.attack_finished = (((time + 1) + (random() / 10)) + self.rfr);
 };
 
 void() M_FireMissile =
 {
 	local entity missile;
-	//local entity mpuff; // unused
 	local vector org;
 	local vector vec;
 	local vector d;
@@ -1454,7 +1586,7 @@ void() M_FireMissile =
 	{
 		self.misspeed = 1000;
 	}
-	sound(self, CHAN_WEAPON, "weapons/sgun1.wav", CHSCAM_ON, ATTN_NORM);
+	sound(self, CHAN_WEAPON, "weapons/sgun1.wav", 1, ATTN_NORM);
 	missile = spawn();
 	missile.owner = self;
 	missile.movetype = MOVETYPE_FLYMISSILE;
@@ -1474,17 +1606,16 @@ void() M_FireMissile =
 	enorg = self.enemy.origin;
 	zenorg = (self.enemy.origin_z + self.enemy.mins_z);
 	traceline(self.enemy.origin, (enorg - (v_up * zenorg)), FALSE, self);
-	if ((trace_fraction == CHSCAM_ON))
+	if ((trace_fraction == 1))
 	{
 		enorg_z = zenorg;
 	}
+
 	if ((vlen(self.enemy.velocity) <= 160))
 	{
 		vlen((enorg - org));
 		t = (vlen((enorg - org)) / (self.misspeed * H_MEGA));
-	}
-	else
-	{
+	} else {
 		t = (vlen((enorg - org)) / self.misspeed);
 	}
 	vec = self.enemy.velocity;
@@ -1495,7 +1626,7 @@ void() M_FireMissile =
 	missile.velocity = (vec * self.misspeed);
 	missile.angles = vectoangles(missile.velocity);
 	self.attack_finished = (((time + 0.8) + (random() / SVC_SETVIEWANGLES)) + self.rfr);
-	if ((self.ability == CHSCAM_ON))
+	if ((self.ability == 1))
 	{
 		SuperDamageSound();
 	}
@@ -1508,7 +1639,7 @@ void(vector org) M_FireNail =
 	local vector en;
 	local float t;
 
-	sound(self, CHAN_WEAPON, "weapons/rocket1i.wav", CHSCAM_ON, ATTN_NORM);
+	sound(self, CHAN_WEAPON, "weapons/rocket1i.wav", 1, ATTN_NORM);
 	en = self.enemy.origin;
 	t = (vlen((en - org)) / 1000);
 	vec = self.enemy.velocity;
@@ -1521,13 +1652,15 @@ void(vector org) M_FireNail =
 	vec = (d - org);
 	vec = ModAcc(vec);
 	vec = normalize(vec);
-	self.attack_finished = (time + MON_CAMPERCHANCE);
-	if ((random() < MON_MAGICCHANCE))
+
+	self.attack_finished = (time + 0.1);
+	if ( random() < MON_MAGICCHANCE )
 	{
-		self.attack_finished = ((time + MON_BACKTIME) + self.rfr);
+		self.attack_finished = ((time + 0.5) + self.rfr);
 	}
+
 	launch_spike(org, vec);
-	if ((self.ability == CHSCAM_ON))
+	if ((self.ability == 1))
 	{
 		SuperDamageSound();
 	}
@@ -1553,13 +1686,15 @@ void(vector org) M_FireSuperNail =
 	vec = (d - org);
 	vec = ModAcc(vec);
 	vec = normalize(vec);
-	self.attack_finished = (time + MON_CAMPERCHANCE);
-	if ((random() < MON_MAGICCHANCE))
+
+	self.attack_finished = (time + 0.1);
+	if ( random() < MON_MAGICCHANCE )
 	{
-		self.attack_finished = ((time + MON_BACKTIME) + self.rfr);
+		self.attack_finished = ((time + 0.5) + self.rfr);
 	}
+
 	launch_sspike((org + '0 0 8'), vec);
-	if ((self.ability == CHSCAM_ON))
+	if ( self.ability == 1 )
 	{
 		SuperDamageSound();
 	}
@@ -1570,14 +1705,14 @@ void() M_FireShotgun =
 	local vector dir;
 	local entity en;
 
-	sound(self, CHAN_WEAPON, "weapons/guncock.wav", CHSCAM_ON, ATTN_NORM);
+	sound(self, CHAN_WEAPON, "weapons/guncock.wav", 1, ATTN_NORM);
 	en = self.enemy;
 	dir = (((en.origin - self.origin) - (en.velocity * 0.07)) + ((v_right * 15) * crandom()));
 	dir = ModAcc(dir);
 	dir = normalize(dir);
-	FireBullets(LOGIC_DEFEND, dir, '0.1 0.1 0');
-	self.attack_finished = (((time + MON_BACKTIME) + (random() / SVC_SETVIEWANGLES)) + self.rfr);
-	if ((self.ability == CHSCAM_ON))
+	FireBullets(4, dir, '0.1 0.1 0');
+	self.attack_finished = (((time + 0.5) + (random() / SVC_SETVIEWANGLES)) + self.rfr);
+	if ( self.ability == 1 )
 	{
 		SuperDamageSound();
 	}
@@ -1588,51 +1723,40 @@ void() M_FireSuperShotgun =
 	local vector dir;
 	local entity en;
 
-	sound(self, CHAN_WEAPON, "weapons/shotgn2.wav", CHSCAM_ON, ATTN_NORM);
+	sound(self, CHAN_WEAPON, "weapons/shotgn2.wav", 1, ATTN_NORM);
 	en = self.enemy;
 	dir = (((en.origin - self.origin) - (en.velocity * 0.07)) + ((v_right * 15) * crandom()));
 	dir = ModAcc(dir);
 	dir = normalize(dir);
 	FireBullets(14, dir, '0.14 0.08 0');
 	self.attack_finished = (((time + 0.6) + (random() / SVC_SETVIEWANGLES)) + self.rfr);
-	if ((self.ability == CHSCAM_ON))
+	if ( self.ability == 1 )
 	{
 		SuperDamageSound();
 	}
 };
 
-void() M_FireShaft =
+void() M_FireShaft = // W_FireLightning but for Guardian bots
 {
 	local vector org;
 	local vector dir;
 
 	self.effects = (self.effects | EF_MUZZLEFLASH);
-	if ((self.t_width < time))
-	{
-		sound(self, CHAN_WEAPON, "weapons/lhit.wav", CHSCAM_ON, ATTN_NORM);
-		self.t_width = (time + 0.6);
-	}
+
 	org = (self.origin + '0 0 8');
 	dir = (((self.enemy.origin + '0 0 8') - org) + ((v_right * GRD_DEFENDTIME) * crandom()));
 	dir = ModAcc(dir);
 	dir = normalize(dir);
-	traceline(org, (self.origin + (dir * 600)), TRUE, self);
-	WriteByte(MSG_BROADCAST, SVC_TEMPENTITY);
-	WriteByte(MSG_BROADCAST, TE_LIGHTNING2);
-	WriteEntity(MSG_BROADCAST, self);
-	WriteCoord(MSG_BROADCAST, org_x);
-	WriteCoord(MSG_BROADCAST, org_y);
-	WriteCoord(MSG_BROADCAST, org_z);
-	WriteCoord(MSG_BROADCAST, trace_endpos_x);
-	WriteCoord(MSG_BROADCAST, trace_endpos_y);
-	WriteCoord(MSG_BROADCAST, trace_endpos_z);
-	LightningDamage(org, trace_endpos, self, MON_CAMPTIME);
-	self.attack_finished = (time + MON_CAMPERCHANCE);
-	if ((random() < MON_MAGICCHANCE))
+
+	moon_trace_lightning_bolt_shaft(org, (org + (dir * MOON_WEAPON_DISTANCE_LIGHTNING)), self, self, MOON_WEAPON_PIERCING_LIGHTNING_NONE);
+
+	self.attack_finished = (time + MOON_WEAPON_LIGHTNING_COOLDOWN);
+	if ((random() < 0.03))
 	{
 		self.attack_finished = ((time + 0.3) + self.rfr);
 	}
-	if ((self.ability == CHSCAM_ON))
+
+	if ( self.ability == 1 )
 	{
 		SuperDamageSound();
 	}

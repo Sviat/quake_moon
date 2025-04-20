@@ -825,25 +825,17 @@ void() CastLightning =
 	local vector dir;
 
 	self.effects = (self.effects | EF_MUZZLEFLASH);
+
 	ai_face();
 	org = (self.origin + '0 0 70');
 	dir = ((self.enemy.origin + '0 0 16') - org);
 	dir = normalize(dir);
-	traceline(org, (self.origin + (dir * 600)), TRUE, self);
-	WriteByte(MSG_BROADCAST, SVC_TEMPENTITY);
-	WriteByte(MSG_BROADCAST, TE_LIGHTNING1);
-	WriteEntity(MSG_BROADCAST, self);
-	WriteCoord(MSG_BROADCAST, org_x);
-	WriteCoord(MSG_BROADCAST, org_y);
-	WriteCoord(MSG_BROADCAST, org_z);
-	WriteCoord(MSG_BROADCAST, trace_endpos_x);
-	WriteCoord(MSG_BROADCAST, trace_endpos_y);
-	WriteCoord(MSG_BROADCAST, trace_endpos_z);
-	LightningDamage(org, trace_endpos, self, SVC_SETVIEWANGLES);
-	sound(self, CHAN_WEAPON, "weapons/lhit.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
-	if ((random() < MON_CAMPERCHANCE))
+
+	moon_trace_lightning_bolt_shambler(org, org + (dir * MOON_WEAPON_DISTANCE_LIGHTNING), self);
+
+	if ((random() < 0.1))
 	{
-		self.attack_finished = ((time + START_OFF) + random());
+		self.attack_finished = ((time + 1) + random());
 	}
 };
 

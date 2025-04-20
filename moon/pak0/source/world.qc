@@ -231,7 +231,7 @@ void() StartFrame =
 {
 	teamplay = cvar("teamplay");
 	skill = cvar("skill");
-	framecount = (framecount + CHSCAM_ON);
+	framecount = framecount + 1;
 };
 entity bodyque_head;
 
@@ -241,8 +241,6 @@ void() bodyque =
 
 void() InitBodyQue =
 {
-	//local entity e; // unused
-
 	bodyque_head = spawn();
 	bodyque_head.classname = "bodyque";
 	bodyque_head.owner = spawn();
@@ -538,11 +536,12 @@ void() PutClientInServer =
 	self.solid = SOLID_SLIDEBOX;
 	self.movetype = MOVETYPE_WALK;
 	self.show_hostile = 0;
-	self.health_magic_regen_time = 0;
-	if ((self.max_health <= 0))
+
+	if ( self.max_health <= 0 )
 	{
 		self.max_health = MOON_PLAYER_HEALTH_INIT;
 	}
+
 	self.flags = FL_CLIENT;
 	self.super_damage_finished = 0;
 	self.gold = 0;
@@ -554,6 +553,11 @@ void() PutClientInServer =
 	self.mentat_offense_time = 0;
 	self.mentat_defense_time = 0;
 	self.mentat_attackspeed_time = 0;
+	self.natural_regen_cooldown = MOON_PLAYER_HEALTH_REGEN_COOLDOWN;
+	self.natural_regen_value = 0;
+	self.natural_regen_time = 0;
+	self.magical_regen_time = 0;
+
 	DecodeLevelParms();
 	W_SetCurrentAmmo();
 	self.attack_finished = (time + 0.5); // was 0.1
@@ -843,25 +847,40 @@ void() CheckCrosshair =
 	}
 	self.console_time = (time + MOON_TIME_PLUS_CROSSHAIRTRACE); // was (time + 0.01)
 
-	traceline(self.origin, (self.origin + (v_forward * MOON_PHYSIC_CROSSHAIRTRACE_MAXDIST)), 2, self);
-	if ( trace_ent.classname == MOON_HEART_CLASSNAME )
-	{
-		centerprint(self, MOON_HEART_DISPLAYNAME);
-		return;
-	}
+	traceline(self.origin, (self.origin + (v_forward * MOON_PHYSIC_CROSSHAIRTRACE_MAXDIST)), CONST_QC_COLLISION_WITH_MONSTER_WIDE, self);
 	if ( trace_ent.flags & FL_MONSTER )
 	{
-		centerprint(self, "{0}{1}{2}{3}{4}", trace_ent.prefix_one, trace_ent.prefix_two, trace_ent.netname, trace_ent.prefix_three, trace_ent.prefix_four);
-		return;
-	}
-	if ( trace_ent.classname == MOON_PLAYER_CLASSNAME )
-	{
-		centerprint(self, trace_ent.netname);
+		if ( MOON_DEBUG & MOON_TRAIT_CPRINT_SEE_MONSTER_HP )
+		{
+			centerprint(self, "{0}{1}{2}{3}{4} ({5})", trace_ent.prefix_one, trace_ent.prefix_two, trace_ent.netname, trace_ent.prefix_three, trace_ent.prefix_four, floor_ftos(trace_ent.health));
+		} else {
+			centerprint(self, "{0}{1}{2}{3}{4}", trace_ent.prefix_one, trace_ent.prefix_two, trace_ent.netname, trace_ent.prefix_three, trace_ent.prefix_four);
+		}
 		return;
 	}
 	if ( trace_ent.classname == MOON_GUARD_CLASSNAME )
 	{
-		centerprint(self, MOON_GUARD_DISPLAYNAME);
+		if ( MOON_DEBUG & MOON_TRAIT_CPRINT_SEE_ALLY_HP )
+		{
+			centerprint(self, "{0} ({1}/{2})", MOON_GUARD_DISPLAYNAME, floor_ftos(trace_ent.health), floor_ftos(trace_ent.max_health));
+		} else {
+			centerprint(self, MOON_GUARD_DISPLAYNAME);
+		}
+		return;
+	}
+	if ( trace_ent.classname == MOON_HEART_CLASSNAME )
+	{
+		if ( MOON_DEBUG & MOON_TRAIT_CPRINT_SEE_ALLY_HP )
+		{
+			centerprint(self, "{0} ({1}/{2})", MOON_HEART_AIMLABEL, floor_ftos(trace_ent.health), floor_ftos(trace_ent.max_health));
+		} else {
+			centerprint(self, MOON_HEART_AIMLABEL);
+		}
+		return;
+	}
+	if ( trace_ent.classname == MOON_PLAYER_CLASSNAME )
+	{
+		centerprint(self, "{0} ({1}/{2})", trace_ent.netname, floor_ftos(trace_ent.health), floor_ftos(trace_ent.max_health));
 		return;
 	}
 
@@ -875,65 +894,13 @@ void() CheckCrosshair =
 	} // debug entity tracer
 };
 
-void() proc_health_magic_regen_time =
-{
-	local float bonus;
-
-	if ( self.health_magic_regen_time > time )
-	{
-		return;
-	}
-	self.health_magic_regen_time = (time + 1);
-
-	if ( (self.deadflag == DEAD_RESPAWNABLE) || (self.deadflag == DEAD_DEAD) )
-	{
-		return;
-	}
-	if ( (self.health <= 0) || (self.health >= self.max_health) )
-	{
-		return;
-	}
-
-	bonus = moon_get_target_total_bonus_by_code(self, MOON_ITEM_REGEN_CODE);
-	if (bonus > 0)
-	{
-		T_Heal(self, bonus);
-	}
-};
-
-void() regen_life =
+void() regen_mana = // refactor same way as regen later
 {
 	if (((self.deadflag == DEAD_RESPAWNABLE) || (self.deadflag == DEAD_DEAD)))
 	{
 		return;
 	}
-	if ((self.rgn_time > time))
-	{
-		return;
-	}
-	if ((self.max_health <= self.health))
-	{
-		return;
-	}
-	if ((self.skl_rgn == WF_NORMAL))
-	{
-		return;
-	}
-	if ((self.health <= WF_NORMAL))
-	{
-		return;
-	}
-	self.health = (self.health + CHSCAM_ON);
-	self.rgn_time = (time + self.skl_rgn);
-};
-
-void() regen_mana =
-{
-	if (((self.deadflag == DEAD_RESPAWNABLE) || (self.deadflag == DEAD_DEAD)))
-	{
-		return;
-	}
-	if ((self.rgnm_time > time))
+	if ((self.mana_restore_time > time))
 	{
 		return;
 	}
@@ -941,8 +908,8 @@ void() regen_mana =
 	{
 		return;
 	}
-	self.mana = (self.mana + SVC_SETVIEWPORT);
-	self.rgnm_time = (time + CHSCAM_ON);
+	self.mana = (self.mana + 5);
+	self.mana_restore_time = (time + 1);
 };
 
 void() check_poison =
@@ -1027,8 +994,8 @@ void() PlayerPreThink =
 		return;
 	}
 	CheckCrosshair();
-	regen_life();
-	proc_health_magic_regen_time();
+	moon_do_target_natural_health_regen_tick(self);
+	moon_do_target_magical_health_regen_tick(self);
 	regen_mana();
 	check_spells();
 
@@ -1246,7 +1213,7 @@ void() ClientConnect =
 		bprint(self.netname);
 		bprint(" was kicked. Reason: too late (you still can join after map restart)\n");
 		self.think = ClientBan;
-		self.nextthink = (time + 2);
+		self.nextthink = (time + 5);
 		return;
 	}
 

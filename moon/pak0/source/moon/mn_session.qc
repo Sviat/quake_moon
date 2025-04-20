@@ -20,8 +20,12 @@ void(entity target) moon_prepare_player_entity =
 	target.mana = self.max_mana;
 	target.point = 0;
 	target.mosterskilled = 0;
-	target.up_bullet = 0;
-	target.up_nail = 0;
+
+	target.up_axe = MOON_CONST_LOCKED;
+	target.up_bullet = MOON_CONST_LOCKED;
+	target.up_nail = MOON_CONST_LOCKED;
+	target.up_rocket = MOON_CONST_LOCKED;
+	target.up_cell = MOON_CONST_LOCKED;
 
 	target.mentat_offense_time = 0;
 	target.mentat_defense_time = 0;
@@ -42,6 +46,6 @@ void() moon_init_self_player = // happens with first impulse check
 	moon_prepare_player_entity(self); // extract to PutClientInServer
 
 	sprint(self, "Project MOON. Original v0.21beta created by \s3d[Power]\s\n");
-	sprint(self, "ReProject MOON. Remake v{} on \sKEX Engine\s by \sSanctus-Susanin\s\n", MOON_VERSION);
-	sprint(self, "type pm_help to learn more about MOON console commands\n");
+	sprint(self, "ReProject MOON. Remake v{0} by \sSanctus-Susanin\s\n", MOON_VERSION);
+	sprint(self, "Type pm_help to learn more about MOON console commands\n");
 };

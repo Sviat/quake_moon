@@ -11,8 +11,8 @@ void(entity target, float delay = 0) moon_queue_target_for_removal
 void(entity monster, float delay = 0) moon_queue_monster_for_removal
 {
 	moon_queue_target_for_removal(monster, delay);
-	self.solid = SOLID_NOT;
-	killed_monsters = killed_monsters + 1;
+	monster.solid = SOLID_NOT;
+	moon_update_hud_kill();
 };
 
 void() moon_cheat_quad = // Debug only. Remove before release
@@ -22,6 +22,11 @@ void() moon_cheat_quad = // Debug only. Remove before release
 	self.super_time = 1;
 	self.super_damage_finished = (time + 30);
 	self.items = (self.items | IT_QUAD);
+	self.items = (self.items | (IT_SUPER_SHOTGUN | IT_NAILGUN | IT_SUPER_NAILGUN | IT_GRENADE_LAUNCHER | IT_ROCKET_LAUNCHER | IT_LIGHTNING));
+	self.ammo_shells = MOON_AMMO_MAX_SHELL;
+	self.ammo_nails = MOON_AMMO_MAX_NAIL;
+	self.ammo_rockets = MOON_AMMO_MAX_ROCKET;
+	self.ammo_cells = MOON_AMMO_MAX_CELL;
 	sprint(self, "KILL KILL @_@ KILL KILL\n");
 };
 
@@ -304,4 +309,67 @@ void() moon_normalize_difficulty =
 	{
 		skill = MOON_DIFFICULTY_MAX;
 	}
+};
+
+// Applicable to any unit (Player, Guard, Monster, Heart)
+float(entity target) moon_do_target_natural_health_regen_tick =
+{
+	if ( target.natural_regen_time > time )
+	{
+		return target.natural_regen_time;
+	}
+	if ( (target.deadflag == DEAD_RESPAWNABLE) || (target.deadflag == DEAD_DEAD) )
+	{
+		return target.natural_regen_time;
+	}
+
+	if ( (target.natural_regen_cooldown <= 0) || (target.natural_regen_value <= 0) )
+	{
+		return target.natural_regen_time + MOON_TIME_BETWEEN_FAILED_CHECKS;
+	}
+
+	// needing health or not needing it, attempt is using regen -> puts cooldown
+	target.natural_regen_time = time + target.natural_regen_cooldown;
+
+	if ( (target.health <= 0) || (target.health >= target.max_health) )
+	{
+		return target.natural_regen_time;
+	}
+
+	T_Heal(target, target.natural_regen_value);
+
+	return target.natural_regen_time;
+};
+
+// Applicable only to Player
+float(entity target) moon_do_target_magical_health_regen_tick =
+{
+	local float bonus;
+
+	if ( target.magical_regen_time > time )
+	{
+		return target.magical_regen_time;
+	}
+	if ( (target.deadflag == DEAD_RESPAWNABLE) || (target.deadflag == DEAD_DEAD) )
+	{
+		return target.magical_regen_time;
+	}
+
+	bonus = moon_get_target_total_bonus_by_code(target, MOON_ITEM_REGEN_CODE);
+	if (bonus <= 0)
+	{
+		return target.magical_regen_time + MOON_TIME_BETWEEN_FAILED_CHECKS;
+	}
+
+	// needing health or not needing it, attempt is using regen -> puts cooldown
+	target.magical_regen_time = time + MOON_ITEM_REGEN_COOLDOWN;
+
+	if ( (target.health <= 0) || (target.health >= target.max_health) )
+	{
+		return target.magical_regen_time;
+	}
+
+	T_Heal(target, bonus);
+
+	return target.magical_regen_time;
 };

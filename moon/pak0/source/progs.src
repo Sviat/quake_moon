@@ -4,6 +4,10 @@
 
 sysdefs.qc
 defs.qc
+3rd/consts_fte.qc
+3rd/defs_kex.qc
+3rd/subs_kex.qc
+// 3rd/subs_soc.qc
 moon/mn_defs.qc
 moon/mn_globals.qc
 moon/mn_entity.qc

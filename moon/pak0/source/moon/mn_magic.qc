@@ -281,7 +281,7 @@ void() moon_magic_effect_thunder = // Shaft effect ctor()
 	makevectors(self.angles);
 	self.scroll_shaf_eff = 0;
 	self.effects = (self.effects | EF_MUZZLEFLASH);
-	traceline((self.origin + (v_up * self.mins_z)), (self.origin + (v_up * 800)), TRUE, self);
+	traceline((self.origin + (v_up * self.mins_z)), (self.origin + (v_up * 800)), CONST_QC_COLLISION_WITH_SOLID, self);
 	WriteByte(MSG_BROADCAST, SVC_TEMPENTITY);
 	WriteByte(MSG_BROADCAST, TE_LIGHTNING3);
 	WriteEntity(MSG_BROADCAST, self);

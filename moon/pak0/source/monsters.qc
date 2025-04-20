@@ -38,6 +38,7 @@ void() walkmonster_start_go =
 	self.mx_speed = self.speed;
 	self.use = monster_use;
 	self.flags = (self.flags | FL_MONSTER);
+	self.classname = MOON_MONSTER_CLASSNAME;
 	self.th_stand();
 	self.nextthink = (self.nextthink + (random() * MON_BACKTIME));
 };
@@ -47,7 +48,7 @@ void() walkmonster_start =
 	self.nextthink = (self.nextthink + MON_REFRESHTIME);
 	self.think = walkmonster_start_go;
 	self.max_health = self.health;
-	self.classname = "monster";
+	self.classname = MOON_MONSTER_CLASSNAME;
 };
 
 void() flymonster_start_go =

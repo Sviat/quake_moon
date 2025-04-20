@@ -568,7 +568,8 @@ void() func_gate =
 	self.movetype = MOVETYPE_PUSH;
 	setorigin(self, self.origin);
 	setmodel(self, self.model);
-	self.classname = "gate";
+	self.classname = MOON_GATE_CLASSNAME;
+	self.netname = MOON_GATE_ENTRY_DISPLAYNAME;
 	self.blocked = door_blocked;
 	self.use = door_use;
 	if (!self.speed)

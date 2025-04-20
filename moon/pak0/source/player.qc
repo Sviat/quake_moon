@@ -186,8 +186,8 @@ void() player_nail1 = [ 103, player_nail2 ]
 		self.weaponframe = CHSCAM_ON;
 	}
 	SuperDamageSound();
-	W_FireSpikes(LOGIC_DEFEND);
-	self.attack_finished = (time + MON_REACTIONTIME);
+	W_FireSpikes(4);
+	self.attack_finished = (time + 0.2);
 };
 
 void() player_nail2 = [ 104, player_nail1 ]
@@ -204,8 +204,8 @@ void() player_nail2 = [ 104, player_nail1 ]
 		self.weaponframe = CHSCAM_ON;
 	}
 	SuperDamageSound();
-	W_FireSpikes(CONTENT_SLIME);
-	self.attack_finished = (time + MON_REACTIONTIME);
+	W_FireSpikes(-4);
+	self.attack_finished = (time + 0.2);
 };
 
 void() player_light1 = [ 105, player_light2 ]
@@ -326,21 +326,30 @@ void() PainSound =
 		}
 		return;
 	}
-	if ((self.pain_finished > time))
+
+	if ( self.pain_finished > time )
 	{
-		self.axhitme = WF_NORMAL;
+		self.axhitme = MOON_CONST_AXE_NOT;
 		return;
 	}
 	self.pain_finished = (time + CL_DEADTIME);
-	if ((self.axhitme == CHSCAM_ON))
+
+	if ( self.axhitme == MOON_CONST_AXE_CRIPPLE ) // TODO: later
 	{
-		self.axhitme = WF_NORMAL;
-		sound(self, CHAN_VOICE, "player/axhit1.wav", CHSCAM_ON, ATTN_NORM);
+		self.axhitme = MOON_CONST_AXE_HIT;
+		sound(self, CHAN_VOICE, "player/pain1.wav", 1, ATTN_NORM);
 		return;
 	}
-	rs = rint(((random() * SVC_SETVIEWPORT) + CHSCAM_ON));
+	if ( self.axhitme == MOON_CONST_AXE_HIT )
+	{
+		self.axhitme = MOON_CONST_AXE_NOT;
+		sound(self, CHAN_VOICE, "player/axhit1.wav", 1, ATTN_NORM);
+		return;
+	}
+
+	rs = rint(((random() * 5) + 1));
 	self.noise = s_wiz;
-	if ((rs == CHSCAM_ON))
+	if ((rs == 1))
 	{
 		self.noise = "player/pain1.wav";
 	}
@@ -636,7 +645,7 @@ void() GibPlayer =
 	ThrowGib("progs/gib2.mdl", self.health);
 	ThrowGib("progs/gib3.mdl", self.health);
 	self.deadflag = DEAD_DEAD;
-	DropPLGold(self);
+
 	if ((damage_attacker.classname == "teledeath"))
 	{
 		sound(self, CHAN_VOICE, "player/teledth1.wav", CHSCAM_ON, ATTN_NONE);
@@ -685,9 +694,11 @@ void() PlayerDie =
 	{
 		self.velocity_z = (self.velocity_z + (random() * 300));
 	}
-	if ((self.health < -35))
+
+	moon_drop_player_gold(self);
+	if ((self.health < -25)) // was -35
 	{
-		if ((self.health < -40))
+		if ((self.health < -50)) // was -40
 		{
 			GibPlayer();
 			return;
@@ -695,8 +706,8 @@ void() PlayerDie =
 		DieUnhead();
 		return;
 	}
+
 	DeathSound();
-	DropPLGold(self);
 	self.angles_x = 0;
 	self.angles_z = 0;
 	if ( self.weapon == IT_AXE )

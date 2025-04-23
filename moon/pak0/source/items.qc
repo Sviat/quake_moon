@@ -1930,19 +1930,10 @@ float(float effect_code, float effect_value) moon_calculate_effect_cost =
 		case MOON_ITEM_VAMPIR_CODE	: return (effect_value * MOON_ITEM_VAMPIR_MARKET_COST_SCALE);
 		case MOON_ITEM_REGEN_CODE	: return (effect_value * MOON_ITEM_REGEN_MARKET_COST_SCALE);
 		case MOON_ITEM_CONSUME_CODE : return (effect_value * MOON_ITEM_CONSUME_MARKET_COST_SCALE);
-		default: return 42;
+		case MOON_ITEM_REPAIR_CODE 	: return (effect_value * MOON_ITEM_REPAIR_MARKET_COST_SCALE);
+		case MOON_ITEM_RECHARGE_CODE: return (effect_value * MOON_ITEM_RECHARGE_MARKET_COST_SCALE);
+		default: return 42; // should not happen
 	}
-};
-
-void(entity e) moon_calculate_magic_cost =
-{
-	local float ccost;
-
-	ccost = MOON_ITEM_MARKET_COST_BASE;
-	ccost = ccost + moon_calculate_effect_cost(e.magic_typeone, e.magic_typeone_value);
-	ccost = ccost + moon_calculate_effect_cost(e.magic_typetwo, e.magic_typetwo_value);
-
-	e.cost = ccost;
 };
 
 void() moon_market_place_ammo =
@@ -2009,302 +2000,460 @@ void() moon_market_place_elixir =
 	sound(e, CHAN_ITEM, "items/itembk2.wav", 1, ATTN_NORM);
 };
 
-float(float level) moon_generate_trait_prefix_code =
+void(entity e) moon_calculate_magic_cost =
 {
-	local float r;
+	local float ccost;
 
-	if ((level <= MOON_ITEM_LVLTHRESHOLD_LOW))
+	ccost = MOON_ITEM_MARKET_COST_BASE;
+	ccost = ccost + moon_calculate_effect_cost(e.magic_typeone, e.magic_typeone_value);
+	ccost = ccost + moon_calculate_effect_cost(e.magic_typetwo, e.magic_typetwo_value);
+
+	e.cost = ccost;
+};
+
+float(float level) moon_generate_trait_quality =
+{
+	return level * MOON_ITEM_TRAIT_QUALITY_MULTIPLIER_LEVEL
+		 + random() * MOON_ITEM_TRAIT_QUALITY_MULTIPLIER_RANDOM;
+};
+
+float(float level) moon_generate_trait_prefix_rarity =
+{
+	local float total_quality;
+	total_quality = moon_generate_trait_quality(level);
+
+	if ( total_quality < MOON_ITEM_TRAIT_THRESHOLD_PREFIX_LOW )
 	{
-		r = random_int(MOON_ITEM_TRAIT_LOWERBOUND_LOW, MOON_ITEM_TRAIT_UPPERBOUND_PREFIX_LOW);
+		return MOON_ITEM_RARITY_LOW;
 	} else
-	if ((level <= MOON_ITEM_LVLTHRESHOLD_NORMAL))
+	if ( total_quality < MOON_ITEM_TRAIT_THRESHOLD_PREFIX_NORMAL )
 	{
-		r = random_int(MOON_ITEM_TRAIT_LOWERBOUND_NORMAL, MOON_ITEM_TRAIT_UPPERBOUND_PREFIX_NORMAL);
+		return MOON_ITEM_RARITY_NORMAL;
 	} else
-	if ((level <= MOON_ITEM_LVLTHRESHOLD_HIGH))
+	if ( total_quality < MOON_ITEM_TRAIT_THRESHOLD_PREFIX_HIGH )
 	{
-		r = random_int(MOON_ITEM_TRAIT_LOWERBOUND_HIGH, MOON_ITEM_TRAIT_UPPERBOUND_PREFIX_HIGH);
+		return MOON_ITEM_RARITY_HIGH;
 	} else {
-		r = random_int(MOON_ITEM_TRAIT_LOWERBOUND_EPIC, MOON_ITEM_TRAIT_UPPERBOUND_PREFIX_EPIC);
+		return MOON_ITEM_RARITY_EPIC;
 	}
+};
 
-	return (r % (MOON_ITEM_TRAIT_MAX_PREFIX + 1));
-}
-
-float(float level) moon_generate_trait_postfix_code =
+float(float level) moon_generate_trait_postfix_rarity =
 {
-	local float r;
+	local float total_quality;
+	total_quality = moon_generate_trait_quality(level);
 
-	if ((level <= MOON_ITEM_LVLTHRESHOLD_LOW))
+	if ( total_quality < MOON_ITEM_TRAIT_THRESHOLD_POSTFIX_LOW )
 	{
-		r = random_int(MOON_ITEM_TRAIT_LOWERBOUND_LOW, MOON_ITEM_TRAIT_UPPERBOUND_POSTFIX_LOW);
+		return MOON_ITEM_RARITY_LOW;
 	} else
-	if ((level <= MOON_ITEM_LVLTHRESHOLD_NORMAL))
+	if ( total_quality < MOON_ITEM_TRAIT_THRESHOLD_POSTFIX_NORMAL )
 	{
-		r = random_int(MOON_ITEM_TRAIT_LOWERBOUND_NORMAL, MOON_ITEM_TRAIT_UPPERBOUND_POSTFIX_NORMAL);
+		return MOON_ITEM_RARITY_NORMAL;
 	} else
-	if ((level <= MOON_ITEM_LVLTHRESHOLD_HIGH))
+	if ( total_quality < MOON_ITEM_TRAIT_THRESHOLD_POSTFIX_HIGH )
 	{
-		r = random_int(MOON_ITEM_TRAIT_LOWERBOUND_HIGH, MOON_ITEM_TRAIT_UPPERBOUND_POSTFIX_HIGH);
+		return MOON_ITEM_RARITY_HIGH;
 	} else {
-		r = random_int(MOON_ITEM_TRAIT_LOWERBOUND_EPIC, MOON_ITEM_TRAIT_UPPERBOUND_POSTFIX_EPIC);
+		return MOON_ITEM_RARITY_HIGH;
+		// return MOON_ITEM_RARITY_EPIC; // disable, until Unique items implemented
 	}
+};
 
-	return (r % (MOON_ITEM_TRAIT_MAX_POSTFIX + 1));
-}
-
-void(entity e) moon_generate_magic_prefix = // Refactor to work with new effects as well
+float(float level) moon_generate_trait_effect_code =
 {
-	local float r;
+	if ( level < MOON_ITEM_TRAIT_CODE_THRESHOLD_LOW )
+	{
+		return random_int(MOON_ITEM_TRAIT_MIN_EFFECT, MOON_ITEM_TRAIT_CODE_LOW_HIGHEST);
+	} else
+	if ( level > MOON_ITEM_TRAIT_CODE_THRESHOLD_HIGH )
+	{
+		return random_int(MOON_ITEM_TRAIT_CODE_HIGH_LOWEST, MOON_ITEM_TRAIT_MAX_EFFECT);
+	} else {
+		return random_int(MOON_ITEM_TRAIT_MIN_EFFECT, MOON_ITEM_TRAIT_MAX_EFFECT);
+	}
+};
+
+void(entity e) moon_generate_magic_prefix =
+{
 	local float mxx;
+	local float effect;
+	local float rarity;
 
 	mxx = moon_get_max_player_level();
-	r = moon_generate_trait_prefix_code(mxx);
-	e.magic_typeone = r % (MOON_ITEM_TRAIT_MAX_EFFECT + 1); // assuming trait fits the grid [LOW1-8,NORMAL1-8,HIGH1-8,EPIC1-8]
-	switch(r)
+	effect = moon_generate_trait_effect_code(mxx);
+	e.magic_typeone = effect;
+
+	rarity = moon_generate_trait_prefix_rarity(mxx);
+	e.magic_rarity_level = e.magic_rarity_level + rarity;
+	switch(effect)
 	{
-	// MOON_ITEM_HEALTH_CODE
-	case MOON_ITEM_HEALTH_CODE + (MOON_ITEM_TRAIT_MAX_EFFECT * MOON_ITEM_RARITY_LOW):		// 1 = 1+(8*0)
-		e.magic_typeone_value = random_int(MOON_ITEM_HEALTH_PREFIX_LOW_FROM, MOON_ITEM_HEALTH_PREFIX_LOW_TO);
-		e.prefix_one = MOON_ITEM_HEALTH_PREFIX_LOW;
+	case MOON_ITEM_HEALTH_CODE:
+		switch(rarity)
+		{
+		case MOON_ITEM_RARITY_LOW:
+			e.magic_typeone_value = random_int(MOON_ITEM_HEALTH_PREFIX_LOW_FROM, MOON_ITEM_HEALTH_PREFIX_LOW_TO);
+			e.prefix_one = MOON_ITEM_HEALTH_PREFIX_LOW;
+			break;
+		case MOON_ITEM_RARITY_NORMAL:
+			e.magic_typeone_value = random_int(MOON_ITEM_HEALTH_PREFIX_NORMAL_FROM, MOON_ITEM_HEALTH_PREFIX_NORMAL_TO);
+			e.prefix_one = MOON_ITEM_HEALTH_PREFIX_NORMAL;
+			break;
+		case MOON_ITEM_RARITY_HIGH:
+			e.magic_typeone_value = random_int(MOON_ITEM_HEALTH_PREFIX_HIGH_FROM, MOON_ITEM_HEALTH_PREFIX_HIGH_TO);
+			e.prefix_one = MOON_ITEM_HEALTH_PREFIX_HIGH;
+			break;
+		case MOON_ITEM_RARITY_EPIC:
+			e.magic_typeone_value = random_int(MOON_ITEM_HEALTH_PREFIX_EPIC_FROM, MOON_ITEM_HEALTH_PREFIX_EPIC_TO);
+			e.prefix_one = MOON_ITEM_HEALTH_PREFIX_EPIC;
+			break;
+		}
 		break;
-	case MOON_ITEM_HEALTH_CODE + (MOON_ITEM_TRAIT_MAX_EFFECT * MOON_ITEM_RARITY_NORMAL):	// 9 = 1+(8*1)
-		e.magic_typeone_value = random_int(MOON_ITEM_HEALTH_PREFIX_NORMAL_FROM, MOON_ITEM_HEALTH_PREFIX_NORMAL_TO);
-		e.prefix_one = MOON_ITEM_HEALTH_PREFIX_NORMAL;
+	case MOON_ITEM_RESIST_CODE:
+		switch(rarity)
+		{
+		case MOON_ITEM_RARITY_LOW:
+			e.magic_typeone_value = random_int(MOON_ITEM_RESIST_PREFIX_LOW_FROM, MOON_ITEM_RESIST_PREFIX_LOW_TO);
+			e.prefix_one = MOON_ITEM_RESIST_PREFIX_LOW;
+			break;
+		case MOON_ITEM_RARITY_NORMAL:
+			e.magic_typeone_value = random_int(MOON_ITEM_RESIST_PREFIX_NORMAL_FROM, MOON_ITEM_RESIST_PREFIX_NORMAL_TO);
+			e.prefix_one = MOON_ITEM_RESIST_PREFIX_NORMAL;
+			break;
+		case MOON_ITEM_RARITY_HIGH:
+			e.magic_typeone_value = random_int(MOON_ITEM_RESIST_PREFIX_HIGH_FROM, MOON_ITEM_RESIST_PREFIX_HIGH_TO);
+			e.prefix_one = MOON_ITEM_RESIST_PREFIX_HIGH;
+			break;
+		case MOON_ITEM_RARITY_EPIC:
+			e.magic_typeone_value = random_int(MOON_ITEM_RESIST_PREFIX_EPIC_FROM, MOON_ITEM_RESIST_PREFIX_EPIC_TO);
+			e.prefix_one = MOON_ITEM_RESIST_PREFIX_EPIC;
+			break;
+		}
 		break;
-	case MOON_ITEM_HEALTH_CODE + (MOON_ITEM_TRAIT_MAX_EFFECT * MOON_ITEM_RARITY_HIGH):		// 17 = 1+(8*2)
-		e.magic_typeone_value = random_int(MOON_ITEM_HEALTH_PREFIX_HIGH_FROM, MOON_ITEM_HEALTH_PREFIX_HIGH_TO);
-		e.prefix_one = MOON_ITEM_HEALTH_PREFIX_HIGH;
+	case MOON_ITEM_GOLD_CODE:
+		switch(rarity)
+		{
+		case MOON_ITEM_RARITY_LOW:
+			e.magic_typeone_value = random_int(MOON_ITEM_GOLD_PREFIX_LOW_FROM, MOON_ITEM_GOLD_PREFIX_LOW_TO);
+			e.prefix_one = MOON_ITEM_GOLD_PREFIX_LOW;
+			break;
+		case MOON_ITEM_RARITY_NORMAL:
+		case MOON_ITEM_RARITY_HIGH: // -- There were NO High rarity variant -- \\
+			e.magic_typeone_value = random_int(MOON_ITEM_GOLD_PREFIX_NORMAL_FROM, MOON_ITEM_GOLD_PREFIX_NORMAL_TO);
+			e.prefix_one = MOON_ITEM_GOLD_PREFIX_NORMAL;
+			break;
+		case MOON_ITEM_RARITY_EPIC:
+			e.magic_typeone_value = random_int(MOON_ITEM_GOLD_PREFIX_EPIC_FROM, MOON_ITEM_GOLD_PREFIX_EPIC_TO);
+			e.prefix_one = MOON_ITEM_GOLD_PREFIX_EPIC;
+			break;
+		}
 		break;
-	case MOON_ITEM_HEALTH_PREFIX_EPIC_CODE: // keep original distribution of traits			// 23
-		e.magic_typeone = MOON_ITEM_HEALTH_CODE; // out of grid, so code also needs to be changed
-		e.magic_typeone_value = random_int(MOON_ITEM_HEALTH_PREFIX_EPIC_FROM, MOON_ITEM_HEALTH_PREFIX_EPIC_TO);
-		e.prefix_one = MOON_ITEM_HEALTH_PREFIX_EPIC;
+	case MOON_ITEM_DAMAGE_CODE:
+		switch(rarity)
+		{
+		case MOON_ITEM_RARITY_LOW:
+			e.magic_typeone_value = random_int(MOON_ITEM_DAMAGE_PREFIX_LOW_FROM, MOON_ITEM_DAMAGE_PREFIX_LOW_TO);
+			e.prefix_one = MOON_ITEM_DAMAGE_PREFIX_LOW;
+			break;
+		case MOON_ITEM_RARITY_NORMAL:
+			e.magic_typeone_value = random_int(MOON_ITEM_DAMAGE_PREFIX_NORMAL_FROM, MOON_ITEM_DAMAGE_PREFIX_NORMAL_TO);
+			e.prefix_one = MOON_ITEM_DAMAGE_PREFIX_NORMAL;
+			break;
+		case MOON_ITEM_RARITY_HIGH:
+		case MOON_ITEM_RARITY_EPIC: // -- There were NO Epic rarity variant -- \\
+			e.magic_typeone_value = random_int(MOON_ITEM_DAMAGE_PREFIX_HIGH_FROM, MOON_ITEM_DAMAGE_PREFIX_HIGH_TO);
+			e.prefix_one = MOON_ITEM_DAMAGE_PREFIX_HIGH;
+			break;
+		}
 		break;
-	// MOON_ITEM_RESIST_CODE
-	case MOON_ITEM_RESIST_CODE + (MOON_ITEM_TRAIT_MAX_EFFECT * MOON_ITEM_RARITY_LOW):		// 2 = 2+(8*0)
-		e.magic_typeone_value = random_int(MOON_ITEM_RESIST_PREFIX_LOW_FROM, MOON_ITEM_RESIST_PREFIX_LOW_TO);
-		e.prefix_one = MOON_ITEM_RESIST_PREFIX_LOW;
+	case MOON_ITEM_RETALATE_CODE:
+		switch(rarity)
+		{
+		case MOON_ITEM_RARITY_LOW:
+			e.magic_typeone_value = random_int(MOON_ITEM_RETALATE_PREFIX_LOW_FROM, MOON_ITEM_RETALATE_PREFIX_LOW_TO);
+			e.prefix_one = MOON_ITEM_RETALATE_PREFIX_LOW;
+			break;
+		case MOON_ITEM_RARITY_NORMAL:
+			e.magic_typeone_value = random_int(MOON_ITEM_RETALATE_PREFIX_NORMAL_FROM, MOON_ITEM_RETALATE_PREFIX_NORMAL_TO);
+			e.prefix_one = MOON_ITEM_RETALATE_PREFIX_NORMAL;
+			break;
+		case MOON_ITEM_RARITY_HIGH: // -- There were NO High rarity variant -- \\
+		case MOON_ITEM_RARITY_EPIC:
+			e.magic_typeone_value = random_int(MOON_ITEM_RETALATE_PREFIX_EPIC_FROM, MOON_ITEM_RETALATE_PREFIX_EPIC_TO);
+			e.prefix_one = MOON_ITEM_RETALATE_PREFIX_EPIC;
+			break;
+		}
 		break;
-	case MOON_ITEM_RESIST_CODE + (MOON_ITEM_TRAIT_MAX_EFFECT * MOON_ITEM_RARITY_NORMAL):	// 10 = 2+(8*1)
-		e.magic_typeone_value = random_int(MOON_ITEM_RESIST_PREFIX_NORMAL_FROM, MOON_ITEM_RESIST_PREFIX_NORMAL_TO);
-		e.prefix_one = MOON_ITEM_RESIST_PREFIX_NORMAL;
+	case MOON_ITEM_VAMPIR_CODE:
+		switch(rarity)
+		{
+		case MOON_ITEM_RARITY_LOW:
+			e.magic_typeone_value = random_int(MOON_ITEM_VAMPIR_PREFIX_LOW_FROM, MOON_ITEM_VAMPIR_PREFIX_LOW_TO);
+			e.prefix_one = MOON_ITEM_VAMPIR_PREFIX_LOW;
+			break;
+		case MOON_ITEM_RARITY_NORMAL:
+			e.magic_typeone_value = random_int(MOON_ITEM_VAMPIR_PREFIX_NORMAL_FROM, MOON_ITEM_VAMPIR_PREFIX_NORMAL_TO);
+			e.prefix_one = MOON_ITEM_VAMPIR_PREFIX_NORMAL;
+			break;
+		case MOON_ITEM_RARITY_HIGH: // -- There were NO High rarity variant -- \\
+		case MOON_ITEM_RARITY_EPIC:
+			e.magic_typeone_value = random_int(MOON_ITEM_VAMPIR_PREFIX_EPIC_FROM, MOON_ITEM_VAMPIR_PREFIX_EPIC_TO);
+			e.prefix_one = MOON_ITEM_VAMPIR_PREFIX_EPIC;
+			break;
+		}
 		break;
-	case MOON_ITEM_RESIST_CODE + (MOON_ITEM_TRAIT_MAX_EFFECT * MOON_ITEM_RARITY_HIGH):		// 18 = 2+(8*2)
-		e.magic_typeone_value = random_int(MOON_ITEM_RESIST_PREFIX_HIGH_FROM, MOON_ITEM_RESIST_PREFIX_HIGH_TO);
-		e.prefix_one = MOON_ITEM_RESIST_PREFIX_HIGH;
+	case MOON_ITEM_REGEN_CODE:
+		switch(rarity)
+		{
+		case MOON_ITEM_RARITY_LOW:
+			e.magic_typeone_value = random_int(MOON_ITEM_REGEN_PREFIX_LOW_FROM, MOON_ITEM_REGEN_PREFIX_LOW_TO);
+			e.prefix_one = MOON_ITEM_REGEN_PREFIX_LOW;
+			break;
+		case MOON_ITEM_RARITY_NORMAL:
+			e.magic_typeone_value = random_int(MOON_ITEM_REGEN_PREFIX_NORMAL_FROM, MOON_ITEM_REGEN_PREFIX_NORMAL_TO);
+			e.prefix_one = MOON_ITEM_REGEN_PREFIX_NORMAL;
+			break;
+		case MOON_ITEM_RARITY_HIGH:
+			e.magic_typeone_value = random_int(MOON_ITEM_REGEN_PREFIX_HIGH_FROM, MOON_ITEM_REGEN_PREFIX_HIGH_TO);
+			e.prefix_one = MOON_ITEM_REGEN_PREFIX_HIGH;
+			break;
+		case MOON_ITEM_RARITY_EPIC:
+			e.magic_typeone_value = random_int(MOON_ITEM_REGEN_PREFIX_EPIC_FROM, MOON_ITEM_REGEN_PREFIX_EPIC_TO);
+			e.prefix_one = MOON_ITEM_REGEN_PREFIX_EPIC;
+			break;
+		}
 		break;
-	case MOON_ITEM_RESIST_PREFIX_EPIC_CODE:													// 24
-		e.magic_typeone = MOON_ITEM_RESIST_CODE;
-		e.magic_typeone_value = random_int(MOON_ITEM_RESIST_PREFIX_EPIC_FROM, MOON_ITEM_RESIST_PREFIX_EPIC_TO);
-		e.prefix_one = MOON_ITEM_RESIST_PREFIX_EPIC;
+	case MOON_ITEM_CONSUME_CODE:
+		switch(rarity)
+		{
+		case MOON_ITEM_RARITY_LOW:
+			e.magic_typeone_value = random_int(MOON_ITEM_CONSUME_PREFIX_LOW_FROM, MOON_ITEM_CONSUME_PREFIX_LOW_TO);
+			e.prefix_one = MOON_ITEM_CONSUME_PREFIX_LOW;
+			break;
+		case MOON_ITEM_RARITY_NORMAL:
+			e.magic_typeone_value = random_int(MOON_ITEM_CONSUME_PREFIX_NORMAL_FROM, MOON_ITEM_CONSUME_PREFIX_NORMAL_TO);
+			e.prefix_one = MOON_ITEM_CONSUME_PREFIX_NORMAL;
+			break;
+		case MOON_ITEM_RARITY_HIGH:
+		case MOON_ITEM_RARITY_EPIC: // -- There were NO Epic rarity variant -- \\
+			e.magic_typeone_value = random_int(MOON_ITEM_CONSUME_PREFIX_HIGH_FROM, MOON_ITEM_CONSUME_PREFIX_HIGH_TO);
+			e.prefix_one = MOON_ITEM_CONSUME_PREFIX_HIGH;
+			break;
+		}
 		break;
-	// MOON_ITEM_GOLD_CODE
-	case MOON_ITEM_GOLD_CODE + (MOON_ITEM_TRAIT_MAX_EFFECT * MOON_ITEM_RARITY_LOW):			// 3 = 3+(8*0)
-		e.magic_typeone_value = random_int(MOON_ITEM_GOLD_PREFIX_LOW_FROM, MOON_ITEM_GOLD_PREFIX_LOW_TO);
-		e.prefix_one = MOON_ITEM_GOLD_PREFIX_LOW;
+	case MOON_ITEM_REPAIR_CODE:
+		switch(rarity)
+		{
+		case MOON_ITEM_RARITY_LOW:
+			e.magic_typeone_value = random_int(MOON_ITEM_REPAIR_PREFIX_LOW_FROM, MOON_ITEM_REPAIR_PREFIX_LOW_TO);
+			e.prefix_one = MOON_ITEM_REPAIR_PREFIX_LOW;
+			break;
+		case MOON_ITEM_RARITY_NORMAL:
+			e.magic_typeone_value = random_int(MOON_ITEM_REPAIR_PREFIX_NORMAL_FROM, MOON_ITEM_REPAIR_PREFIX_NORMAL_TO);
+			e.prefix_one = MOON_ITEM_REPAIR_PREFIX_NORMAL;
+			break;
+		case MOON_ITEM_RARITY_HIGH:
+			e.magic_typeone_value = random_int(MOON_ITEM_REPAIR_PREFIX_HIGH_FROM, MOON_ITEM_REPAIR_PREFIX_HIGH_TO);
+			e.prefix_one = MOON_ITEM_REPAIR_PREFIX_HIGH;
+			break;
+		case MOON_ITEM_RARITY_EPIC:
+			e.magic_typeone_value = random_int(MOON_ITEM_REPAIR_PREFIX_EPIC_FROM, MOON_ITEM_REPAIR_PREFIX_EPIC_TO);
+			e.prefix_one = MOON_ITEM_REPAIR_PREFIX_EPIC;
+			break;
+		}
 		break;
-	case MOON_ITEM_GOLD_CODE + (MOON_ITEM_TRAIT_MAX_EFFECT * MOON_ITEM_RARITY_NORMAL):		// 11 = 3+(8*1)
-		e.magic_typeone_value = random_int(MOON_ITEM_GOLD_PREFIX_NORMAL_FROM, MOON_ITEM_GOLD_PREFIX_NORMAL_TO);
-		e.prefix_one = MOON_ITEM_GOLD_PREFIX_NORMAL;
+	case MOON_ITEM_RECHARGE_CODE:
+		switch(rarity)
+		{
+		case MOON_ITEM_RARITY_LOW:
+			e.magic_typeone_value = random_int(MOON_ITEM_RECHARGE_PREFIX_LOW_FROM, MOON_ITEM_RECHARGE_PREFIX_LOW_TO);
+			e.prefix_one = MOON_ITEM_RECHARGE_PREFIX_LOW;
+			break;
+		case MOON_ITEM_RARITY_NORMAL:
+			e.magic_typeone_value = random_int(MOON_ITEM_RECHARGE_PREFIX_NORMAL_FROM, MOON_ITEM_RECHARGE_PREFIX_NORMAL_TO);
+			e.prefix_one = MOON_ITEM_REPAIR_PREFIX_NORMAL;
+			break;
+		case MOON_ITEM_RARITY_HIGH:
+			e.magic_typeone_value = random_int(MOON_ITEM_RECHARGE_PREFIX_HIGH_FROM, MOON_ITEM_RECHARGE_PREFIX_HIGH_TO);
+			e.prefix_one = MOON_ITEM_REPAIR_PREFIX_HIGH;
+			break;
+		case MOON_ITEM_RARITY_EPIC:
+			e.magic_typeone_value = random_int(MOON_ITEM_RECHARGE_PREFIX_EPIC_FROM, MOON_ITEM_RECHARGE_PREFIX_EPIC_TO);
+			e.prefix_one = MOON_ITEM_RECHARGE_PREFIX_EPIC;
+			break;
+		}
 		break;
-	// -- NO High rarity variant -- \\
-	case MOON_ITEM_GOLD_PREFIX_EPIC_CODE:													// 25
-		e.magic_typeone = MOON_ITEM_GOLD_CODE;
-		e.magic_typeone_value = random_int(MOON_ITEM_GOLD_PREFIX_EPIC_FROM, MOON_ITEM_GOLD_PREFIX_EPIC_TO);
-		e.prefix_one = MOON_ITEM_GOLD_PREFIX_EPIC;
-		break;
-	// MOON_ITEM_DAMAGE_CODE
-	case MOON_ITEM_DAMAGE_CODE + (MOON_ITEM_TRAIT_MAX_EFFECT * MOON_ITEM_RARITY_LOW):		// 4 = 4+(8*0)
-		e.magic_typeone_value = random_int(MOON_ITEM_DAMAGE_PREFIX_LOW_FROM, MOON_ITEM_DAMAGE_PREFIX_LOW_TO);
-		e.prefix_one = MOON_ITEM_DAMAGE_PREFIX_LOW;
-		break;
-	case MOON_ITEM_DAMAGE_CODE + (MOON_ITEM_TRAIT_MAX_EFFECT * MOON_ITEM_RARITY_NORMAL):	// 12 = 4+(8*1)
-		e.magic_typeone_value = random_int(MOON_ITEM_DAMAGE_PREFIX_NORMAL_FROM, MOON_ITEM_DAMAGE_PREFIX_NORMAL_TO);
-		e.prefix_one = MOON_ITEM_DAMAGE_PREFIX_NORMAL;
-		break;
-	case MOON_ITEM_DAMAGE_PREFIX_HIGH_CODE:													// 19
-		e.magic_typeone = MOON_ITEM_DAMAGE_CODE;
-		e.magic_typeone_value = random_int(MOON_ITEM_DAMAGE_PREFIX_HIGH_FROM, MOON_ITEM_DAMAGE_PREFIX_HIGH_TO);
-		e.prefix_one = MOON_ITEM_DAMAGE_PREFIX_HIGH;
-		break;
-	// -- NO Epic rarity variant -- \\
-	// MOON_ITEM_RETALATE_CODE
-	case MOON_ITEM_RETALATE_CODE + (MOON_ITEM_TRAIT_MAX_EFFECT * MOON_ITEM_RARITY_LOW):		// 5 = 5+(8*0)
-		e.magic_typeone_value = random_int(MOON_ITEM_RETALATE_PREFIX_LOW_FROM, MOON_ITEM_RETALATE_PREFIX_LOW_TO);
-		e.prefix_one = MOON_ITEM_RETALATE_PREFIX_LOW;
-		break;
-	case MOON_ITEM_RETALATE_CODE + (MOON_ITEM_TRAIT_MAX_EFFECT * MOON_ITEM_RARITY_NORMAL):	// 13 = 5+(8*1)
-		e.magic_typeone_value = random_int(MOON_ITEM_RETALATE_PREFIX_NORMAL_FROM, MOON_ITEM_RETALATE_PREFIX_NORMAL_TO);
-		e.prefix_one = MOON_ITEM_RETALATE_PREFIX_NORMAL;
-		break;
-	// -- NO High rarity variant -- \\
-	case MOON_ITEM_RETALATE_PREFIX_EPIC_CODE:												// 26
-		e.magic_typeone = MOON_ITEM_RETALATE_CODE;
-		e.magic_typeone_value = random_int(MOON_ITEM_RETALATE_PREFIX_EPIC_FROM, MOON_ITEM_RETALATE_PREFIX_EPIC_TO);
-		e.prefix_one = MOON_ITEM_RETALATE_PREFIX_EPIC;
-		break;
-	// MOON_ITEM_VAMPIR_CODE
-	case MOON_ITEM_VAMPIR_CODE + (MOON_ITEM_TRAIT_MAX_EFFECT * MOON_ITEM_RARITY_LOW):		// 6 = 6+(8*0)
-		e.magic_typeone_value = random_int(MOON_ITEM_VAMPIR_PREFIX_LOW_FROM, MOON_ITEM_VAMPIR_PREFIX_LOW_TO);
-		e.prefix_one = MOON_ITEM_VAMPIR_PREFIX_LOW;
-		break;
-	case MOON_ITEM_VAMPIR_CODE + (MOON_ITEM_TRAIT_MAX_EFFECT * MOON_ITEM_RARITY_NORMAL):	// 14 = 6+(8*1)
-		e.magic_typeone_value = random_int(MOON_ITEM_VAMPIR_PREFIX_NORMAL_FROM, MOON_ITEM_VAMPIR_PREFIX_NORMAL_TO);
-		e.prefix_one = MOON_ITEM_VAMPIR_PREFIX_NORMAL;
-		break;
-	// -- NO High rarity variant -- \\
-	case MOON_ITEM_VAMPIR_PREFIX_EPIC_CODE:													// 27
-		e.magic_typeone = MOON_ITEM_VAMPIR_CODE;
-		e.magic_typeone_value = random_int(MOON_ITEM_VAMPIR_PREFIX_EPIC_FROM, MOON_ITEM_VAMPIR_PREFIX_EPIC_TO);
-		e.prefix_one = MOON_ITEM_VAMPIR_PREFIX_EPIC;
-		break;
-	// MOON_ITEM_REGEN_CODE
-	case MOON_ITEM_REGEN_CODE + (MOON_ITEM_TRAIT_MAX_EFFECT * MOON_ITEM_RARITY_LOW):		// 7 = 7+(8*0)
-		e.magic_typeone_value = random_int(MOON_ITEM_REGEN_PREFIX_LOW_FROM, MOON_ITEM_REGEN_PREFIX_LOW_TO);
-		e.prefix_one = MOON_ITEM_REGEN_PREFIX_LOW;
-		break;
-	case MOON_ITEM_REGEN_CODE + (MOON_ITEM_TRAIT_MAX_EFFECT * MOON_ITEM_RARITY_NORMAL):		// 15 = 7+(8*1)
-		e.magic_typeone_value = random_int(MOON_ITEM_REGEN_PREFIX_NORMAL_FROM, MOON_ITEM_REGEN_PREFIX_NORMAL_TO);
-		e.prefix_one = MOON_ITEM_REGEN_PREFIX_NORMAL;
-		break;
-	case MOON_ITEM_REGEN_PREFIX_HIGH_CODE:													// 20
-		e.magic_typeone = MOON_ITEM_REGEN_CODE;
-		e.magic_typeone_value = random_int(MOON_ITEM_REGEN_PREFIX_HIGH_FROM, MOON_ITEM_REGEN_PREFIX_HIGH_TO);
-		e.prefix_one = MOON_ITEM_REGEN_PREFIX_HIGH;
-		break;
-	case MOON_ITEM_REGEN_PREFIX_EPIC_CODE:													// 22
-		e.magic_typeone = MOON_ITEM_REGEN_CODE;
-		e.magic_typeone_value = random_int(MOON_ITEM_REGEN_PREFIX_EPIC_FROM, MOON_ITEM_REGEN_PREFIX_EPIC_TO);
-		e.prefix_one = MOON_ITEM_REGEN_PREFIX_EPIC;
-		break;
-	// MOON_ITEM_CONSUME_CODE
-	case MOON_ITEM_CONSUME_CODE + (MOON_ITEM_TRAIT_MAX_EFFECT * MOON_ITEM_RARITY_LOW):		// 8 = 8+(8*0)
-		e.magic_typeone_value = random_int(MOON_ITEM_CONSUME_PREFIX_LOW_FROM, MOON_ITEM_CONSUME_PREFIX_LOW_TO);
-		e.prefix_one = MOON_ITEM_CONSUME_PREFIX_LOW;
-		break;
-	case MOON_ITEM_CONSUME_CODE + (MOON_ITEM_TRAIT_MAX_EFFECT * MOON_ITEM_RARITY_NORMAL):	// 16 = 8+(8*1)
-		e.magic_typeone_value = random_int(MOON_ITEM_CONSUME_PREFIX_NORMAL_FROM, MOON_ITEM_CONSUME_PREFIX_NORMAL_TO);
-		e.prefix_one = MOON_ITEM_CONSUME_PREFIX_NORMAL;
-		break;
-	case MOON_ITEM_CONSUME_PREFIX_HIGH_CODE:												// 21
-		e.magic_typeone = MOON_ITEM_CONSUME_CODE;
-		e.magic_typeone_value = random_int(MOON_ITEM_CONSUME_PREFIX_HIGH_FROM, MOON_ITEM_CONSUME_PREFIX_HIGH_TO);
-		e.prefix_one = MOON_ITEM_CONSUME_PREFIX_HIGH;
-		break;
-	// -- NO Epic rarity variant -- \\
 	default:
-		bprint("moon_generate_magic_prefix cannot handle code {}\n", quick_ftos(r));
+		bprint("moon_generate_magic_prefix cannot handle code {}\n", quick_ftos(effect));
 	}
 
 };
 
 void(entity e) moon_generate_magic_postfix =
 {
-	local float r;
 	local float mxx;
+	local float effect;
+	local float rarity;
 
 	mxx = moon_get_max_player_level();
-	r = moon_generate_trait_postfix_code(mxx);
-	e.magic_typetwo = r % (MOON_ITEM_TRAIT_MAX_EFFECT + 1);
+	effect = moon_generate_trait_effect_code(mxx);
+	e.magic_typetwo = effect;
 
-	switch(r)
+	rarity = moon_generate_trait_prefix_rarity(mxx);
+	e.magic_rarity_level = e.magic_rarity_level + rarity;
+	switch(effect)
 	{
-	// MOON_ITEM_HEALTH_CODE
-	case MOON_ITEM_HEALTH_CODE + (MOON_ITEM_TRAIT_MAX_EFFECT * MOON_ITEM_RARITY_LOW):		// 1 = 1+(8*0)
-		e.magic_typetwo_value = random_int(MOON_ITEM_HEALTH_POSTFIX_LOW_FROM, MOON_ITEM_HEALTH_POSTFIX_LOW_TO);
-		e.prefix_two = MOON_ITEM_HEALTH_POSTFIX_LOW;
+	case MOON_ITEM_HEALTH_CODE:
+		switch(rarity)
+		{
+		case MOON_ITEM_RARITY_LOW:
+			e.magic_typetwo_value = random_int(MOON_ITEM_HEALTH_POSTFIX_LOW_FROM, MOON_ITEM_HEALTH_POSTFIX_LOW_TO);
+			e.prefix_two = MOON_ITEM_HEALTH_POSTFIX_LOW;
+			break;
+		case MOON_ITEM_RARITY_NORMAL:
+		case MOON_ITEM_RARITY_HIGH: // -- There were NO High rarity variant -- \\
+			e.magic_typetwo_value = random_int(MOON_ITEM_HEALTH_POSTFIX_NORMAL_FROM, MOON_ITEM_HEALTH_POSTFIX_NORMAL_TO);
+			e.prefix_two = MOON_ITEM_HEALTH_POSTFIX_NORMAL;
+			break;
+		}
 		break;
-	case MOON_ITEM_HEALTH_POSTFIX_NORMAL_CODE:												// 8
-		e.magic_typetwo = MOON_ITEM_HEALTH_CODE;
-		e.magic_typetwo_value = random_int(MOON_ITEM_HEALTH_POSTFIX_NORMAL_FROM, MOON_ITEM_HEALTH_POSTFIX_NORMAL_TO);
-		e.prefix_two = MOON_ITEM_HEALTH_POSTFIX_NORMAL;
+	case MOON_ITEM_RESIST_CODE:
+		switch(rarity)
+		{
+		case MOON_ITEM_RARITY_LOW:
+			e.magic_typetwo_value = random_int(MOON_ITEM_RESIST_POSTFIX_LOW_FROM, MOON_ITEM_RESIST_POSTFIX_LOW_TO);
+			e.prefix_two = MOON_ITEM_RESIST_POSTFIX_LOW;
+			break;
+		case MOON_ITEM_RARITY_NORMAL:
+			e.magic_typetwo_value = random_int(MOON_ITEM_RESIST_POSTFIX_NORMAL_FROM, MOON_ITEM_RESIST_POSTFIX_NORMAL_TO);
+			e.prefix_two = MOON_ITEM_RESIST_POSTFIX_NORMAL;
+			break;
+		case MOON_ITEM_RARITY_HIGH:
+			e.magic_typetwo_value = random_int(MOON_ITEM_RESIST_POSTFIX_HIGH_FROM, MOON_ITEM_RESIST_POSTFIX_HIGH_TO);
+			e.prefix_two = MOON_ITEM_RESIST_POSTFIX_HIGH;
+			break;
+		}
 		break;
-	// -- NO High rarity variant -- \\
-	// MOON_ITEM_RESIST_CODE
-	case MOON_ITEM_RESIST_CODE + (MOON_ITEM_TRAIT_MAX_EFFECT * MOON_ITEM_RARITY_LOW):		// 2 = 2+(8*0)
-		e.magic_typetwo_value = random_int(MOON_ITEM_RESIST_POSTFIX_LOW_FROM, MOON_ITEM_RESIST_POSTFIX_LOW_TO);
-		e.prefix_two = MOON_ITEM_RESIST_POSTFIX_LOW;
+	case MOON_ITEM_GOLD_CODE:
+		switch(rarity)
+		{
+		case MOON_ITEM_RARITY_LOW:
+			e.magic_typetwo_value = random_int(MOON_ITEM_GOLD_POSTFIX_LOW_FROM, MOON_ITEM_GOLD_POSTFIX_LOW_TO);
+			e.prefix_two = MOON_ITEM_GOLD_POSTFIX_LOW;
+			break;
+		case MOON_ITEM_RARITY_NORMAL:
+		case MOON_ITEM_RARITY_HIGH: // -- There were NO High rarity variant -- \\
+			e.magic_typetwo_value = random_int(MOON_ITEM_GOLD_POSTFIX_NORMAL_FROM, MOON_ITEM_GOLD_POSTFIX_NORMAL_TO);
+			e.prefix_two = MOON_ITEM_GOLD_POSTFIX_NORMAL;
+			break;
+		}
 		break;
-	case MOON_ITEM_RESIST_POSTFIX_NORMAL_CODE:												// 9
-		e.magic_typetwo = MOON_ITEM_RESIST_CODE;
-		e.magic_typetwo_value = random_int(MOON_ITEM_RESIST_POSTFIX_NORMAL_FROM, MOON_ITEM_RESIST_POSTFIX_NORMAL_TO);
-		e.prefix_two = MOON_ITEM_RESIST_POSTFIX_NORMAL;
+	case MOON_ITEM_DAMAGE_CODE:
+		switch(rarity)
+		{
+		case MOON_ITEM_RARITY_LOW:
+			e.magic_typetwo_value = random_int(MOON_ITEM_DAMAGE_POSTFIX_LOW_FROM, MOON_ITEM_DAMAGE_POSTFIX_LOW_TO);
+			e.prefix_two = MOON_ITEM_DAMAGE_POSTFIX_LOW;
+			break;
+		case MOON_ITEM_RARITY_NORMAL:
+			e.magic_typetwo_value = random_int(MOON_ITEM_DAMAGE_POSTFIX_NORMAL_FROM, MOON_ITEM_DAMAGE_POSTFIX_NORMAL_TO);
+			e.prefix_two = MOON_ITEM_DAMAGE_POSTFIX_NORMAL;
+			break;
+		case MOON_ITEM_RARITY_HIGH:
+			e.magic_typetwo_value = random_int(MOON_ITEM_DAMAGE_POSTFIX_HIGH_FROM, MOON_ITEM_DAMAGE_POSTFIX_HIGH_TO);
+			e.prefix_two = MOON_ITEM_DAMAGE_POSTFIX_HIGH;
+			break;
+		}
 		break;
-	case MOON_ITEM_RESIST_POSTFIX_HIGH_CODE:												// 14
-		e.magic_typetwo = MOON_ITEM_RESIST_CODE;
-		e.magic_typetwo_value = random_int(MOON_ITEM_RESIST_POSTFIX_HIGH_FROM, MOON_ITEM_RESIST_POSTFIX_HIGH_TO);
-		e.prefix_two = MOON_ITEM_RESIST_POSTFIX_HIGH;
+	case MOON_ITEM_RETALATE_CODE:
+		switch(rarity)
+		{
+		case MOON_ITEM_RARITY_LOW:
+			e.magic_typetwo_value = random_int(MOON_ITEM_RETALATE_POSTFIX_LOW_FROM, MOON_ITEM_RETALATE_POSTFIX_LOW_TO);
+			e.prefix_two = MOON_ITEM_RETALATE_POSTFIX_LOW;
+			break;
+		case MOON_ITEM_RARITY_NORMAL:
+		case MOON_ITEM_RARITY_HIGH: // -- There were NO High rarity variant -- \\
+			e.magic_typetwo_value = random_int(MOON_ITEM_RETALATE_POSTFIX_NORMAL_FROM, MOON_ITEM_RETALATE_POSTFIX_NORMAL_TO);
+			e.prefix_two = MOON_ITEM_RETALATE_POSTFIX_NORMAL;
+			break;
+		}
 		break;
-	// MOON_ITEM_GOLD_CODE
-	case MOON_ITEM_GOLD_CODE + (MOON_ITEM_TRAIT_MAX_EFFECT * MOON_ITEM_RARITY_LOW):			// 3 = 3+(8*0)
-		e.magic_typetwo_value = random_int(MOON_ITEM_GOLD_POSTFIX_LOW_FROM, MOON_ITEM_GOLD_POSTFIX_LOW_TO);
-		e.prefix_two = MOON_ITEM_GOLD_POSTFIX_LOW;
+	case MOON_ITEM_VAMPIR_CODE:
+		switch(rarity)
+		{
+		case MOON_ITEM_RARITY_LOW:
+		case MOON_ITEM_RARITY_NORMAL: // -- There were NO Normal rarity variant -- \\
+		case MOON_ITEM_RARITY_HIGH: // -- There were NO High rarity variant -- \\
+			e.magic_typetwo_value = random_int(MOON_ITEM_VAMPIR_POSTFIX_LOW_FROM, MOON_ITEM_VAMPIR_POSTFIX_LOW_TO);
+			e.prefix_two = MOON_ITEM_VAMPIR_POSTFIX_LOW;
+			break;
+		}
 		break;
-	case MOON_ITEM_GOLD_POSTFIX_NORMAL_CODE:												// 10
-		e.magic_typetwo = MOON_ITEM_GOLD_CODE;
-		e.magic_typetwo_value = random_int(MOON_ITEM_GOLD_POSTFIX_NORMAL_FROM, MOON_ITEM_GOLD_POSTFIX_NORMAL_TO);
-		e.prefix_two = MOON_ITEM_GOLD_POSTFIX_NORMAL;
+	case MOON_ITEM_REGEN_CODE:
+		switch(rarity)
+		{
+		case MOON_ITEM_RARITY_LOW:
+			e.magic_typetwo_value = random_int(MOON_ITEM_REGEN_POSTFIX_LOW_FROM, MOON_ITEM_REGEN_POSTFIX_LOW_TO);
+			e.prefix_two = MOON_ITEM_REGEN_POSTFIX_LOW;
+			break;
+		case MOON_ITEM_RARITY_NORMAL:
+		case MOON_ITEM_RARITY_HIGH: // -- There were NO High rarity variant -- \\
+			e.magic_typetwo_value = random_int(MOON_ITEM_REGEN_POSTFIX_NORMAL_FROM, MOON_ITEM_REGEN_POSTFIX_NORMAL_TO);
+			e.prefix_two = MOON_ITEM_REGEN_POSTFIX_NORMAL;
+			break;
+		}
 		break;
-	// -- NO High rarity variant -- \\
-	// MOON_ITEM_DAMAGE_CODE
-	case MOON_ITEM_DAMAGE_CODE + (MOON_ITEM_TRAIT_MAX_EFFECT * MOON_ITEM_RARITY_LOW):		// 4 = 4+(8*0)
-		e.magic_typetwo_value = random_int(MOON_ITEM_DAMAGE_POSTFIX_LOW_FROM, MOON_ITEM_DAMAGE_POSTFIX_LOW_TO);
-		e.prefix_two = MOON_ITEM_DAMAGE_POSTFIX_LOW;
+	case MOON_ITEM_CONSUME_CODE:
+		switch(rarity)
+		{
+		case MOON_ITEM_RARITY_LOW:
+			e.magic_typetwo_value = random_int(MOON_ITEM_CONSUME_POSTFIX_LOW_FROM, MOON_ITEM_CONSUME_POSTFIX_LOW_TO);
+			e.prefix_two = MOON_ITEM_CONSUME_POSTFIX_LOW;
+			break;
+		case MOON_ITEM_RARITY_NORMAL:
+		case MOON_ITEM_RARITY_HIGH: // -- There were NO High rarity variant -- \\
+			e.magic_typetwo_value = random_int(MOON_ITEM_CONSUME_POSTFIX_NORMAL_FROM, MOON_ITEM_CONSUME_POSTFIX_NORMAL_TO);
+			e.prefix_two = MOON_ITEM_CONSUME_POSTFIX_NORMAL;
+			break;
+		}
 		break;
-	case MOON_ITEM_DAMAGE_POSTFIX_NORMAL_CODE:												// 11
-		e.magic_typetwo = MOON_ITEM_DAMAGE_CODE;
-		e.magic_typetwo_value = random_int(MOON_ITEM_DAMAGE_POSTFIX_NORMAL_FROM, MOON_ITEM_DAMAGE_POSTFIX_NORMAL_TO);
-		e.prefix_two = MOON_ITEM_DAMAGE_POSTFIX_NORMAL;
+	case MOON_ITEM_REPAIR_CODE:
+		switch(rarity)
+		{
+		case MOON_ITEM_RARITY_LOW:
+			e.magic_typetwo_value = random_int(MOON_ITEM_REPAIR_POSTFIX_LOW_FROM, MOON_ITEM_REPAIR_POSTFIX_LOW_TO);
+			e.prefix_two = MOON_ITEM_REPAIR_POSTFIX_LOW;
+			break;
+		case MOON_ITEM_RARITY_NORMAL:
+			e.magic_typetwo_value = random_int(MOON_ITEM_REPAIR_POSTFIX_NORMAL_FROM, MOON_ITEM_REPAIR_POSTFIX_NORMAL_TO);
+			e.prefix_two = MOON_ITEM_REPAIR_POSTFIX_NORMAL;
+			break;
+		case MOON_ITEM_RARITY_HIGH:
+			e.magic_typetwo_value = random_int(MOON_ITEM_REPAIR_POSTFIX_HIGH_FROM, MOON_ITEM_REPAIR_POSTFIX_HIGH_TO);
+			e.prefix_two = MOON_ITEM_REPAIR_POSTFIX_HIGH;
+			break;
+		}
 		break;
-	case MOON_ITEM_DAMAGE_POSTFIX_HIGH_CODE:												// 17
-		e.magic_typetwo = MOON_ITEM_DAMAGE_CODE;
-		e.magic_typetwo_value = random_int(MOON_ITEM_DAMAGE_POSTFIX_HIGH_FROM, MOON_ITEM_DAMAGE_POSTFIX_HIGH_TO);
-		e.prefix_two = MOON_ITEM_DAMAGE_POSTFIX_HIGH;
+	case MOON_ITEM_RECHARGE_CODE:
+		switch(rarity)
+		{
+		case MOON_ITEM_RARITY_LOW:
+			e.magic_typetwo_value = random_int(MOON_ITEM_RECHARGE_POSTFIX_LOW_FROM, MOON_ITEM_RECHARGE_POSTFIX_LOW_TO);
+			e.prefix_two = MOON_ITEM_RECHARGE_POSTFIX_LOW;
+			break;
+		case MOON_ITEM_RARITY_NORMAL:
+			e.magic_typetwo_value = random_int(MOON_ITEM_RECHARGE_POSTFIX_NORMAL_FROM, MOON_ITEM_RECHARGE_POSTFIX_NORMAL_TO);
+			e.prefix_two = MOON_ITEM_RECHARGE_POSTFIX_NORMAL;
+			break;
+		case MOON_ITEM_RARITY_HIGH:
+			e.magic_typetwo_value = random_int(MOON_ITEM_RECHARGE_POSTFIX_HIGH_FROM, MOON_ITEM_RECHARGE_POSTFIX_HIGH_TO);
+			e.prefix_two = MOON_ITEM_RECHARGE_POSTFIX_HIGH;
+			break;
+		}
 		break;
-	// MOON_ITEM_RETALATE_CODE
-	case MOON_ITEM_RETALATE_CODE + (MOON_ITEM_TRAIT_MAX_EFFECT * MOON_ITEM_RARITY_LOW):		// 5 = 5+(8*0)
-		e.magic_typetwo_value = random_int(MOON_ITEM_RETALATE_POSTFIX_LOW_FROM, MOON_ITEM_RETALATE_POSTFIX_LOW_TO);
-		e.prefix_two = MOON_ITEM_RETALATE_POSTFIX_LOW;
-		break;
-	case MOON_ITEM_RETALATE_POSTFIX_NORMAL_CODE:											// 12
-		e.magic_typetwo = MOON_ITEM_RETALATE_CODE;
-		e.magic_typetwo_value = random_int(MOON_ITEM_RETALATE_POSTFIX_NORMAL_FROM, MOON_ITEM_RETALATE_POSTFIX_NORMAL_TO);
-		e.prefix_two = MOON_ITEM_RETALATE_POSTFIX_NORMAL;
-		break;
-	// -- NO High rarity variant -- \\
-	// MOON_ITEM_VAMPIR_CODE
-	case MOON_ITEM_VAMPIR_CODE + (MOON_ITEM_TRAIT_MAX_EFFECT * MOON_ITEM_RARITY_LOW):		// 6 = 6+(8*0)
-		e.magic_typetwo_value = random_int(MOON_ITEM_VAMPIR_POSTFIX_LOW_FROM, MOON_ITEM_VAMPIR_POSTFIX_LOW_TO);
-		e.prefix_two = MOON_ITEM_VAMPIR_POSTFIX_LOW;
-		break;
-	// -- NO Normal rarity variant -- \\
-	// -- NO High rarity variant -- \\
-	// MOON_ITEM_REGEN_CODE
-	case MOON_ITEM_REGEN_CODE + (MOON_ITEM_TRAIT_MAX_EFFECT * MOON_ITEM_RARITY_LOW):		// 7 = 7+(8*0)
-		e.magic_typetwo_value = random_int(MOON_ITEM_REGEN_POSTFIX_LOW_FROM, MOON_ITEM_REGEN_POSTFIX_LOW_TO);
-		e.prefix_two = MOON_ITEM_REGEN_POSTFIX_LOW;
-		break;
-	case MOON_ITEM_REGEN_POSTFIX_NORMAL_CODE:												// 16
-		e.magic_typetwo = MOON_ITEM_REGEN_CODE;
-		e.magic_typetwo_value = random_int(MOON_ITEM_REGEN_POSTFIX_NORMAL_FROM, MOON_ITEM_REGEN_POSTFIX_NORMAL_TO);
-		e.prefix_two = MOON_ITEM_REGEN_POSTFIX_NORMAL;
-		break;
-	// -- NO High rarity variant -- \\
-	// MOON_ITEM_CONSUME_CODE
-	case MOON_ITEM_CONSUME_POSTFIX_LOW_CODE:												// 13
-		e.magic_typetwo = MOON_ITEM_CONSUME_CODE;
-		e.magic_typetwo_value = random_int(MOON_ITEM_CONSUME_POSTFIX_LOW_FROM, MOON_ITEM_CONSUME_POSTFIX_LOW_TO);
-		e.prefix_two = MOON_ITEM_CONSUME_POSTFIX_LOW;
-		break;
-	case MOON_ITEM_CONSUME_POSTFIX_NORMAL_CODE:												// 15
-		e.magic_typetwo = MOON_ITEM_CONSUME_CODE;
-		e.magic_typetwo_value = random_int(MOON_ITEM_CONSUME_POSTFIX_NORMAL_FROM, MOON_ITEM_CONSUME_POSTFIX_NORMAL_TO);
-		e.prefix_two = MOON_ITEM_CONSUME_POSTFIX_NORMAL;
-		break;
-	// -- NO High rarity variant -- \\
 	default:
-		bprint("moon_generate_magic_postfix cannot handle code {}\n", quick_ftos(r));
+		bprint("moon_generate_magic_postfix cannot handle code {}\n", quick_ftos(effect));
 	}
 };
 
@@ -2583,54 +2732,6 @@ void() sale_brain =
 	e = spawn();
 	e.nextthink = ((time + 20) + (2 * random()));
 	e.think = sale_think;
-};
-
-void() walkman_think =
-{
-	if (time > self.next_heart)
-	{
-		self.next_heart = time + MOON_WALKMAN_DELAY_BETWEENTRACKS_SHOP + moon_walkman_start_music_shop(self.master); // self.master caches emitter_shop
-	}
-
-	if (time > self.next_gate)
-	{
-		self.next_gate = time + MOON_WALKMAN_DELAY_BETWEENTRACKS_GATE + moon_walkman_start_music_gate(self.killer); // self.killer caches emitter_gate
-	}
-
-	self.nextthink = time + MOON_WALKMAN_DELAY_BETWEENTHINKS;
-	self.think = walkman_think;
-};
-
-void() walkman_brain =
-{
-	local entity e;
-
-	local entity emitter_gate;
-	local entity emitter_shop;
-
-	emitter_gate = find(world, classname, MOON_GATE_CLASSNAME);
-	if (emitter_gate == world)
-	{
-		dprint("Cannot find any sound gate\n");
-		return;
-	}
-
-	emitter_shop = find(world, netname, MOON_TRADE_SHOP_HEALTH_NETNAME);
-	if (emitter_shop == world)
-	{
-		dprint("Cannot find any healthy trader\n");
-		return;
-	}
-
-	e = spawn();
-	e.killer = emitter_gate;
-	e.master = emitter_shop;
-
-	e.next_heart = time + MOON_WALKMAN_DELAY_FIRSTTRACK_SHOP;
-	e.next_gate = time + MOON_WALKMAN_DELAY_FIRSTTRACK_GATE;
-
-	e.think = walkman_think;
-	e.nextthink = time + MOON_WALKMAN_DELAY_FIRSTTHINK_MIN + (MOON_WALKMAN_DELAY_FIRSTTHINK_RANDOM * random());
 };
 
 void() s_touch =
@@ -3175,10 +3276,11 @@ void() moon_set_map_moon4 = // nothing to do here until all other problems are d
 	game_brain();
 	jesus_brain();
 	sale_brain();
-	walkman_brain();
+	moon_walkman_brain();
 	moon_reset_globals();
 	waypoints_ok = TRUE;
 };
+//
 
 void(entity who) CheckEdge =
 {
@@ -3983,7 +4085,7 @@ void(entity spawner, float player_level) moon_spawn_monster =
 	local entity monster;
 
 	random_shift = rint(random() * 3);
-	player_level_adjusted = player_level - random_shift;
+	player_level_adjusted = player_level - random_shift; // may be add skill here (so -3 random compensated by +3 nightmare)?
 
 	spawner.count = (spawner.count - 1);
 	monster_type = moon_get_monster_spawn_type(player_level);
@@ -6460,6 +6562,7 @@ void() MagicItemTouch =
 	{
 		sprint(other, "=== magic item ===\n");
 		moon_print_target_item_name(other, self.prefix_one, self.netname, self.prefix_two);
+		moon_print_target_item_rarity(other, self.magic_rarity_level);
 		sprint(other, "\n");
 		moon_println_target_own_magic_item_description(other); // when self is item, its magic is held in same place for both Armor and Ring
 
@@ -6500,6 +6603,7 @@ void(entity target, entity selected) moon_target_wear_magic_item =
 		{
 			moon_handle_magic_effect_lost_max_health(target, target.magic_typeone, target.magic_typeone_value);
 			moon_handle_magic_effect_lost_max_health(target, target.magic_typetwo, target.magic_typetwo_value);
+			target.magic_rarity_level = 0;
 			target.magic_typeone = 0;
 			target.magic_typeone_value = 0;
 			target.magic_prefixone = s_wiz;
@@ -6507,10 +6611,11 @@ void(entity target, entity selected) moon_target_wear_magic_item =
 			target.magic_typetwo_value = 0;
 			target.magic_prefixtwo = s_wiz;
 		}
-		selected.magic_prefixone = selected.prefix_one;
-		selected.magic_prefixtwo = selected.prefix_two;
+		selected.magic_prefixone = selected.prefix_one;	// wtf, why not fill magic_prefix on item spawn?
+		selected.magic_prefixtwo = selected.prefix_two;	// wtf, why not fill magic_prefix on item spawn?
 		sound(target, CHAN_ITEM, "items/armor1.wav", 1, ATTN_NORM);
 		target.wear_armor = MOON_ITEM_SOME;
+		target.magic_rarity_level = selected.magic_rarity_level;
 		if ( selected.magic_typeone > 0 )
 		{
 			target.magic_typeone = selected.magic_typeone;
@@ -6540,6 +6645,7 @@ void(entity target, entity selected) moon_target_wear_magic_item =
 		{
 			moon_handle_magic_effect_lost_max_health(target, target.ring_typeone, target.ring_typeone_value);
 			moon_handle_magic_effect_lost_max_health(target, target.ring_typetwo, target.ring_typetwo_value);
+			target.ring_rarity_level = 0;
 			target.ring_typeone = 0;
 			target.ring_typeone_value = 0;
 			target.ring_prefixone = s_wiz;
@@ -6547,6 +6653,7 @@ void(entity target, entity selected) moon_target_wear_magic_item =
 			target.ring_typetwo_value = 0;
 			target.ring_prefixtwo = s_wiz;
 		}
+		selected.ring_rarity_level = selected.magic_rarity_level;
 		selected.ring_prefixone = selected.prefix_one;
 		selected.ring_prefixtwo = selected.prefix_two;
 		selected.ring_typeone = selected.magic_typeone;
@@ -6555,6 +6662,7 @@ void(entity target, entity selected) moon_target_wear_magic_item =
 		selected.ring_typetwo_value = selected.magic_typetwo_value;
 		sound(target, CHAN_ITEM, "moon/items/ring.wav", 1, ATTN_NORM);
 		target.wear_ring = MOON_ITEM_SOME;
+		target.ring_rarity_level = selected.ring_rarity_level;
 		if ( selected.ring_typeone > 0 )
 		{
 			target.ring_typeone = selected.ring_typeone;
@@ -6605,7 +6713,7 @@ void() moon_self_pickup_magic_item_and_clear =
 	remove(selected);
 };
 
-void(entity who) DropMagicArmor =
+void(entity who) moon_spawn_drop_magic_item =
 {
 	local entity item;
 	local float z;
@@ -6668,7 +6776,7 @@ void() UpgradeTouch =
 		moon_println_all_global_gold_bonus();
 		break;
 	case MOON_ITEM_GATEALERT_CODE:
-		if (up_alert < 1)
+		if (up_alert == MOON_CONST_LOCKED)
 		{
 			sprint(other, MOON_ITEM_GATEALERT_EFFECT);
 		} else {
@@ -6758,7 +6866,7 @@ void() UpgradeTouch =
 	remove(self);
 };
 
-void(entity who, float val) DropBookByCode =
+void(entity who, float upgrade_code) DropBookByCode =
 {
 	local entity item;
 
@@ -6767,7 +6875,7 @@ void(entity who, float val) DropBookByCode =
 	item.velocity_z = 300;
 	item.velocity_x = (-100 + (random() * 200));
 	item.velocity_y = (-100 + (random() * 200));
-	item.cnt = val;
+	item.cnt = upgrade_code;
 	item.flags = FL_ITEM;
 	item.solid = SOLID_TRIGGER;
 	item.movetype = MOVETYPE_TOSS;
@@ -6812,7 +6920,7 @@ void() HPTouch =
 	{
 		sprint(other, "You get {0} and receive {1} health\n", self.netname, floor_ftos(self.healamount));
 	} else {
-		sprint(other, "You wasted {}\n", self.netname);
+		sprint(other, "You wasted {0}\n", self.netname);
 	}
 
 	flash_target(other);
@@ -6843,7 +6951,7 @@ void() ELTouch =
 	}
 
 	flash_target(other);
-	sprint(other, "You got {}\n", self.netname);
+	sprint(other, "You got {0}\n", self.netname);
 	sound(other, CHAN_ITEM, "moon/items/potion.wav", 1, ATTN_NORM);
 	remove(self);
 };
@@ -6857,10 +6965,10 @@ void(entity who) moon_spawn_drop_elixir =
 	item.origin = (who.origin - '0 0 24');
 	prepare_item(item);
 	setmodel(item, "progs/potion.mdl");
-	item.skin = H_MEGA;
+	item.skin = 2;
 	setsize(item, '-12 -12 0', '12 12 36');
 	item.touch = ELTouch;
-	item.nextthink = (time + 60);
+	item.nextthink = (time + MOON_TIME_TO_DISAPPEAR_NORMAL);
 	item.think = SUB_Remove;
 	pl = random_int(MOON_ELIXIR_STR_CODE, MOON_ELIXIR_VIT_CODE); // TODO: when implemented, up to MOON_ELIXIR_INT_CODE
 	item.cnt = pl;
@@ -6881,11 +6989,52 @@ void(entity who) moon_spawn_drop_elixir =
 	}
 };
 
+void(entity item) moon_fill_potion_with_heal =
+{
+	local float pl;
+	local float r;
+
+	pl = moon_get_max_player_level();
+
+	if ( pl < MOON_ITEM_LVLTHRESHOLD_POTION_LOWER )
+	{
+		item.healamount = rint( (random() * MOON_ITEM_POTION_SMALL_RANDOM) + MOON_ITEM_POTION_SMALL_BASE );
+		item.netname = MOON_ITEM_POTION_SMALL_NETNAME;
+		return;
+	}
+
+	if ( (pl >= MOON_ITEM_LVLTHRESHOLD_POTION_LOWER) && (pl <= MOON_ITEM_LVLTHRESHOLD_POTION_UPPER) )
+	{
+		if ((random() < 0.6))
+		{
+			item.healamount = rint( (random() * MOON_ITEM_POTION_NORMAL_RANDOM) + MOON_ITEM_POTION_NORMAL_BASE );
+			item.netname = MOON_ITEM_POTION_NORMAL_NETNAME;
+		} else {
+			item.healamount = rint( (random() * MOON_ITEM_POTION_SMALL_RANDOM) + MOON_ITEM_POTION_SMALL_BASE );
+			item.netname = MOON_ITEM_POTION_SMALL_NETNAME;
+		}
+		return;
+	}
+
+	r = random();
+	if ( r < 0.33 )
+	{
+		item.healamount = rint( (random() * MOON_ITEM_POTION_SMALL_RANDOM) + MOON_ITEM_POTION_SMALL_BASE );
+		item.netname = MOON_ITEM_POTION_SMALL_NETNAME;
+	} else
+	if ( r <= 0.66 )
+	{
+		item.healamount = rint( (random() * MOON_ITEM_POTION_NORMAL_RANDOM) + MOON_ITEM_POTION_NORMAL_BASE );
+		item.netname = MOON_ITEM_POTION_NORMAL_NETNAME;
+	} else {
+		item.healamount = rint( (random() * MOON_ITEM_POTION_BIG_RANDOM) + MOON_ITEM_POTION_BIG_BASE );
+		item.netname = MOON_ITEM_POTION_BIG_NETNAME;
+	}
+};
+
 void(entity who) moon_spawn_drop_potion =
 {
 	local entity item;
-	local float pl;
-	local float r;
 
 	item = spawn();
 	item.origin = (who.origin - '0 0 24');
@@ -6897,53 +7046,10 @@ void(entity who) moon_spawn_drop_potion =
 	item.movetype = MOVETYPE_TOSS;
 	item.angles_y = rint((random() * 360));
 	setmodel(item, "progs/potion.mdl");
-	pl = moon_get_max_player_level();
-	if ((pl < MOON_ITEM_LVLTHRESHOLD_POTION_LOWER))
-	{
-		item.healamount = rint(((random() * MOON_ITEM_POTION_SMALL_RANDOM) + MOON_ITEM_POTION_SMALL_BASE));
-		item.netname = MOON_ITEM_POTION_SMALL_NETNAME;
-	}
-	else
-	{
-		if (((pl >= MOON_ITEM_LVLTHRESHOLD_POTION_LOWER) && (pl <= MOON_ITEM_LVLTHRESHOLD_POTION_UPPER)))
-		{
-			if ((random() < 0.6))
-			{
-				item.healamount = rint(((random() * MOON_ITEM_POTION_NORMAL_RANDOM) + MOON_ITEM_POTION_NORMAL_BASE));
-				item.netname = MOON_ITEM_POTION_NORMAL_NETNAME;
-			}
-			else
-			{
-				item.healamount = rint(((random() * MOON_ITEM_POTION_SMALL_RANDOM) + MOON_ITEM_POTION_SMALL_BASE));
-				item.netname = MOON_ITEM_POTION_SMALL_NETNAME;
-			}
-		}
-		else
-		{
-			r = random();
-			if ((r < 0.33))
-			{
-				item.healamount = rint(((random() * MOON_ITEM_POTION_NORMAL_RANDOM) + MOON_ITEM_POTION_NORMAL_BASE));
-				item.netname = MOON_ITEM_POTION_NORMAL_NETNAME;
-			}
-			else
-			{
-				if ((r > 0.66))
-				{
-					item.healamount = rint(((random() * MOON_ITEM_POTION_SMALL_RANDOM) + MOON_ITEM_POTION_SMALL_BASE));
-					item.netname = MOON_ITEM_POTION_SMALL_NETNAME;
-				}
-				else
-				{
-					item.healamount = rint(((random() * MOON_ITEM_POTION_BIG_RANDOM) + MOON_ITEM_POTION_BIG_BASE));
-					item.netname = MOON_ITEM_POTION_BIG_NETNAME;
-				}
-			}
-		}
-	}
 	setsize(item, '-12 -12 0', '12 12 36');
+	moon_fill_potion_with_heal(item);
 	item.touch = HPTouch;
-	item.nextthink = (time + 60);
+	item.nextthink = (time + MOON_TIME_TO_DISAPPEAR_NORMAL);
 	item.think = SUB_Remove;
 };
 
@@ -7133,7 +7239,7 @@ void(entity who) moon_drop_player_gold =
 	setmodel(item, "progs/gold.mdl");
 	setsize(item, '-16 -16 0', '16 16 56');
 	item.touch = GoldTouch;
-	item.nextthink = (time + MOON_TIME_TO_DISAPPEAR_NORMAL);
+	item.nextthink = (time + MOON_TIME_TO_DISAPPEAR_IMPORTANT);
 	item.think = SUB_Remove;
 };
 
@@ -7271,7 +7377,7 @@ void() DropItem =
 	}
 	if ((random() < 0.025))
 	{
-		DropMagicArmor(self);
+		moon_spawn_drop_magic_item(self);
 		return;
 	}
 	if ((random() < 0.015))

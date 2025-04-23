@@ -12,7 +12,8 @@ float(entity target) moon_do_target_magical_health_regen_tick;
 void(entity target, float armor_code, float armor_durability = -1) moon_init_target_as_armor;
 float(entity target, float code) moon_get_target_total_bonus_by_code;
 void() moon_set_map_moon4;
-float(entity emitter, float track) moon_walkman_play;
+void() moon_walkman_brain; // used in Map init
+float(entity emitter, float track) moon_walkman_play; // used by Impulse handler
 void(entity target, float delay = 0) moon_queue_target_for_removal;
 
 // Base of base: damage, heal, move
@@ -31,7 +32,7 @@ void(entity who) moon_particle_heal;
 void() moon_monster_apply_effect_self;
 
 // Waves
-entity(entity spawner, float level) moon_spawn_monster_entity {return world;};
+entity(entity spawner, float level) moon_spawn_monster_entity {return world;}; // TODO: Implement
 void(entity e, float enc) spawn_knight; // unused so far
 entity(entity e, float enc) spawn_soldier;
 entity(entity e, float enc) spawn_enforcer;
@@ -48,6 +49,9 @@ void() moon_print_skills;
 void() moon_print_inventory;
 void() moon_identify_item;
 void() moon_buy_item;
+
+void(entity target, string prefix, string name, string postfix) moon_print_target_item_name;
+void(entity target, float rarity_level) moon_print_target_item_rarity;
 
 // Character
 void(entity target, float value = 1) moon_raise_target_vitality;

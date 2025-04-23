@@ -53,18 +53,66 @@ float(entity emitter, float track) moon_walkman_play = // return track length
 void(entity emitter) moon_walkman_stop =
 {
 	moon_walkman_play(emitter, 0);
-}
+};
 
 float(entity emitter) moon_walkman_start_music_gate = // return track length
 {
 	local float track;
 	track = random_int(1, 10);
 	return moon_walkman_play(emitter, track);
-}
+};
 
 float(entity emitter) moon_walkman_start_music_shop = // return track length
 {
 	local float track;
 	track = random_int(11, 12);
 	return moon_walkman_play(emitter, track);
-}
+};
+
+void() moon_walkman_think =
+{
+	if (time > self.next_heart)
+	{
+		self.next_heart = time + MOON_WALKMAN_DELAY_BETWEENTRACKS_SHOP + moon_walkman_start_music_shop(self.master); // self.master caches emitter_shop
+	}
+
+	if (time > self.next_gate)
+	{
+		self.next_gate = time + MOON_WALKMAN_DELAY_BETWEENTRACKS_GATE + moon_walkman_start_music_gate(self.killer); // self.killer caches emitter_gate
+	}
+
+	self.nextthink = time + MOON_WALKMAN_DELAY_BETWEENTHINKS;
+	self.think = moon_walkman_think;
+};
+
+void() moon_walkman_brain =
+{
+	local entity e;
+
+	local entity emitter_gate;
+	local entity emitter_shop;
+
+	emitter_gate = find(world, classname, MOON_GATE_CLASSNAME);
+	if (emitter_gate == world)
+	{
+		dprint("Cannot find any sound gate\n");
+		return;
+	}
+
+	emitter_shop = find(world, netname, MOON_TRADE_SHOP_HEALTH_NETNAME);
+	if (emitter_shop == world)
+	{
+		dprint("Cannot find any healthy trader\n");
+		return;
+	}
+
+	e = spawn();
+	e.killer = emitter_gate;
+	e.master = emitter_shop;
+
+	e.next_heart = time + MOON_WALKMAN_DELAY_FIRSTTRACK_SHOP;
+	e.next_gate = time + MOON_WALKMAN_DELAY_FIRSTTRACK_GATE;
+
+	e.think = moon_walkman_think;
+	e.nextthink = time + MOON_WALKMAN_DELAY_FIRSTTHINK_MIN + (MOON_WALKMAN_DELAY_FIRSTTHINK_RANDOM * random());
+};

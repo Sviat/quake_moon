@@ -425,7 +425,7 @@ entity(vector source, vector destination, entity attacker) moon_trace_lightning_
 
 entity(vector source, vector destination, entity attacker, entity inflictor, float piercing_strength = 0) moon_trace_lightning_bolt_shaft =
 {
-	return moon_trace_lightning_bolt(source, destination, attacker, inflictor, (MOON_WEAPON_DAMAGEPER_CELL/2), TE_LIGHTNING2, piercing_strength);
+	return moon_trace_lightning_bolt(source, destination, attacker, inflictor, MOON_WEAPON_DAMAGEPER_CELL, TE_LIGHTNING2, piercing_strength);
 };
 
 void(entity attacker, entity target, float max_distance, float jump_count = 0) moon_trace_lightning_bolt_chain =

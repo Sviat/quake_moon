@@ -3,7 +3,7 @@
 
 /// Player
 // Stats
-.float gold;
+.float gold;        // Held currency
 .float exp;         // Experience points
 .float lvl;         // Level
 .float point;       // Free skill points
@@ -18,29 +18,34 @@
 .float up_rocket;   // Re-use same param for both Upgrade and Extra capacity
 .float up_cell;     // Re-use same param for both Upgrade and Extra capacity
 
-// Items
-.float wear_armor;
-.float magic_typeone;
-.float magic_typeone_value;
-.string magic_prefixone;
-.float magic_typetwo;
-.float magic_typetwo_value;
-.string magic_prefixtwo;
-.float wear_ring;
-.float ring_typeone;
-.float ring_typeone_value;
-.string ring_prefixone;
-.float ring_typetwo;
-.float ring_typetwo_value;
-.string ring_prefixtwo;
+/// Items
+// Magical wearables
+.float wear_armor;          // Flag, true - if magical armour equipped
+.float magic_rarity_level;  // Total rarity of both effects
+.float magic_typeone;       // (Prefix) Effect code
+.float magic_typeone_value; // Effect power
+.string magic_prefixone;    // Effect display name
+.float magic_typetwo;       // (Postfix) Effect code
+.float magic_typetwo_value; // Effect power
+.string magic_prefixtwo;    // Effect display name
 
-.float mentat_offense_time;
-.float mentat_defense_time;
-.float mentat_attackspeed_time;
+.float wear_ring;           // Flag, true - if magical ring equipped
+.float ring_rarity_level;   // Total rarity of both effects
+.float ring_typeone;        // (Prefix) Effect code
+.float ring_typeone_value;  // Effect power
+.string ring_prefixone;     // Effect display name
+.float ring_typetwo;        // (Postfix) Effect code
+.float ring_typetwo_value;  // Effect power
+.string ring_prefixtwo;     // Effect display name
 
-// Monster
-.float prefix;
-.float prefix_value;
+// Mentats (see Fallout)
+.float mentat_offense_time;     // End time of Offensive drug
+.float mentat_defense_time;     // End time of Defensive drug
+.float mentat_attackspeed_time; // End time of Accelartive drug
+
+/// Monster
+.float prefix;              // Special monster type code
+.float prefix_value;        // Special effect power
 .string prefix_one;
 .string prefix_two;
 .string prefix_three;

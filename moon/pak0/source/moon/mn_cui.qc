@@ -197,15 +197,47 @@ void(entity target, string prefix, string name, string postfix) moon_print_targe
 	}
 };
 
+void(entity target, float rarity_level) moon_print_target_item_rarity =
+{
+	switch(rarity_level)
+	{
+	case MOON_ITEM_RARITY_THRESHOLD_TRASH:
+		sprint(target, MOON_ITEM_RARITY_THRESHOLD_DISPLAY_TRASH);
+		break;
+	case MOON_ITEM_RARITY_THRESHOLD_COMMON:
+		sprint(target, MOON_ITEM_RARITY_THRESHOLD_DISPLAY_COMMON);
+		break;
+	case MOON_ITEM_RARITY_THRESHOLD_UNCOMMON:
+		sprint(target, MOON_ITEM_RARITY_THRESHOLD_DISPLAY_UNCOMMON);
+		break;
+	case MOON_ITEM_RARITY_THRESHOLD_RARE:
+		sprint(target, MOON_ITEM_RARITY_THRESHOLD_DISPLAY_RARE);
+		break;
+	case MOON_ITEM_RARITY_THRESHOLD_EPIC:
+		sprint(target, MOON_ITEM_RARITY_THRESHOLD_DISPLAY_EPIC);
+		break;
+	case MOON_ITEM_RARITY_THRESHOLD_LEGENDARY:
+		sprint(target, MOON_ITEM_RARITY_THRESHOLD_DISPLAY_LEGENDARY);
+		break;
+	case MOON_ITEM_RARITY_THRESHOLD_UNIQUE:
+		sprint(target, MOON_ITEM_RARITY_THRESHOLD_DISPLAY_UNIQUE);
+		break;
+	default:
+		break;
+	}
+};
+
 void(entity target, entity owner) moon_println_target_magic_armor_name =
 {
     moon_print_target_item_name(target, owner.magic_prefixone, MOON_ITEM_ARMOR_DISPLAY, owner.magic_prefixtwo);
+	moon_print_target_item_rarity(target, owner.magic_rarity_level);
 	sprint(target, "\n");
 };
 
 void(entity target, entity owner) moon_println_target_magic_ring_name =
 {
     moon_print_target_item_name(target, owner.ring_prefixone, MOON_ITEM_RING_DISPLAY, owner.ring_prefixtwo);
+	moon_print_target_item_rarity(target, owner.ring_rarity_level);
 	sprint(target, "\n");
 };
 

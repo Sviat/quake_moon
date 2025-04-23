@@ -27,16 +27,17 @@ void() moon_cheat_quad = // Debug only. Remove before release
 	self.ammo_nails = MOON_AMMO_MAX_NAIL;
 	self.ammo_rockets = MOON_AMMO_MAX_ROCKET;
 	self.ammo_cells = MOON_AMMO_MAX_CELL;
-	sprint(self, "KILL KILL @_@ KILL KILL\n");
+	bprint("{0}: KILL KILL @_@ KILL KILL\n", self.netname);
 };
 
 void() moon_cheat_gold = // Debug only. Remove before release
 {
 	if (!(MOON_DEBUG & MOON_DEBUG_CHEATS_ON) ) { return; }
 
+	self.up_cell = MOON_CONST_UNLOCKED;
 	self.gold = 9999;
 	flash_self();
-	sprint(self, "MONEY MONEY MONEY $_$ MONEY MONEY MONEY\n");
+	bprint("{0}: MONEY MONEY MONEY $_$ MONEY MONEY MONEY\n", self.netname);
 };
 
 // If player was doing nothing this frame, we can try searching something around him

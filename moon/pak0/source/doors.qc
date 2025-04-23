@@ -190,7 +190,7 @@ void() door_killed =
 		{
 			if ((e.gatename == self.gatename))
 			{
-				if ((up_alert >= 1))
+				if ( up_alert >= MOON_CONST_UNLOCKED )
 				{
 					moon_make_chat_noise();
 					bprint("Gate security alert!\n");

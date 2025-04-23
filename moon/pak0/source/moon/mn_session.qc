@@ -7,7 +7,7 @@ void() moon_reset_globals =
 	sv_alwaysday = 0;
 	sv_fastmeat = 0;
 	sv_noshake = 0;
-	up_alert = 0;
+	up_alert = MOON_CONST_LOCKED;
 };
 
 void(entity target) moon_prepare_player_entity =

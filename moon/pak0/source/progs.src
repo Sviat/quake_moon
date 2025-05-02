@@ -1,7 +1,5 @@
 ../progs.dat
 
-#pragma flag enable lax //remove this line once you've fixed up any decompiler bugs...
-
 sysdefs.qc
 defs.qc
 3rd/consts_fte.qc
@@ -16,6 +14,7 @@ moon/mn_init.qc
 moon/mn_session.qc
 moon/mn_game.qc
 moon/mn_cui.qc
+moon/mn_weapons.qc
 moon/mn_magic.qc
 //moon/mn_waves.qc
 //moon/mn_items.qc

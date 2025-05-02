@@ -44,12 +44,12 @@
 .float mentat_attackspeed_time; // End time of Accelartive drug
 
 /// Monster
-.float prefix;              // Special monster type code
+.float prefix;              // Special monster type code (actually can be seen as postfix in name)
 .float prefix_value;        // Special effect power
-.string prefix_one;
-.string prefix_two;
-.string prefix_three;
-.string prefix_four;
+.string prefix_one;         // Prefix (.ability or level)
+.string prefix_two;         // Prefix (.ability or level)
+.string prefix_three;       // Postfix (.prefix)
+.string prefix_four;        // Postfix (??)
 
 // Status
 .float lightning_chained_time; // target hit by chain lightning, should not prevent consequent chainings, only during same frame

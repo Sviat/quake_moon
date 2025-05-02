@@ -7,7 +7,7 @@ float(entity emitter, float track) moon_walkman_play = // return track length
 	switch (track)
 	{
 	case 0:
-		sound(emitter, MOON_WALKMAN_CHANNEL, "misc/null.wav", 1, ATTN_NORM);
+		sound(emitter, MOON_WALKMAN_CHANNEL, "misc/null.wav", MOON_WALKMAN_VOLUME_SILENCE, ATTN_NORM);
 		return 0;
 	case 1:
 		sound(emitter, MOON_WALKMAN_CHANNEL, "music/bpm/01_judgement.wav", MOON_WALKMAN_VOLUME_MUSIC, MOON_WALKMAN_ATTEN_MUSIC);
@@ -85,7 +85,7 @@ void() moon_walkman_think =
 	self.think = moon_walkman_think;
 };
 
-void() moon_walkman_brain =
+void() moon_walkman_init_think =
 {
 	local entity e;
 

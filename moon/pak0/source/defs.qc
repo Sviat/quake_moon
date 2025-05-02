@@ -430,7 +430,6 @@ float(entity targ, entity inflictor) CanCarefulDamage;
 entity() SelectSpawnPoint;
 void(vector org) spawn_tfog;
 float() crandom;
-void() moon_make_chat_noise;
 void() bot_run1;
 void() BecomeExplosion;
 void(string gibname, float dm) ThrowGib;

@@ -3,21 +3,27 @@
 /// No needs to prefix Math functions with moon_
 
 // // Forward declarations:
-// ???
+// Default QC func unchanged
+void() player_run;
+// SORT OUT
+void() moon_make_chat_noise;
 void(entity who) moon_spawn_drop_gold;
-float(float weapon, float ammo) W_EnoughAmmoToShoot;
+float(entity target, float wpn) moon_select_target_weapon;
+float(entity target, float include_dangerous = false) moon_swap_target_to_best_weapon;
 // TODO: add functions to use or gain ammo
+// TODO: moon_target_consume_ammo_from() move all ammo from entity A to entity B
 float(entity target) moon_do_target_natural_health_regen_tick;
 float(entity target) moon_do_target_magical_health_regen_tick;
 void(entity target, float armor_code, float armor_durability = -1) moon_init_target_as_armor;
 float(entity target, float code) moon_get_target_total_bonus_by_code;
 void() moon_set_map_moon4;
-void() moon_walkman_brain; // used in Map init
+void() moon_walkman_init_think; // used in Map init
 float(entity emitter, float track) moon_walkman_play; // used by Impulse handler
 void(entity target, float delay = 0) moon_queue_target_for_removal;
 
 // Base of base: damage, heal, move
 float(entity target, float healamount, float ignore = 0) T_Heal;
+void(entity e, float healamount) moon_heal_target_monster;
 void(entity inflictor, entity attacker, float damage, entity ignore) T_RadiusDamage;
 float(entity subject, entity object) moon_can_trace_object;
 entity(vector source, vector destination, entity attacker) moon_trace_lightning_bolt_shambler;
@@ -303,10 +309,7 @@ float(entity subject, entity object) moon_can_trace_object =
 
 float(entity target) moon_target_player_needs_tutorial =
 {
-	float max_level;
-
-	max_level = moon_get_max_player_level();
-	if ( (target.cl_nohelp == 0) && (max_level < MOON_PLAYER_LEVEL_NOMOREHELP) )
+	if ( (target.cl_nohelp == 0) && (target.lvl < MOON_PLAYER_LEVEL_NOMOREHELP) )
 	{
 		return TRUE;
 	}

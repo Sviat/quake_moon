@@ -12,12 +12,16 @@ void() moon_reset_globals =
 
 void(entity target) moon_prepare_player_entity =
 {
+	if (target.prepared) { return; }
+
 	target.lvl = 0;
 	target.exp = 0;
 	target.nextexp = MOON_EXP_FIRST_LEVEL;
 	target.gold = MOON_PLAYER_GOLD_INIT;
+	target.max_health = MOON_PLAYER_HEALTH_INIT;
+	target.health = target.max_health;
 	target.max_mana = MOON_PLAYER_MANA_INIT;
-	target.mana = self.max_mana;
+	target.mana = target.max_mana;
 	target.point = 0;
 	target.mosterskilled = 0;
 
@@ -26,6 +30,9 @@ void(entity target) moon_prepare_player_entity =
 	target.up_nail = MOON_CONST_LOCKED;
 	target.up_rocket = MOON_CONST_LOCKED;
 	target.up_cell = MOON_CONST_LOCKED;
+
+	target.magic_typeone = MOON_ITEM_NONE;
+	target.magic_typetwo = MOON_ITEM_NONE;
 
 	target.mentat_offense_time = 0;
 	target.mentat_defense_time = 0;

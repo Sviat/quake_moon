@@ -3291,7 +3291,6 @@ void() moon_set_map_moon4 = // nothing to do here until all other problems are d
 	game_brain();
 	jesus_brain();
 	sale_brain();
-	moon_walkman_brain();
 	moon_reset_globals();
 	waypoints_ok = TRUE;
 };
@@ -4473,10 +4472,15 @@ void() brain_think =
 void() game_brain =
 {
 	local entity e;
+	local entity jukebox;
 
 	e = spawn();
 	e.nextthink = (time + MOON_MONSTER_FISRTWAVETIME_DELAY) + (random() * MOON_MONSTER_FISRTWAVETIME_RANDOM);
 	e.think = brain_think;
+
+	jukebox = spawn();
+	jukebox.nextthink = time + 1;
+	jukebox.think = moon_walkman_init_think;
 };
 
 void() info_monster_start = // Empty ctor()

@@ -42,6 +42,15 @@ float(entity e, float healamount) T_Overheal = // may be put overheal rot here?
 	return TRUE;
 };
 
+void(entity e, float healamount) moon_heal_target_monster =
+{
+	e.health = e.health + healamount;
+	if ( e.health > e.max_health )
+	{
+		e.health = e.max_health;
+	}
+};
+
 float(entity e, float healamount) T_Mana =
 {
 	if ((e.mana >= e.max_mana))

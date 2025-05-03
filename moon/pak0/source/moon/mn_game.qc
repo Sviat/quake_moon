@@ -47,6 +47,13 @@ void() moon_handle_impulse_noop =
 	local entity selected;
 	local entity e;
 	local float min_dist;
+	local string rarity;
+
+	if ( time < self.nextfind_time )
+	{
+		return;
+	}
+	self.nextfind_time = time + MOON_TIME_BETWEEN_ITEMSCANS;
 
 	min_dist = MOON_PHYSIC_ITEMSEARCH_RADIUS;
 	while ( (e = find(e, classname, MOON_TRADE_SHOP_SPOT_CLASSNAME)) ) // TODO: redo iteration by other field, that is common for both Shop and Market
@@ -57,7 +64,7 @@ void() moon_handle_impulse_noop =
 			selected = e;
 		}
 	}
-	if ( (selected != world) && (selected.targetname != s_wiz) )
+	if ( (selected != world) && (selected.targetname != "") )
 	{
 		centerprint(self, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n{0} ({1} gold)", selected.targetname, floor_ftos(selected.cost));
 		return;
@@ -73,9 +80,21 @@ void() moon_handle_impulse_noop =
 			selected = e;
 		}
 	}
-	if ( (selected != world) && (selected.targetname != s_wiz) )
+	if ( (selected != world) && (selected.targetname != "") )
 	{
-		centerprint(self, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n{0} ({1} gold)", selected.targetname, floor_ftos(selected.cost));
+		if ( (selected.targetname == MOON_ITEM_ARMOR_DISPLAY_LONG) || (selected.targetname == MOON_ITEM_RING_DISPLAY_LONG) )
+		{
+			rarity = moon_get_item_rarity_display(selected.magic_rarity_level);
+			centerprint(self, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n{0}{1}{2} [{3}] ({4} gold)"
+							, (selected.prefix_one == "") ? "" : selected.prefix_one
+							, selected.targetname
+							, (selected.prefix_two == "") ? "" : selected.prefix_two
+							, (rarity == string_null) ? "" : rarity
+							, floor_ftos(selected.cost)
+			);
+		} else {
+			centerprint(self, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n{0} [{1}] ({2} gold)", selected.targetname, floor_ftos(selected.currentammo), floor_ftos(selected.cost));
+		}
 		return;
 	}
 };
@@ -124,10 +143,32 @@ void(float impulse_code) moon_handle_impulse_stat =
 	}
 };
 
+void() moon_eprint_monsters_alive =
+{
+	if (!(MOON_DEBUG & MOON_DEBUG_EPRINT_MONSTERS) ) { return; }
+
+	local entity e;
+
+	dprint("== Alive monsters ==\n");
+	e = findradius(self.origin, 1024);
+	while ( (e != world) )
+	{
+		if ( (e.flags & FL_MONSTER) )
+		{
+			eprint(e);
+		}
+		e = e.chain;
+	}
+	dprint("== end of list ==\n");
+};
+
 void(float impulse_code) moon_handle_impulse_ui =
 {
 	switch(impulse_code)
 	{
+	case MOON_IMPULSE_CODE_DEBUG_EPRINT_MONSTERS_ALIVE:
+		moon_eprint_monsters_alive();
+		break;
 	case MOON_IMPULSE_CODE_PRINT_STAT:
 		moon_print_skills();
 		break;
@@ -174,10 +215,10 @@ void(float impulse_code) moon_handle_impulse_server =
 		if (sv_noshake == 0)
 		{
 			sv_noshake = 1;
-			moon_chat_message_broad(MOON_CHAT_NAME_SERVER, MOON_CHAT_COLOR_TECHMSG, "Earthquakes disabled\n");
+			moon_chat_message_broad(MOON_CHAT_NAME_SERVER, MOON_CHAT_COLOR_TECHMSG, "Moonquakes disabled\n");
 		} else {
 			sv_noshake = 0;
-			moon_chat_message_broad(MOON_CHAT_NAME_SERVER, MOON_CHAT_COLOR_TECHMSG, "Earthquakes enabled\n");
+			moon_chat_message_broad(MOON_CHAT_NAME_SERVER, MOON_CHAT_COLOR_TECHMSG, "Moonquakes enabled\n");
 		}
 		break;
 	case MOON_IMPULSE_CODE_FASTMEAT:
@@ -219,10 +260,10 @@ void(float impulse_code) moon_handle_impulse_client =
 		if (self.cl_nohelp == 0)
 		{
 			self.cl_nohelp = 1;
-			moon_chat_message_self(MOON_CHAT_NAME_SETTINGS, MOON_CHAT_COLOR_TECHMSG, "extra help enabled\n");
+			moon_chat_message_self(MOON_CHAT_NAME_SETTINGS, MOON_CHAT_COLOR_TECHMSG, "extra help disabled\n");
 		} else {
 			self.cl_nohelp = 0;
-			moon_chat_message_self(MOON_CHAT_NAME_SETTINGS, MOON_CHAT_COLOR_TECHMSG, "extra help disabled\n");
+			moon_chat_message_self(MOON_CHAT_NAME_SETTINGS, MOON_CHAT_COLOR_TECHMSG, "extra help enabled\n");
 		}
 		break;
 	case MOON_IMPULSE_CODE_SHOWFPS:
@@ -263,16 +304,6 @@ void() moon_handle_impulse =
 	if ( self.prepared == FALSE )
 	{
 		moon_init_self_player();
-	}
-
-	if ( self.impulse == MOON_IMPULSE_CODE_NOOP )
-	{
-		if ( self.nextfind_time < time )
-		{
-			moon_handle_impulse_noop();
-			self.nextfind_time = time + MOON_TIME_BETWEEN_ITEMSCANS;
-		}
-		return;
 	}
 
 	// TODO: killme \/ JUKEBOX CONTROLS

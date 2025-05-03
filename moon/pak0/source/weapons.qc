@@ -1378,27 +1378,27 @@ void() ImpulseCommands =
 	if ( (self.impulse >= QC_IMPULSE_CODE_WEAPON_AXE) && (self.impulse <= QC_IMPULSE_CODE_WEAPON_LIGHTNING) )
 	{
 		W_ChangeWeapon();
-	}
+	} else
 	if ((self.impulse == QC_IMPULSE_CODE_CHEAT_COMMAND))
 	{
 		CheatCommand();
-	}
+	} else
 	if ((self.impulse == QC_IMPULSE_CODE_CYCLE_WEAPON_FORTH))
 	{
 		CycleWeaponCommand();
-	}
+	} else
 	if ((self.impulse == QC_IMPULSE_CODE_SERVER_FLAGS))
 	{
 		ServerflagsCommand();
-	}
+	} else
 	if ((self.impulse == QC_IMPULSE_CODE_CYCLE_WEAPON_BACK))
 	{
 		CycleWeaponReverseCommand();
+	} else {
+		moon_handle_impulse();
 	}
 
-	moon_handle_impulse();
-
-	self.impulse = MOON_IMPULSE_CODE_NOOP;
+	self.impulse = QC_IMPULSE_CODE_NOOP;
 };
 
 void() W_WeaponFrame =

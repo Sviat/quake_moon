@@ -1884,7 +1884,7 @@ void() moon_market_place_ammo =
 	e.classname = MOON_TRADE_MARKET_SPOT_CLASSNAME;
 	e.netname = MOON_AMMO_MARKET_NETNAME;
 	e.skin = 0;
-	setmodel(e, s_wiz);
+	setmodel(e, string_null);
 	e.noise1 = "weapons/lock4.wav";
 	e.owner = self;
 	sound(e, CHAN_ITEM, "items/itembk2.wav", 1, ATTN_NORM);
@@ -1948,10 +1948,10 @@ void(entity e) moon_calculate_magic_cost =
 	e.cost = ccost;
 };
 
-float(float level) moon_generate_trait_quality =
+float(float level) moon_generate_trait_quality = // return int in range [MAXLEVEL, 2*MAXLEVEL]
 {
-	return level * MOON_ITEM_TRAIT_QUALITY_MULTIPLIER_LEVEL
-		 + random() * MOON_ITEM_TRAIT_QUALITY_MULTIPLIER_RANDOM;
+	return level * MOON_ITEM_TRAIT_QUALITY_MULTIPLIER_LEVEL_FLAT
+		 + rint( random() * level * MOON_ITEM_TRAIT_QUALITY_MULTIPLIER_LEVEL_RANDOM );
 };
 
 float(float level) moon_generate_trait_prefix_rarity =
@@ -2172,9 +2172,12 @@ void(entity e) moon_generate_magic_prefix =
 			e.prefix_one = MOON_ITEM_CONSUME_PREFIX_NORMAL;
 			break;
 		case MOON_ITEM_RARITY_HIGH:
-		case MOON_ITEM_RARITY_EPIC: // -- There were NO Epic rarity variant -- \\
 			e.magic_typeone_value = random_int(MOON_ITEM_CONSUME_PREFIX_HIGH_FROM, MOON_ITEM_CONSUME_PREFIX_HIGH_TO);
 			e.prefix_one = MOON_ITEM_CONSUME_PREFIX_HIGH;
+			break;
+		case MOON_ITEM_RARITY_EPIC:
+			e.magic_typeone_value = random_int(MOON_ITEM_CONSUME_PREFIX_EPIC_FROM, MOON_ITEM_CONSUME_PREFIX_EPIC_TO);
+			e.prefix_one = MOON_ITEM_CONSUME_PREFIX_EPIC;
 			break;
 		}
 		break;
@@ -2221,9 +2224,15 @@ void(entity e) moon_generate_magic_prefix =
 		}
 		break;
 	default:
+		e.magic_typeone = MOON_ITEM_NONE;
 		bprint("moon_generate_magic_prefix cannot handle code {}\n", quick_ftos(effect));
 	}
 
+	// Just adding Rarity levels works correctly, except for one case, when item has both prefix and postfix of same LOW level trait (which effectively makes it COMMON from TRASH)
+	if ( (e.magic_typeone >= MOON_ITEM_SOME) && (e.magic_typetwo >= MOON_ITEM_SOME) && (e.magic_rarity_level == MOON_ITEM_RARITY_THRESHOLD_TRASH) )
+	{
+		e.magic_rarity_level = MOON_ITEM_RARITY_THRESHOLD_COMMON;
+	}
 };
 
 void(entity e) moon_generate_magic_postfix =
@@ -2248,9 +2257,12 @@ void(entity e) moon_generate_magic_postfix =
 			e.prefix_two = MOON_ITEM_HEALTH_POSTFIX_LOW;
 			break;
 		case MOON_ITEM_RARITY_NORMAL:
-		case MOON_ITEM_RARITY_HIGH: // -- There were NO High rarity variant -- \\
 			e.magic_typetwo_value = random_int(MOON_ITEM_HEALTH_POSTFIX_NORMAL_FROM, MOON_ITEM_HEALTH_POSTFIX_NORMAL_TO);
 			e.prefix_two = MOON_ITEM_HEALTH_POSTFIX_NORMAL;
+			break;
+		case MOON_ITEM_RARITY_HIGH:
+			e.magic_typetwo_value = random_int(MOON_ITEM_HEALTH_POSTFIX_HIGH_FROM, MOON_ITEM_HEALTH_POSTFIX_HIGH_TO);
+			e.prefix_two = MOON_ITEM_HEALTH_POSTFIX_HIGH;
 			break;
 		}
 		break;
@@ -2279,9 +2291,12 @@ void(entity e) moon_generate_magic_postfix =
 			e.prefix_two = MOON_ITEM_GOLD_POSTFIX_LOW;
 			break;
 		case MOON_ITEM_RARITY_NORMAL:
-		case MOON_ITEM_RARITY_HIGH: // -- There were NO High rarity variant -- \\
 			e.magic_typetwo_value = random_int(MOON_ITEM_GOLD_POSTFIX_NORMAL_FROM, MOON_ITEM_GOLD_POSTFIX_NORMAL_TO);
 			e.prefix_two = MOON_ITEM_GOLD_POSTFIX_NORMAL;
+			break;
+		case MOON_ITEM_RARITY_HIGH:
+			e.magic_typetwo_value = random_int(MOON_ITEM_GOLD_POSTFIX_HIGH_FROM, MOON_ITEM_GOLD_POSTFIX_HIGH_TO);
+			e.prefix_two = MOON_ITEM_GOLD_POSTFIX_HIGH;
 			break;
 		}
 		break;
@@ -2335,9 +2350,12 @@ void(entity e) moon_generate_magic_postfix =
 			e.prefix_two = MOON_ITEM_REGEN_POSTFIX_LOW;
 			break;
 		case MOON_ITEM_RARITY_NORMAL:
-		case MOON_ITEM_RARITY_HIGH: // -- There were NO High rarity variant -- \\
 			e.magic_typetwo_value = random_int(MOON_ITEM_REGEN_POSTFIX_NORMAL_FROM, MOON_ITEM_REGEN_POSTFIX_NORMAL_TO);
 			e.prefix_two = MOON_ITEM_REGEN_POSTFIX_NORMAL;
+			break;
+		case MOON_ITEM_RARITY_HIGH:
+			e.magic_typetwo_value = random_int(MOON_ITEM_REGEN_POSTFIX_HIGH_FROM, MOON_ITEM_REGEN_POSTFIX_HIGH_TO);
+			e.prefix_two = MOON_ITEM_REGEN_POSTFIX_HIGH;
 			break;
 		}
 		break;
@@ -2349,9 +2367,12 @@ void(entity e) moon_generate_magic_postfix =
 			e.prefix_two = MOON_ITEM_CONSUME_POSTFIX_LOW;
 			break;
 		case MOON_ITEM_RARITY_NORMAL:
-		case MOON_ITEM_RARITY_HIGH: // -- There were NO High rarity variant -- \\
 			e.magic_typetwo_value = random_int(MOON_ITEM_CONSUME_POSTFIX_NORMAL_FROM, MOON_ITEM_CONSUME_POSTFIX_NORMAL_TO);
 			e.prefix_two = MOON_ITEM_CONSUME_POSTFIX_NORMAL;
+			break;
+		case MOON_ITEM_RARITY_HIGH:
+			e.magic_typetwo_value = random_int(MOON_ITEM_CONSUME_POSTFIX_HIGH_FROM, MOON_ITEM_CONSUME_POSTFIX_HIGH_TO);
+			e.prefix_two = MOON_ITEM_CONSUME_POSTFIX_HIGH;
 			break;
 		}
 		break;
@@ -2390,7 +2411,14 @@ void(entity e) moon_generate_magic_postfix =
 		}
 		break;
 	default:
+		e.magic_typetwo = MOON_ITEM_NONE;
 		bprint("moon_generate_magic_postfix cannot handle code {}\n", quick_ftos(effect));
+	}
+
+	// Just adding Rarity levels works correctly, except for one case, when item has both prefix and postfix of same LOW level trait (which effectively makes it COMMON from TRASH)
+	if ( (e.magic_typeone >= MOON_ITEM_SOME) && (e.magic_typetwo >= MOON_ITEM_SOME) && (e.magic_rarity_level == MOON_ITEM_RARITY_THRESHOLD_TRASH) )
+	{
+		e.magic_rarity_level = MOON_ITEM_RARITY_THRESHOLD_COMMON;
 	}
 };
 
@@ -7311,6 +7339,14 @@ void() DropItem =
 		e.think = s_explode1;
 		e.nextthink = time;
 	}
+
+	// KILLME
+	if ( random() < 0.17 )
+	{
+		spawned_object = moon_spawn_drop_magic_item(self);
+		spawned_object.nextthink = (time + MOON_TIME_TO_DISAPPEAR_TRASH);
+	}
+	//
 
 	if ( self.prefix == MOON_MONSTER_TRAIT_EXTRA_GOLD )
 	{

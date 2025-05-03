@@ -6728,7 +6728,7 @@ void() moon_self_pickup_magic_item_and_clear =
 	remove(selected);
 };
 
-void(entity who) moon_spawn_drop_magic_item =
+entity(entity who) moon_spawn_drop_magic_item =
 {
 	local entity item;
 	local float z;
@@ -6768,6 +6768,8 @@ void(entity who) moon_spawn_drop_magic_item =
 		moon_generate_magic_prefix(item);
 		moon_generate_magic_postfix(item);
 	}
+
+	return item;
 };
 
 void() UpgradeTouch =

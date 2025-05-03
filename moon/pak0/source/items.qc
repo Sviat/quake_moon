@@ -7346,6 +7346,7 @@ void(entity who) moon_spawn_drop_ammo =
 void() DropItem =
 {
 	local entity e;
+	local entity spawned_object;
 
 	self.think = SUB_Null;
 	self.nextthink = 0;
@@ -7358,12 +7359,12 @@ void() DropItem =
 		moon_magic_effect_inferno();
 	}
 
-	if ( self.prefix == MOON_CREEP_BOMB_PREFIX_CODE )
+	if ( self.prefix == MOON_MONSTER_TRAIT_SUICIDE )
 	{
 		e = spawn();
 		e.origin = self.origin;
 		T_RadiusDamage(e, self, self.prefix_value, e);
-		sound(e, CHAN_VOICE, "weapons/r_exp3.wav", CHSCAM_ON, ATTN_NORM);
+		sound(e, CHAN_VOICE, "weapons/r_exp3.wav", 1, ATTN_NORM);
 		WriteByte(MSG_BROADCAST, SVC_TEMPENTITY);
 		WriteByte(MSG_BROADCAST, TE_EXPLOSION);
 		WriteCoord(MSG_BROADCAST, e.origin_x);
@@ -7443,57 +7444,50 @@ void(entity target) level_up_target =
 	target.nextexp = exp_table(target.lvl, target.nextexp); // Increase requirement with updated level
 	target.frags = target.lvl;
 
-	if ((target.health > 0))
+	if ( target.health > 0 )
 	{
-		if ((target.health < target.max_health))
+		if ( target.health < target.max_health )
 		{
 			target.health = target.max_health;
 		}
 	}
 
-	if (!(target.items & IT_KEY1))
-	{
-		target.items = (target.items + IT_KEY1);
-	}
-	if ((target.lvl <= MOON_PLAYER_LEVEL_GROW_FAST))
+	target.items = (target.items | IT_KEY1);
+	if ( target.lvl <= MOON_PLAYER_LEVEL_GROW_FAST )
 	{
 		target.point = (target.point + MOON_PLAYER_POINT_GROW_FAST);
+	} else
+	if ( target.lvl <= MOON_PLAYER_LEVEL_GROW_NORMAL )
+	{
+		target.point = (target.point + MOON_PLAYER_POINT_GROW_NORMAL);
 	} else {
-		if ((target.lvl <= MOON_PLAYER_LEVEL_GROW_NORMAL))
-		{
-			target.point = (target.point + MOON_PLAYER_POINT_GROW_NORMAL);
-		} else {
-			target.point = (target.point + MOON_PLAYER_POINT_GROW_SLOW);
-		}
+		target.point = (target.point + MOON_PLAYER_POINT_GROW_SLOW);
 	}
 
 	sound(target, CHAN_BODY, "moon/misc/levelup.wav", 1, ATTN_NORM);
 	sprint(target, "=== Level Up! ===\n");
-	sprint(target, "You are now level {}\n", quick_ftos(target.lvl));
-	sprint(target, "Get {} experience for the next Level.\n", quick_ftos(target.nextexp));
+	sprint(target, "You are now level {0}\n", quick_ftos(target.lvl));
 
-	if (target.cl_nohelp == 0)
+	if (moon_target_player_needs_tutorial(target))
 	{
-		if (target.lvl < 4)
-		{
-			sprint(target, "use `stats` command to check and upgrade your stats\n");
-		}
+		sprint(target, "Get {0} experience for the next Level.\n", quick_ftos(target.nextexp));
+		sprint(target, "use `stats` command to check and upgrade your stats\n");
+		sprint(target, "-----------------\n");
 	}
-	sprint(target, "-----------------\n");
 };
 
 void(entity heart) level_up_heart =
 {
-	moon_spawn_guard();
-
 	if (heart == world) { return; }
 
-	if (heart.lvl >= MOON_PLAYER_MAX_LEVEL)
+	if (heart.lvl >= MOON_HEART_MAX_LEVEL)
 	{
 		bprint("Congratulations! You \swon\s the game.\n");
 		intermission_victory();
 		return;
 	}
+
+	moon_spawn_guard();
 
 	heart.lvl = heart.lvl + 1; // Increase level first
 	heart.nextexp = exp_table(heart.lvl, heart.nextexp); // Increase requirement with updated level
@@ -7508,8 +7502,8 @@ void(entity heart) level_up_heart =
 
 void(float experience) moon_grant_all_exp =
 {
-	local entity e;
 	local entity heart;
+	local entity e;
 
 	if (gameover) { return; }
 

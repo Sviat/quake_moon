@@ -40,7 +40,7 @@ void() InitTrigger =
 	setmodel(self, self.model);
 	self.movetype = MOVETYPE_NONE;
 	self.modelindex = WF_NORMAL;
-	self.model = s_wiz;
+	self.model = string_null;
 };
 
 void(entity ent, vector tdest, float tspeed, void() func) SUB_CalcMoveEnt =
@@ -163,7 +163,7 @@ void() SUB_UseTargets =
 		t.target = self.target;
 		return;
 	}
-	if (((activator.classname == "player") && (self.message != s_wiz)))
+	if (((activator.classname == "player") && (self.message != "")))
 	{
 		centerprint(activator, self.message);
 		if (!self.noise)

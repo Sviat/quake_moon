@@ -1,7 +1,6 @@
 /// ReProjectMoon-specific source file
 /// Here go all global vars introduced by Moon
 
-string s_wiz; // empty string. Refactor to use string_null instead.
 float waypoints_ok;     // ??
 float gl_playercount;   // Active player count
 float up_alert;         // Re-use same param for both Upgrade and Extra health

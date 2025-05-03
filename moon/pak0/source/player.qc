@@ -4,7 +4,7 @@ void() bubble_bob;
 void() player_stand1 = [ 17, player_stand1 ]
 {
 	self.weaponframe = WF_NORMAL;
-	if ((self.velocity_x || self.velocity_y))
+	if ( self.velocity_x || self.velocity_y )
 	{
 		self.walkframe = WF_NORMAL;
 		player_run();
@@ -32,7 +32,7 @@ void() player_stand1 = [ 17, player_stand1 ]
 void() player_run = [ 6, player_run ]
 {
 	self.weaponframe = WF_NORMAL;
-	if ((!self.velocity_x && !self.velocity_y))
+	if (!(self.velocity_x || self.velocity_y))
 	{
 		self.walkframe = WF_NORMAL;
 		player_stand1();
@@ -348,7 +348,7 @@ void() PainSound =
 	}
 
 	rs = rint(((random() * 5) + 1));
-	self.noise = s_wiz;
+	self.noise = "";
 	if ((rs == 1))
 	{
 		self.noise = "player/pain1.wav";
@@ -684,7 +684,7 @@ void() PlayerDie =
 	{
 		DropBackpack();
 	}
-	self.weaponmodel = s_wiz;
+	self.weaponmodel = string_null;
 	self.view_ofs = '0 0 -8';
 	self.deadflag = DEAD_DYING;
 	self.solid = SOLID_NOT;

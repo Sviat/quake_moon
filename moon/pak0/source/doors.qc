@@ -135,9 +135,9 @@ void() door_use =
 {
 	local entity oself;
 
-	self.message = s_wiz;
-	self.owner.message = s_wiz;
-	self.enemy.message = s_wiz;
+	self.message = "";
+	self.owner.message = "";
+	self.enemy.message = "";
 	oself = self;
 	self = self.owner;
 	door_fire();
@@ -308,7 +308,7 @@ void() LinkDoors =
 		{
 			starte.targetname = self.targetname;
 		}
-		if ((self.message != s_wiz))
+		if ((self.message != ""))
 		{
 			starte.message = self.message;
 		}

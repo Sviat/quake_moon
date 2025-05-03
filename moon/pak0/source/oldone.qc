@@ -314,7 +314,7 @@ void() finale_1 =
 	}
 	remove(pl);
 	WriteByte(MSG_ALL, SVC_FINALE);
-	WriteString(MSG_ALL, s_wiz);
+	WriteString(MSG_ALL, "");
 	pl = find(world, classname, "player");
 	while ((pl != world))
 	{

@@ -1,5 +1,5 @@
 //Decompiled code. Please respect the original copyright.
-void() player_run;
+
 void(vector org, vector vel, float damage) SpawnBlood;
 void() SuperDamageSound;
 
@@ -530,8 +530,7 @@ void() W_FireLightning =
 
 	if ( self.ammo_cells < MOON_WEAPON_LIGHTNING_SALVO_SIZE )
 	{
-		self.weapon = W_BestWeapon();
-		W_SetCurrentAmmo();
+		moon_swap_target_to_best_weapon(self);
 		return;
 	}
 
@@ -539,7 +538,7 @@ void() W_FireLightning =
 	{
 		cells = self.ammo_cells;
 		self.ammo_cells = 0;
-		W_SetCurrentAmmo();
+		moon_set_target_currentammo(self);
 		T_RadiusDamage(self, self, (MOON_WEAPON_DAMAGEPER_CELL_DISCHARGE * cells), world);
 		return;
 	}
@@ -715,8 +714,7 @@ void(float ox) W_FireSpikes =
 	}
 	if ((self.ammo_nails < MOON_WEAPON_NAILGUN_SALVO_SIZE))
 	{
-		self.weapon = W_BestWeapon();
-		W_SetCurrentAmmo();
+		moon_swap_target_to_best_weapon(self);
 		return;
 	}
 
@@ -878,13 +876,13 @@ void() W_SetCurrentAmmo =
 		break;
 	default:
 		self.currentammo = 0;
-		self.weaponmodel = s_wiz;
+		self.weaponmodel = string_null;
 		self.weaponframe = WF_NORMAL;
 	}
 
 	if ( self.speed & CHSCAM_ON )
 	{
-		self.weaponmodel = s_wiz;
+		self.weaponmodel = string_null;
 	}
 };
 
@@ -952,8 +950,12 @@ float() W_CheckNoAmmo =
 		return TRUE;
 	}
 
-	self.weapon = W_BestWeapon();
-	W_SetCurrentAmmo();
+	moon_swap_target_to_best_weapon(self);
+	if ( self.currentammo <= 0 )
+	{
+		moon_swap_target_to_best_weapon(self, TRUE);
+	}
+
 	return FALSE;
 };
 
@@ -986,18 +988,16 @@ void() W_Attack = // Player attack handling
 		if ( r < 0.25 )
 		{
 			player_axe1();
+		} else
+		if ( r < 0.5 )
+		{
+			player_axeb1();
+		} else
+		if ( r < 0.75 )
+		{
+			player_axec1();
 		} else {
-			if ( r < 0.5 )
-			{
-				player_axeb1();
-			} else {
-				if ( r < 0.75 )
-				{
-					player_axec1();
-				} else {
-					player_axed1();
-				}
-			}
+			player_axed1();
 		}
 
 		delay = MOON_WEAPON_AXE_COOLDOWN;
@@ -1136,7 +1136,7 @@ void() W_ChangeWeapon =
 		break;
 	}
 
-	self.impulse = MOON_IMPULSE_CODE_NOOP;
+	self.impulse = QC_IMPULSE_CODE_NOOP;
 	if (!(self.items & fl))
 	{
 		sprint(self, "no weapon.\n");
@@ -1149,8 +1149,7 @@ void() W_ChangeWeapon =
 		return;
 	}
 
-	self.weapon = fl;
-	W_SetCurrentAmmo();
+	moon_select_target_weapon(self, fl);
 };
 
 void() CheatCommand =
@@ -1173,97 +1172,80 @@ void() CheatCommand =
 void() CycleWeaponCommand =
 {
 	local float it;
-	local float am;
+	local float current_weapon;
+	local float no_ammo;
+
+	self.impulse = QC_IMPULSE_CODE_NOOP;
 
 	it = self.items;
-	self.impulse = WF_NORMAL;
-	while (CHSCAM_ON)
+	current_weapon = self.weapon;
+	while (TRUE)
 	{
-		am = WF_NORMAL;
-		if ((self.weapon == IT_LIGHTNING))
+		no_ammo = FALSE;
+		switch(current_weapon)
 		{
-			self.weapon = IT_AXE;
-		}
-		else
-		{
-			if ((self.weapon == IT_AXE))
+		case IT_AXE:
+			current_weapon = IT_SHOTGUN;
+			if ( self.ammo_shells < MOON_WEAPON_SHOTGUN_SALVO_SIZE )
 			{
-				self.weapon = IT_SHOTGUN;
-				if ((self.ammo_shells < CHSCAM_ON))
-				{
-					am = CHSCAM_ON;
-				}
+				no_ammo = TRUE;
 			}
-			else
+			break;
+		case IT_SHOTGUN:
+			current_weapon = IT_SUPER_SHOTGUN;
+			if ( self.ammo_shells < MOON_WEAPON_SUPERSHOTGUN_SALVO_SIZE )
 			{
-				if ((self.weapon == IT_SHOTGUN))
-				{
-					self.weapon = IT_SUPER_SHOTGUN;
-					if ((self.ammo_shells < H_MEGA))
-					{
-						am = CHSCAM_ON;
-					}
-				}
-				else
-				{
-					if ((self.weapon == IT_SUPER_SHOTGUN))
-					{
-						self.weapon = IT_NAILGUN;
-						if ((self.ammo_nails < CHSCAM_ON))
-						{
-							am = CHSCAM_ON;
-						}
-					}
-					else
-					{
-						if ((self.weapon == IT_NAILGUN))
-						{
-							self.weapon = IT_SUPER_NAILGUN;
-							if ((self.ammo_nails < H_MEGA))
-							{
-								am = CHSCAM_ON;
-							}
-						}
-						else
-						{
-							if ((self.weapon == IT_SUPER_NAILGUN))
-							{
-								self.weapon = IT_GRENADE_LAUNCHER;
-								if ((self.ammo_rockets < CHSCAM_ON))
-								{
-									am = CHSCAM_ON;
-								}
-							}
-							else
-							{
-								if ((self.weapon == IT_GRENADE_LAUNCHER))
-								{
-									self.weapon = IT_ROCKET_LAUNCHER;
-									if ((self.ammo_rockets < CHSCAM_ON))
-									{
-										am = CHSCAM_ON;
-									}
-								}
-								else
-								{
-									if ((self.weapon == IT_ROCKET_LAUNCHER))
-									{
-										self.weapon = IT_LIGHTNING;
-										if ((self.ammo_cells < CHSCAM_ON))
-										{
-											am = CHSCAM_ON;
-										}
-									}
-								}
-							}
-						}
-					}
-				}
+				no_ammo = TRUE;
 			}
+			break;
+		case IT_SUPER_SHOTGUN:
+			current_weapon = IT_NAILGUN;
+			if ( self.ammo_nails < MOON_WEAPON_NAILGUN_SALVO_SIZE )
+			{
+				no_ammo = TRUE;
+			}
+			break;
+		case IT_NAILGUN:
+			current_weapon = IT_SUPER_NAILGUN;
+			if ( self.ammo_nails < MOON_WEAPON_SUPERNAILGUN_SALVO_SIZE )
+			{
+				no_ammo = TRUE;
+			}
+			break;
+		case IT_SUPER_NAILGUN:
+			current_weapon = IT_GRENADE_LAUNCHER;
+			if ( self.ammo_rockets < MOON_WEAPON_GRENADELAUNCHER_SALVO_SIZE )
+			{
+				no_ammo = TRUE;
+			}
+			break;
+		case IT_GRENADE_LAUNCHER:
+			current_weapon = IT_ROCKET_LAUNCHER;
+			if ( self.ammo_rockets < MOON_WEAPON_ROCKETLAUNCHER_SALVO_SIZE )
+			{
+				no_ammo = TRUE;
+			}
+			break;
+		case IT_ROCKET_LAUNCHER:
+			current_weapon = IT_LIGHTNING;
+			if ( self.ammo_cells < MOON_WEAPON_LIGHTNING_SALVO_SIZE )
+			{
+				no_ammo = TRUE;
+			}
+			break;
+		case IT_LIGHTNING:
+			current_weapon = IT_AXE;
+			break;
 		}
-		if (((it & self.weapon) && (am == WF_NORMAL)))
+
+		if (current_weapon == self.weapon) // for future when AXE would be available
 		{
-			W_SetCurrentAmmo();
+			return;
+		}
+
+		if ( (it & current_weapon) && (no_ammo == FALSE) ) // this will work at least once, if AXE in inventory
+		{
+			moon_select_target_weapon(self, current_weapon);
 			return;
 		}
 	}
@@ -1272,97 +1254,80 @@ void() CycleWeaponCommand =
 void() CycleWeaponReverseCommand =
 {
 	local float it;
-	local float am;
+	local float current_weapon;
+	local float no_ammo;
+
+	self.impulse = QC_IMPULSE_CODE_NOOP;
 
 	it = self.items;
-	self.impulse = WF_NORMAL;
-	while (CHSCAM_ON)
+	current_weapon = self.weapon;
+	while (TRUE)
 	{
-		am = WF_NORMAL;
-		if ((self.weapon == IT_LIGHTNING))
+		no_ammo = FALSE;
+		switch(current_weapon)
 		{
-			self.weapon = IT_ROCKET_LAUNCHER;
-			if ((self.ammo_rockets < CHSCAM_ON))
+		case IT_AXE:
+			current_weapon = IT_LIGHTNING;
+			if ( self.ammo_cells < MOON_WEAPON_LIGHTNING_SALVO_SIZE )
 			{
-				am = CHSCAM_ON;
+				no_ammo = TRUE;
 			}
+			break;
+		case IT_SHOTGUN:
+			current_weapon = IT_AXE;
+			break;
+		case IT_SUPER_SHOTGUN:
+			current_weapon = IT_SHOTGUN;
+			if ( self.ammo_shells < MOON_WEAPON_SHOTGUN_SALVO_SIZE )
+			{
+				no_ammo = TRUE;
+			}
+			break;
+		case IT_NAILGUN:
+			current_weapon = IT_SUPER_SHOTGUN;
+			if ( self.ammo_shells < MOON_WEAPON_SUPERSHOTGUN_SALVO_SIZE )
+			{
+				no_ammo = TRUE;
+			}
+			break;
+		case IT_SUPER_NAILGUN:
+			current_weapon = IT_NAILGUN;
+			if ( self.ammo_nails < MOON_WEAPON_NAILGUN_SALVO_SIZE )
+			{
+				no_ammo = TRUE;
+			}
+			break;
+		case IT_GRENADE_LAUNCHER:
+			current_weapon = IT_SUPER_NAILGUN;
+			if ( self.ammo_nails < MOON_WEAPON_SUPERNAILGUN_SALVO_SIZE )
+			{
+				no_ammo = TRUE;
+			}
+			break;
+		case IT_ROCKET_LAUNCHER:
+			current_weapon = IT_GRENADE_LAUNCHER;
+			if ( self.ammo_rockets < MOON_WEAPON_GRENADELAUNCHER_SALVO_SIZE )
+			{
+				no_ammo = TRUE;
+			}
+			break;
+		case IT_LIGHTNING:
+			current_weapon = IT_ROCKET_LAUNCHER;
+			if ( self.ammo_rockets < MOON_WEAPON_ROCKETLAUNCHER_SALVO_SIZE )
+			{
+				no_ammo = TRUE;
+			}
+			break;
 		}
-		else
+
+		if (current_weapon == self.weapon) // for future when AXE would be available
 		{
-			if ((self.weapon == IT_ROCKET_LAUNCHER))
-			{
-				self.weapon = IT_GRENADE_LAUNCHER;
-				if ((self.ammo_rockets < CHSCAM_ON))
-				{
-					am = CHSCAM_ON;
-				}
-			}
-			else
-			{
-				if ((self.weapon == IT_GRENADE_LAUNCHER))
-				{
-					self.weapon = IT_SUPER_NAILGUN;
-					if ((self.ammo_nails < H_MEGA))
-					{
-						am = CHSCAM_ON;
-					}
-				}
-				else
-				{
-					if ((self.weapon == IT_SUPER_NAILGUN))
-					{
-						self.weapon = IT_NAILGUN;
-						if ((self.ammo_nails < CHSCAM_ON))
-						{
-							am = CHSCAM_ON;
-						}
-					}
-					else
-					{
-						if ((self.weapon == IT_NAILGUN))
-						{
-							self.weapon = IT_SUPER_SHOTGUN;
-							if ((self.ammo_shells < H_MEGA))
-							{
-								am = CHSCAM_ON;
-							}
-						}
-						else
-						{
-							if ((self.weapon == IT_SUPER_SHOTGUN))
-							{
-								self.weapon = IT_SHOTGUN;
-								if ((self.ammo_shells < CHSCAM_ON))
-								{
-									am = CHSCAM_ON;
-								}
-							}
-							else
-							{
-								if ((self.weapon == IT_SHOTGUN))
-								{
-									self.weapon = IT_AXE;
-								}
-								else
-								{
-									if ((self.weapon == IT_AXE))
-									{
-										self.weapon = IT_LIGHTNING;
-										if ((self.ammo_cells < CHSCAM_ON))
-										{
-											am = CHSCAM_ON;
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
+			return;
 		}
-		if (((it & self.weapon) && (am == WF_NORMAL)))
+
+		if ( (it & current_weapon) && (no_ammo == FALSE) ) // this will work at least once, if AXE in inventory
 		{
-			W_SetCurrentAmmo();
+			moon_select_target_weapon(self, current_weapon);
 			return;
 		}
 	}
@@ -1370,6 +1335,10 @@ void() CycleWeaponReverseCommand =
 
 void() ServerflagsCommand = // WTF?!
 {
+	if ((deathmatch || coop))
+	{
+		return;
+	}
 	serverflags = ((serverflags * 2) + 1);
 };
 

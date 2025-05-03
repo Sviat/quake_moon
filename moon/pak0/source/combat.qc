@@ -241,79 +241,66 @@ void(entity targ, entity inflictor, entity attacker, float damage) T_Damage = //
 			}
 		}
 	}
+
 	if ((attacker.flags & FL_MONSTER))
 	{
 		if (!(targ.flags & FL_MONSTER))
 		{
 			damage = (damage + percent(damage, attacker.damage_bonus));
 		}
-	}
-	if ((attacker.prefix > WF_NORMAL))
-	{
-		if ((attacker.flags & FL_MONSTER))
+
+		if ( attacker.prefix == MOON_MONSTER_TRAIT_DOUBLEDAMAGE )
 		{
-			if ((attacker.prefix == WF_DEFEND))
+			if ( random() < attacker.prefix_value )
 			{
-				if ((random() < attacker.prefix_value))
-				{
-					damage = (damage * WF_EXTRASIZE);
-				}
+				damage = (damage * 2);
 			}
-			else
-			{
-				if ((attacker.prefix == TE_WIZSPIKE))
-				{
-					damage = (damage + percent(damage, attacker.prefix_value));
-				}
-			}
+		} else
+		if ( attacker.prefix == MOON_MONSTER_TRAIT_EXTRA_DAMAGE )
+		{
+			damage = (damage + percent(damage, attacker.prefix_value));
 		}
 	}
-	if ((targ.prefix > WF_NORMAL))
+
+	if ( targ.flags & FL_MONSTER )
 	{
-		if ((targ.flags & FL_MONSTER))
+		if ( targ.prefix == MOON_MONSTER_TRAIT_ABSORBHALFDAMAGE )
 		{
-			if ((targ.prefix == WF_EXTRASIZE))
+			if ( random() < targ.prefix_value )
 			{
-				if ((random() < targ.prefix_value))
-				{
-					damage = rint((damage / WF_EXTRASIZE));
-				}
+				damage = rint(damage / 2);
 			}
-			else
-			{
-				if ((targ.prefix == KEY_MOVERIGHT))
-				{
-					damage = (damage - rint(percent(damage, targ.prefix_value)));
-				}
-				else
-				{
-					if ((targ.prefix == TE_LIGHTNING3))
-					{
-						damage = (damage + percent(damage, targ.prefix_value));
-					}
-				}
-			}
+		} else
+		if ( targ.prefix == MOON_MONSTER_TRAIT_RESISTANCE )
+		{
+			damage = damage - rint(percent(damage, targ.prefix_value));
+		} else
+		if ( targ.prefix == MOON_MONSTER_TRAIT_EXTRA_RECEIVEDAMAGE )
+		{
+			damage = damage + rint(percent(damage, targ.prefix_value));
 		}
 	}
-	if ((attacker.flags & FL_MONSTER))
+
+	if ( attacker.flags & FL_MONSTER )
 	{
 		if (!(targ.flags & FL_MONSTER))
 		{
-			if ((attacker.scroll_redu_eff > time))
+			if ((attacker.scroll_redu_eff > time)) // attacker under effect of REDUCE DAMAGE magic
 			{
 				damage = rint((damage - percent(damage, attacker.sc_redu_lvl)));
-				if ((damage == WF_NORMAL))
+				if ( damage <= 0 )
 				{
 					return;
 				}
 			}
 		}
 	}
+
 	save = ceil((targ.armortype * damage));
 	if ((save >= targ.armorvalue))
 	{
 		save = targ.armorvalue;
-		targ.armortype = WF_NORMAL;
+		targ.armortype = 0;
 		targ.items = (targ.items - (targ.items & ((IT_ARMOR1 | IT_ARMOR2) | IT_ARMOR3)));
 	}
 	targ.armorvalue = (targ.armorvalue - save);
@@ -324,143 +311,120 @@ void(entity targ, entity inflictor, entity attacker, float damage) T_Damage = //
 		targ.dmg_save = (targ.dmg_save + save);
 		targ.dmg_inflictor = inflictor;
 	}
-	if (((inflictor != world) && (targ.classname == "player")))
+
+	if ( (inflictor != world) && (targ.classname == MOON_PLAYER_CLASSNAME) )
 	{
 		dir = (targ.origin - ((inflictor.absmin + inflictor.absmax) * MON_BACKTIME));
 		dir = normalize(dir);
-		if ((targ.classname == "guard"))
+		if ( targ.classname == MOON_GUARD_CLASSNAME )
 		{
-			targ.velocity = (targ.velocity + ((dir * damage) * LOGIC_HUNTENEMY));
-		}
-		else
-		{
-			targ.velocity = (targ.velocity + ((dir * damage) * KEY_MOVERIGHT));
+			targ.velocity = (targ.velocity + ((dir * damage) * 6));
+		} else {
+			targ.velocity = (targ.velocity + ((dir * damage) * 8));
 		}
 	}
-	if ((targ.flags & FL_GODMODE))
+
+	if ( targ.flags & FL_GODMODE )
 	{
 		return;
 	}
-	if ((targ.invincible_finished >= time))
+
+	if ( targ.invincible_finished >= time )
 	{
 		if ((self.invincible_sound < time))
 		{
-			sound(targ, CHAN_ITEM, "items/protect3.wav", WF_DEFEND, ATTN_NORM);
-			self.invincible_sound = (time + WF_EXTRASIZE);
+			sound(targ, CHAN_ITEM, "items/protect3.wav", 1, ATTN_NORM);
+			self.invincible_sound = (time + 2);
 		}
 		return;
 	}
-	if (((targ.flags & FL_MONSTER) && (attacker.flags & FL_MONSTER)))
+
+	if ( (targ.flags & FL_MONSTER) && (attacker.flags & FL_MONSTER) )
 	{
+		// TODO: use MOON_MONSTER_TRAIT_FRIENDLY_FIRE here
 		return;
 	}
-	if (((targ.classname == "guard") && (attacker.classname == "guard")))
+
+	if ( attacker.classname == MOON_GUARD_CLASSNAME )
 	{
-		take = (take / KEY_MOVEFORWARD);
-	}
-	if (((targ.classname == "player") && (attacker.classname == "guard")))
-	{
-		take = (take / KEY_MOVEFORWARD);
-	}
-	if ((targ.ability > WF_NORMAL))
-	{
-		if ((targ.flags & FL_MONSTER))
+		if ( targ.classname == MOON_GUARD_CLASSNAME )
 		{
-			if ((targ.health > WF_NORMAL))
+			take = rint(take / 16);
+		}
+		if ( targ.classname == MOON_PLAYER_CLASSNAME )
+		{
+			take = rint(take / 16);
+		}
+	}
+
+	if ( (targ.flags & FL_MONSTER) && (targ.health > 0) )
+	{
+		if ( targ.ability == MOON_MONSTER_TRAIT_IRON )
+		{
+			spk = percent(take, MOON_MONSTER_TRAIT_IRON_DAMAGERECEIVED);
+			if ( spk > 0 )
 			{
-				if ((targ.ability == WF_EXTRASIZE))
+				T_Damage(attacker, targ, targ, spk);
+			}
+		}
+		if ( targ.ability == MOON_MONSTER_TRAIT_STONE )
+		{
+			if ( random() < MOON_MONSTER_TRAIT_STONE_PROC )
+			{
+				take = 0;
+				if ( targ.invincible_sound < time )
 				{
-					spk = percent(take, GRD_PATROLTIME);
-					if ((spk > WF_NORMAL))
+					if ( random() < 0.5 )
 					{
-						T_Damage(attacker, targ, targ, spk);
+						sound(targ, CHAN_ITEM, "moon/misc/stone1.wav", 1, ATTN_NORM);
+					} else {
+						sound(targ, CHAN_ITEM, "moon/misc/stone2.wav", 1, ATTN_NORM);
 					}
-				}
-				if ((targ.ability == LOGIC_FINDDEFEND))
-				{
-					if ((random() < MON_BACKTIME))
-					{
-						take = WF_NORMAL;
-						if ((targ.invincible_sound < time))
-						{
-							if ((random() < MON_BACKTIME))
-							{
-								sound(targ, CHAN_ITEM, "moon/misc/stone1.wav", WF_DEFEND, ATTN_NORM);
-							}
-							else
-							{
-								sound(targ, CHAN_ITEM, "moon/misc/stone2.wav", WF_DEFEND, ATTN_NORM);
-							}
-							targ.invincible_sound = (time + WF_DEFEND);
-						}
-					}
+					targ.invincible_sound = (time + 1);
 				}
 			}
 		}
 	}
-	if ((attacker.ability == 4))
+
+	if ( (attacker.flags & FL_MONSTER) && (attacker.health > 0) )
 	{
-		if ((attacker.flags & FL_MONSTER))
+		if ( attacker.ability == MOON_MONSTER_TRAIT_BLOOD )
 		{
-			if ((attacker.health > WF_NORMAL))
-			{
-				if ((rint((take / WF_EXTRASIZE)) > WF_NORMAL))
-				{
-					attacker.health = (attacker.health + rint((take / WF_EXTRASIZE)));
-					if ((attacker.health > attacker.max_health))
-					{
-						attacker.health = attacker.max_health;
-					}
-				}
-			}
+			spk = rint(take * MOON_MONSTER_TRAIT_BLOOD_HEALRATIO);
+			moon_heal_target_monster(attacker, spk); // easy to heal for 0 than do IF check
 		}
 	}
-	targ.health = rint((targ.health - take));
-	if ((targ.health <= WF_NORMAL))
+
+	targ.health = rint( targ.health - take );
+	if ( targ.health <= 0 )
 	{
-		if (((attacker.classname == "player") && (attacker.health > WF_NORMAL)))
+		if ( attacker.classname == MOON_PLAYER_CLASSNAME )
 		{
-			if ((attacker.health < attacker.max_health))
+			if ( (attacker.health > 0) && (attacker.health < attacker.max_health) )
 			{
-				if ((targ.flags & FL_MONSTER))
+				gh = moon_get_target_total_bonus_by_code(attacker, MOON_ITEM_CONSUME_CODE);
+				if (!(targ.flags & FL_MONSTER) )
 				{
-					gh = WF_NORMAL;
-					if ((attacker.magic_typeone == KEY_MOVERIGHT))
-					{
-						gh = (gh + attacker.magic_typeone_value);
-					}
-					if ((attacker.magic_typetwo == KEY_MOVERIGHT))
-					{
-						gh = (gh + attacker.magic_typetwo_value);
-					}
-					if ((attacker.ring_typeone == KEY_MOVERIGHT))
-					{
-						gh = (gh + attacker.ring_typeone_value);
-					}
-					if ((attacker.ring_typetwo == KEY_MOVERIGHT))
-					{
-						gh = (gh + attacker.ring_typetwo_value);
-					}
-					if ((gh > WF_NORMAL))
-					{
-						T_Heal(attacker, gh);
-					}
+					gh = rint(gh / 2); // restore even for killing teammates, but less
+				}
+				if ( gh > 0 )
+				{
+					T_Heal(attacker, gh);
 				}
 			}
-		}
-		if ((attacker.classname == "player"))
-		{
-			if ((targ.flags & FL_MONSTER))
+			if ( targ.flags & FL_MONSTER )
 			{
-				attacker.mosterskilled = (attacker.mosterskilled + WF_DEFEND);
+				attacker.mosterskilled = (attacker.mosterskilled + 1);
 			}
 		}
+
 		Killed(targ, attacker);
 		return;
 	}
+
 	if (((((targ.flags & FL_MONSTER) && (attacker != world)) && (attacker.flags & FL_CLIENT)) && ((targ.enemy == world) || (targ.enemy.classname == "idle_ent"))))
 	{
-		if (((targ != attacker) && (attacker != targ.enemy)))
+		if ( (targ != attacker) && (attacker != targ.enemy) )
 		{
 			if (!(attacker.flags & FL_MONSTER))
 			{

@@ -411,71 +411,16 @@ void(entity target) moon_limit_target_ammo =
 	target.currentammo = clamp(target.currentammo, CONST_QC_DISPLAY_MAX);
 };
 
-float(float w) RankForWeapon =
-{
-	if ((w == IT_LIGHTNING))
-	{
-		return (1);
-	}
-	if ((w == IT_ROCKET_LAUNCHER))
-	{
-		return (2);
-	}
-	if ((w == IT_SUPER_NAILGUN))
-	{
-		return (3);
-	}
-	if ((w == IT_GRENADE_LAUNCHER))
-	{
-		return (4);
-	}
-	if ((w == IT_SUPER_SHOTGUN))
-	{
-		return (5);
-	}
-	if ((w == IT_NAILGUN))
-	{
-		return (6);
-	}
-	return (7);
-};
-
-// UNUSED?!
-void(float old, float new) Deathmatch_Weapon =
-{
-	local float or;
-	local float nr;
-
-	or = RankForWeapon(self.weapon);
-	nr = RankForWeapon(new);
-	if ((nr < or))
-	{
-		self.weapon = new;
-	}
-};
-float() W_BestWeapon;
-
 void() weapon_touch =
 {
-	//local float hadammo; // unused
-	local float best;
-	//local float new; // unused
-	local float old;
-	local entity stemp;
-	//local float leave; // unused
-
 	if (!(other.flags & FL_CLIENT))
 	{
 		return;
 	}
-	if ((other.health <= WF_NORMAL))
-	{
-		return;
-	}
-	if ((other.classname != "player"))
-	{
-		return;
-	}
+
+	if ( other.classname != MOON_PLAYER_CLASSNAME ) { return; }
+	if ( other.health <= 0 ) { return; }
+
 	other.ammo_nails = (other.ammo_nails + self.ammo_nails);
 	other.ammo_shells = (other.ammo_shells + self.ammo_shells);
 	other.ammo_rockets = (other.ammo_rockets + self.ammo_rockets);
@@ -484,20 +429,14 @@ void() weapon_touch =
 
 	if (!(other.items & self.items))
 	{
-		other.items = (other.items + self.items);
+		other.items = (other.items | self.items);
 	}
-	sprint(other, "You got the {}\n", self.netname);
-	sound(other, CHAN_ITEM, "weapons/pkup.wav", WF_DEFEND, ATTN_NORM);
-	flash_target(other);
 
-	old = other.weapon;
+	sprint(other, "You got the {0}\n", self.netname);
+	sound(other, CHAN_ITEM, "weapons/pkup.wav", 1, ATTN_NORM);
+	flash_other();
 
-	stemp = self;
-	self = other;
-	best = W_BestWeapon();
-	Deathmatch_Weapon(old, stemp.items);
-	W_SetCurrentAmmo();
-	self = stemp;
+	moon_set_target_deathmatch_weapon(other, self.items);
 
 	remove(self);
 };
@@ -576,16 +515,12 @@ void() weapon_lightning =
 
 void() ammo_touch =
 {
-	local entity stemp;
 	local float best;
 
 	if ( other.classname != MOON_PLAYER_CLASSNAME ) { return; }
 	if ( other.health <= 0 ) { return; }
 
-	stemp = self;
-	self = other;
-	best = W_BestWeapon();
-	self = stemp;
+	best = moon_get_target_best_weapon(other); // remember best weapon before getting additional ammo
 
 	other.ammo_shells = (other.ammo_shells + self.ammo_shells);
 	other.ammo_nails = (other.ammo_nails + self.ammo_nails);
@@ -594,32 +529,14 @@ void() ammo_touch =
 	moon_limit_target_ammo(other);
 
 	flash_target(other);
-	if (self.ammo_shells)
-	{
-		sprint(other, "You picked up {0} {1}\n", floor_ftos(self.ammo_shells), MOON_AMMO_SHELLS_DISPLAYNAME);
-	}
-	if (self.ammo_nails)
-	{
-		sprint(other, "You picked up {0} {1}\n", floor_ftos(self.ammo_nails), MOON_AMMO_NAILS_DISPLAYNAME);
-	}
-	if (self.ammo_rockets)
-	{
-		sprint(other, "You picked up {0} {1}\n", floor_ftos(self.ammo_rockets), MOON_AMMO_ROCKETS_DISPLAYNAME);
-	}
-	if (self.ammo_cells)
-	{
-		sprint(other, "You picked up {0} {1}\n", floor_ftos(self.ammo_cells), MOON_AMMO_CELLS_DISPLAYNAME);
-	}
+	sprint(other, "You picked up {0} {1}\n", floor_ftos(self.currentammo), self.netname);
 	sound(other, CHAN_ITEM, "weapons/lock4.wav", 1, ATTN_NORM);
 
-	stemp = self;
-	self = other;
-	if (self.weapon == best)
+	if (other.weapon == best)
 	{
-		self.weapon = W_BestWeapon();
+		other.weapon = moon_get_target_best_weapon(other);
 	}
-	W_SetCurrentAmmo();
-	self = stemp;
+	moon_set_target_currentammo(other);
 
 	remove(self);
 };
@@ -788,17 +705,12 @@ void() item_artifact_super_damage =
 void() BackpackTouch =
 {
 	local float best;
-	local float old;
 	local float new;
-	local entity stemp;
 
 	if ( other.classname != MOON_PLAYER_CLASSNAME ) { return; }
 	if ( other.health <= 0 ) { return; }
 
-	stemp = self;
-	self = other;
-	best = W_BestWeapon(); // remember best weapon before getting ammo
-	self = stemp;
+	best = moon_get_target_best_weapon(other); // remember best weapon before getting additional ammo
 
 	other.ammo_shells = (other.ammo_shells + self.ammo_shells);
 	other.ammo_nails = (other.ammo_nails + self.ammo_nails);
@@ -810,9 +722,8 @@ void() BackpackTouch =
 	{
 		new = other.weapon;
 	}
-
-	old = other.items;
 	other.items = (other.items | new);
+
 	moon_limit_target_ammo(other);
 
 	flash_target(other);
@@ -836,15 +747,17 @@ void() BackpackTouch =
 	sprint(other, "\n");
 	sound(other, CHAN_ITEM, "weapons/pkup.wav", 1, ATTN_NORM);
 
-	remove(self);
-	self = other;
-	if (!deathmatch)
+	if (other.weapon == best)
 	{
-		self.weapon = new;
-	} else {
-		Deathmatch_Weapon(old, new);
+		other.weapon = moon_get_target_best_weapon(other);
 	}
-	W_SetCurrentAmmo();
+	if (deathmatch)
+	{
+		moon_set_target_deathmatch_weapon(other, new);
+	}
+	moon_set_target_currentammo(other);
+
+	remove(self);
 };
 
 void() DropBackpack =
@@ -2947,40 +2860,39 @@ void() moon_buy_item_market =
 			sound(self, CHAN_ITEM, selected.noise1, 1, ATTN_NORM);
 			break;
 		case MOON_AMMO_MARKET_NETNAME:
+			best = moon_get_target_best_weapon(self, TRUE); // Remember best weapon before buying ammo
+
 			self.ammo_shells = (self.ammo_shells + selected.ammo_shells);
 			self.ammo_nails = (self.ammo_nails + selected.ammo_nails);
 			self.ammo_rockets = (self.ammo_rockets + selected.ammo_rockets);
 			self.ammo_cells = (self.ammo_cells + selected.ammo_cells);
 			moon_limit_target_ammo(self);
 
-			best = W_BestWeapon(); // Remember best weapon before buying ammo
-
 			if ( self.weapon == best ) // if had best weapon without ammo before, but have ammo now, change current to best as well
 			{
-				self.weapon = W_BestWeapon();
+				moon_swap_target_to_best_weapon(self, TRUE);
 			}
-			W_SetCurrentAmmo();
 
 			sprint(self, "You bought");
-			moon_print_target_container_ammo(self, selected); // moon_print_target_container_ammo prints summary, without line break
+			moon_print_target_container_ammo(self, selected);
 			sprint(self, "\n");
 			sound(self, CHAN_ITEM, "weapons/lock4.wav", 1, ATTN_NORM);
 			break;
 		case MOON_WEAPON_MARKET_NETNAME:
+			best = moon_get_target_best_weapon(self, TRUE); // Remember best weapon before buying ammo
+
 			self.ammo_shells = (self.ammo_shells + selected.ammo_shells);
 			self.ammo_nails = (self.ammo_nails + selected.ammo_nails);
 			self.ammo_rockets = (self.ammo_rockets + selected.ammo_rockets);
 			self.ammo_cells = (self.ammo_cells + selected.ammo_cells);
 			moon_limit_target_ammo(self);
 
-			best = W_BestWeapon(); // Remember best weapon before buying
 			self.items = (self.items | selected.items);
 
-			if ( self.weapon == best ) // if had best weapon before, change current to best as well
+			if ( self.weapon == best ) // if had best weapon and bought better, change current to the best as well
 			{
-				self.weapon = W_BestWeapon();
+				moon_swap_target_to_best_weapon(self, TRUE);
 			}
-			W_SetCurrentAmmo();
 
 			sprint(self, "You bought {}\n", selected.targetname);
 			sound(self, CHAN_ITEM, "weapons/pkup.wav", 1, ATTN_NORM);
@@ -3758,7 +3670,8 @@ void() moon_buy_item =
 	} else
 	if ( selected.cnt == MOON_ITEM_TRADE_SIGNOF_AMMO ) // Sign of Ammo
 	{
-		best = W_BestWeapon();
+		best = moon_get_target_best_weapon(self, TRUE); // Remember best weapon before buying ammo
+
 		self.ammo_shells = (self.ammo_shells + selected.ammo_shells);
 		self.ammo_nails = (self.ammo_nails + selected.ammo_nails);
 		self.ammo_rockets = (self.ammo_rockets + selected.ammo_rockets);
@@ -3770,11 +3683,11 @@ void() moon_buy_item =
 		tempf = MOON_TRADE_SPOT_AMMO_DELAY_MIN / clampd(1, moon_get_current_player_count(), 4);
 		selected.attack_finished = (time + tempf + (random() * MOON_TRADE_SPOT_AMMO_DELAY_RANDOM)); // Ammo respawn at shop faster the more players in game
 
-		if ( self.weapon == best )
+		if ( self.weapon == best ) // if had best weapon without ammo before, but have ammo now, change current to best as well
 		{
-			self.weapon = W_BestWeapon();
+			moon_swap_target_to_best_weapon(self, TRUE);
 		}
-		W_SetCurrentAmmo();
+
 		selected.currentammo = 0;
 		selected.ammo_cells = 0;
 		selected.ammo_rockets = 0;
@@ -3783,23 +3696,25 @@ void() moon_buy_item =
 	} else
 	if ( selected.cnt == MOON_ITEM_TRADE_SIGNOF_WEAPON ) // Sign of Weapon
 	{
-		best = W_BestWeapon();
+		best = moon_get_target_best_weapon(self, TRUE); // Remember best weapon before buying weapon with ammo
+
 		self.ammo_shells = (self.ammo_shells + selected.ammo_shells);
 		self.ammo_nails = (self.ammo_nails + selected.ammo_nails);
 		self.ammo_rockets = (self.ammo_rockets + selected.ammo_rockets);
 		self.ammo_cells = (self.ammo_cells + selected.ammo_cells);
 		moon_limit_target_ammo(self);
+
 		self.items = (self.items | selected.items);
 
-		sprint(self, "You bought {}\n", selected.targetname);
+		sprint(self, "You bought {0}\n", selected.targetname);
 		sound(self, CHAN_ITEM, "weapons/pkup.wav", 1, ATTN_NORM);
 		selected.attack_finished = (time + MOON_TRADE_SPOT_WEAPON_DELAY_MIN + (random() * MOON_TRADE_SPOT_WEAPON_DELAY_RANDOM));
 
-		if ( self.weapon == best )
+		if ( self.weapon == best ) // if had best weapon before, and bought better, change current to best as well
 		{
-			self.weapon = W_BestWeapon();
+			moon_swap_target_to_best_weapon(self, TRUE);
 		}
-		W_SetCurrentAmmo();
+
 		selected.currentammo = 0;
 		selected.ammo_cells = 0;
 		selected.ammo_rockets = 0;

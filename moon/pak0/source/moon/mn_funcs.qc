@@ -55,6 +55,7 @@ void() moon_print_skills;
 void() moon_print_inventory;
 void() moon_identify_item;
 void() moon_buy_item;
+string(float rarity_level) moon_get_item_rarity_display;
 
 void(entity target, string prefix, string name, string postfix) moon_print_target_item_name;
 void(entity target, float rarity_level) moon_print_target_item_rarity;
@@ -225,6 +226,11 @@ void(entity object) moon_debug_println_object_name =
 	{
 		bprint("Spawned {0}{1}{2}{3}{4}\n", object.prefix_one, object.prefix_two, object.netname, object.prefix_three, object.prefix_four);
 	}
+
+	// if ( (MOON_DEBUG & MOON_DEBUG_EPRINT_MONSTERS) )
+	// {
+	// 	eprint(object);
+	// }
 };
 
 // Replace kex_chat_message_X with console for two reasons:

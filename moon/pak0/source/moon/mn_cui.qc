@@ -186,18 +186,36 @@ void(entity target) moon_print_mentat_speed =
 
 void(entity target, string prefix, string name, string postfix) moon_print_target_item_name =
 {
-	if (prefix != s_wiz)
+	if (prefix != "")
 	{
 		sprint(target, prefix);
 	}
 	sprint(target, name);
-	if (postfix != s_wiz)
+	if (postfix != "")
 	{
 		sprint(target, postfix);
 	}
 };
 
-void(entity target, float rarity_level) moon_print_target_item_rarity =
+string(float rarity_level) moon_get_item_rarity_display =
+{
+	switch(rarity_level)
+	{
+	case MOON_ITEM_RARITY_THRESHOLD_TRASH:		return MOON_ITEM_RARITY_THRESHOLD_DISPLAY_TRASH;
+	case MOON_ITEM_RARITY_THRESHOLD_COMMON:		return MOON_ITEM_RARITY_THRESHOLD_DISPLAY_COMMON;
+	case MOON_ITEM_RARITY_THRESHOLD_UNCOMMON: 	return MOON_ITEM_RARITY_THRESHOLD_DISPLAY_UNCOMMON;
+	case MOON_ITEM_RARITY_THRESHOLD_RARE:		return MOON_ITEM_RARITY_THRESHOLD_DISPLAY_RARE;
+	case MOON_ITEM_RARITY_THRESHOLD_EPIC:		return MOON_ITEM_RARITY_THRESHOLD_DISPLAY_EPIC;
+	case MOON_ITEM_RARITY_THRESHOLD_LEGENDARY:	return MOON_ITEM_RARITY_THRESHOLD_DISPLAY_LEGENDARY;
+	case MOON_ITEM_RARITY_THRESHOLD_UNIQUE:		return MOON_ITEM_RARITY_THRESHOLD_DISPLAY_UNIQUE;
+	default:
+		break;
+	}
+
+	return string_null;
+};
+
+void(entity target, float rarity_level) moon_print_target_item_rarity = // duplicates moon_get_item_rarity_display, but thats more eco-friendly
 {
 	switch(rarity_level)
 	{

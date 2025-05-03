@@ -1607,103 +1607,104 @@ entity(entity e, float enc) spawn_spider =
 	if ((enc == 0))
 	{
 		m.health = 180;
-		m.exp = DOOR_GOLD_KEY;
+		m.exp = MOON_MONSTER_BOUNTY_EXP_SPIDER;
 	}
 	else
 	{
 		if ((enc >= 1))
 		{
-			m.health = (180 + (enc * GRD_PATROLTIME));
-			m.exp = (DOOR_GOLD_KEY + (enc * SVC_SETVIEWPORT));
-			if ((enc >= DOOR_DONT_LINK))
+			m.health = (180 + (enc * 20));
+			m.exp = (8 + (enc * 5));
+			if ( enc >= 4 )
 			{
-				m.damage_bonus = (enc * TE_WIZSPIKE);
+				m.damage_bonus = (enc * 7);
 			}
-			if ((random() > 0.6))
+			if ( (random() > 0.6) )
 			{
 				m.poison = 1;
 				m.netname = "poison spider";
 			}
 		}
 	}
-	if ((random() < MON_UNIQUECHANCE))
+
+	if ( random() < MOON_MONSTER_UNIQUE_CHANCE )
 	{
-		unique = rint(((random() * DOOR_DONT_LINK) + 1));
+		unique = random_int(MOON_MONSTER_TRAIT_QUADDAMAGE, MOON_MONSTER_TRAIT_FAST);
 	}
-	if ((unique == 1))
+	if ( unique == MOON_MONSTER_TRAIT_QUADDAMAGE )
 	{
-		m.skin = 0;
-		m.ability = 1;
+		m.ability = MOON_MONSTER_TRAIT_QUADDAMAGE;
+		m.skin = MOON_MONSTER_TRAIT_QUADDAMAGE_SKIN;
+		m.prefix_one = MOON_MONSTER_TRAIT_QUADDAMAGE_DISPLAY;
 		m.items = IT_QUAD;
 		m.super_damage_finished = (time + 999);
 		m.effects = (m.effects | EF_DIMLIGHT);
-		m.prefix_one = "quaded ";
 	}
 	else
 	{
-		if ((unique == 2))
+		if ( unique == MOON_MONSTER_TRAIT_IRON )
 		{
-			m.skin = 1;
-			m.ability = 2;
-			m.prefix_one = "iron ";
+			m.ability = MOON_MONSTER_TRAIT_IRON;
+			m.skin = MOON_MONSTER_TRAIT_IRON_SKIN;
+			m.prefix_one = MOON_MONSTER_TRAIT_IRON_DISPLAY;
 		}
 		else
 		{
-			if ((unique == 3))
+			if ( unique == MOON_MONSTER_TRAIT_STONE )
 			{
-				m.skin = 2;
-				m.ability = 3;
-				m.prefix_one = "stone ";
+				m.ability = MOON_MONSTER_TRAIT_STONE;
+				m.skin = MOON_MONSTER_TRAIT_STONE_SKIN;
+				m.prefix_one = MOON_MONSTER_TRAIT_STONE_DISPLAY;
 			}
 			else
 			{
-				if ((unique == 4))
+				if ( unique == MOON_MONSTER_TRAIT_BLOOD )
 				{
-					m.skin = 3;
-					m.ability = 4;
-					m.prefix_one = "blood ";
+					m.ability = MOON_MONSTER_TRAIT_BLOOD;
+					m.skin = MOON_MONSTER_TRAIT_BLOOD_SKIN;
+					m.prefix_one = MOON_MONSTER_TRAIT_BLOOD_DISPLAY;
 				}
 				else
 				{
-					if ((unique == SVC_SETVIEWPORT))
+					if ( unique == MOON_MONSTER_TRAIT_FAST )
 					{
-						m.ability = SVC_SETVIEWPORT;
-						m.speed = 450;
-						m.misspeed = 1800;
-						m.prefix_one = "fast ";
+						m.ability = MOON_MONSTER_TRAIT_FAST;
+						m.prefix_one = MOON_MONSTER_TRAIT_FAST_DISPLAY;
+						m.speed = MOON_MONSTER_TRAIT_FAST_MOVESPEED;
+						m.misspeed = MOON_MONSTER_TRAIT_FAST_MISSILESPEED;
 					}
 				}
 			}
 		}
 	}
-	if ((random() < MON_MAGICCHANCE))
+
+	if ( random() < MOON_MONSTER_MAGIC_CHANCE )
 	{
 		GetPrefix(m);
 		if ((m.skin == 0))
 		{
 			m.skin = 0; // was 4, but skin out of range
 		}
-	}
-	else
+	} else
+	if ( random() < MON_CAMPERCHANCE )
 	{
-		if ((random() < MON_CAMPERCHANCE))
+		if ( unique == 0 )
 		{
-			if ((unique == 0))
-			{
-				GenegateCampTarget(m);
-			}
+			GenegateCampTarget(m);
 		}
 	}
-	if ((unique >= 1))
+
+	if ( unique > MOON_MONSTER_TRAIT_NO )
 	{
 		m.exp = (m.exp * 1.25);
 	}
+
 	m.th_stand = spid_stand;
 	m.th_run = spid_run;
 	m.th_die = spider_die;
 	m.th_missile = spider_attack;
 	m.origin = spot.origin;
-	m.nextthink = (time + (random() * MON_BACKTIME));
+	m.nextthink = (time + (random() * 0.5));
 	m.think = walkmonster_start_go;
 	m.angles = spot.angles;
 	m.attack_finished = time;

@@ -1408,7 +1408,13 @@ void() W_WeaponFrame =
 		return;
 	}
 
-	ImpulseCommands();
+	if ( self.impulse == QC_IMPULSE_CODE_NOOP )
+	{
+		moon_handle_impulse_noop();
+	} else {
+		ImpulseCommands();
+	}
+
 	if ( self.button0 )
 	{
 		SuperDamageSound();

@@ -7303,6 +7303,7 @@ void(entity who) moon_spawn_drop_gold =
 void(entity who) moon_spawn_drop_ammo =
 {
 	local entity item;
+	local float z;
 
 	item = spawn();
 	item.origin = (who.origin - '0 0 24');
@@ -7314,25 +7315,30 @@ void(entity who) moon_spawn_drop_ammo =
 	item.solid = SOLID_TRIGGER;
 	item.movetype = MOVETYPE_TOSS;
 
-	if ((random() < 0.3))
+	z = random();
+	if ( z < 0.3 )
 	{
 		setmodel(item, MOON_AMMO_SHELLS_MODEL);
+		item.netname = MOON_AMMO_SHELLS_DISPLAYNAME;
 		item.ammo_shells = ceil(MOON_AMMO_SHELLS_LOOT_MIN + (random() * MOON_AMMO_SHELLS_LOOT_RANDOM));
 		item.currentammo = item.ammo_shells;
 	} else
-	if ((random() < 0.6))
+	if ( z < 0.72 )
 	{
 		setmodel(item, MOON_AMMO_NAILS_MODEL);
+		item.netname = MOON_AMMO_NAILS_DISPLAYNAME;
 		item.ammo_nails = ceil(MOON_AMMO_NAILS_LOOT_MIN + (random() * MOON_AMMO_NAILS_LOOT_RANDOM));
 		item.currentammo = item.ammo_nails;
 	} else
-	if ((random() < 0.8))
+	if ( z < 0.944 )
 	{
 		setmodel(item, MOON_AMMO_ROCKETS_MODEL);
+		item.netname = MOON_AMMO_ROCKETS_DISPLAYNAME;
 		item.ammo_rockets = ceil(MOON_AMMO_ROCKETS_LOOT_MIN + (random() * MOON_AMMO_ROCKETS_LOOT_RANDOM));
 		item.currentammo = item.ammo_rockets;
 	} else {
 		setmodel(item, MOON_AMMO_CELLS_MODEL);
+		item.netname = MOON_AMMO_CELLS_DISPLAYNAME;
 		item.ammo_cells = ceil(MOON_AMMO_CELLS_LOOT_MIN + (random() * MOON_AMMO_CELLS_LOOT_RANDOM));
 		item.currentammo = item.ammo_cells;
 	}

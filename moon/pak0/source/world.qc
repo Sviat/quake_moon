@@ -559,7 +559,7 @@ void() PutClientInServer =
 	self.magical_regen_time = 0;
 
 	DecodeLevelParms();
-	W_SetCurrentAmmo();
+	moon_set_target_currentammo(self);
 	self.attack_finished = (time + 0.5); // was 0.1
 	self.th_pain = player_pain;
 	self.th_die = PlayerDie;
@@ -1021,10 +1021,9 @@ void() PlayerPreThink =
 	{
 		self.velocity = VEC_ORIGIN;
 	}
-	if ( (time > self.attack_finished) && (!W_EnoughAmmoToShoot(self.weapon, self.currentammo)) )
+	if ( (time > self.attack_finished) && (!moon_is_enough_ammo(self.weapon, self.currentammo)) )
 	{
-		self.weapon = W_BestWeapon();
-		W_SetCurrentAmmo();
+		moon_swap_target_to_best_weapon(self);
 	}
 };
 

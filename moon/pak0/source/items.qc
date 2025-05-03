@@ -4145,12 +4145,10 @@ void(entity spawner, float player_level) moon_spawn_monster =
 
 float SVC_SETVIEWPORT    = 5;
 float SVC_SETVIEWANGLES    = 10;
-float CHSCAM_ON    = 1;
-void() Keep_cam_chasing_owner;
-void(float opt) Remove_chase_cam;
 float chasecam_dist    = 118;
 float chasecam_zofs    = 24;
 
+void() Keep_cam_chasing_owner; // forward declaration
 void(entity cam_owner) Start_chase_cam = // Black magic Voodoo shit
 {
 	local entity chase_cam;
@@ -4195,7 +4193,7 @@ void(float opt) Remove_chase_cam = // Black magic Voodoo shit
 	{
 		self.owner.speed = (self.owner.speed - CHSCAM_ON);
 	}
-	setmodel(self, s_wiz);
+	setmodel(self, string_null);
 	self.velocity = VEC_ORIGIN;
 	msg_entity = self.owner;
 	WriteByte(MSG_ONE, SVC_SETVIEWPORT);
@@ -4320,7 +4318,7 @@ void() Toggle_chase_cam =
 		self.speed = (self.speed - CHSCAM_ON);
 	} else {
 		self.speed = CHSCAM_ON;
-		self.weaponmodel = s_wiz;
+		self.weaponmodel = string_null;
 		Start_chase_cam(self);
 	}
 };
@@ -7292,7 +7290,7 @@ void(entity who) moon_spawn_drop_gold =
 	// The stuff below is crazy. It increases gold amount with each applied factor.
 	// So it is multiplicative (SIC!) bonus, not additive!
 	// Proper way should be separating base gold and accumulating bonus, then applying it once
-	if ( who.prefix == MOON_CREEP_GOLD_PREFIX_CODE )
+	if ( who.prefix == MOON_MONSTER_TRAIT_EXTRA_GOLD )
 	{
 		item.gold = (item.gold + percent(item.gold, who.prefix_value));
 	}
@@ -7397,7 +7395,7 @@ void() DropItem =
 		e.nextthink = time;
 	}
 
-	if ( self.prefix == MOON_CREEP_GOLD_PREFIX_CODE )
+	if ( self.prefix == MOON_MONSTER_TRAIT_EXTRA_GOLD )
 	{
 		moon_spawn_drop_gold(self);
 		return;

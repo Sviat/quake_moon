@@ -6618,20 +6618,20 @@ void(entity target, entity selected) moon_target_wear_magic_item =
 		{
 			moon_handle_magic_effect_lost_max_health(target, target.magic_typeone, target.magic_typeone_value);
 			moon_handle_magic_effect_lost_max_health(target, target.magic_typetwo, target.magic_typetwo_value);
-			target.magic_rarity_level = 0;
-			target.magic_typeone = 0;
+			target.magic_rarity_level = MOON_ITEM_RARITY_THRESHOLD_TRASH;
+			target.magic_typeone = MOON_ITEM_NONE;
 			target.magic_typeone_value = 0;
-			target.magic_prefixone = s_wiz;
-			target.magic_typetwo = 0;
+			target.magic_prefixone = "";
+			target.magic_typetwo = MOON_ITEM_NONE;
 			target.magic_typetwo_value = 0;
-			target.magic_prefixtwo = s_wiz;
+			target.magic_prefixtwo = "";
 		}
 		selected.magic_prefixone = selected.prefix_one;	// wtf, why not fill magic_prefix on item spawn?
 		selected.magic_prefixtwo = selected.prefix_two;	// wtf, why not fill magic_prefix on item spawn?
 		sound(target, CHAN_ITEM, "items/armor1.wav", 1, ATTN_NORM);
 		target.wear_armor = MOON_ITEM_SOME;
 		target.magic_rarity_level = selected.magic_rarity_level;
-		if ( selected.magic_typeone > 0 )
+		if ( selected.magic_typeone >= MOON_ITEM_SOME )
 		{
 			target.magic_typeone = selected.magic_typeone;
 			target.magic_typeone_value = selected.magic_typeone_value;
@@ -6641,7 +6641,7 @@ void(entity target, entity selected) moon_target_wear_magic_item =
 				moon_raise_target_max_health(target, selected.magic_typeone_value);
 			}
 		}
-		if ( selected.magic_typetwo > 0 )
+		if ( selected.magic_typetwo >= MOON_ITEM_SOME )
 		{
 			target.magic_typetwo = selected.magic_typetwo;
 			target.magic_typetwo_value = selected.magic_typetwo_value;
@@ -6663,10 +6663,10 @@ void(entity target, entity selected) moon_target_wear_magic_item =
 			target.ring_rarity_level = 0;
 			target.ring_typeone = 0;
 			target.ring_typeone_value = 0;
-			target.ring_prefixone = s_wiz;
+			target.ring_prefixone = "";
 			target.ring_typetwo = 0;
 			target.ring_typetwo_value = 0;
-			target.ring_prefixtwo = s_wiz;
+			target.ring_prefixtwo = "";
 		}
 		selected.ring_rarity_level = selected.magic_rarity_level;
 		selected.ring_prefixone = selected.prefix_one;
@@ -6678,7 +6678,7 @@ void(entity target, entity selected) moon_target_wear_magic_item =
 		sound(target, CHAN_ITEM, "moon/items/ring.wav", 1, ATTN_NORM);
 		target.wear_ring = MOON_ITEM_SOME;
 		target.ring_rarity_level = selected.ring_rarity_level;
-		if ( selected.ring_typeone > 0 )
+		if ( selected.ring_typeone >= MOON_ITEM_SOME )
 		{
 			target.ring_typeone = selected.ring_typeone;
 			target.ring_typeone_value = selected.ring_typeone_value;
@@ -6688,7 +6688,7 @@ void(entity target, entity selected) moon_target_wear_magic_item =
 				moon_raise_target_max_health(target, selected.ring_typeone_value);
 			}
 		}
-		if ( selected.ring_typetwo > 0 )
+		if ( selected.ring_typetwo >= MOON_ITEM_SOME )
 		{
 			target.ring_typetwo = selected.ring_typetwo;
 			target.ring_typetwo_value = selected.ring_typetwo_value;

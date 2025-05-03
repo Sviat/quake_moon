@@ -952,148 +952,163 @@ void(entity e) GetPrefix =
 	switch(r)
 	{
 	case 1:
-		e.prefix_three = " of slaughter";
-		e.prefix = 1;
-		e.prefix_value = 0.2;
-		makeaura(e, 1);
+		e.prefix = MOON_MONSTER_TRAIT_DOUBLEDAMAGE;
+		e.prefix_three = MOON_MONSTER_TRAIT_DOUBLEDAMAGE_LOW_DISPLAY;
+		e.prefix_value = MOON_MONSTER_TRAIT_DOUBLEDAMAGE_LOW_PROC;
+		e.exp = rint(e.exp * MOON_MONSTER_BOUNTY_EXP_MULT_LOW);
+		makeaura(e, MOON_MONSTER_TRAIT_AURA_TYPE_DOUBLEDAMAGE);
 		break;
 	case 2:
-		e.prefix_three = " of violence";
-		e.prefix = 1;
-		e.prefix_value = 0.4;
-		makeaura(e, 1);
+		e.prefix = MOON_MONSTER_TRAIT_DOUBLEDAMAGE;
+		e.prefix_three = MOON_MONSTER_TRAIT_DOUBLEDAMAGE_NORMAL_DISPLAY;
+		e.prefix_value = MOON_MONSTER_TRAIT_DOUBLEDAMAGE_NORMAL_PROC;
+		e.exp = rint(e.exp * MOON_MONSTER_BOUNTY_EXP_MULT_NORMAL);
+		makeaura(e, MOON_MONSTER_TRAIT_AURA_TYPE_DOUBLEDAMAGE);
 		break;
 	case 3:
-		e.prefix_three = " in snake armor";
-		e.prefix = 2;
-		e.prefix_value = 0.2;
+		e.prefix = MOON_MONSTER_TRAIT_ABSORBHALFDAMAGE;
+		e.prefix_three = MOON_MONSTER_TRAIT_ABSORBHALFDAMAGE_LOW_DISPLAY;
+		e.prefix_value = MOON_MONSTER_TRAIT_ABSORBHALFDAMAGE_LOW_PROC;
+		e.exp = rint(e.exp * MOON_MONSTER_BOUNTY_EXP_MULT_LOW);
 		break;
 	case 4:
-		e.prefix_three = " in demon skin";
-		e.prefix = 2;
-		e.prefix_value = 0.5;
+		e.prefix = MOON_MONSTER_TRAIT_ABSORBHALFDAMAGE;
+		e.prefix_three = MOON_MONSTER_TRAIT_ABSORBHALFDAMAGE_NORMAL_DISPLAY;
+		e.prefix_value = MOON_MONSTER_TRAIT_ABSORBHALFDAMAGE_NORMAL_PROC;
 		e.health = (e.health * 2.5);
-		e.exp = (e.exp * 2);
+		e.exp = rint(e.exp * MOON_MONSTER_BOUNTY_EXP_MULT_HIGH);
 		break;
 	case 5:
-		e.prefix_three = " in bear armor";
-		e.prefix = 2;
-		e.prefix_value = 1;
+		e.prefix = MOON_MONSTER_TRAIT_ABSORBHALFDAMAGE;
+		e.prefix_three = MOON_MONSTER_TRAIT_ABSORBHALFDAMAGE_HUGE_DISPLAY;
+		e.prefix_value = MOON_MONSTER_TRAIT_ABSORBHALFDAMAGE_HUGE_PROC;
+		e.exp = rint(e.exp * MOON_MONSTER_BOUNTY_EXP_MULT_HUGE);
 		break;
 	case 6:
-		e.prefix_three = " of weakness";
-		e.health = rint(e.health / 2);
+		e.prefix = MOON_MONSTER_TRAIT_REDUCED_HEALTH; // prefix since 0.29
+		e.prefix_three = MOON_MONSTER_TRAIT_REDUCED_HEALTH_DISPLAY;
+		e.health = rint(e.health * MOON_MONSTER_TRAIT_REDUCED_HEALTH_MULTIPLIER);
 		break;
 	case 7:
-		e.prefix_three = " the profitable"; // TODO: may be "the experienced"?
-		e.exp = rint(e.exp * 1.5);
+		e.prefix = MOON_MONSTER_TRAIT_EXTRA_BOUNTY_EXP; // prefix since 0.29
+		e.prefix_three = MOON_MONSTER_TRAIT_EXTRA_BOUNTY_EXP_DISPLAY;
+		e.exp = rint(e.exp * MOON_MONSTER_BOUNTY_EXP_MULT_NORMAL);
 		break;
 	case 8:
-		e.prefix_three = " the rip";
-		e.exp = 1;
-		e.health = 20;
+		e.prefix = MOON_MONSTER_TRAIT_LOWHEALTH; // prefix since 0.29
+		e.prefix_three = MOON_MONSTER_TRAIT_LOWHEALTH_DISPLAY;
+		e.health = MOON_MONSTER_TRAIT_LOWHEALTH_VALUE;
+		e.exp = MOON_MONSTER_BOUNTY_EXP_BAREMINIMUM;
 		break;
 	case 9:
-		e.prefix_three = " the warrior";
-		e.prefix = 3;
+		e.prefix = MOON_MONSTER_TRAIT_HUNTER; // unused, unknown
+		e.prefix_three = MOON_MONSTER_TRAIT_HUNTER_LOW_DISPLAY;
 		break;
 	case 10:
-		e.prefix_three = " the hunter";
-		e.prefix = 3;
+		e.prefix = MOON_MONSTER_TRAIT_HUNTER; // unused, unknown
+		e.prefix_three = MOON_MONSTER_TRAIT_HUNTER_NORMAL_DISPLAY;
 		break;
 	case 11:
-		e.prefix_three = " of regeneration";
-		e.prefix = 4;
-		e.prefix_value = 3;
+		e.prefix = MOON_MONSTER_TRAIT_REGEN; // unused
+		e.prefix_three = MOON_MONSTER_TRAIT_REGEN_LOW_DISPLAY;
+		e.prefix_value = MOON_MONSTER_TRAIT_REGEN_LOW_VALUE;
 		break;
 	case 12:
-		e.prefix_three = " of great reshape";
-		e.prefix = 4;
-		e.prefix_value = 10;
+		e.prefix = MOON_MONSTER_TRAIT_REGEN; // unused
+		e.prefix_three = MOON_MONSTER_TRAIT_REGEN_NORMAL_DISPLAY;
+		e.prefix_value = MOON_MONSTER_TRAIT_REGEN_NORMAL_VALUE;
 		break;
 	case 13:
-		e.prefix_three = " the rich";
-		e.prefix = 5;
-		e.prefix_value = 200;
+		e.prefix = MOON_MONSTER_TRAIT_EXTRA_GOLD;
+		e.prefix_three = MOON_MONSTER_TRAIT_EXTRA_GOLD_LOW_DISPLAY;
+		e.prefix_value = MOON_MONSTER_TRAIT_EXTRA_GOLD_LOW_VALUE;
 		break;
 	case 14:
-		e.prefix_three = " the treasurer";
-		e.prefix = 5;
-		e.prefix_value = 500;
+		e.prefix = MOON_MONSTER_TRAIT_EXTRA_GOLD;
+		e.prefix_three = MOON_MONSTER_TRAIT_EXTRA_GOLD_NORMAL_DISPLAY;
+		e.prefix_value = MOON_MONSTER_TRAIT_EXTRA_GOLD_NORMAL_VALUE;
 		break;
 	case 15:
-		e.prefix_three = " the millioner";
-		e.prefix = 5;
-		e.prefix_value = 1000;
+		e.prefix = MOON_MONSTER_TRAIT_EXTRA_GOLD;
+		e.prefix_three = MOON_MONSTER_TRAIT_EXTRA_GOLD_HIGH_DISPLAY;
+		e.prefix_value = MOON_MONSTER_TRAIT_EXTRA_GOLD_HIGH_VALUE;
 		break;
 	case 16:
-		e.prefix_three = " the petard";
-		e.prefix = 6;
-		e.prefix_value = 120;
+		e.prefix = MOON_MONSTER_TRAIT_SUICIDE;
+		e.prefix_three = MOON_MONSTER_TRAIT_SUICIDE_LOW_DISPLAY;
+		e.prefix_value = MOON_MONSTER_TRAIT_SUICIDE_LOW_VALUE;
 		break;
 	case 17:
-		e.prefix_three = " the bomb";
-		e.prefix = 6;
-		e.prefix_value = 220;
+		e.prefix = MOON_MONSTER_TRAIT_SUICIDE;
+		e.prefix_three = MOON_MONSTER_TRAIT_SUICIDE_NORMAL_DISPLAY;
+		e.prefix_value = MOON_MONSTER_TRAIT_SUICIDE_NORMAL_VALUE;
 		break;
 	case 18:
-		e.prefix_three = " the nuclear";
-		e.prefix = 6;
-		e.prefix_value = 420;
+		e.prefix = MOON_MONSTER_TRAIT_SUICIDE;
+		e.prefix_three = MOON_MONSTER_TRAIT_SUICIDE_HIGH_DISPLAY;
+		e.prefix_value = MOON_MONSTER_TRAIT_SUICIDE_HIGH_VALUE;
 		break;
 	case 19:
-		e.prefix_three = " the chosen";
-		e.prefix = 7;
-		e.prefix_value = 50;
-		makeaura(e, 1);
+		e.prefix = MOON_MONSTER_TRAIT_EXTRA_DAMAGE;
+		e.prefix_three = MOON_MONSTER_TRAIT_EXTRA_DAMAGE_LOW_DISPLAY;
+		e.prefix_value = MOON_MONSTER_TRAIT_EXTRA_DAMAGE_LOW_BONUSPERCENT;
+		e.exp = rint(e.exp * MOON_MONSTER_BOUNTY_EXP_MULT_LOW);
+		makeaura(e, MOON_MONSTER_TRAIT_AURA_TYPE_EXTRADAMAGE);
 		break;
 	case 20:
-		e.prefix_three = " of destroying";
-		e.prefix = 7;
-		e.prefix_value = 100;
-		makeaura(e, 1);
+		e.prefix = MOON_MONSTER_TRAIT_EXTRA_DAMAGE;
+		e.prefix_three = MOON_MONSTER_TRAIT_EXTRA_DAMAGE_NORMAL_DISPLAY;
+		e.prefix_value = MOON_MONSTER_TRAIT_EXTRA_DAMAGE_NORMAL_BONUSPERCENT;
+		e.exp = rint(e.exp * MOON_MONSTER_BOUNTY_EXP_MULT_NORMAL);
+		makeaura(e, MOON_MONSTER_TRAIT_AURA_TYPE_EXTRADAMAGE);
 		break;
 	case 21:
-		e.prefix_three = " of humiliation";
-		e.prefix = 7;
-		e.prefix_value = 200;
-		makeaura(e, 1);
+		e.prefix = MOON_MONSTER_TRAIT_EXTRA_DAMAGE;
+		e.prefix_three = MOON_MONSTER_TRAIT_EXTRA_DAMAGE_HIGH_DISPLAY;
+		e.prefix_value = MOON_MONSTER_TRAIT_EXTRA_DAMAGE_HIGH_BONUSPERCENT;
+		e.exp = rint(e.exp * MOON_MONSTER_BOUNTY_EXP_MULT_HIGH);
+		makeaura(e, MOON_MONSTER_TRAIT_AURA_TYPE_EXTRADAMAGE);
 		break;
 	case 22:
-		e.prefix_three = " of world erasing";
-		e.prefix = 7;
-		e.prefix_value = 300;
-		makeaura(e, 1);
+		e.prefix = MOON_MONSTER_TRAIT_EXTRA_DAMAGE;
+		e.prefix_three = MOON_MONSTER_TRAIT_EXTRA_DAMAGE_HUGE_DISPLAY;
+		e.prefix_value = MOON_MONSTER_TRAIT_EXTRA_DAMAGE_HUGE_BONUSPERCENT;
+		e.exp = rint(e.exp * MOON_MONSTER_BOUNTY_EXP_MULT_HUGE);
+		makeaura(e, MOON_MONSTER_TRAIT_AURA_TYPE_EXTRADAMAGE);
 		break;
 	case 23:
-		e.prefix_three = " of resistance";
-		e.prefix = 8;
-		e.prefix_value = 30;
+		e.prefix = MOON_MONSTER_TRAIT_RESISTANCE;
+		e.prefix_three = MOON_MONSTER_TRAIT_RESISTANCE_LOW_DISPLAY;
+		e.prefix_value = MOON_MONSTER_TRAIT_RESISTANCE_LOW_BONUSPERCENT;
+		e.exp = rint(e.exp * MOON_MONSTER_BOUNTY_EXP_MULT_LOW);
 		break;
 	case 24:
-		e.prefix_three = " in wood armor";
-		e.prefix = 8;
-		e.prefix_value = 40;
+		e.prefix = MOON_MONSTER_TRAIT_RESISTANCE;
+		e.prefix_three = MOON_MONSTER_TRAIT_RESISTANCE_NORMAL_DISPLAY;
+		e.prefix_value = MOON_MONSTER_TRAIT_RESISTANCE_NORMAL_BONUSPERCENT;
+		e.exp = rint(e.exp * MOON_MONSTER_BOUNTY_EXP_MULT_NORMAL);
 		break;
 	case 25:
-		e.prefix_three = " in bronze armor";
-		e.prefix = 8;
-		e.prefix_value = 60;
+		e.prefix = MOON_MONSTER_TRAIT_RESISTANCE;
+		e.prefix_three = MOON_MONSTER_TRAIT_RESISTANCE_HIGH_DISPLAY;
+		e.prefix_value = MOON_MONSTER_TRAIT_RESISTANCE_HIGH_BONUSPERCENT;
+		e.exp = rint(e.exp * MOON_MONSTER_BOUNTY_EXP_MULT_HIGH);
 		break;
 	case 26:
-		e.prefix_three = " of failure";
-		e.prefix = 9;
-		e.prefix_value = 30;
+		e.prefix = MOON_MONSTER_TRAIT_EXTRA_RECEIVEDAMAGE;
+		e.prefix_three = MOON_MONSTER_TRAIT_EXTRA_RECEIVEDAMAGE_LOW_DISPLAY;
+		e.prefix_value = MOON_MONSTER_TRAIT_EXTRA_RECEIVEDAMAGE_LOW_BONUSPERCENT;
 		break;
 	case 27:
-		e.prefix_three = " of receive";
-		e.prefix = 9;
-		e.prefix_value = 60;
+		e.prefix = MOON_MONSTER_TRAIT_EXTRA_RECEIVEDAMAGE;
+		e.prefix_three = MOON_MONSTER_TRAIT_EXTRA_RECEIVEDAMAGE_NORMAL_DISPLAY;
+		e.prefix_value = MOON_MONSTER_TRAIT_EXTRA_RECEIVEDAMAGE_NORMAL_BONUSPERCENT;
 		break;
 	case 28:
-		e.prefix_three = " of cry";
-		e.prefix = 9;
-		e.prefix_value = 90;
+		e.prefix = MOON_MONSTER_TRAIT_EXTRA_RECEIVEDAMAGE;
+		e.prefix_three = MOON_MONSTER_TRAIT_EXTRA_RECEIVEDAMAGE_HIGH_DISPLAY;
+		e.prefix_value = MOON_MONSTER_TRAIT_EXTRA_RECEIVEDAMAGE_HIGH_BONUSPERCENT;
+		e.exp = MOON_MONSTER_BOUNTY_EXP_BAREMINIMUM;
 		break;
 	}
 };

@@ -4116,30 +4116,32 @@ void(entity spawner, float player_level) moon_spawn_monster =
 	switch(monster_type)	// TODO: split/refactor spawn_X functions to handle only specific to X stuff there
 	{
 	case MOON_MONSTER_CODE_SOLDIER:
-		monster = spawn_soldier(spawner, clampd(0, player_level_adjusted - MOON_MONSTER_BASELEVEL_SOLDIER, 50) );
+		monster = spawn_soldier(spawner, clampd(0, player_level_adjusted - MOON_MONSTER_BASELEVEL_SOLDIER, MOON_CONST_MAXLVL) );
 		break;
 	case MOON_MONSTER_CODE_ENFORCER:
-		monster = spawn_enforcer(spawner, clampd(0, player_level_adjusted - MOON_MONSTER_BASELEVEL_ENFORCER, 50));
+		monster = spawn_enforcer(spawner, clampd(0, player_level_adjusted - MOON_MONSTER_BASELEVEL_ENFORCER, MOON_CONST_MAXLVL));
 		break;
 	case MOON_MONSTER_CODE_SPIDER:
-		monster = spawn_spider(spawner, clampd(0, player_level_adjusted - MOON_MONSTER_BASELEVEL_SPIDER, 50));
+		monster = spawn_spider(spawner, clampd(0, player_level_adjusted - MOON_MONSTER_BASELEVEL_SPIDER, MOON_CONST_MAXLVL));
 		break;
 	case MOON_MONSTER_CODE_OGRE:
-		monster = spawn_ogre(spawner, clampd(0, player_level_adjusted - MOON_MONSTER_BASELEVEL_OGRE, 50));
+		monster = spawn_ogre(spawner, clampd(0, player_level_adjusted - MOON_MONSTER_BASELEVEL_OGRE, MOON_CONST_MAXLVL));
 		break;
 	case MOON_MONSTER_CODE_SNAKE:
-		monster = spawn_snake(spawner, clampd(0, player_level_adjusted - MOON_MONSTER_BASELEVEL_SNAKE, 50));
+		monster = spawn_snake(spawner, clampd(0, player_level_adjusted - MOON_MONSTER_BASELEVEL_SNAKE, MOON_CONST_MAXLVL));
 		break;
 	case MOON_MONSTER_CODE_MAGE:
-		monster = spawn_mage(spawner, clampd(0, player_level_adjusted - MOON_MONSTER_BASELEVEL_MAGE, 50));
+		monster = spawn_mage(spawner, clampd(0, player_level_adjusted - MOON_MONSTER_BASELEVEL_MAGE, MOON_CONST_MAXLVL));
 		break;
 	case MOON_MONSTER_CODE_SHALRATH:
-		monster = spawn_shalrath(spawner, clampd(0, player_level_adjusted - MOON_MONSTER_BASELEVEL_SHALRATH, 50));
+		monster = spawn_shalrath(spawner, clampd(0, player_level_adjusted - MOON_MONSTER_BASELEVEL_SHALRATH, MOON_CONST_MAXLVL));
 		break;
 	default:
 		dprint("ERROR IN moon_spawn_monster(...): monster_type spawns null monster\n");
 		return;
 	}
+	monster.flags = (self.flags | FL_MONSTER); // should be in // moon_spawn_monster_entity();
+	monster.classname = MOON_MONSTER_CLASSNAME; // should be in // moon_spawn_monster_entity();
 	moon_debug_println_object_name(monster); // Debug only
 };
 

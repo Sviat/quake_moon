@@ -2031,7 +2031,12 @@ entity() moon_market_place_ammo =
 	return e;
 };
 
-void() moon_market_place_elixir =
+float(float price) moon_get_inflation_adjusted_cost =
+{
+	return price + percent(price, up_gold_value);
+};
+
+entity() moon_market_place_elixir =
 {
 	local entity e;
 	local float code;
@@ -2042,7 +2047,7 @@ void() moon_market_place_elixir =
 	e.solid = SOLID_NOT;
 	e.classname = MOON_TRADE_MARKET_SPOT_CLASSNAME;
 	e.netname = MOON_ELIXIR_MARKET_NETNAME;
-	e.skin = H_MEGA;
+	e.skin = 2; // TODO: extract
 	setmodel(e, "progs/potion.mdl");
 	e.noise1 = "moon/items/potion.wav";
 	e.owner = self;
@@ -2052,15 +2057,22 @@ void() moon_market_place_elixir =
 		case MOON_ELIXIR_STR_CODE:
 			e.targetname = MOON_ELIXIR_STR_NAME;
 			e.healtype = MOON_ELIXIR_STR_CODE;
-			e.cost = 3000; // TODO: lower base price but multply by 100%+GoldBonus to take inflation into account
+			e.cost = moon_get_inflation_adjusted_cost(MOON_ELIXIR_STR_COST_BASE);
 			break;
 		case MOON_ELIXIR_VIT_CODE:
 			e.targetname = MOON_ELIXIR_VIT_NAME;
 			e.healtype = MOON_ELIXIR_VIT_CODE;
-			e.cost = 2000; // TODO: lower base price but multply by 100%+GoldBonus to take inflation into account
+			e.cost = moon_get_inflation_adjusted_cost(MOON_ELIXIR_VIT_COST_BASE);
 			break;
+		case MOON_ELIXIR_MAG_CODE: // TODO: implement
+		case MOON_ELIXIR_INT_CODE: // TODO: implement
+		default:
+			break; // noop
 	}
+	e.count = 0;	// unused
 	sound(e, CHAN_ITEM, "items/itembk2.wav", 1, ATTN_NORM);
+
+	return e;
 };
 
 void(entity e) moon_calculate_magic_cost =

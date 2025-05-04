@@ -490,6 +490,7 @@ void(string gibname, float dm) ThrowGib =
 
 void(string gibname, float dm) ThrowHead =
 {
+	self.skin = 0; // Fixes R_ChainEntity: skinnum out of range (3) (model=progs/h_player.mdl)
 	setmodel (self, gibname);
 	self.frame = 0;
 	self.nextthink = -1;

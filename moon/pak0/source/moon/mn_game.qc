@@ -150,16 +150,16 @@ void() moon_eprint_monsters_alive =
 	local entity e;
 
 	dprint("== Alive monsters ==\n");
-	e = findradius(self.origin, 1024);
+	e = findradius(self.origin, 2025);
 	while ( (e != world) )
 	{
-		if ( (e.flags & FL_MONSTER) )
+		if ( (e.deadflag == DEAD_NO) )
 		{
 			eprint(e);
 		}
 		e = e.chain;
 	}
-	dprint("== end of list ==\n");
+	dprint("==    end of list ==\n");
 };
 
 void(float impulse_code) moon_handle_impulse_ui =

@@ -104,6 +104,7 @@ void() moon_precache_items =
 	precache_sound("items/r_item2.wav");
 	precache_sound("items/health1.wav");
 	precache_sound("items/armor1.wav");
+	precache_sound("misc/medkey.wav");
 	precache_sound("misc/null.wav"); // Null to clear channel
 	precache_sound("moon/ambient/quake.wav");
 	precache_sound("moon/items/ring.wav");

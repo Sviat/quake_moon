@@ -5447,29 +5447,7 @@ void() moon_spawn_guard =
 
 	moon_spawn_guard_items(newbot);
 	bprint("== a wandering guardian joins your forces ==\n"); // refactor to more generic decribe functions
-	bprint("HP: {}. ", floor_ftos(newbot.max_health));
-	if ( newbot.items & IT_ARMOR3 )
-	{
-		bprint(MOON_ARMOR_RED_DISPLAYNAME);
-	} else
-	if ( newbot.items & IT_ARMOR2 )
-	{
-		bprint(MOON_ARMOR_YELLOW_DISPLAYNAME);
-	} else
-	if ( newbot.items & IT_ARMOR1 )
-	{
-		bprint(MOON_ARMOR_GREEN_DISPLAYNAME);
-	}
-	bprint("({}).\n", floor_ftos(newbot.armorvalue));
-
-	bprint("Weapons: Shot");
-	if ( newbot.items & IT_SUPER_SHOTGUN ) 		{ bprint(", Supershot"); }
-	if ( newbot.items & IT_NAILGUN ) 			{ bprint(", Nail"); }
-	if ( newbot.items & IT_SUPER_NAILGUN ) 		{ bprint(", Supernail"); }
-	if ( newbot.items & IT_GRENADE_LAUNCHER ) 	{ bprint(", GL"); }
-	if ( newbot.items & IT_ROCKET_LAUNCHER ) 	{ bprint(", RL"); }
-	if ( newbot.items & IT_LIGHTNING ) 			{ bprint(", Shaft"); }
-	bprint(".\n");
+	moon_bprint_describe_player(newbot);
 
 	newbot.th_stand = bot_ai_stand;
 	newbot.th_run = bot_run1;

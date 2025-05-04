@@ -184,6 +184,38 @@ void(entity target) moon_print_mentat_speed =
 	sprint(target, " (improve weapon attack or projectile speed)");
 };
 
+void(entity subject) moon_bprint_describe_player =
+{
+	bprint("{0}{1}. Level [{2}]. HP: {3}", subject.prefix_one, subject.netname, floor_ftos(subject.lvl), floor_ftos(subject.health));
+	if ( subject.health != subject.max_health )
+	{
+		bprint("/{0}", floor_ftos(subject.max_health));
+	}
+	bprint(" in ");
+	if ( subject.items & IT_ARMOR3 )
+	{
+		bprint(MOON_ARMOR_RED_DISPLAYNAME);
+	} else
+	if ( subject.items & IT_ARMOR2 )
+	{
+		bprint(MOON_ARMOR_YELLOW_DISPLAYNAME);
+	} else
+	if ( subject.items & IT_ARMOR1 )
+	{
+		bprint(MOON_ARMOR_GREEN_DISPLAYNAME);
+	}
+	bprint("({0}).\n", floor_ftos(subject.armorvalue));
+
+	bprint("Weapons: {0}", MOON_WEAPON_SHOTGUN_SHORTNAME);
+	if ( subject.items & IT_SUPER_SHOTGUN ) 	{ bprint(", {0}", MOON_WEAPON_SUPERSHOTGUN_SHORTNAME); }
+	if ( subject.items & IT_NAILGUN ) 			{ bprint(", {0}", MOON_WEAPON_NAILGUN_SHORTNAME); }
+	if ( subject.items & IT_SUPER_NAILGUN ) 	{ bprint(", {0}", MOON_WEAPON_SUPERNAILGUN_SHORTNAME); }
+	if ( subject.items & IT_GRENADE_LAUNCHER ) 	{ bprint(", {0}", MOON_WEAPON_GRENADELAUNCHER_SHORTNAME); }
+	if ( subject.items & IT_ROCKET_LAUNCHER ) 	{ bprint(", {0}", MOON_WEAPON_ROCKETLAUNCHER_SHORTNAME); }
+	if ( subject.items & IT_LIGHTNING ) 		{ bprint(", {0}", MOON_WEAPON_LIGHTNING_SHORTNAME); }
+	bprint(".\n");
+};
+
 void(entity target, string prefix, string name, string postfix) moon_print_target_item_name =
 {
 	if (prefix != "")
@@ -212,7 +244,7 @@ string(float rarity_level) moon_get_item_rarity_display =
 		break;
 	}
 
-	return string_null;
+	return "";
 };
 
 void(entity target, float rarity_level) moon_print_target_item_rarity = // duplicates moon_get_item_rarity_display, but thats more eco-friendly

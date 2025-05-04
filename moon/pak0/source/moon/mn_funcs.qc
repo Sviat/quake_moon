@@ -8,13 +8,9 @@ void() player_run;
 // SORT OUT
 void() moon_make_chat_noise;
 void(entity who) moon_spawn_drop_gold;
-float(entity target, float wpn) moon_select_target_weapon;
-float(entity target, float include_dangerous = false) moon_swap_target_to_best_weapon;
-// TODO: add functions to use or gain ammo
-// TODO: moon_target_consume_ammo_from() move all ammo from entity A to entity B
+
 float(entity target) moon_do_target_natural_health_regen_tick;
 float(entity target) moon_do_target_magical_health_regen_tick;
-void(entity target, float armor_code, float armor_durability = -1) moon_init_target_as_armor;
 float(entity target, float code) moon_get_target_total_bonus_by_code;
 void() moon_set_map_moon4;
 void() moon_walkman_init_think; // used in Map init
@@ -29,6 +25,14 @@ float(entity subject, entity object) moon_can_trace_object;
 entity(vector source, vector destination, entity attacker) moon_trace_lightning_bolt_shambler;
 entity(vector source, vector destination, entity attacker, entity inflictor, float piercing_strength = 0) moon_trace_lightning_bolt_shaft;
 void(entity attacker, entity target, float max_distance, float jump_count = 0) moon_trace_lightning_bolt_chain;
+
+// moon/mn_weapons
+void(entity target) moon_limit_target_ammo;
+void(entity target, entity object) moon_target_consume_ammo_from;
+float(entity target, float include_dangerous = false) moon_get_target_best_weapon;
+float(entity target, float wpn) moon_select_target_weapon;
+float(entity target, float include_dangerous = false) moon_swap_target_to_best_weapon;
+// TODO: add functions to use or gain ammo
 
 // Bots (Guards and Monsters) logic
 void(entity who) moon_particle_heal;
@@ -48,15 +52,15 @@ entity(entity e, float enc) spawn_snake;
 entity(entity e, float enc) spawn_mage;
 entity(entity e, float enc) spawn_shalrath;
 
-// CUI
+// moon/mn_cui
 void() moon_print_cmd_help;
 void() moon_print_character_status;
 void() moon_print_skills;
 void() moon_print_inventory;
 void() moon_identify_item;
 void() moon_buy_item;
+void(entity subject) moon_bprint_describe_player;
 string(float rarity_level) moon_get_item_rarity_display;
-
 void(entity target, string prefix, string name, string postfix) moon_print_target_item_name;
 void(entity target, float rarity_level) moon_print_target_item_rarity;
 

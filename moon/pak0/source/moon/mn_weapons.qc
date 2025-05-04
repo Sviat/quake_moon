@@ -2,13 +2,42 @@
 /// Here go all common functions related to weapon pick, switch, damage, ammo count etc
 
 
-void(entity target) moon_reset_target_anim = // no idea
+void(entity target) moon_reset_target_anim = // to reliably reset state after weapon change
 {
 	entity temp;
 	temp = self;
 	self = target;
 	player_run(); // get out of any weapon firing states
 	self = temp;
+};
+
+void(entity target) moon_limit_target_ammo =
+{
+	local float max_shells;
+	local float max_nails;
+	local float max_cells;
+	local float max_rockets;
+
+	max_shells = clampd( MOON_AMMO_MAX_SHELL, (MOON_AMMO_MAX_SHELL + (target.up_bullet * MOON_ITEM_SHELLUP_SIDEEFFECT_BONUS)), CONST_QC_DISPLAY_MAX);
+	max_nails = clampd( MOON_AMMO_MAX_NAIL, (MOON_AMMO_MAX_NAIL + (target.up_nail * MOON_ITEM_NAILUP_SIDEEFFECT_BONUS)), CONST_QC_DISPLAY_MAX);
+	max_rockets = clampd( MOON_AMMO_MAX_ROCKET, (MOON_AMMO_MAX_ROCKET + (target.up_rocket * MOON_ITEM_ROCKUP_SIDEEFFECT_BONUS)), CONST_QC_DISPLAY_MAX);
+	max_cells = clampd( MOON_AMMO_MAX_CELL, (MOON_AMMO_MAX_CELL + (target.up_cell * MOON_ITEM_CELLUP_SIDEEFFECT_BONUS)), CONST_QC_DISPLAY_MAX);
+
+	target.ammo_shells = clamp(target.ammo_shells, max_shells);
+	target.ammo_nails = clamp(target.ammo_nails, max_nails);
+	target.ammo_rockets = clamp(target.ammo_rockets, max_rockets);
+	target.ammo_cells = clamp(target.ammo_cells, max_cells);
+
+	target.currentammo = clamp(target.currentammo, CONST_QC_DISPLAY_MAX);
+};
+
+void(entity target, entity object) moon_target_consume_ammo_from =
+{
+	target.ammo_shells = (target.ammo_shells + object.ammo_shells);
+	target.ammo_nails = (target.ammo_nails + object.ammo_nails);
+	target.ammo_rockets = (target.ammo_rockets + object.ammo_rockets);
+	target.ammo_cells = (target.ammo_cells + object.ammo_cells);
+	moon_limit_target_ammo(target);
 };
 
 void(entity target) moon_set_target_currentammo = // variant of W_SetCurrentAmmo

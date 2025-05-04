@@ -1346,7 +1346,7 @@ void() DieUnhead =
 	e.velocity_x = (100 * crandom());
 	e.velocity_y = (100 * crandom());
 	e.velocity_z = WF_NORMAL;
-	if ((self.weapon == IT_AXE))
+	if ( self.weapon == IT_AXE )
 	{
 		e.think = playe_die_ax1;
 	} else {
@@ -1355,8 +1355,8 @@ void() DieUnhead =
 	e.nextthink = time;
 	ThrowHead("progs/h_player.mdl", self.health);
 	self.deadflag = DEAD_DEAD;
-	sound(self, CHAN_VOICE, "player/gib.wav", CHSCAM_ON, ATTN_NONE);
-	if ((self.classname == MOON_GUARD_CLASSNAME))
+	sound(self, CHAN_VOICE, "player/gib.wav", 1, ATTN_NONE);
+	if ( self.classname == MOON_GUARD_CLASSNAME )
 	{
 		self.think = SUB_Remove;
 		self.nextthink = time + moon_get_despawn_delay();

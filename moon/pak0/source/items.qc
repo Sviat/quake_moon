@@ -5366,7 +5366,7 @@ void(entity who) moon_spawn_guard_items = // Works - dont touch
 {
 	local float lv;
 
-	lv = moon_get_max_player_level();
+	lv = who.lvl;
 	who.items = ((who.items + IT_AXE) + IT_SHOTGUN);
 	if ((lv <= 4))
 	{
@@ -5493,6 +5493,7 @@ void() moon_spawn_guard =
 	newbot.movetype = MOVETYPE_STEP;
 	newbot.angles = self.angles;
 	newbot.classname = MOON_GUARD_CLASSNAME;
+	newbot.lvl = moon_get_max_player_level();
 	newbot.master = self;
 	newbot.action = 0;
 	newbot.takedamage = DAMAGE_AIM;

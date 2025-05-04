@@ -3034,8 +3034,12 @@ void() moon_buy_item_market =
 	}
 	if ( selected == world ) { return; }
 
-	if ( moon_pay_target_gold(self, selected.cost) == FALSE ) { return; }
-	flash_self();
+	if ( self.gold < selected.cost )
+	{
+		sprint(self, "not enough gold\n");
+		sound(self, CHAN_ITEM, "misc/medkey.wav", 1, ATTN_NORM);
+		return;
+	}
 
 	switch (selected.netname)
 	{
@@ -3123,6 +3127,9 @@ void() moon_buy_item_market =
 			moon_target_wear_magic_item(self, selected);
 			break;
 	}
+
+	if ( moon_pay_target_gold(self, selected.cost) == FALSE ) { return; }
+	flash_self();
 
 	selected.targetname = string_null;
 	selected.owner.attack_finished = 0;
@@ -3713,6 +3720,7 @@ void() moon_buy_item =
 	if ( self.gold < selected.cost )
 	{
 		sprint(self, "not enough gold\n");
+		sound(self, CHAN_ITEM, "misc/medkey.wav", 1, ATTN_NORM);
 		return;
 	}
 

@@ -1844,6 +1844,47 @@ void(entity target, float weapon_code, float ammo_count = -1) moon_init_target_a
 	target.count = target.currentammo; // duplicate for easier crosshair identification
 };
 
+void(entity target, float medkit_code, float medkit_durability = -1) moon_init_target_as_medkit =
+{
+	target.health = medkit_durability;
+	target.items = IT_SUPERHEALTH;
+
+	switch(medkit_code)
+	{
+	case MOON_MEDKIT_SMALL_TYPE:
+		setmodel(target, "maps/b_bh10.bsp");
+		target.noise = "items/r_item1.wav";
+		target.healtype = MOON_MEDKIT_SMALL_TYPE;
+		target.max_health = MOON_MEDKIT_SMALL_VALUE;
+		target.cost = MOON_MEDKIT_SMALL_COST;
+		target.targetname = MOON_MEDKIT_SMALL_DISPLAYNAME;
+		break;
+	case MOON_MEDKIT_NORMAL_TYPE:
+		setmodel(target, "maps/b_bh25.bsp");
+		target.noise = "items/health1.wav";
+		target.healtype = MOON_MEDKIT_NORMAL_TYPE;
+		target.max_health = MOON_MEDKIT_NORMAL_VALUE;
+		target.cost = MOON_MEDKIT_NORMAL_COST;
+		target.targetname = MOON_MEDKIT_NORMAL_DISPLAYNAME;
+		break;
+	case MOON_MEDKIT_MEGA_TYPE:
+		setmodel(target, "maps/b_bh100.bsp");
+		target.noise = "items/r_item2.wav";
+		target.healtype = MOON_MEDKIT_MEGA_TYPE;
+		target.max_health = MOON_MEDKIT_MEGA_VALUE;
+		target.cost = MOON_MEDKIT_MEGA_COST;
+		target.targetname = MOON_MEDKIT_MEGA_DISPLAYNAME;
+		break;
+	default:
+		target.max_health = 1; // Division by zero guard
+		dprint("Unknown medkit code {0}\n", medkit_code);
+	}
+
+	// Adjust cost for spoiled medkits
+	target.healamount = ( (target.health > 0) ? target.health : target.max_health);
+	target.count = target.healamount; // duplicate for easier crosshair identification
+	target.cost = (target.cost * (target.healamount / target.max_health));
+};
 
 // This should be used for both loot drop, shop and market spots
 void(entity target, float ammo_code, float ammo_count = -1) moon_init_target_as_ammobox =

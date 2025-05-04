@@ -1751,49 +1751,161 @@ void(entity target, float armor_code, float armor_durability = -1) moon_init_tar
 	target.cost = (target.cost * (target.armorvalue / target.max_health));
 };
 
-		}
-		else
+void(entity target, float weapon_code, float ammo_count = -1) moon_init_target_as_weapon =
+{
+	switch(weapon_code)
+	{
+	case MOON_WEAPON_AXE_CODE: // never happens
+	case MOON_WEAPON_SHOTGUN_CODE: // never happens
+		target.currentammo = 0;
+		break; // noop
+	case MOON_WEAPON_SUPERSHOTGUN_CODE:
+		setmodel(target, MOON_WEAPON_SUPERSHOTGUN_MODEL_TPV);
+		if ( ammo_count > 0 )
 		{
-			if ((r < MON_BACKTIME))
-			{
-				setmodel(e, "progs/g_nail2.mdl");
-				e.ammo_nails = rint((random() * 30));
-				e.cost = (100 + e.ammo_nails);
-				e.targetname = "Inferioity Super Nailgun";
-				e.items = IT_SUPER_NAILGUN;
-			}
-			else
-			{
-				if ((r < 0.66))
-				{
-					setmodel(e, "progs/g_rock.mdl");
-					e.ammo_rockets = rint((random() * LOGIC_PATROL));
-					e.cost = (150 + (e.ammo_rockets * LOGIC_FINDDEFEND));
-					e.targetname = "Inferioity Grenade Launcher";
-					e.items = IT_GRENADE_LAUNCHER;
-				}
-				else
-				{
-					if ((r < 0.82))
-					{
-						setmodel(e, "progs/g_rock2.mdl");
-						e.ammo_rockets = rint((random() * LOGIC_PATROL));
-						e.cost = (250 + (e.ammo_rockets * LOGIC_FINDDEFEND));
-						e.targetname = "Inferioity Rocket Launcher";
-						e.items = IT_ROCKET_LAUNCHER;
-					}
-					else
-					{
-						setmodel(e, "progs/g_light.mdl");
-						e.ammo_cells = rint((random() * 12));
-						e.cost = (400 + (e.ammo_cells * H_MEGA));
-						e.targetname = "Inferioity Thunderbolt";
-						e.items = IT_LIGHTNING;
-					}
-				}
-			}
+			target.ammo_shells = ammo_count;
+		} else {
+			target.ammo_shells = MOON_WEAPON_SUPERSHOTGUN_AMMO_SHOP;
 		}
+		target.currentammo = target.ammo_shells;
+		target.cost = MOON_WEAPON_SUPERSHOTGUN_COST_SHOP;
+		target.targetname = MOON_WEAPON_SUPERSHOTGUN_DISPLAYNAME;
+		target.items = IT_SUPER_SHOTGUN;
+		break;
+	case MOON_WEAPON_NAILGUN_CODE:
+		setmodel(target, MOON_WEAPON_NAILGUN_MODEL_TPV);
+		if ( ammo_count > 0 )
+		{
+			target.ammo_nails = ammo_count;
+		} else {
+			target.ammo_nails = MOON_WEAPON_NAILGUN_AMMO_SHOP;
+		}
+		target.currentammo = target.ammo_nails;
+		target.cost = MOON_WEAPON_NAILGUN_COST_SHOP;
+		target.targetname = MOON_WEAPON_NAILGUN_DISPLAYNAME;
+		target.items = IT_NAILGUN;
+		break;
+	case MOON_WEAPON_SUPERNAILGUN_CODE:
+		setmodel(target, MOON_WEAPON_SUPERNAILGUN_MODEL_TPV);
+		if ( ammo_count > 0 )
+		{
+			target.ammo_nails = ammo_count;
+		} else {
+			target.ammo_nails = MOON_WEAPON_SUPERNAILGUN_AMMO_SHOP;
+		}
+		target.currentammo = target.ammo_nails;
+		target.cost = MOON_WEAPON_SUPERNAILGUN_COST_SHOP;
+		target.targetname = MOON_WEAPON_SUPERNAILGUN_DISPLAYNAME;
+		target.items = IT_SUPER_NAILGUN;
+		break;
+	case MOON_WEAPON_GRENADELAUNCHER_CODE:
+		setmodel(target, MOON_WEAPON_GRENADELAUNCHER_MODEL_TPV);
+		if ( ammo_count > 0 )
+		{
+			target.ammo_rockets = ammo_count;
+		} else {
+			target.ammo_rockets = MOON_WEAPON_GRENADELAUNCHER_AMMO_SHOP;
+		}
+		target.currentammo = target.ammo_rockets;
+		target.cost = MOON_WEAPON_GRENADELAUNCHER_COST_SHOP;
+		target.targetname = MOON_WEAPON_GRENADELAUNCHER_DISPLAYNAME;
+		target.items = IT_GRENADE_LAUNCHER;
+		break;
+	case MOON_WEAPON_ROCKETLAUNCHER_CODE:
+		setmodel(target, MOON_WEAPON_ROCKETLAUNCHER_MODEL_TPV);
+		if ( ammo_count > 0 )
+		{
+			target.ammo_rockets = ammo_count;
+		} else {
+			target.ammo_rockets = MOON_WEAPON_ROCKETLAUNCHER_AMMO_SHOP;
+		}
+		target.currentammo = target.ammo_rockets;
+		target.cost = MOON_WEAPON_ROCKETLAUNCHER_COST_SHOP;
+		target.targetname = MOON_WEAPON_ROCKETLAUNCHER_DISPLAYNAME;
+		target.items = IT_ROCKET_LAUNCHER;
+		break;
+	case MOON_WEAPON_LIGHTNING_CODE:
+		setmodel(target, MOON_WEAPON_LIGHTNING_MODEL_TPV);
+		if ( ammo_count > 0 )
+		{
+			target.ammo_cells = ammo_count;
+		} else {
+			target.ammo_cells = MOON_WEAPON_LIGHTNING_AMMO_SHOP;
+		}
+		target.currentammo = target.ammo_cells;
+		target.cost = MOON_WEAPON_LIGHTNING_COST_SHOP;
+		target.targetname = MOON_WEAPON_LIGHTNING_DISPLAYNAME;
+		target.items = IT_LIGHTNING;
+		break;
+	default:
+		dprint("Unknown weapon code {0}\n", weapon_code);
 	}
+
+	target.count = target.currentammo; // duplicate for easier crosshair identification
+};
+
+
+// This should be used for both loot drop, shop and market spots
+void(entity target, float ammo_code, float ammo_count = -1) moon_init_target_as_ammobox =
+{
+	target.items = ammo_code;
+	target.cnt = MOON_ITEM_TRADE_SIGNOF_AMMO; // sadly still used in some Shop&Market code
+
+	switch(ammo_code)
+	{
+	case MOON_AMMO_SHELLS_CODE: //==IT_SHELLS:
+		setmodel(target, MOON_AMMO_SHELLS_MODEL);
+		if ( ammo_count > 0 )
+		{
+			target.ammo_shells = ammo_count;
+		} else {
+			target.ammo_shells = ceil(MOON_AMMO_SHELLS_BASE + (random() * MOON_AMMO_SHELLS_RANDOM));
+		}
+		target.currentammo = target.ammo_shells;
+		target.cost = ceil(target.ammo_shells * MOON_AMMO_SHELLS_COSTOFONE);
+		target.targetname = MOON_AMMO_SHELLS_DISPLAYNAME;
+		break;
+	case MOON_AMMO_NAILS_CODE: //==IT_NAILS:
+		setmodel(target, MOON_AMMO_NAILS_MODEL);
+		if ( ammo_count > 0 )
+		{
+			target.ammo_nails = ammo_count;
+		} else {
+			target.ammo_nails = ceil(MOON_AMMO_NAILS_BASE + (random() * MOON_AMMO_NAILS_RANDOM));
+		}
+		target.currentammo = target.ammo_nails;
+		target.cost = ceil(target.ammo_nails * MOON_AMMO_NAILS_COSTOFONE);
+		target.targetname = MOON_AMMO_NAILS_DISPLAYNAME;
+		break;
+	case MOON_AMMO_ROCKETS_CODE: //==IT_ROCKETS:
+		setmodel(target, MOON_AMMO_ROCKETS_MODEL);
+		if ( ammo_count > 0 )
+		{
+			target.ammo_rockets = ammo_count;
+		} else {
+			target.ammo_rockets = ceil(MOON_AMMO_ROCKETS_BASE + (random() * MOON_AMMO_ROCKETS_RANDOM));
+		}
+		target.currentammo = target.ammo_rockets;
+		target.cost = ceil(target.ammo_rockets * MOON_AMMO_ROCKETS_COSTOFONE);
+		target.targetname = MOON_AMMO_ROCKETS_DISPLAYNAME;
+		break;
+	case MOON_AMMO_CELLS_CODE: //==IT_CELLS:
+		setmodel(target, MOON_AMMO_CELLS_MODEL);
+		if ( ammo_count > 0 )
+		{
+			target.ammo_cells = ammo_count;
+		} else {
+			target.ammo_cells = ceil(MOON_AMMO_CELLS_BASE + (random() * MOON_AMMO_CELLS_RANDOM));
+		}
+		target.currentammo = target.ammo_cells;
+		target.cost = ceil(target.ammo_cells * MOON_AMMO_CELLS_COSTOFONE);
+		target.targetname = MOON_AMMO_CELLS_DISPLAYNAME;
+		break;
+	default:
+		dprint("Unknown ammunition code {0}\n", ammo_code);
+	}
+
+	target.count = target.currentammo; // duplicate for easier crosshair identification
 };
 
 entity() moon_market_place_armor =
@@ -1850,7 +1962,7 @@ float(float effect_code, float effect_value) moon_calculate_effect_cost =
 	}
 };
 
-void() moon_market_place_ammo =
+entity() moon_market_place_ammo =
 {
 	local entity e;
 
@@ -1868,18 +1980,14 @@ void() moon_market_place_ammo =
 
 	if ((random() < MOON_AMMO_MARKET_ROCKET_VS_CELL_RATIO))
 	{
-		setmodel(e, MOON_AMMO_ROCKETS_MODEL);
-		e.ammo_rockets = ceil( MOON_AMMO_ROCKETS_MARKET_MIN + (random() * MOON_AMMO_ROCKETS_MARKET_RANDOM) );
-		e.currentammo = e.ammo_rockets;
+		moon_init_target_as_ammobox(e, MOON_AMMO_ROCKETS_CODE, ceil( MOON_AMMO_ROCKETS_MARKET_MIN + (random() * MOON_AMMO_ROCKETS_MARKET_RANDOM) ));
 		e.cost = ceil(e.currentammo * MOON_AMMO_ROCKETS_MARKET_COSTOFONE);
-		e.targetname = MOON_AMMO_ROCKETS_DISPLAYNAME;
 	} else {
-		setmodel(e, MOON_AMMO_CELLS_MODEL);
-		e.ammo_cells = ceil( MOON_AMMO_CELLS_MARKET_MIN + (random() * MOON_AMMO_CELLS_MARKET_RANDOM) );
-		e.currentammo = e.ammo_cells;
+		moon_init_target_as_ammobox(e, MOON_AMMO_CELLS_CODE, ceil( MOON_AMMO_CELLS_MARKET_MIN + (random() * MOON_AMMO_CELLS_MARKET_RANDOM) ));
 		e.cost = ceil(e.currentammo * MOON_AMMO_CELLS_MARKET_COSTOFONE);
-		e.targetname = MOON_AMMO_CELLS_DISPLAYNAME;
 	}
+
+	return e;
 };
 
 void() moon_market_place_elixir =
@@ -2443,7 +2551,59 @@ entity() moon_market_place_magic_item =
 	return e;
 };
 
-void() moon_market_place_medkit_mega =
+entity() moon_market_place_weapon =
+{
+	local entity e;
+	local float r;
+
+	e = spawn();
+	makevectors(self.angles);
+	setorigin(e, ((self.origin + (v_forward * 47)) - '0 0 24'));
+	e.solid = SOLID_NOT;
+	e.classname = MOON_TRADE_MARKET_SPOT_CLASSNAME;
+	e.netname = MOON_WEAPON_MARKET_NETNAME;
+	e.noise1 = "weapons/pkup.wav";
+	e.owner = self;
+	sound(e, CHAN_ITEM, "items/itembk2.wav", 1, ATTN_NORM);
+
+	r = random();
+	if ( r < 0.16 )
+	{
+		moon_init_target_as_weapon(e, MOON_WEAPON_SUPERSHOTGUN_CODE, random_int(1, MOON_WEAPON_SUPERSHOTGUN_AMMO_MARKET));
+		e.cost = rint( MOON_WEAPON_SUPERSHOTGUN_COST_MARKET + (e.currentammo * MOON_AMMO_SHELLS_COSTOFONE) );
+		e.targetname = MOON_WEAPON_SUPERSHOTGUN_MARKET_DISPLAYNAME;
+	} else
+	if ( r < 0.33 )
+	{
+		moon_init_target_as_weapon(e, MOON_WEAPON_NAILGUN_CODE, random_int(1, MOON_WEAPON_NAILGUN_AMMO_MARKET));
+		e.cost = rint( MOON_WEAPON_NAILGUN_COST_MARKET + (e.currentammo * MOON_AMMO_NAILS_COSTOFONE) );
+		e.targetname = MOON_WEAPON_NAILGUN_MARKET_DISPLAYNAME;
+	} else
+	if ( r < 0.5 )
+	{
+		moon_init_target_as_weapon(e, MOON_WEAPON_SUPERNAILGUN_CODE, random_int(1, MOON_WEAPON_SUPERNAILGUN_AMMO_MARKET));
+		e.cost = rint( MOON_WEAPON_SUPERNAILGUN_COST_MARKET + (e.currentammo * MOON_AMMO_NAILS_COSTOFONE) );
+		e.targetname = MOON_WEAPON_SUPERNAILGUN_MARKET_DISPLAYNAME;
+	} else
+	if ( r < 0.66 )
+	{
+		moon_init_target_as_weapon(e, MOON_WEAPON_GRENADELAUNCHER_CODE, random_int(1, MOON_WEAPON_GRENADELAUNCHER_AMMO_MARKET));
+		e.cost = rint( MOON_WEAPON_GRENADELAUNCHER_COST_MARKET + (e.currentammo * MOON_AMMO_ROCKETS_COSTOFONE) );
+		e.targetname = MOON_WEAPON_GRENADELAUNCHER_MARKET_DISPLAYNAME;
+	} else
+	if ( r < 0.82 )
+	{
+		moon_init_target_as_weapon(e, MOON_WEAPON_ROCKETLAUNCHER_CODE, random_int(1, MOON_WEAPON_ROCKETLAUNCHER_AMMO_MARKET));
+		e.cost = rint( MOON_WEAPON_ROCKETLAUNCHER_COST_MARKET + (e.currentammo * MOON_AMMO_ROCKETS_COSTOFONE) );
+		e.targetname = MOON_WEAPON_ROCKETLAUNCHER_MARKET_DISPLAYNAME;
+	} else {
+		moon_init_target_as_weapon(e, MOON_WEAPON_LIGHTNING_CODE, random_int(1, MOON_WEAPON_LIGHTNING_AMMO_MARKET));
+		e.cost = rint( MOON_WEAPON_LIGHTNING_COST_MARKET + (e.currentammo * MOON_AMMO_CELLS_COSTOFONE) );
+		e.targetname = MOON_WEAPON_LIGHTNING_MARKET_DISPLAYNAME;
+	}
+
+	return e;
+};
 {
 	local entity e;
 
@@ -2478,7 +2638,7 @@ void() PlaceGoody =
 	} else
 	if ( r < 0.37 )
 	{
-		PlaceWeapon();
+		moon_market_place_weapon();
 	} else
 	if ( r < 0.52 )
 	{
@@ -3335,88 +3495,6 @@ void(entity who) find_creature =
 	}
 };
 
-void(entity target, float armor_code, float armor_durability = -1) moon_init_target_as_armor =
-{
-	setmodel(target, "progs/armor.mdl");
-	target.health = armor_durability;
-
-	switch(armor_code)
-	{
-	case MOON_ARMOR_GREEN_CODE:
-		target.items = IT_ARMOR1;
-		target.skin = MOON_ARMOR_GREEN_SKIN;
-		target.max_health = MOON_ARMOR_GREEN_DURABILITY;
-		target.armortype = MOON_ARMOR_GREEN_RESISTANCE;
-		target.cost = MOON_ARMOR_GREEN_SHOP_COST;
-		target.targetname = MOON_ARMOR_GREEN_DISPLAYNAME;
-		break;
-	case MOON_ARMOR_YELLOW_CODE:
-		target.items = IT_ARMOR2;
-		target.skin = MOON_ARMOR_YELLOW_SKIN;
-		target.max_health = MOON_ARMOR_YELLOW_DURABILITY;
-		target.armortype = MOON_ARMOR_YELLOW_RESISTANCE;
-		target.cost = MOON_ARMOR_YELLOW_SHOP_COST;
-		target.targetname = MOON_ARMOR_YELLOW_DISPLAYNAME;
-		break;
-	case MOON_ARMOR_RED_CODE:
-		target.items = IT_ARMOR3;
-		target.skin = MOON_ARMOR_RED_SKIN;
-		target.max_health = MOON_ARMOR_RED_DURABILITY;
-		target.armortype = MOON_ARMOR_RED_RESISTANCE;
-		target.cost = MOON_ARMOR_RED_SHOP_COST;
-		target.targetname = MOON_ARMOR_RED_DISPLAYNAME;
-		break;
-	default:
-		target.max_health = 1; // Division by zero guard
-		dprint("Unknown armor code {}\n", armor_code);
-	}
-
-	// Adjust cost for damaged Armors
-	target.armorvalue = ( (target.health > 0) ? target.health : target.max_health);
-	target.cost = (target.cost * (target.armorvalue / target.max_health));
-};
-
-void(entity target, float medkit_code, float medkit_durability = -1) moon_init_target_as_medkit =
-{
-	target.health = medkit_durability;
-	target.items = IT_SUPERHEALTH;
-
-	switch(medkit_code)
-	{
-	case MOON_MEDKIT_SMALL_TYPE:
-		setmodel(target, "maps/b_bh10.bsp");
-		target.noise = "items/r_item1.wav";
-		target.healtype = MOON_MEDKIT_SMALL_TYPE;
-		target.max_health = MOON_MEDKIT_SMALL_VALUE;
-		target.cost = MOON_MEDKIT_SMALL_COST;
-		target.targetname = MOON_MEDKIT_SMALL_DISPLAYNAME;
-		break;
-	case MOON_MEDKIT_NORMAL_TYPE:
-		setmodel(target, "maps/b_bh25.bsp");
-		target.noise = "items/health1.wav";
-		target.healtype = MOON_MEDKIT_NORMAL_TYPE;
-		target.max_health = MOON_MEDKIT_NORMAL_VALUE;
-		target.cost = MOON_MEDKIT_NORMAL_COST;
-		target.targetname = MOON_MEDKIT_NORMAL_DISPLAYNAME;
-		break;
-	case MOON_MEDKIT_MEGA_TYPE:
-		setmodel(target, "maps/b_bh100.bsp");
-		target.noise = "items/r_item2.wav";
-		target.healtype = MOON_MEDKIT_MEGA_TYPE;
-		target.max_health = MOON_MEDKIT_MEGA_VALUE;
-		target.cost = MOON_MEDKIT_MEGA_COST;
-		target.targetname = MOON_MEDKIT_MEGA_DISPLAYNAME;
-		break;
-	default:
-		target.max_health = 1; // Division by zero guard
-		dprint("Unknown medkit code {}\n", medkit_code);
-	}
-
-	// Adjust cost for spoiled medkits
-	target.healamount = ( (target.health > 0) ? target.health : target.max_health);
-	target.cost = (target.cost * (target.healamount / target.max_health));
-};
-
 void(entity trader) find_trade_spot =
 {
 	local entity head;
@@ -3459,88 +3537,42 @@ void(entity trader) find_trade_spot =
 			head.cnt = MOON_ITEM_TRADE_SIGNOF_AMMO;
 			if ( r < 0.1 ) 	// was 0.2
 			{
-				setmodel(head, MOON_AMMO_SHELLS_MODEL);
-				head.ammo_shells = ceil(MOON_AMMO_SHELLS_BASE + (random() * MOON_AMMO_SHELLS_RANDOM));
-				head.currentammo = head.ammo_shells;
-				head.cost = ceil(head.ammo_shells * MOON_AMMO_SHELLS_COSTOFONE);
-				head.targetname = MOON_AMMO_SHELLS_DISPLAYNAME;
+				moon_init_target_as_ammobox(head, MOON_AMMO_SHELLS_CODE);
 			} else
 			if ( r < 0.4 )	// was 0.4
 			{
-				setmodel(head, MOON_AMMO_NAILS_MODEL);
-				head.ammo_nails = ceil(MOON_AMMO_NAILS_BASE + (random() * MOON_AMMO_NAILS_RANDOM));
-				head.currentammo = head.ammo_nails;
-				head.cost = ceil(head.ammo_nails * MOON_AMMO_NAILS_COSTOFONE);
-				head.targetname = MOON_AMMO_NAILS_DISPLAYNAME;
+				moon_init_target_as_ammobox(head, MOON_AMMO_NAILS_CODE);
 			} else
-			if ((r < 0.7))	// was 0.7
+			if ( r < 0.7 )	// was 0.7
 			{
-				setmodel(head, MOON_AMMO_ROCKETS_MODEL);
-				head.ammo_rockets = ceil(MOON_AMMO_ROCKETS_BASE + (random() * MOON_AMMO_ROCKETS_RANDOM));
-				head.currentammo = head.ammo_rockets;
-				head.cost = ceil(head.ammo_rockets * MOON_AMMO_ROCKETS_COSTOFONE);
-				head.targetname = MOON_AMMO_ROCKETS_DISPLAYNAME;
+				moon_init_target_as_ammobox(head, MOON_AMMO_ROCKETS_CODE);
 			} else {
-				setmodel(head, MOON_AMMO_CELLS_MODEL);
-				head.ammo_cells = ceil(MOON_AMMO_CELLS_BASE + (random() * MOON_AMMO_CELLS_RANDOM));
-				head.currentammo = head.ammo_cells;
-				head.cost = ceil(head.ammo_cells * MOON_AMMO_CELLS_COSTOFONE);
-				head.targetname = MOON_AMMO_CELLS_DISPLAYNAME;
+				moon_init_target_as_ammobox(head, MOON_AMMO_CELLS_CODE);
 			}
 			break;
 		case MOON_TRADE_SHOP_WEAPON_NETNAME:
 			head.cnt = MOON_ITEM_TRADE_SIGNOF_WEAPON;
 			if ( r < 0.15 )
 			{
-				setmodel(head, MOON_WEAPON_SUPERSHOTGUN_MODEL_TPV);
-				head.ammo_shells = MOON_WEAPON_SUPERSHOTGUN_AMMO_SHOP;
-				head.currentammo = head.ammo_shells;
-				head.cost = MOON_WEAPON_SUPERSHOTGUN_COST_SHOP;
-				head.targetname = MOON_WEAPON_SUPERSHOTGUN_DISPLAYNAME;
-				head.items = IT_SUPER_SHOTGUN;
+				moon_init_target_as_weapon(head, MOON_WEAPON_SUPERSHOTGUN_CODE);
 			} else
 			if ( r < 0.3 )
 			{
-				setmodel(head, MOON_WEAPON_NAILGUN_MODEL_TPV);
-				head.ammo_nails = MOON_WEAPON_NAILGUN_AMMO_SHOP;
-				head.currentammo = head.ammo_nails;
-				head.cost = MOON_WEAPON_NAILGUN_COST_SHOP;
-				head.targetname = MOON_WEAPON_NAILGUN_DISPLAYNAME;
-				head.items = IT_NAILGUN;
+				moon_init_target_as_weapon(head, MOON_WEAPON_NAILGUN_CODE);
 			} else
 			if ( r < 0.45 )
 			{
-				setmodel(head, MOON_WEAPON_SUPERNAILGUN_MODEL_TPV);
-				head.ammo_nails = MOON_WEAPON_SUPERNAILGUN_AMMO_SHOP;
-				head.currentammo = head.ammo_nails;
-				head.cost = MOON_WEAPON_SUPERNAILGUN_COST_SHOP;
-				head.targetname = MOON_WEAPON_SUPERNAILGUN_DISPLAYNAME;
-				head.items = IT_SUPER_NAILGUN;
+				moon_init_target_as_weapon(head, MOON_WEAPON_SUPERNAILGUN_CODE);
 			} else
 			if ( r < 0.6 )
 			{
-				setmodel(head, MOON_WEAPON_GRENADELAUNCHER_MODEL_TPV);
-				head.ammo_rockets = MOON_WEAPON_GRENADELAUNCHER_AMMO_SHOP;
-				head.currentammo = head.ammo_rockets;
-				head.cost = MOON_WEAPON_GRENADELAUNCHER_COST_SHOP;
-				head.targetname = MOON_WEAPON_GRENADELAUNCHER_DISPLAYNAME;
-				head.items = IT_GRENADE_LAUNCHER;
+				moon_init_target_as_weapon(head, MOON_WEAPON_GRENADELAUNCHER_CODE);
 			} else
 			if ( r < 0.8 )
 			{
-				setmodel(head, MOON_WEAPON_ROCKETLAUNCHER_MODEL_TPV);
-				head.ammo_rockets = MOON_WEAPON_ROCKETLAUNCHER_AMMO_SHOP;
-				head.currentammo = head.ammo_rockets;
-				head.cost = MOON_WEAPON_ROCKETLAUNCHER_COST_SHOP;
-				head.targetname = MOON_WEAPON_ROCKETLAUNCHER_DISPLAYNAME;
-				head.items = IT_ROCKET_LAUNCHER;
+				moon_init_target_as_weapon(head, MOON_WEAPON_ROCKETLAUNCHER_CODE);
 			} else {
-				setmodel(head, MOON_WEAPON_LIGHTNING_MODEL_TPV);
-				head.ammo_cells = MOON_WEAPON_LIGHTNING_AMMO_SHOP;
-				head.currentammo = head.ammo_cells;
-				head.cost = MOON_WEAPON_LIGHTNING_COST_SHOP;
-				head.targetname = MOON_WEAPON_LIGHTNING_DISPLAYNAME;
-				head.items = IT_LIGHTNING;
+				moon_init_target_as_weapon(head, MOON_WEAPON_LIGHTNING_CODE);
 			}
 			break;
 		}
@@ -7114,45 +7146,27 @@ void(entity who) moon_spawn_drop_weapon =
 	r = random();
 	item = spawn();
 	item.origin = (who.origin - '0 0 24');
-	if ((r < 0.15))
+	if ( r < 0.15 )
 	{
-		setmodel(item, "progs/g_shot.mdl");
-		item.ammo_shells = rint((random() * MOON_WEAPON_SUPERSHOTGUN_AMMO_LOOT_RANDOM) + MOON_WEAPON_SUPERSHOTGUN_AMMO_LOOT_MIN);
-		item.netname = MOON_WEAPON_SUPERSHOTGUN_DISPLAYNAME;
-		item.items = IT_SUPER_SHOTGUN;
+		moon_init_target_as_weapon(item, MOON_WEAPON_SUPERSHOTGUN_CODE, rint((random() * MOON_WEAPON_SUPERSHOTGUN_AMMO_LOOT_RANDOM) + MOON_WEAPON_SUPERSHOTGUN_AMMO_LOOT_MIN));
 	} else
-	if ((r < 0.3))
+	if ( r < 0.3 )
 	{
-		setmodel(item, "progs/g_nail.mdl");
-		item.ammo_nails = rint((random() * MOON_WEAPON_NAILGUN_AMMO_LOOT_RANDOM) + MOON_WEAPON_NAILGUN_AMMO_LOOT_MIN);
-		item.netname = MOON_WEAPON_NAILGUN_DISPLAYNAME;
-		item.items = IT_NAILGUN;
+		moon_init_target_as_weapon(item, MOON_WEAPON_NAILGUN_CODE, rint((random() * MOON_WEAPON_NAILGUN_AMMO_LOOT_RANDOM) + MOON_WEAPON_NAILGUN_AMMO_LOOT_MIN));
 	} else
-	if ((r < 0.45))
+	if ( r < 0.45 )
 	{
-		setmodel(item, "progs/g_nail2.mdl");
-		item.ammo_nails = rint((random() * MOON_WEAPON_SUPERNAILGUN_AMMO_LOOT_RANDOM) + MOON_WEAPON_SUPERNAILGUN_AMMO_LOOT_MIN);
-		item.netname = MOON_WEAPON_SUPERNAILGUN_DISPLAYNAME;
-		item.items = IT_SUPER_NAILGUN;
+		moon_init_target_as_weapon(item, MOON_WEAPON_SUPERNAILGUN_CODE, rint((random() * MOON_WEAPON_SUPERNAILGUN_AMMO_LOOT_RANDOM) + MOON_WEAPON_SUPERNAILGUN_AMMO_LOOT_MIN));
 	} else
-	if ((r < 0.6))
+	if ( r < 0.6 )
 	{
-		setmodel(item, "progs/g_rock.mdl");
-		item.ammo_rockets = rint((random() * MOON_WEAPON_GRENADELAUNCHER_AMMO_LOOT_RANDOM) + MOON_WEAPON_GRENADELAUNCHER_AMMO_LOOT_MIN);
-		item.netname = MOON_WEAPON_GRENADELAUNCHER_DISPLAYNAME;
-		item.items = IT_GRENADE_LAUNCHER;
+		moon_init_target_as_weapon(item, MOON_WEAPON_GRENADELAUNCHER_CODE, rint((random() * MOON_WEAPON_GRENADELAUNCHER_AMMO_LOOT_RANDOM) + MOON_WEAPON_GRENADELAUNCHER_AMMO_LOOT_MIN));
 	} else
-	if ((r < 0.8))
+	if ( r < 0.8 )
 	{
-		setmodel(item, "progs/g_rock2.mdl");
-		item.ammo_rockets = rint((random() * MOON_WEAPON_ROCKETLAUNCHER_AMMO_LOOT_RANDOM) + MOON_WEAPON_ROCKETLAUNCHER_AMMO_LOOT_MIN);
-		item.netname = MOON_WEAPON_ROCKETLAUNCHER_DISPLAYNAME;
-		item.items = IT_ROCKET_LAUNCHER;
+		moon_init_target_as_weapon(item, MOON_WEAPON_ROCKETLAUNCHER_CODE, rint((random() * MOON_WEAPON_ROCKETLAUNCHER_AMMO_LOOT_RANDOM) + MOON_WEAPON_ROCKETLAUNCHER_AMMO_LOOT_MIN));
 	} else {
-		setmodel(item, "progs/g_light.mdl");
-		item.ammo_cells = rint((random() * MOON_WEAPON_LIGHTNING_AMMO_LOOT_RANDOM) + MOON_WEAPON_LIGHTNING_AMMO_LOOT_MIN);
-		item.netname = MOON_WEAPON_LIGHTNING_DISPLAYNAME;
-		item.items = IT_LIGHTNING;
+		moon_init_target_as_weapon(item, MOON_WEAPON_LIGHTNING_CODE, rint((random() * MOON_WEAPON_LIGHTNING_AMMO_LOOT_RANDOM) + MOON_WEAPON_LIGHTNING_AMMO_LOOT_MIN));
 	}
 
 	item.velocity_z = 300;

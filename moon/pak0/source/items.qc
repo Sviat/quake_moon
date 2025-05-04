@@ -3702,7 +3702,7 @@ void() moon_buy_item =
 	min_dist = 150;
 	while ( (head = find(head, classname, MOON_TRADE_SHOP_SPOT_CLASSNAME)) )
 	{
-		if ((head.free == FALSE))
+		if ( head.free == FALSE )
 		{
 			if ((vlen((head.origin - self.origin)) < min_dist))
 			{

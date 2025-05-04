@@ -82,18 +82,18 @@ void() moon_handle_impulse_noop =
 	}
 	if ( (selected != world) && (selected.targetname != "") )
 	{
-		if ( (selected.targetname == MOON_ITEM_ARMOR_DISPLAY_LONG) || (selected.targetname == MOON_ITEM_RING_DISPLAY_LONG) )
+		if ( (selected.netname == MOON_ITEM_ARMOR_NETNAME) || (selected.netname == MOON_ITEM_RING_NETNAME) )
 		{
 			rarity = moon_get_item_rarity_display(selected.magic_rarity_level);
-			centerprint(self, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n{0}{1}{2} [{3}] ({4} gold)"
-							, (selected.prefix_one == "") ? "" : selected.prefix_one
+			centerprint(self, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n{0}{1}{2}{3} ({4} gold)"
+							, selected.prefix_one
 							, selected.targetname
-							, (selected.prefix_two == "") ? "" : selected.prefix_two
-							, (rarity == string_null) ? "" : rarity
+							, selected.prefix_two
+							, rarity
 							, floor_ftos(selected.cost)
 			);
 		} else {
-			centerprint(self, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n{0} [{1}] ({2} gold)", selected.targetname, floor_ftos(selected.currentammo), floor_ftos(selected.cost));
+			centerprint(self, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n{0} [{1}] ({2} gold)", selected.targetname, floor_ftos(selected.count), floor_ftos(selected.cost));
 		}
 		return;
 	}

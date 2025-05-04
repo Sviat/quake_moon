@@ -2657,6 +2657,8 @@ entity() moon_market_place_weapon =
 
 	return e;
 };
+
+entity() moon_market_place_medkit_mega =
 {
 	local entity e;
 
@@ -2708,7 +2710,7 @@ void() PlaceGoody =
 		moon_market_place_ammo();
 	}
 
-	self.free = 2;
+	self.free = 2;	// trade mode
 };
 
 void() saler_stand = // Praise the Omnissiah!

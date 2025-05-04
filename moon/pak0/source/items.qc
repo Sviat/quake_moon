@@ -1709,38 +1709,48 @@ float() find_ns =
 	return (TRUE);
 };
 
-void() PlaceWeapon = // TODO: refactor next
+void(entity target, float armor_code, float armor_durability = -1) moon_init_target_as_armor =
 {
-	local entity e;
-	local float r;
+	setmodel(target, "progs/armor.mdl");
+	target.health = armor_durability;
 
-	e = spawn();
-	makevectors(self.angles);
-	setorigin(e, ((self.origin + (v_forward * 47)) - '0 0 24'));
-	e.solid = SOLID_NOT;
-	e.classname = "goody_ent";
-	e.netname = "goody_weapon";
-	e.noise1 = "weapons/pkup.wav";
-	e.owner = self;
-	sound(e, CHAN_ITEM, "items/itembk2.wav", H_ROTTEN, ATTN_NORM);
-	r = random();
-	if ((r < 0.16))
+	switch(armor_code)
 	{
-		setmodel(e, "progs/g_shot.mdl");
-		e.ammo_shells = rint((random() * LOGIC_PATROL));
-		e.cost = (GRD_DEFENDTIME + (e.ammo_shells * H_MEGA));
-		e.targetname = "Inferioity Double-barrelled Shotgun";
-		e.items = IT_SUPER_SHOTGUN;
+	case MOON_ARMOR_GREEN_CODE:
+		target.items = IT_ARMOR1;
+		target.skin = MOON_ARMOR_GREEN_SKIN;
+		target.max_health = MOON_ARMOR_GREEN_DURABILITY;
+		target.armortype = MOON_ARMOR_GREEN_RESISTANCE;
+		target.cost = MOON_ARMOR_GREEN_SHOP_COST;
+		target.targetname = MOON_ARMOR_GREEN_DISPLAYNAME;
+		break;
+	case MOON_ARMOR_YELLOW_CODE:
+		target.items = IT_ARMOR2;
+		target.skin = MOON_ARMOR_YELLOW_SKIN;
+		target.max_health = MOON_ARMOR_YELLOW_DURABILITY;
+		target.armortype = MOON_ARMOR_YELLOW_RESISTANCE;
+		target.cost = MOON_ARMOR_YELLOW_SHOP_COST;
+		target.targetname = MOON_ARMOR_YELLOW_DISPLAYNAME;
+		break;
+	case MOON_ARMOR_RED_CODE:
+		target.items = IT_ARMOR3;
+		target.skin = MOON_ARMOR_RED_SKIN;
+		target.max_health = MOON_ARMOR_RED_DURABILITY;
+		target.armortype = MOON_ARMOR_RED_RESISTANCE;
+		target.cost = MOON_ARMOR_RED_SHOP_COST;
+		target.targetname = MOON_ARMOR_RED_DISPLAYNAME;
+		break;
+	default:
+		target.max_health = 1; // Division by zero guard
+		dprint("Unknown armor code {}\n", armor_code);
 	}
-	else
-	{
-		if ((r < 0.33))
-		{
-			setmodel(e, "progs/g_nail.mdl");
-			e.ammo_nails = rint((random() * 30));
-			e.cost = (70 + e.ammo_nails);
-			e.targetname = "Inferioity Nailgun";
-			e.items = IT_NAILGUN;
+
+	// Adjust cost for damaged Armors
+	target.armorvalue = ( (target.health > 0) ? target.health : target.max_health);
+	target.count = target.armorvalue; // duplicate for easier crosshair identification
+	target.cost = (target.cost * (target.armorvalue / target.max_health));
+};
+
 		}
 		else
 		{
@@ -1786,7 +1796,7 @@ void() PlaceWeapon = // TODO: refactor next
 	}
 };
 
-void() moon_market_place_armor =
+entity() moon_market_place_armor =
 {
 	local entity e;
 	local float r;
@@ -1818,6 +1828,8 @@ void() moon_market_place_armor =
 		e.cost = rint( e.armorvalue * MOON_ARMOR_RED_MARKET_COSTOFONE );
 		e.targetname = MOON_ARMOR_RED_MARKET_DISPLAYNAME;
 	}
+
+	return e;
 };
 
 float(float effect_code, float effect_value) moon_calculate_effect_cost =
@@ -2387,7 +2399,7 @@ void(entity e) moon_generate_magic_postfix =
 	}
 };
 
-void() moon_market_place_magic_item =
+entity() moon_market_place_magic_item =
 {
 	local entity e;
 	local float z;
@@ -2400,13 +2412,13 @@ void() moon_market_place_magic_item =
 	if ( random() < MOON_ITEM_ARMOR_VS_RING_CHANCE )
 	{
 		e.netname = MOON_ITEM_ARMOR_NETNAME;
-		e.targetname = MOON_ITEM_ARMOR_DISPLAY_LONG;
+		e.targetname = MOON_ITEM_ARMOR_DISPLAY;
 		setmodel(e, "progs/armor.mdl");
 		e.noise1 = "items/armor1.wav";
 		e.skin = 3;
 	} else {
 		e.netname = MOON_ITEM_RING_NETNAME;
-		e.targetname = MOON_ITEM_RING_DISPLAY_LONG;
+		e.targetname = MOON_ITEM_RING_DISPLAY;
 		setmodel(e, "progs/ring.mdl");
 		e.noise1 = "moon/items/ring.wav";
 	}
@@ -2427,6 +2439,8 @@ void() moon_market_place_magic_item =
 	}
 
 	moon_calculate_magic_cost(e);
+
+	return e;
 };
 
 void() moon_market_place_medkit_mega =
@@ -2443,11 +2457,14 @@ void() moon_market_place_medkit_mega =
 	e.targetname = MOON_MEDKIT_MEGA_MARKET_DISPLAYNAME;
 	e.noise1 = "items/r_item2.wav";
 	e.healamount = rint( MOON_MEDKIT_MEGA_MARKET_MIN + (random() * MOON_MEDKIT_MEGA_MARKET_RANDOM) );
+	e.count = e.healamount;
 	e.cost = (e.healamount * MOON_MEDKIT_MEGA_MARKET_COSTOFONE);
 	e.owner = self;
 	e.healtype = MOON_MEDKIT_MEGA_TYPE;
 	sound(e, CHAN_ITEM, "items/itembk2.wav", 1, ATTN_NORM);
 	setmodel(e, MOON_MEDKIT_MEGA_MODEL);
+
+	return e;
 };
 
 void() PlaceGoody =

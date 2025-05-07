@@ -646,7 +646,7 @@ float MOON_ITEM_NO_CODE = 0;
 // Some effects may be missing one or more rarity levels in original mod. That is to be eventually filled
 
 float MOON_ITEM_HEALTH_CODE = 1;
-float MOON_ITEM_HEALTH_MARKET_COST_SCALE = 45;
+float MOON_ITEM_HEALTH_MARKET_COST_SCALE = 22; // was 45. Purpose of change: overall bonus values raised for all levels, to just keep items a competetive choice, hence need to lower price scaling
 string MOON_ITEM_HEALTH_EFFECT  	= "+{} to maximum health";
 string MOON_ITEM_HEALTH_PREFIX_LOW   	= "Echidna ";
 float MOON_ITEM_HEALTH_PREFIX_LOW_FROM = 16;    // was 12
@@ -670,7 +670,7 @@ string MOON_ITEM_HEALTH_POSTFIX_HIGH    = " of Fortitude";
 float MOON_ITEM_HEALTH_POSTFIX_HIGH_FROM = 60;  // was 50
 float MOON_ITEM_HEALTH_POSTFIX_HIGH_TO = 90;    // was 80
 
-float MOON_ITEM_RESIST_CODE = 2;
+float MOON_ITEM_RESIST_CODE = 2; // TODO: move this trait higher, so it appears at all stages of game
 float MOON_ITEM_RESIST_MARKET_COST_SCALE = 65;
 string MOON_ITEM_RESIST_EFFECT  	= "reduce damage received by {}%";
 string MOON_ITEM_RESIST_PREFIX_LOW   	= "Halo ";
@@ -697,7 +697,7 @@ float MOON_ITEM_RESIST_POSTFIX_HIGH_FROM = 20;
 float MOON_ITEM_RESIST_POSTFIX_HIGH_TO = 30;
 
 float MOON_ITEM_GOLD_CODE = 3;
-float MOON_ITEM_GOLD_MARKET_COST_SCALE = 25;
+float MOON_ITEM_GOLD_MARKET_COST_SCALE = 7; // was 25. Purpose of change is to make such items on marketplace a "farm guns" - cheap, giving extra gold, but no combat benefits - perfect for early game
 string MOON_ITEM_GOLD_EFFECT	 	= "{}% extra gold from monsters";
 string MOON_ITEM_GOLD_PREFIX_LOW   		= "Lunacy ";
 float MOON_ITEM_GOLD_PREFIX_LOW_FROM = 20;

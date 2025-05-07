@@ -5426,11 +5426,10 @@ void() moon_spawn_guard =
 	local vector org;
 
 	newbot = spawn();
+
 	newbot.solid = SOLID_SLIDEBOX;
 	newbot.movetype = MOVETYPE_STEP;
 	newbot.angles = self.angles;
-	newbot.classname = MOON_GUARD_CLASSNAME;
-	newbot.lvl = moon_get_max_player_level();
 	newbot.master = self;
 	newbot.action = 0;
 	newbot.takedamage = DAMAGE_AIM;
@@ -5446,8 +5445,13 @@ void() moon_spawn_guard =
 	newbot.natural_regen_value = MOON_GUARD_HEALTH_REGEN_VALUE;
 	newbot.natural_regen_time = 0;
 
+	newbot.classname = MOON_GUARD_CLASSNAME;
+	newbot.prefix_one = MOON_GUARD_DISPLAYNAME;
+	newbot.netname = moon_lookup_random_client_name();
+	newbot.lvl = moon_get_max_player_level();
+
 	moon_spawn_guard_items(newbot);
-	bprint("== a wandering guardian joins your forces ==\n"); // refactor to more generic decribe functions
+	bprint("== a wandering guardian joins your forces ==\n");
 	moon_bprint_describe_player(newbot);
 
 	newbot.th_stand = bot_ai_stand;
@@ -5463,7 +5467,7 @@ void() moon_spawn_guard =
 	newbot.backdist = 100;
 	newbot.angles_x = WF_NORMAL;
 	newbot.angles_z = WF_NORMAL;
-	newbot.skin = 3;
+	newbot.skin = MOON_GUARD_SKIN;
 	setmodel(newbot, "progs/player.mdl");
 	setsize(newbot, VEC_HULL_MIN, VEC_HULL_MAX);
 	spot = SelectSpawnPoint();

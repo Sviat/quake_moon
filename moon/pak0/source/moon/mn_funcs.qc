@@ -11,6 +11,8 @@ void(entity who) moon_spawn_drop_gold;
 
 float(entity target) moon_do_target_natural_health_regen_tick;
 float(entity target) moon_do_target_magical_health_regen_tick;
+// now items, later extract
+float(entity target) moon_get_target_total_bonus_damage;
 float(entity target, float code) moon_get_target_total_bonus_by_code;
 void() moon_set_map_moon4;
 void() moon_walkman_init_think; // used in Map init

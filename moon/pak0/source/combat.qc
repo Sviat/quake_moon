@@ -194,18 +194,18 @@ void(entity targ, entity inflictor, entity attacker, float damage) T_Damage = //
 			damage = (damage - rint(percent(damage, bnresist)));
 		}
 		bnamp = 0;
-		bnamp = (bnamp + moon_get_target_total_bonus_by_code(attacker, MOON_ITEM_DAMAGE_CODE));
+		bnamp = (bnamp + moon_get_target_total_bonus_damage(attacker));
 		if ( attacker.stre > 0 ) // may be add negative strength debuf too??
 		{
-			bnamp = (bnamp + (attacker.stre * MOON_STAT_DAMAGE_PER_STRENGTH));
+			bnamp = (bnamp + (attacker.stre * MOON_STAT_DAMAGE_PER_STRENGTH)); // move this to moon_get_target_total_bonus_damage
 		}
 		if ( attacker.mentat_offense_time > time )
 		{
-			bnamp = (bnamp + MOON_MENTAT_OFFENSE_VALUE);
+			bnamp = (bnamp + MOON_MENTAT_OFFENSE_VALUE); // move this to moon_get_target_total_bonus_damage
 		}
 		if ((attacker.scroll_brut_eff > time))
 		{
-			bnamp = ((bnamp + 50) + (attacker.sc_brut_lvl * KEY_MOVERIGHT));
+			bnamp = ((bnamp + 50) + (attacker.sc_brut_lvl * KEY_MOVERIGHT)); // move this to moon_get_target_total_bonus_damage
 		}
 		if ((bnamp > 0))
 		{

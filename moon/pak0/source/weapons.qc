@@ -1377,6 +1377,11 @@ void() W_WeaponFrame =
 		return;
 	}
 
+	if ( self.prepared == FALSE )
+	{
+		moon_init_self_player();
+	}
+
 	if ( self.impulse == QC_IMPULSE_CODE_NOOP )
 	{
 		moon_handle_impulse_noop();

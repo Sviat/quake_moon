@@ -188,7 +188,7 @@ void(float impulse_code) moon_handle_impulse_ui =
 		moon_print_character_status();
 		break;
 	default:
-		dprint("Unhandled impulse code for CLI UI {}\n", impulse_code);
+		dprint("Unhandled impulse code for CLI UI {0}\n", quick_ftos(impulse_code));
 	}
 };
 
@@ -248,7 +248,7 @@ void(float impulse_code) moon_handle_impulse_server =
 		moon_cheat_gold();
 		break;
 	default:
-		dprint("Unhandled impulse code for SERVER settings {}\n", impulse_code);
+		dprint("Unhandled impulse code for SERVER settings {0}\n", quick_ftos(impulse_code));
 	}
 };
 
@@ -277,7 +277,7 @@ void(float impulse_code) moon_handle_impulse_client =
 		}
 		break;
 	default:
-		dprint("Unhandled impulse code for CLIENT settings {}\n", impulse_code);
+		dprint("Unhandled impulse code for CLIENT settings {0}\n", quick_ftos(impulse_code));
 	}
 };
 
@@ -295,17 +295,12 @@ void(float impulse_code) moon_handle_impulse_trace =
 		moon_identify_item();
 		break;
 	default:
-		dprint("Unhandled impulse code for CLI UI {}\n", impulse_code);
+		dprint("Unhandled impulse code for CLI UI {0}\n", quick_ftos(impulse_code));
 	}
 };
 
 void() moon_handle_impulse =
 {
-	if ( self.prepared == FALSE )
-	{
-		moon_init_self_player();
-	}
-
 	// TODO: killme \/ JUKEBOX CONTROLS
 	if ( (self.impulse >= 220) && (self.impulse <= 232) )
 	{
@@ -327,7 +322,7 @@ void() moon_handle_impulse =
 	{
 		moon_handle_impulse_trace(self.impulse);
 	} else {
-		dprint("Impulse code {0} out of Project Moon's range {1}-{2}\n", self.impulse, MOON_IMPULSE_CODE_FIRST, MOON_IMPULSE_CODE_LAST);
+		dprint("Impulse code {0} out of MOON's range {1}-{2}\n", quick_ftos(self.impulse), quick_ftos(MOON_IMPULSE_CODE_FIRST), quick_ftos(MOON_IMPULSE_CODE_LAST));
 	}
 };
 

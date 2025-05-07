@@ -50,7 +50,7 @@ void() moon_init_self_player = // happens with first impulse check
 		return;
 	}
 
-	moon_prepare_player_entity(self); // extract to PutClientInServer
+	moon_prepare_player_entity(self);
 
 	sprint(self, "Project MOON. Original v0.21beta created by \s3d[Power]\s\n");
 	sprint(self, "ReProject MOON. Remake v{0} by \sSanctus-Susanin\s\n", MOON_VERSION);

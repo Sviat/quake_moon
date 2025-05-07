@@ -850,7 +850,7 @@ void() CheckCrosshair =
 	traceline(self.origin, (self.origin + (v_forward * MOON_PHYSIC_CROSSHAIRTRACE_MAXDIST)), CONST_QC_COLLISION_WITH_MONSTER_WIDE, self);
 	if ( trace_ent.flags & FL_MONSTER )
 	{
-		if ( MOON_DEBUG & MOON_TRAIT_CPRINT_SEE_MONSTER_HP )
+		if ( MOON_DEBUG & MOON_CONST_TRAIT_CPRINT_SEE_MONSTER_HP )
 		{
 			centerprint(self, "{0}{1}{2}{3}{4} ({5})", trace_ent.prefix_one, trace_ent.prefix_two, trace_ent.netname, trace_ent.prefix_three, trace_ent.prefix_four, floor_ftos(trace_ent.health));
 		} else {
@@ -860,7 +860,7 @@ void() CheckCrosshair =
 	}
 	if ( trace_ent.classname == MOON_GUARD_CLASSNAME )
 	{
-		if ( MOON_DEBUG & MOON_TRAIT_CPRINT_SEE_ALLY_HP )
+		if ( MOON_DEBUG & MOON_CONST_TRAIT_CPRINT_SEE_ALLY_HP )
 		{
 			centerprint(self, "{0} {1} ({2}/{3})", trace_ent.prefix_one, trace_ent.netname, floor_ftos(trace_ent.health), floor_ftos(trace_ent.max_health));
 		} else {
@@ -870,7 +870,7 @@ void() CheckCrosshair =
 	}
 	if ( trace_ent.classname == MOON_HEART_CLASSNAME )
 	{
-		if ( MOON_DEBUG & MOON_TRAIT_CPRINT_SEE_ALLY_HP )
+		if ( MOON_DEBUG & MOON_CONST_TRAIT_CPRINT_SEE_ALLY_HP )
 		{
 			centerprint(self, "{0} ({1}/{2})", MOON_HEART_AIMLABEL, floor_ftos(trace_ent.health), floor_ftos(trace_ent.max_health));
 		} else {
@@ -884,7 +884,7 @@ void() CheckCrosshair =
 		return;
 	}
 
-	if ( MOON_DEBUG & MOON_DEBUG_CPRINT_TRACEENT )
+	if ( MOON_DEBUG & MOON_CONST_DEBUG_CPRINT_TRACEENT )
 	{
 		if ( trace_ent.classname != "worldspawn" )
 		{

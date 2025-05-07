@@ -2,7 +2,14 @@
 /// Here go all common game (and logic) definitions
 // TODO: one day may be split between technical and Game Design defs?
 
-/// These are engine consts, declared just to remember
+// Syntactic sugar for function argument defaulting. Only exception to naming convention
+#define false 0
+#define true 1
+
+/// These (CONST_* and MOON_CONST_*) are (preprocessor) consts
+///     SAFE TO USE AS RIGHT-HAND SIDE AND/OR DEFAULT ARGUMENT
+
+// Vanilla consts that declared only to remember them
 #define CONST_QC_DISPLAY_MAX 999
 
 #define CONST_QC_SPRINT_A "\a"			// Black cell
@@ -18,49 +25,52 @@
 #define CONST_QC_COLLISION_WITH_EVERYTHING 0
 #define CONST_QC_COLLISION_WITH_SOLID 1
 #define CONST_QC_COLLISION_WITH_MONSTER_WIDE 2
+// //
 
 /// All below MUST be prefixed with MOON_
-// Glyphs
-#define MOON_GLYPH_WHITECELL "\x0B"		// White cell, should be cursor
-#define MOON_GLYPH_SELECTION "\x0D"		// Red triangle
-#define MOON_GLYPH_BRACKET_OPEN "\x10"	// Red [, also x90
-#define MOON_GLYPH_BRACKET_CLOSE "\x11"	// Red ], also x91
-#define MOON_GLYPH_CENTERDOT_WHITE "\x1C" // White center dot
-#define MOON_GLYPH_ARROW "\x7F"			// Arrow pointing left
-#define MOON_GLYPH_BLACKSQUARE "\x88"	// Black square
-#define MOON_GLYPH_REDSQUARE "\x8B"		// Red square
-#define MOON_GLYPH_CENTERDOT_YELLOW "\x8E" // Yellow center dot
-#define MOON_GLYPH_REDARROW "\xFF"		// Red arrow pointing left
 
-// Syntactic sugar for function argument defaulting
-#define false 0
-#define true 1
+// // Quake Glyphs
+#define MOON_CONST_GLYPH_WHITECELL "\x0B"		// White cell, should be cursor
+#define MOON_CONST_GLYPH_SELECTION "\x0D"		// Red triangle
+#define MOON_CONST_GLYPH_BRACKET_OPEN "\x10"	// Red [, also x90
+#define MOON_CONST_GLYPH_BRACKET_CLOSE "\x11"	// Red ], also x91
+#define MOON_CONST_GLYPH_CENTERDOT_WHITE "\x1C" // White center dot
+#define MOON_CONST_GLYPH_ARROW "\x7F"			// Arrow pointing left
+#define MOON_CONST_GLYPH_BLACKSQUARE "\x88"	    // Black square
+#define MOON_CONST_GLYPH_REDSQUARE "\x8B"		// Red square
+#define MOON_CONST_GLYPH_CENTERDOT_YELLOW "\x8E" // Yellow center dot
+#define MOON_CONST_GLYPH_REDARROW "\xFF"		// Red arrow pointing left
+// //
 
-// Consts for traits with Locked->Unlocked->Level1->...->LevelN progression
+// Special Flag for Traits/ItemSlots/Upgrades with Locked->Unlocked->Level1->...->LevelN progression
 #define MOON_CONST_LOCKED -1
 #define MOON_CONST_UNLOCKED 0 // anything above this is the Level of that property
 
+// Special Flag for Axe hit state (vanilla was 0/1, added 2)
 #define MOON_CONST_AXE_NOT 0
 #define MOON_CONST_AXE_HIT 1
 #define MOON_CONST_AXE_CRIPPLE 2 // added, TODO: handling
 
+// Max level is widely used throughout the code
 #define MOON_CONST_MAXLVL 50
 
-// Debug flags set
-#define MOON_DEBUG_DPRINT_NONE 0            // dprint > /dev/null
-#define MOON_DEBUG_DPRINT_SOME 1            // dprint > bprint, occasional: debug sprint
-#define MOON_DEBUG_CPRINT_TRACEENT 2        // Every frame: centerprint target entity class, name and target
-#define MOON_DEBUG_DPRINT_NEXTWAVE 4        // Every wave: dprint time till next wave
-#define MOON_DEBUG_DPRINT_SPAWNED_NAMES 8   // Every wave: dprint name of each spawned monster
-#define MOON_DEBUG_CHEATS_ON 16             // Allow the use of cheats
-#define MOON_DEBUG_EPRINT_MONSTERS 32       // Allow eprint-ing monsters (i.e to find stuck on respawn)
+// // Bit flag enums for debug option
+#define MOON_CONST_DEBUG_DPRINT_NONE 0              // dprint > /dev/null
+#define MOON_CONST_DEBUG_DPRINT_SOME 1              // dprint > bprint, occasional: debug sprint
+#define MOON_CONST_DEBUG_CPRINT_TRACEENT 2          // Every frame: centerprint target entity class, name and target
+#define MOON_CONST_DEBUG_DPRINT_NEXTWAVE 4          // Every wave: dprint time till next wave
+#define MOON_CONST_DEBUG_DPRINT_SPAWNED_NAMES 8     // Every wave: dprint name of each spawned monster
+#define MOON_CONST_DEBUG_CHEATS_ON 16               // Allow the use of cheats
+#define MOON_CONST_DEBUG_EPRINT_MONSTERS 32         // Allow eprint-ing monsters (i.e to find stuck on respawn)
 // Traits later be used in playable classes
-#define MOON_TRAIT_CPRINT_SEE_ALLY_HP 512       // Show ally (heart, guard) HP on crosshair
-#define MOON_TRAIT_CPRINT_SEE_MONSTER_HP 1024   // Show monster HP on crosshair
+#define MOON_CONST_TRAIT_CPRINT_SEE_ALLY_HP 512     // Show ally (heart, guard) HP on crosshair
+#define MOON_CONST_TRAIT_CPRINT_SEE_MONSTER_HP 1024 // Show monster HP on crosshair
 // //
 
+/// end of (preprocessor) consts
+
 string MOON_VERSION = "0.29kf";
-float MOON_DEBUG = MOON_DEBUG_DPRINT_SPAWNED_NAMES | MOON_DEBUG_CHEATS_ON | MOON_TRAIT_CPRINT_SEE_ALLY_HP | MOON_TRAIT_CPRINT_SEE_MONSTER_HP | MOON_DEBUG_EPRINT_MONSTERS;
+float MOON_DEBUG = MOON_CONST_DEBUG_DPRINT_SPAWNED_NAMES | MOON_CONST_DEBUG_CHEATS_ON | MOON_CONST_TRAIT_CPRINT_SEE_ALLY_HP | MOON_CONST_TRAIT_CPRINT_SEE_MONSTER_HP | MOON_CONST_DEBUG_EPRINT_MONSTERS;
 // // Impulse codes. First 19 keep for original Q1; limit is 255; so we should line up somewhere in between
 float QC_IMPULSE_CODE_NOOP = 0;
 // Code range WEAPONS 1..8 - Quake defaults
@@ -215,7 +225,7 @@ string MOON_GATE_ENTRY_DISPLAYNAME = "Entrance Gate";
 string MOON_HEART_CLASSNAME = "heart";
 string MOON_HEART_DISPLAYNAME = "Castle Heart";
 string MOON_HEART_MODEL = "progs/heart.mdl";
-string MOON_HEART_AIMLABEL = MOON_GLYPH_REDSQUARE" \sDONT\s "MOON_GLYPH_REDSQUARE;
+string MOON_HEART_AIMLABEL = MOON_CONST_GLYPH_REDSQUARE" \sDONT\s "MOON_CONST_GLYPH_REDSQUARE;
 float MOON_HEART_HEALTH_INIT = 200;
 float MOON_HEART_HEALTH_GROW = 10;
 float MOON_HEART_HEALTH_REGEN_VALUE = 1;
@@ -335,8 +345,8 @@ string MOON_ITEM_RARITY_THRESHOLD_DISPLAY_COMMON = " [Common]";
 string MOON_ITEM_RARITY_THRESHOLD_DISPLAY_UNCOMMON = " [Uncommon]";
 string MOON_ITEM_RARITY_THRESHOLD_DISPLAY_RARE = " [Rare]";
 string MOON_ITEM_RARITY_THRESHOLD_DISPLAY_EPIC = " [EPIC]";
-string MOON_ITEM_RARITY_THRESHOLD_DISPLAY_LEGENDARY = MOON_GLYPH_WHITECELL;
-string MOON_ITEM_RARITY_THRESHOLD_DISPLAY_UNIQUE = MOON_GLYPH_REDSQUARE;
+string MOON_ITEM_RARITY_THRESHOLD_DISPLAY_LEGENDARY = MOON_CONST_GLYPH_WHITECELL;
+string MOON_ITEM_RARITY_THRESHOLD_DISPLAY_UNIQUE = MOON_CONST_GLYPH_REDSQUARE;
 
 // Dynamic Magical item grid
 // Trait effect is chosen uniformaly between [MOON_ITEM_TRAIT_MIN_EFFECT, MOON_ITEM_TRAIT_MAX_EFFECT]

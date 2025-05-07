@@ -183,7 +183,7 @@ float() moon_get_spawn_delay =
 
 	delay = min + (random() * random_max);
 
-	if ( MOON_DEBUG & MOON_DEBUG_DPRINT_NEXTWAVE)
+	if ( MOON_DEBUG & MOON_CONST_DEBUG_DPRINT_NEXTWAVE)
 	{
 		dprint("Next wave in: {0} (delay {1}-{2})\n", floor_ftos(delay), quick_ftos(min), quick_ftos(min+random_max));
 	} // debug wave timer
@@ -228,12 +228,12 @@ void(entity object) moon_debug_println_object_name =
 {
 	if ( object == world ) { return; }
 
-	if ( MOON_DEBUG & MOON_DEBUG_DPRINT_SPAWNED_NAMES)
+	if ( MOON_DEBUG & MOON_CONST_DEBUG_DPRINT_SPAWNED_NAMES)
 	{
 		bprint("Spawned {0}{1}{2}{3}{4}\n", object.prefix_one, object.prefix_two, object.netname, object.prefix_three, object.prefix_four);
 	}
 
-	// if ( (MOON_DEBUG & MOON_DEBUG_EPRINT_MONSTERS) )
+	// if ( (MOON_DEBUG & MOON_CONST_DEBUG_EPRINT_MONSTERS) )
 	// {
 	// 	eprint(object);
 	// }

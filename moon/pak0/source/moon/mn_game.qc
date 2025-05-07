@@ -17,7 +17,7 @@ void(entity monster, float delay = 0) moon_queue_monster_for_removal
 
 void() moon_cheat_quad = // Debug only. Remove before release
 {
-	if (!(MOON_DEBUG & MOON_DEBUG_CHEATS_ON) ) { return; }
+	if (!(MOON_DEBUG & MOON_CONST_DEBUG_CHEATS_ON) ) { return; }
 
 	self.super_time = 1;
 	self.super_damage_finished = (time + 30);
@@ -32,7 +32,7 @@ void() moon_cheat_quad = // Debug only. Remove before release
 
 void() moon_cheat_gold = // Debug only. Remove before release
 {
-	if (!(MOON_DEBUG & MOON_DEBUG_CHEATS_ON) ) { return; }
+	if (!(MOON_DEBUG & MOON_CONST_DEBUG_CHEATS_ON) ) { return; }
 
 	self.up_cell = MOON_CONST_UNLOCKED;
 	self.gold = 9999;
@@ -145,7 +145,7 @@ void(float impulse_code) moon_handle_impulse_stat =
 
 void() moon_eprint_monsters_alive =
 {
-	if (!(MOON_DEBUG & MOON_DEBUG_EPRINT_MONSTERS) ) { return; }
+	if (!(MOON_DEBUG & MOON_CONST_DEBUG_EPRINT_MONSTERS) ) { return; }
 
 	local entity e;
 	local float found;

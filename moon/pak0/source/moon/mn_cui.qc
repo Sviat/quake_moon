@@ -119,7 +119,7 @@ void(entity value_target) moon_println_all_other_health =
 
 void(entity target) moon_println_target_exp =
 {
-	sprint(target, "Level: {0}, Exp {1}{2}/{3}{4}\n", floor_ftos(target.lvl), MOON_GLYPH_BRACKET_OPEN, floor_ftos(target.exp), quick_ftos(ceil(target.nextexp)), MOON_GLYPH_BRACKET_CLOSE);
+	sprint(target, "Level: {0}, Exp {1}{2}/{3}{4}\n", floor_ftos(target.lvl), MOON_CONST_GLYPH_BRACKET_OPEN, floor_ftos(target.exp), quick_ftos(ceil(target.nextexp)), MOON_CONST_GLYPH_BRACKET_CLOSE);
 };
 
 void(entity target) moon_print_mentat_offense =
@@ -194,25 +194,25 @@ void(entity target, float rarity_level) moon_print_target_item_rarity = // dupli
 	switch(rarity_level)
 	{
 	case MOON_ITEM_RARITY_THRESHOLD_TRASH:
-		sprint(target, "{0}{1}{2}", MOON_GLYPH_BRACKET_OPEN, MOON_ITEM_RARITY_THRESHOLD_DISPLAY_TRASH, MOON_GLYPH_BRACKET_CLOSE);
+		sprint(target, "{0}{1}{2}", MOON_CONST_GLYPH_BRACKET_OPEN, MOON_ITEM_RARITY_THRESHOLD_DISPLAY_TRASH, MOON_CONST_GLYPH_BRACKET_CLOSE);
 		break;
 	case MOON_ITEM_RARITY_THRESHOLD_COMMON:
-		sprint(target, "{0}{1}{2}", MOON_GLYPH_BRACKET_OPEN, MOON_ITEM_RARITY_THRESHOLD_DISPLAY_COMMON, MOON_GLYPH_BRACKET_CLOSE);
+		sprint(target, "{0}{1}{2}", MOON_CONST_GLYPH_BRACKET_OPEN, MOON_ITEM_RARITY_THRESHOLD_DISPLAY_COMMON, MOON_CONST_GLYPH_BRACKET_CLOSE);
 		break;
 	case MOON_ITEM_RARITY_THRESHOLD_UNCOMMON:
-		sprint(target, "{0}{1}{2}", MOON_GLYPH_BRACKET_OPEN, MOON_ITEM_RARITY_THRESHOLD_DISPLAY_UNCOMMON, MOON_GLYPH_BRACKET_CLOSE);
+		sprint(target, "{0}{1}{2}", MOON_CONST_GLYPH_BRACKET_OPEN, MOON_ITEM_RARITY_THRESHOLD_DISPLAY_UNCOMMON, MOON_CONST_GLYPH_BRACKET_CLOSE);
 		break;
 	case MOON_ITEM_RARITY_THRESHOLD_RARE:
-		sprint(target, "{0}{1}{2}", MOON_GLYPH_BRACKET_OPEN, MOON_ITEM_RARITY_THRESHOLD_DISPLAY_RARE, MOON_GLYPH_BRACKET_CLOSE);
+		sprint(target, "{0}{1}{2}", MOON_CONST_GLYPH_BRACKET_OPEN, MOON_ITEM_RARITY_THRESHOLD_DISPLAY_RARE, MOON_CONST_GLYPH_BRACKET_CLOSE);
 		break;
 	case MOON_ITEM_RARITY_THRESHOLD_EPIC:
-		sprint(target, "{0}{1}{2}", MOON_GLYPH_BRACKET_OPEN, MOON_ITEM_RARITY_THRESHOLD_DISPLAY_EPIC, MOON_GLYPH_BRACKET_CLOSE);
+		sprint(target, "{0}{1}{2}", MOON_CONST_GLYPH_BRACKET_OPEN, MOON_ITEM_RARITY_THRESHOLD_DISPLAY_EPIC, MOON_CONST_GLYPH_BRACKET_CLOSE);
 		break;
 	case MOON_ITEM_RARITY_THRESHOLD_LEGENDARY:
-		sprint(target, "{0}{1}{2}", MOON_GLYPH_BRACKET_OPEN, MOON_ITEM_RARITY_THRESHOLD_DISPLAY_LEGENDARY, MOON_GLYPH_BRACKET_CLOSE);
+		sprint(target, "{0}{1}{2}", MOON_CONST_GLYPH_BRACKET_OPEN, MOON_ITEM_RARITY_THRESHOLD_DISPLAY_LEGENDARY, MOON_CONST_GLYPH_BRACKET_CLOSE);
 		break;
 	case MOON_ITEM_RARITY_THRESHOLD_UNIQUE:
-		sprint(target, "{0}{1}{2}", MOON_GLYPH_BRACKET_OPEN, MOON_ITEM_RARITY_THRESHOLD_DISPLAY_UNIQUE, MOON_GLYPH_BRACKET_CLOSE);
+		sprint(target, "{0}{1}{2}", MOON_CONST_GLYPH_BRACKET_OPEN, MOON_ITEM_RARITY_THRESHOLD_DISPLAY_UNIQUE, MOON_CONST_GLYPH_BRACKET_CLOSE);
 		break;
 	default:
 		break;
@@ -359,21 +359,21 @@ void() moon_print_inventory =
 	{
 		moon_print_mentat_offense(self);
 		duration = self.mentat_offense_time - time;
-		sprint(self, " {0}{1}{2}\n", MOON_GLYPH_BRACKET_OPEN, floor_ftos(duration), MOON_GLYPH_BRACKET_CLOSE);
+		sprint(self, " {0}{1}{2}\n", MOON_CONST_GLYPH_BRACKET_OPEN, floor_ftos(duration), MOON_CONST_GLYPH_BRACKET_CLOSE);
 		did_print_section = TRUE;
 	}
 	if ( self.mentat_defense_time > time )
 	{
 		moon_print_mentat_defense(self);
 		duration = self.mentat_defense_time - time;
-		sprint(self, " {0}{1}{2}\n", MOON_GLYPH_BRACKET_OPEN, floor_ftos(duration), MOON_GLYPH_BRACKET_CLOSE);
+		sprint(self, " {0}{1}{2}\n", MOON_CONST_GLYPH_BRACKET_OPEN, floor_ftos(duration), MOON_CONST_GLYPH_BRACKET_CLOSE);
 		did_print_section = TRUE;
 	}
 	if ( self.mentat_attackspeed_time > time )
 	{
 		moon_print_mentat_speed(self);
 		duration = self.mentat_attackspeed_time - time;
-		sprint(self, " {0}{1}{2}\n", MOON_GLYPH_BRACKET_OPEN, floor_ftos(duration), MOON_GLYPH_BRACKET_CLOSE);
+		sprint(self, " {0}{1}{2}\n", MOON_CONST_GLYPH_BRACKET_OPEN, floor_ftos(duration), MOON_CONST_GLYPH_BRACKET_CLOSE);
 		did_print_section = TRUE;
 	}
 

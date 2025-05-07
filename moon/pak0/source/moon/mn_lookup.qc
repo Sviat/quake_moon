@@ -20,7 +20,7 @@ string(float digit) moon_gets_golden_digit =
 		case 9: return ("\9");
 		default:
 			dprint("<{}>", quick_ftos(digit));
-			return MOON_GLYPH_CENTERDOT_WHITE;
+			return MOON_CONST_GLYPH_CENTERDOT_WHITE;
 	}
 };
 
@@ -40,7 +40,7 @@ string(float digit) moon_gets_red_digit =
 		case 9: return ("\xB9");
 		default:
 			dprint("<{}>", quick_ftos(digit));
-			return MOON_GLYPH_CENTERDOT_WHITE;
+			return MOON_CONST_GLYPH_CENTERDOT_WHITE;
 	}
 };
 

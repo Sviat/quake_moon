@@ -391,8 +391,10 @@ void() item_armorInv =
 	StartItem();
 };
 
-void() weapon_touch =
+void() weapon_touch = // self - weapon, other - player
 {
+	local float best;
+
 	if (!(other.flags & FL_CLIENT))
 	{
 		return;
@@ -400,6 +402,8 @@ void() weapon_touch =
 
 	if ( other.classname != MOON_PLAYER_CLASSNAME ) { return; }
 	if ( other.health <= 0 ) { return; }
+
+	best = moon_get_target_best_weapon(other);
 
 	moon_target_consume_ammo_from(other, self);
 
@@ -409,7 +413,12 @@ void() weapon_touch =
 	sound(other, CHAN_ITEM, "weapons/pkup.wav", 1, ATTN_NORM);
 	flash_other();
 
-	moon_set_target_deathmatch_weapon(other, self.items); // TODO: either unify with moon_swap_target_to_best_weapon or remove completely
+	if ( other.weapon == best )
+	{
+		moon_swap_target_to_best_weapon(other);
+	} else {
+		moon_set_target_currentammo(other);
+	}
 
 	remove(self);
 };
@@ -714,13 +723,10 @@ void() BackpackTouch = // self - backpack, other - player
 
 	if (other.weapon == best)
 	{
-		other.weapon = moon_get_target_best_weapon(other);
+		moon_swap_target_to_best_weapon(other);
+	} else {
+		moon_set_target_currentammo(other);
 	}
-	if (deathmatch)
-	{
-		moon_set_target_deathmatch_weapon(other, new); // TODO: unite with moon_swap_target_to_best_weapon or else
-	}
-	moon_set_target_currentammo(other);
 
 	remove(self);
 };

@@ -4,6 +4,46 @@
 /// 	but open question how to keep boundary range in sync with switch-case?
 
 
+string(float digit) moon_gets_golden_digit =
+{
+	switch(floor(digit))
+	{
+		case 0: return ("\0");
+		case 1: return ("\1");
+		case 2: return ("\2");
+		case 3: return ("\3");
+		case 4: return ("\4");
+		case 5: return ("\5");
+		case 6: return ("\6");
+		case 7: return ("\7");
+		case 8: return ("\8");
+		case 9: return ("\9");
+		default:
+			dprint("<{}>", quick_ftos(digit));
+			return MOON_GLYPH_CENTERDOT_WHITE;
+	}
+};
+
+string(float digit) moon_gets_red_digit =
+{
+	switch(floor(digit))
+	{
+		case 0: return ("\xB0");
+		case 1: return ("\xB1");
+		case 2: return ("\xB2");
+		case 3: return ("\xB3");
+		case 4: return ("\xB4");
+		case 5: return ("\xB5");
+		case 6: return ("\xB6");
+		case 7: return ("\xB7");
+		case 8: return ("\xB8");
+		case 9: return ("\xB9");
+		default:
+			dprint("<{}>", quick_ftos(digit));
+			return MOON_GLYPH_CENTERDOT_WHITE;
+	}
+};
+
 string(float r) moon_lookup_client_name =
 {
 	switch(r)

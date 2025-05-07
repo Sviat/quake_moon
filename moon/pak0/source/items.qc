@@ -6574,12 +6574,12 @@ void(entity e) GenegateCampTarget = // NOT TODAY
 	}
 };
 
-void() MagicItemTouch =
+void() MagicItemTouch = // self - magic item, other - player
 {
 	if (other.classname != MOON_PLAYER_CLASSNAME) { return; }
 	if (other.health <= 0) { return; }
 
-	if (((other.next_mesg_time < time) || (other.mesg_inflictor != self)))
+	if ( (self.next_mesg_time < time) && (other.next_mesg_time < time) )
 	{
 		sprint(other, "=== magic item ===\n");
 		moon_print_target_item_name(other, self.prefix_one, self.netname, self.prefix_two);
@@ -6589,14 +6589,16 @@ void() MagicItemTouch =
 
 		if ( moon_target_player_needs_tutorial(other) )
 		{
-			if ((self.classname != MOON_TRADE_MARKET_SPOT_CLASSNAME))
+			if ( self.classname == MOON_TRADE_MARKET_SPOT_CLASSNAME )
 			{
+				sprint(other, "Use `buy` (default: `F`) command to buy it.\n");
+			} else {
 				sprint(other, "Use `use` (default: `E`) command to pick it up.\n");
 			}
 		}
 
-		other.next_mesg_time = (time + 4);
-		other.mesg_inflictor = self;
+		self.next_mesg_time = time + MOON_TIME_BETWEEN_ITEMTOUCH_ITEM_PRINT;
+		other.next_mesg_time = time + MOON_TIME_BETWEEN_ITEMTOUCH_PLAYER_PRINT;
 	}
 };
 

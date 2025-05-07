@@ -205,6 +205,8 @@ float MOON_TIME_ACTIVE_MENTAT = 90;
 float MOON_TIME_BETWEEN_MONSTER_SPAWN = 0.4; // was 0.3 but for Coop MP changed to 0.4
 float MOON_TIME_BETWEEN_ITEMSCANS = 1.28;
 float MOON_TIME_BETWEEN_FAILED_CHECKS = 4.21;
+float MOON_TIME_BETWEEN_ITEMTOUCH_ITEM_PRINT = 4.01; // dont bother Player with this item for that period
+float MOON_TIME_BETWEEN_ITEMTOUCH_PLAYER_PRINT = 1.01; // dont bother Player with any item for that period
 
 string MOON_GATE_CLASSNAME = "gate";
 string MOON_GATE_ENTRY_DISPLAYNAME = "Entrance Gate";

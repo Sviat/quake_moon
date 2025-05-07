@@ -862,9 +862,9 @@ void() CheckCrosshair =
 	{
 		if ( MOON_DEBUG & MOON_TRAIT_CPRINT_SEE_ALLY_HP )
 		{
-			centerprint(self, "{0} ({1}/{2})", MOON_GUARD_DISPLAYNAME, floor_ftos(trace_ent.health), floor_ftos(trace_ent.max_health));
+			centerprint(self, "{0} {1} ({2}/{3})", trace_ent.prefix_one, trace_ent.netname, floor_ftos(trace_ent.health), floor_ftos(trace_ent.max_health));
 		} else {
-			centerprint(self, MOON_GUARD_DISPLAYNAME);
+			centerprint(self, "{0} {1}", trace_ent.prefix_one, trace_ent.netname);
 		}
 		return;
 	}

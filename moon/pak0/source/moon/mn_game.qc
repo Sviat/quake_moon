@@ -148,14 +148,31 @@ void() moon_eprint_monsters_alive =
 	if (!(MOON_DEBUG & MOON_DEBUG_EPRINT_MONSTERS) ) { return; }
 
 	local entity e;
+	local float found;
 
 	dprint("== Alive monsters ==\n");
+
+	found = FALSE;
 	e = findradius(self.origin, 2025);
 	while ( (e != world) )
 	{
-		if ( (e.deadflag == DEAD_NO) )
+		if ( (e.classname != "waypoint") && (e.deadflag == DEAD_NO) )
 		{
 			eprint(e);
+			found = TRUE;
+		}
+		e = e.chain;
+	}
+	if ( found ) { return; }
+
+	found = FALSE;
+	e = findradius(self.origin, 768);
+	while ( (e != world) )
+	{
+		if ( e.classname != "waypoint" )
+		{
+			eprint(e);
+			found = TRUE;
 		}
 		e = e.chain;
 	}

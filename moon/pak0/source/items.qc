@@ -1769,7 +1769,8 @@ void(entity target, float weapon_code, float ammo_count = -1) moon_init_target_a
 		}
 		target.currentammo = target.ammo_shells;
 		target.cost = MOON_WEAPON_SUPERSHOTGUN_COST_SHOP;
-		target.targetname = MOON_WEAPON_SUPERSHOTGUN_DISPLAYNAME;
+		target.targetname = MOON_WEAPON_SUPERSHOTGUN_DISPLAYNAME; // for the Market&Shop
+		target.netname = MOON_WEAPON_SUPERSHOTGUN_DISPLAYNAME; // for the Loot drop
 		target.items = IT_SUPER_SHOTGUN;
 		break;
 	case MOON_WEAPON_NAILGUN_CODE:
@@ -1783,6 +1784,7 @@ void(entity target, float weapon_code, float ammo_count = -1) moon_init_target_a
 		target.currentammo = target.ammo_nails;
 		target.cost = MOON_WEAPON_NAILGUN_COST_SHOP;
 		target.targetname = MOON_WEAPON_NAILGUN_DISPLAYNAME;
+		target.netname = MOON_WEAPON_NAILGUN_DISPLAYNAME;
 		target.items = IT_NAILGUN;
 		break;
 	case MOON_WEAPON_SUPERNAILGUN_CODE:
@@ -1796,6 +1798,7 @@ void(entity target, float weapon_code, float ammo_count = -1) moon_init_target_a
 		target.currentammo = target.ammo_nails;
 		target.cost = MOON_WEAPON_SUPERNAILGUN_COST_SHOP;
 		target.targetname = MOON_WEAPON_SUPERNAILGUN_DISPLAYNAME;
+		target.netname = MOON_WEAPON_SUPERNAILGUN_DISPLAYNAME;
 		target.items = IT_SUPER_NAILGUN;
 		break;
 	case MOON_WEAPON_GRENADELAUNCHER_CODE:
@@ -1809,6 +1812,7 @@ void(entity target, float weapon_code, float ammo_count = -1) moon_init_target_a
 		target.currentammo = target.ammo_rockets;
 		target.cost = MOON_WEAPON_GRENADELAUNCHER_COST_SHOP;
 		target.targetname = MOON_WEAPON_GRENADELAUNCHER_DISPLAYNAME;
+		target.netname = MOON_WEAPON_GRENADELAUNCHER_DISPLAYNAME;
 		target.items = IT_GRENADE_LAUNCHER;
 		break;
 	case MOON_WEAPON_ROCKETLAUNCHER_CODE:
@@ -1822,6 +1826,7 @@ void(entity target, float weapon_code, float ammo_count = -1) moon_init_target_a
 		target.currentammo = target.ammo_rockets;
 		target.cost = MOON_WEAPON_ROCKETLAUNCHER_COST_SHOP;
 		target.targetname = MOON_WEAPON_ROCKETLAUNCHER_DISPLAYNAME;
+		target.netname = MOON_WEAPON_ROCKETLAUNCHER_DISPLAYNAME;
 		target.items = IT_ROCKET_LAUNCHER;
 		break;
 	case MOON_WEAPON_LIGHTNING_CODE:
@@ -1835,6 +1840,7 @@ void(entity target, float weapon_code, float ammo_count = -1) moon_init_target_a
 		target.currentammo = target.ammo_cells;
 		target.cost = MOON_WEAPON_LIGHTNING_COST_SHOP;
 		target.targetname = MOON_WEAPON_LIGHTNING_DISPLAYNAME;
+		target.netname = MOON_WEAPON_LIGHTNING_DISPLAYNAME;
 		target.items = IT_LIGHTNING;
 		break;
 	default:
@@ -2614,7 +2620,6 @@ entity() moon_market_place_weapon =
 	setorigin(e, ((self.origin + (v_forward * 47)) - '0 0 24'));
 	e.solid = SOLID_NOT;
 	e.classname = MOON_TRADE_MARKET_SPOT_CLASSNAME;
-	e.netname = MOON_WEAPON_MARKET_NETNAME;
 	e.noise1 = "weapons/pkup.wav";
 	e.owner = self;
 	sound(e, CHAN_ITEM, "items/itembk2.wav", 1, ATTN_NORM);
@@ -2654,6 +2659,8 @@ entity() moon_market_place_weapon =
 		e.cost = rint( MOON_WEAPON_LIGHTNING_COST_MARKET + (e.currentammo * MOON_AMMO_CELLS_COSTOFONE) );
 		e.targetname = MOON_WEAPON_LIGHTNING_MARKET_DISPLAYNAME;
 	}
+
+	e.netname = MOON_WEAPON_MARKET_NETNAME; // overwrite value set by moon_init_target_as_weapon
 
 	return e;
 };

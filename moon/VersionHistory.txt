@@ -4,6 +4,40 @@ Created by Sanctus-Susanin
 https://steamcommunity.com/id/sanctorum/ (Steam) / @SanctusSusanin (Discord)
 -----------------------------
 
+ver 0.29kf
+- Changed how weapons work, reload, shoot, damage...internally. From player's PoV should not be noticeable
+	- Only noticeable change is order of weapon switching when bought or picked up
+		- RL and GL are considered dangerous, and should not automatically appear in some cases (i.e, when running out of batteries)
+- Added Book upgrades for all types of Ammo
+	- Previously only Bullets (Shells) and Nails had one
+	- Now Rockets and Cells have too
+		- Check out this amazing Cell upgrade! You will like it
+	- Honored mention - Axe, which is upgradeable, but code is not finished yet, so you probably will not use it anyway [v>=0.32]
+- Adjusted "Speed Mentat" buff as well
+	- It is actually planned for deprecation or rework [v>=0.30]
+	- New version planned to buff player speed instead
+	- All mentats planned to have different debuffs on expiration, that can be healed by consuming any new mentat [v>=0.31]
+- Added two new magical item traits
+	- One to repair (non-magical) armor up to some value
+	- Other to recharge cells up to some value as well
+- Magical item properties are more random and should appear earlier
+	- Previously there was linear loot table where each trait was repeated several times with higher quality. Spawn chance was locked by level ranges.
+	- Now, exact effect and its power are generated independently from each other
+	- This is true for both prefix- and postfix-traits.
+	- Some effects still should not spawn before (and some not after) certain level.
+		- Early-game-only traits are extra health and extra gold
+		- Late-game-only are 2 new traits plus health regen and vampirism
+- Added personal touch to Guardian bots
+	- Now before you send them rockets flying please at least check their name to press "F" later
+	- May be in the future they will collect unpicked weapons in the fields [v>=0.35]
+
+ver 0.28kf
+- Added display of HP for players, bots and Heart
+- Difficulty level now also influences the monster quantity
+- Guardians now slowly regenerate health
+- Counting spawned and killed monsters fixed
+	- When you occasionally see that you killed less monsters than were spawned, yet nobody is attacking, thats because they are gathering on their spawn for the final wave
+
 ver 0.27kf
 - First version to at least somehow work anywhere except KEX (on FTE)
 - First version to appear at the Quake Enhanced Add-on Server mod repository

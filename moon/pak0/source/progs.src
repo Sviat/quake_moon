@@ -10,6 +10,7 @@ moon/mn_defs.qc
 moon/mn_globals.qc
 moon/mn_entity.qc
 moon/mn_funcs.qc
+moon/mn_lookup.qc
 moon/mn_init.qc
 moon/mn_session.qc
 moon/mn_game.qc

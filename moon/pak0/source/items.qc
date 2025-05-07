@@ -3934,72 +3934,9 @@ void() moon_print_skills =
 	sprint(self, "---------------------\n");
 };
 
-string(float level) moon_get_monster_level_prefix =
-{
-	if ( level < 0 )
-	{
-		return "n00bie ";
-	}
-	switch(level)
-	{
-		case 0: return "novice ";
-		case 1: return "ordinary ";
-		case 2: return "promoted ";
-		case 3: return "advanced ";
-		case 4: return "experienced ";
-		case 5: return "grim ";
-		case 6: return "massive ";
-		case 7: return "skillful ";
-		case 8: return "incredible ";
-		case 9: return "merciless ";
-		case 10: return "drilled ";
-		case 11: return "war ";
-		case 12: return "enourmous ";
-		case 13: return "powerful ";
-		case 14: return "grand ";
-		case 15: return "chaos ";
-		case 16: return "demonical ";
-		case 17: return "superior ";
-		case 18: return "hurricane ";
-		case 19: return "defacing ";
-		case 20: return "phantom ";
-		case 21: return "lord ";
-		case 22: return "baron ";
-		case 23: return "overlord ";
-		case 24: return "warlord ";
-		case 25: return "king ";
-		case 26: return "plague ";
-		case 27: return "storm ";
-		case 28: return "shadow ";
-		case 29: return "holocaust ";
-		case 30: return "order ";
-		case 31: return "dire ";
-		case 32: return "gale ";
-		case 33: return "cruel ";
-		case 34: return "doom ";
-		case 35: return "serious ";
-		case 36: return "celestial ";
-		case 37: return "terrible ";
-		case 38: return "diamond ";
-		case 39: return "rush ";
-		case 40: return "crashing ";
-		case 41: return "fanged ";
-		case 42: return "thirsty ";
-		case 43: return "splitter ";
-		case 44: return "sunder ";
-		case 45: return "rend ";
-		case 46: return "reaver ";
-		case 47: return "gnash ";
-		case 48: return "blow ";
-		case 49: return "smasher ";
-		case 50: return "satan's ";
-		default: return "satan's ";
-	}
-};
-
 void(entity who, float l) GetMonsterPrefixLevel =
 {
-	who.prefix_two = moon_get_monster_level_prefix(l);
+	who.prefix_two = moon_lookup_monster_level_prefix(l);
 };
 
 float(float level) moon_get_monster_wave_size_for_level =

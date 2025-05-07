@@ -160,11 +160,22 @@ float(entity target, float include_dangerous = false) moon_get_target_best_weapo
 {
 	local float it;
 
+	if ( (target.weapon == IT_ROCKET_LAUNCHER) || (target.weapon == IT_GRENADE_LAUNCHER) )
+	{
+		include_dangerous = TRUE;
+	}
+
 	it = target.items;
 	if ( (target.waterlevel <= 1) && (it & IT_LIGHTNING) && moon_target_has_enough_ammo(target, IT_LIGHTNING) )
 	{
 		return (IT_LIGHTNING);
 	}
+
+	if ( include_dangerous && (it & IT_ROCKET_LAUNCHER) && moon_target_has_enough_ammo(target, IT_ROCKET_LAUNCHER) )
+	{
+		return (IT_ROCKET_LAUNCHER);
+	}
+
 	if ( (it & IT_SUPER_NAILGUN) && moon_target_has_enough_ammo(target, IT_SUPER_NAILGUN) )
 	{
 		return (IT_SUPER_NAILGUN);
@@ -174,9 +185,9 @@ float(entity target, float include_dangerous = false) moon_get_target_best_weapo
 		return (IT_SUPER_SHOTGUN);
 	}
 
-	if ( include_dangerous && (it & IT_ROCKET_LAUNCHER) && moon_target_has_enough_ammo(target, IT_ROCKET_LAUNCHER) )
+	if ( include_dangerous && (it & IT_GRENADE_LAUNCHER) && moon_target_has_enough_ammo(target, IT_GRENADE_LAUNCHER) )
 	{
-		return (IT_ROCKET_LAUNCHER);
+		return (IT_GRENADE_LAUNCHER);
 	}
 
 	if ( (it & IT_NAILGUN) && moon_target_has_enough_ammo(target, IT_NAILGUN))
@@ -186,11 +197,6 @@ float(entity target, float include_dangerous = false) moon_get_target_best_weapo
 	if ( (it & IT_SHOTGUN) && moon_target_has_enough_ammo(target, IT_SHOTGUN) )
 	{
 		return (IT_SHOTGUN);
-	}
-
-	if ( include_dangerous && (it & IT_GRENADE_LAUNCHER) && moon_target_has_enough_ammo(target, IT_GRENADE_LAUNCHER) )
-	{
-		return (IT_GRENADE_LAUNCHER);
 	}
 
 	return (IT_AXE);
@@ -210,7 +216,7 @@ float(entity target, float include_dangerous = false) moon_swap_target_to_best_w
 	return target.weapon;
 };
 
-float(float weapon) moon_get_weapon_rank =
+float(float weapon) moon_get_weapon_rank = // DEPRECATED
 {
 	switch(weapon)
 	{
@@ -233,7 +239,7 @@ float(float weapon) moon_get_weapon_rank =
 	}
 };
 
-void(entity target, float candidate) moon_set_target_deathmatch_weapon =
+void(entity target, float candidate) moon_set_target_deathmatch_weapon = // DEPRECATED
 {
 	local float rank_current;
 	local float rank_candidate;

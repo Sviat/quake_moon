@@ -186,7 +186,7 @@ void(entity target) moon_print_mentat_speed =
 
 void(entity subject) moon_bprint_describe_player =
 {
-	bprint("{0}{1}. Level [{2}]. HP: {3}", subject.prefix_one, subject.netname, floor_ftos(subject.lvl), floor_ftos(subject.health));
+	bprint("{0} {1}, lvl [{2}], HP: {3}", subject.prefix_one, subject.netname, floor_ftos(subject.lvl), floor_ftos(subject.health));
 	if ( subject.health != subject.max_health )
 	{
 		bprint("/{0}", floor_ftos(subject.max_health));

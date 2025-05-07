@@ -62,7 +62,7 @@ void() moon_print_inventory;
 void() moon_identify_item;
 void() moon_buy_item;
 void(entity subject) moon_bprint_describe_player;
-string(float rarity_level) moon_get_item_rarity_display;
+string(float rarity_level) moon_lookup_item_rarity_display;
 void(entity target, string prefix, string name, string postfix) moon_print_target_item_name;
 void(entity target, float rarity_level) moon_print_target_item_rarity;
 

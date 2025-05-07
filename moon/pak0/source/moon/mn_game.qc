@@ -84,7 +84,7 @@ void() moon_handle_impulse_noop =
 	{
 		if ( (selected.netname == MOON_ITEM_ARMOR_NETNAME) || (selected.netname == MOON_ITEM_RING_NETNAME) )
 		{
-			rarity = moon_get_item_rarity_display(selected.magic_rarity_level);
+			rarity = moon_lookup_item_rarity_display(selected.magic_rarity_level);
 			centerprint(self, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n{0}{1}{2}{3} ({4} gold)"
 							, selected.prefix_one
 							, selected.targetname

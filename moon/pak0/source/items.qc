@@ -2099,10 +2099,48 @@ void(entity e) moon_calculate_magic_cost =
 	e.cost = ccost;
 };
 
+float(float level) moon_generate_trait_effect_code =
+{
+	if ( level < MOON_ITEM_TRAIT_CODE_THRESHOLD_LOW )
+	{
+		return random_int(MOON_ITEM_TRAIT_MIN_EFFECT, MOON_ITEM_TRAIT_CODE_LOW_HIGHEST);
+	} else
+	if ( level > MOON_ITEM_TRAIT_CODE_THRESHOLD_HIGH )
+	{
+		return random_int(MOON_ITEM_TRAIT_CODE_HIGH_LOWEST, MOON_ITEM_TRAIT_MAX_EFFECT);
+	} else {
+		return random_int(MOON_ITEM_TRAIT_MIN_EFFECT, MOON_ITEM_TRAIT_MAX_EFFECT);
+	}
+};
+
+
 float(float level) moon_generate_trait_quality = // return int in range [MAXLEVEL, 2*MAXLEVEL]
 {
-	return level * MOON_ITEM_TRAIT_QUALITY_MULTIPLIER_LEVEL_FLAT
-		 + rint( random() * level * MOON_ITEM_TRAIT_QUALITY_MULTIPLIER_LEVEL_RANDOM );
+	local float shift;
+	local float width;
+
+	shift = clampd(0, level * 2 - MOON_ITEM_TRAIT_THRESHOLD_PREFIX_NORMAL, MOON_ITEM_TRAIT_THRESHOLD_PREFIX_NORMAL);
+	width = 0;
+	if ( level <= MOON_ITEM_TRAIT_LVLTHRESHOLD_LOWANDNORMAL )
+	{
+		width = MOON_ITEM_TRAIT_THRESHOLD_PREFIX_NORMAL;
+	} else
+	if ( level <= MOON_ITEM_TRAIT_LVLTHRESHOLD_NOEPIC )
+	{
+		width = MOON_ITEM_TRAIT_THRESHOLD_PREFIX_HIGH;
+	} else
+	if ( level <= MOON_ITEM_TRAIT_LVLTHRESHOLD_ALL )
+	{
+		width = MOON_ITEM_TRAIT_THRESHOLD_PREFIX_HIGH + level;
+	} else
+	if ( level <= MOON_ITEM_TRAIT_LVLTHRESHOLD_NOLOW )
+	{
+		width = MOON_ITEM_TRAIT_THRESHOLD_PREFIX_HIGH + level;
+	} else { // MOON_ITEM_TRAIT_LVLTHRESHOLD_HIGHANDEPIC
+		width = 50 + (level - MOON_ITEM_TRAIT_LVLTHRESHOLD_NOLOW);
+	}
+
+	return shift + rint(random() * width);
 };
 
 float(float level) moon_generate_trait_prefix_rarity =
@@ -2110,15 +2148,15 @@ float(float level) moon_generate_trait_prefix_rarity =
 	local float total_quality;
 	total_quality = moon_generate_trait_quality(level);
 
-	if ( total_quality < MOON_ITEM_TRAIT_THRESHOLD_PREFIX_LOW )
+	if ( total_quality <= MOON_ITEM_TRAIT_THRESHOLD_PREFIX_LOW )
 	{
 		return MOON_ITEM_RARITY_LOW;
 	} else
-	if ( total_quality < MOON_ITEM_TRAIT_THRESHOLD_PREFIX_NORMAL )
+	if ( total_quality <= MOON_ITEM_TRAIT_THRESHOLD_PREFIX_NORMAL )
 	{
 		return MOON_ITEM_RARITY_NORMAL;
 	} else
-	if ( total_quality < MOON_ITEM_TRAIT_THRESHOLD_PREFIX_HIGH )
+	if ( (total_quality + badluck_compensation) <= MOON_ITEM_TRAIT_THRESHOLD_PREFIX_HIGH )
 	{
 		return MOON_ITEM_RARITY_HIGH;
 	} else {
@@ -2131,34 +2169,19 @@ float(float level) moon_generate_trait_postfix_rarity =
 	local float total_quality;
 	total_quality = moon_generate_trait_quality(level);
 
-	if ( total_quality < MOON_ITEM_TRAIT_THRESHOLD_POSTFIX_LOW )
+	if ( total_quality <= MOON_ITEM_TRAIT_THRESHOLD_POSTFIX_LOW )
 	{
 		return MOON_ITEM_RARITY_LOW;
 	} else
-	if ( total_quality < MOON_ITEM_TRAIT_THRESHOLD_POSTFIX_NORMAL )
+	if ( total_quality <= MOON_ITEM_TRAIT_THRESHOLD_POSTFIX_NORMAL )
 	{
 		return MOON_ITEM_RARITY_NORMAL;
 	} else
-	if ( total_quality < MOON_ITEM_TRAIT_THRESHOLD_POSTFIX_HIGH )
+	if ( total_quality <= MOON_ITEM_TRAIT_THRESHOLD_POSTFIX_HIGH )
 	{
 		return MOON_ITEM_RARITY_HIGH;
 	} else {
-		return MOON_ITEM_RARITY_HIGH;
-		// return MOON_ITEM_RARITY_EPIC; // disable, until Unique items implemented
-	}
-};
-
-float(float level) moon_generate_trait_effect_code =
-{
-	if ( level < MOON_ITEM_TRAIT_CODE_THRESHOLD_LOW )
-	{
-		return random_int(MOON_ITEM_TRAIT_MIN_EFFECT, MOON_ITEM_TRAIT_CODE_LOW_HIGHEST);
-	} else
-	if ( level > MOON_ITEM_TRAIT_CODE_THRESHOLD_HIGH )
-	{
-		return random_int(MOON_ITEM_TRAIT_CODE_HIGH_LOWEST, MOON_ITEM_TRAIT_MAX_EFFECT);
-	} else {
-		return random_int(MOON_ITEM_TRAIT_MIN_EFFECT, MOON_ITEM_TRAIT_MAX_EFFECT);
+		return MOON_ITEM_RARITY_EPIC;
 	}
 };
 
@@ -2396,7 +2419,19 @@ void(entity e) moon_generate_magic_postfix =
 	effect = moon_generate_trait_effect_code(mxx);
 	e.magic_typetwo = effect;
 
-	rarity = moon_generate_trait_prefix_rarity(mxx);
+	rarity = moon_generate_trait_postfix_rarity(mxx);
+
+	if ( rarity == MOON_ITEM_RARITY_EPIC ) // Postfix rolled to EPIC -> chance for Unique item
+	{
+		if ( e.magic_rarity_level == MOON_ITEM_RARITY_EPIC ) // Postifx always generated after Prefix, so this field hold rarity of Prefix by now
+		{
+			badluck_compensation = 0; // Reset bonus, and wait for next chance
+		} else {
+			rarity = MOON_ITEM_RARITY_HIGH; // lower quality,
+			badluck_compensation = badluck_compensation + MOON_ITEM_TRAIT_BADLUCKCOMPENSATION_BONUS; // but award compensation
+		}
+	}
+
 	e.magic_rarity_level = e.magic_rarity_level + rarity;
 	switch(effect)
 	{
@@ -2573,6 +2608,20 @@ void(entity e) moon_generate_magic_postfix =
 	}
 };
 
+void(entity e) moon_handle_magic_unique =
+{
+	if ( e.magic_rarity_level != MOON_ITEM_RARITY_THRESHOLD_UNIQUE )
+	{
+		return;
+	}
+	// roll which of Uniques
+	// block that Unique from generating ever again
+	// change Prefix and Postfix strings
+	// change Prefix and Postfix values to maximum
+	// handling of additional effects should be done on demand
+	//  where it is required (i.e in damage function or heal function)
+};
+
 entity() moon_market_place_magic_item =
 {
 	local entity e;
@@ -2610,6 +2659,7 @@ entity() moon_market_place_magic_item =
 	} else {
 		moon_generate_magic_prefix(e);
 		moon_generate_magic_postfix(e);
+		moon_handle_magic_unique(e);
 	}
 
 	moon_calculate_magic_cost(e);

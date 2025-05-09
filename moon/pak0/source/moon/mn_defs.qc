@@ -357,18 +357,28 @@ float MOON_ITEM_TRAIT_CODE_THRESHOLD_LOW    = 10; // after this level - do not g
 float MOON_ITEM_TRAIT_CODE_HIGH_LOWEST  = 4;
 float MOON_ITEM_TRAIT_CODE_THRESHOLD_HIGH   = 40; // after this level - do not generate LOW tier
 
-// Final Trait quality = LVL*_LVLMULTIPLIER + rand()*_RNDMULTIPLIER
-float MOON_ITEM_TRAIT_QUALITY_MULTIPLIER_LEVEL_FLAT = 1;
-float MOON_ITEM_TRAIT_QUALITY_MULTIPLIER_LEVEL_RANDOM = 1;
+// Final Trait quality: Q(lvl) = P(lvl) + rand()*R(lvl)
+//  (shift function) P(lvl) = clampd(0, 2*lvl - 20, 20)
+//  (width function) R(lvl) = 20 / 40 / 40-55 / 40-60 / 50-80
+float MOON_ITEM_TRAIT_QUALITY_MULTIPLIER_LEVEL_FLAT = 2;
+float MOON_ITEM_TRAIT_QUALITY_MULTIPLIER_LEVEL_RANDOM = 1;//remove
+float MOON_ITEM_TRAIT_LVLTHRESHOLD_LOWANDNORMAL = 5;
+float MOON_ITEM_TRAIT_LVLTHRESHOLD_NOEPIC = 10;
+float MOON_ITEM_TRAIT_LVLTHRESHOLD_ALL = 15;
+float MOON_ITEM_TRAIT_LVLTHRESHOLD_NOLOW = 20;
+float MOON_ITEM_TRAIT_LVLTHRESHOLD_HIGHANDEPIC = 100; // not necessary
 // If Trait quality is less than threshold -> that is rarity
-float MOON_ITEM_TRAIT_THRESHOLD_PREFIX_LOW = 8;
-float MOON_ITEM_TRAIT_THRESHOLD_PREFIX_NORMAL = 16;
-float MOON_ITEM_TRAIT_THRESHOLD_PREFIX_HIGH = 32;
+float MOON_ITEM_TRAIT_THRESHOLD_PREFIX_LOW = 10;        // These
+float MOON_ITEM_TRAIT_THRESHOLD_PREFIX_NORMAL = 20;     //  values
+float MOON_ITEM_TRAIT_THRESHOLD_PREFIX_HIGH = 40;       //   were used to balance Quality roll formula
+float MOON_ITEM_TRAIT_THRESHOLD_POSTFIX_LOW = 8;        // But these
+float MOON_ITEM_TRAIT_THRESHOLD_POSTFIX_NORMAL = 16;    //  values
+float MOON_ITEM_TRAIT_THRESHOLD_POSTFIX_HIGH = 92;      //   are intentionally off balance
+
 float MOON_ITEM_TRAIT_THRESHOLD_PREFIX_EPIC = 100; // not necessary, since MAX is 100, and everything between HIGH and that would be EPIC anyway
-float MOON_ITEM_TRAIT_THRESHOLD_POSTFIX_LOW = 10;
-float MOON_ITEM_TRAIT_THRESHOLD_POSTFIX_NORMAL = 15;
-float MOON_ITEM_TRAIT_THRESHOLD_POSTFIX_HIGH = 60;
-float MOON_ITEM_TRAIT_THRESHOLD_POSTFIX_EPIC = 100; // Epic postfix => UNIQUE item, but TODO for later
+float MOON_ITEM_TRAIT_THRESHOLD_POSTFIX_EPIC = 100; // not necessary, since MAX is 100, Epic postfix => UNIQUE item, but TODO for later
+
+float MOON_ITEM_TRAIT_BADLUCKCOMPENSATION_BONUS = 4; // added each time EPIC postfix is rolled, but prefix is not EPIC, so UNIQUE item was not generated
 
 // MOON_ITEM_MEDKIT -> MOON_MEDKIT . Medkits can only be bought
 float MOON_MEDKIT_SMALL_TYPE		= 0;

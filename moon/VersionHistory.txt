@@ -27,6 +27,7 @@ ver 0.29kf
 	- Some effects still should not spawn before (and some not after) certain level.
 		- Early-game-only traits are extra health and extra gold
 		- Late-game-only are 2 new traits plus health regen and vampirism
+	- Added rarity levels that some traits were missing
 - Added personal touch to Guardian bots
 	- Now before you send them rockets flying please at least check their name to press "F" later
 	- May be in the future they will collect unpicked weapons in the fields [v>=0.35]

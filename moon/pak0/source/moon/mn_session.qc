@@ -4,10 +4,14 @@
 void() moon_reset_globals =
 {
 	gl_playercount = 0;
-	sv_alwaysday = 0;
+
+	sv_alwaysday = 0;	// TODO: one day - preserve Settings between restarts
 	sv_fastmeat = 0;
 	sv_noshake = 0;
+
 	up_alert = MOON_CONST_LOCKED;
+	up_gold_value = 0;
+	badluck_compensation = 0;
 };
 
 void(entity target) moon_prepare_player_entity =

@@ -350,8 +350,6 @@ string MOON_ITEM_RARITY_THRESHOLD_DISPLAY_UNIQUE = MOON_CONST_GLYPH_REDSQUARE;
 
 // Dynamic Magical item grid
 // Trait effect is chosen uniformaly between [MOON_ITEM_TRAIT_MIN_EFFECT, MOON_ITEM_TRAIT_MAX_EFFECT]
-float MOON_ITEM_TRAIT_MIN_EFFECT        = 1;
-float MOON_ITEM_TRAIT_MAX_EFFECT        = 10;
 float MOON_ITEM_TRAIT_CODE_LOW_HIGHEST  = 6;
 float MOON_ITEM_TRAIT_CODE_THRESHOLD_LOW    = 10; // after this level - do not generate HIGH tier
 float MOON_ITEM_TRAIT_CODE_HIGH_LOWEST  = 4;
@@ -666,7 +664,8 @@ float MOON_ITEM_NO_CODE = 0;
 // Each rarity level has effect value range [FROM, TO]
 //  these ranges are not disjoint, so higher roll LOW can have same or little better value as lower roll NORMAL item
 // Some effects may be missing one or more rarity levels in original mod. That is to be eventually filled
-
+float MOON_ITEM_TRAIT_MIN_EFFECT        = 1;
+//
 float MOON_ITEM_HEALTH_CODE = 1;
 float MOON_ITEM_HEALTH_MARKET_COST_SCALE = 22; // was 45. Purpose of change: overall bonus values raised for all levels, to just keep items a competetive choice, hence need to lower price scaling
 string MOON_ITEM_HEALTH_EFFECT  	= "+{} to maximum health";
@@ -925,7 +924,8 @@ float MOON_ITEM_RECHARGE_POSTFIX_NORMAL_TO = 11;
 string MOON_ITEM_RECHARGE_POSTFIX_HIGH 	= " of Forgotten Tech";
 float MOON_ITEM_RECHARGE_POSTFIX_HIGH_FROM = 10;
 float MOON_ITEM_RECHARGE_POSTFIX_HIGH_TO = 16;
-
+//
+float MOON_ITEM_TRAIT_MAX_EFFECT        = 10;
 // // last Effect's _CODE should not be greater than MOON_ITEM_TRAIT_MAX_EFFECT
 
 // // list of Upgrades

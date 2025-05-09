@@ -2232,9 +2232,12 @@ void(entity e) moon_generate_magic_prefix =
 			e.prefix_one = MOON_ITEM_DAMAGE_PREFIX_NORMAL;
 			break;
 		case MOON_ITEM_RARITY_HIGH:
-		case MOON_ITEM_RARITY_EPIC: // -- There were NO Epic rarity variant -- \\
 			e.magic_typeone_value = random_int(MOON_ITEM_DAMAGE_PREFIX_HIGH_FROM, MOON_ITEM_DAMAGE_PREFIX_HIGH_TO);
 			e.prefix_one = MOON_ITEM_DAMAGE_PREFIX_HIGH;
+			break;
+		case MOON_ITEM_RARITY_EPIC:
+			e.magic_typeone_value = random_int(MOON_ITEM_DAMAGE_PREFIX_EPIC_FROM, MOON_ITEM_DAMAGE_PREFIX_EPIC_TO);
+			e.prefix_one = MOON_ITEM_DAMAGE_PREFIX_EPIC;
 			break;
 		}
 		break;
@@ -2246,9 +2249,12 @@ void(entity e) moon_generate_magic_prefix =
 			e.prefix_one = MOON_ITEM_GOLD_PREFIX_LOW;
 			break;
 		case MOON_ITEM_RARITY_NORMAL:
-		case MOON_ITEM_RARITY_HIGH: // -- There were NO High rarity variant -- \\
 			e.magic_typeone_value = random_int(MOON_ITEM_GOLD_PREFIX_NORMAL_FROM, MOON_ITEM_GOLD_PREFIX_NORMAL_TO);
 			e.prefix_one = MOON_ITEM_GOLD_PREFIX_NORMAL;
+			break;
+		case MOON_ITEM_RARITY_HIGH:
+			e.magic_typeone_value = random_int(MOON_ITEM_GOLD_PREFIX_HIGH_FROM, MOON_ITEM_GOLD_PREFIX_HIGH_TO);
+			e.prefix_one = MOON_ITEM_GOLD_PREFIX_HIGH;
 			break;
 		case MOON_ITEM_RARITY_EPIC:
 			e.magic_typeone_value = random_int(MOON_ITEM_GOLD_PREFIX_EPIC_FROM, MOON_ITEM_GOLD_PREFIX_EPIC_TO);
@@ -2288,7 +2294,10 @@ void(entity e) moon_generate_magic_prefix =
 			e.magic_typeone_value = random_int(MOON_ITEM_RETALATE_PREFIX_NORMAL_FROM, MOON_ITEM_RETALATE_PREFIX_NORMAL_TO);
 			e.prefix_one = MOON_ITEM_RETALATE_PREFIX_NORMAL;
 			break;
-		case MOON_ITEM_RARITY_HIGH: // -- There were NO High rarity variant -- \\
+		case MOON_ITEM_RARITY_HIGH:
+			e.magic_typeone_value = random_int(MOON_ITEM_RETALATE_PREFIX_HIGH_FROM, MOON_ITEM_RETALATE_PREFIX_HIGH_TO);
+			e.prefix_one = MOON_ITEM_RETALATE_PREFIX_HIGH;
+			break;
 		case MOON_ITEM_RARITY_EPIC:
 			e.magic_typeone_value = random_int(MOON_ITEM_RETALATE_PREFIX_EPIC_FROM, MOON_ITEM_RETALATE_PREFIX_EPIC_TO);
 			e.prefix_one = MOON_ITEM_RETALATE_PREFIX_EPIC;
@@ -2306,7 +2315,10 @@ void(entity e) moon_generate_magic_prefix =
 			e.magic_typeone_value = random_int(MOON_ITEM_VAMPIR_PREFIX_NORMAL_FROM, MOON_ITEM_VAMPIR_PREFIX_NORMAL_TO);
 			e.prefix_one = MOON_ITEM_VAMPIR_PREFIX_NORMAL;
 			break;
-		case MOON_ITEM_RARITY_HIGH: // -- There were NO High rarity variant -- \\
+		case MOON_ITEM_RARITY_HIGH:
+			e.magic_typeone_value = random_int(MOON_ITEM_VAMPIR_PREFIX_HIGH_FROM, MOON_ITEM_VAMPIR_PREFIX_HIGH_TO);
+			e.prefix_one = MOON_ITEM_VAMPIR_PREFIX_HIGH;
+			break;
 		case MOON_ITEM_RARITY_EPIC:
 			e.magic_typeone_value = random_int(MOON_ITEM_VAMPIR_PREFIX_EPIC_FROM, MOON_ITEM_VAMPIR_PREFIX_EPIC_TO);
 			e.prefix_one = MOON_ITEM_VAMPIR_PREFIX_EPIC;
@@ -2511,9 +2523,12 @@ void(entity e) moon_generate_magic_postfix =
 			e.prefix_two = MOON_ITEM_RETALATE_POSTFIX_LOW;
 			break;
 		case MOON_ITEM_RARITY_NORMAL:
-		case MOON_ITEM_RARITY_HIGH: // -- There were NO High rarity variant -- \\
 			e.magic_typetwo_value = random_int(MOON_ITEM_RETALATE_POSTFIX_NORMAL_FROM, MOON_ITEM_RETALATE_POSTFIX_NORMAL_TO);
 			e.prefix_two = MOON_ITEM_RETALATE_POSTFIX_NORMAL;
+			break;
+		case MOON_ITEM_RARITY_HIGH:
+			e.magic_typetwo_value = random_int(MOON_ITEM_RETALATE_POSTFIX_HIGH_FROM, MOON_ITEM_RETALATE_POSTFIX_HIGH_TO);
+			e.prefix_two = MOON_ITEM_RETALATE_POSTFIX_HIGH;
 			break;
 		}
 		break;
@@ -2521,10 +2536,16 @@ void(entity e) moon_generate_magic_postfix =
 		switch(rarity)
 		{
 		case MOON_ITEM_RARITY_LOW:
-		case MOON_ITEM_RARITY_NORMAL: // -- There were NO Normal rarity variant -- \\
-		case MOON_ITEM_RARITY_HIGH: // -- There were NO High rarity variant -- \\
 			e.magic_typetwo_value = random_int(MOON_ITEM_VAMPIR_POSTFIX_LOW_FROM, MOON_ITEM_VAMPIR_POSTFIX_LOW_TO);
 			e.prefix_two = MOON_ITEM_VAMPIR_POSTFIX_LOW;
+			break;
+		case MOON_ITEM_RARITY_NORMAL:
+			e.magic_typetwo_value = random_int(MOON_ITEM_VAMPIR_POSTFIX_NORMAL_FROM, MOON_ITEM_VAMPIR_POSTFIX_NORMAL_TO);
+			e.prefix_two = MOON_ITEM_VAMPIR_POSTFIX_NORMAL;
+			break;
+		case MOON_ITEM_RARITY_HIGH:
+			e.magic_typetwo_value = random_int(MOON_ITEM_VAMPIR_POSTFIX_HIGH_FROM, MOON_ITEM_VAMPIR_POSTFIX_HIGH_TO);
+			e.prefix_two = MOON_ITEM_VAMPIR_POSTFIX_HIGH;
 			break;
 		}
 		break;

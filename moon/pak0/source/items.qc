@@ -2411,7 +2411,7 @@ void(entity e) moon_generate_magic_prefix =
 		break;
 	default:
 		e.magic_typeone = MOON_ITEM_NONE;
-		bprint("moon_generate_magic_prefix cannot handle code {}\n", quick_ftos(effect));
+		bprint("moon_generate_magic_prefix cannot handle code {0}\n", quick_ftos(effect));
 	}
 
 	// Just adding Rarity levels works correctly, except for one case, when item has both prefix and postfix of same LOW level trait (which effectively makes it COMMON from TRASH)
@@ -2619,7 +2619,7 @@ void(entity e) moon_generate_magic_postfix =
 		break;
 	default:
 		e.magic_typetwo = MOON_ITEM_NONE;
-		bprint("moon_generate_magic_postfix cannot handle code {}\n", quick_ftos(effect));
+		bprint("moon_generate_magic_postfix cannot handle code {0}\n", quick_ftos(effect));
 	}
 
 	// Just adding Rarity levels works correctly, except for one case, when item has both prefix and postfix of same LOW level trait (which effectively makes it COMMON from TRASH)

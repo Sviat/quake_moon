@@ -27,6 +27,8 @@ void() moon_cheat_quad = // Debug only. Remove before release
 	self.ammo_nails = MOON_AMMO_MAX_NAIL;
 	self.ammo_rockets = MOON_AMMO_MAX_ROCKET;
 	self.ammo_cells = MOON_AMMO_MAX_CELL;
+
+	flash_self();
 	bprint("{0}: KILL KILL @_@ KILL KILL\n", self.netname);
 };
 
@@ -85,7 +87,7 @@ void() moon_handle_impulse_noop =
 		if ( (selected.netname == MOON_ITEM_ARMOR_NETNAME) || (selected.netname == MOON_ITEM_RING_NETNAME) )
 		{
 			rarity = moon_lookup_item_rarity_display(selected.magic_rarity_level);
-			centerprint(self, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n{0}{1}{2}{3} ({4} gold)"
+			centerprint(self, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n{0}{1}{2} [{3}] ({4} gold)"
 							, selected.prefix_one
 							, selected.targetname
 							, selected.prefix_two

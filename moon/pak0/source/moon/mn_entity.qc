@@ -52,7 +52,11 @@
 .string prefix_four;        // Postfix (??)
 
 // Status
-.float lightning_chained_time; // target hit by chain lightning, should not prevent consequent chainings, only during same frame
+.float lightning_chained_time;  // target hit by chain lightning, should not prevent consequent chainings, only during same frame
+.float magical_repair_time;     // next time magical repair of physical Armor happens
+.float armor_damaged_time;      // last time physical Armor was damaged
+.float magical_recharge_time;   // next time magical Cells recharge happens
+.float cells_used_time;         // last time Cells were used
 
 // sort these
 .float skl_expl; // no idea

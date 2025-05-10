@@ -419,3 +419,69 @@ float(entity target) moon_do_target_magical_health_regen_tick =
 
 	return target.magical_regen_time;
 };
+
+// Applicable only to Player
+float(entity target) moon_do_target_magical_repair_tick =
+{
+	local float limit;
+
+	if ( (target.magical_repair_time > time) || ( (target.armor_damaged_time + MOON_ITEM_REPAIR_DELAY) > time) )
+	{
+		return target.magical_repair_time;
+	}
+	if ( (target.deadflag == DEAD_RESPAWNABLE) || (target.deadflag == DEAD_DEAD) )
+	{
+		return target.magical_repair_time;
+	}
+
+	limit = moon_get_target_total_bonus_by_code(target, MOON_ITEM_REPAIR_CODE);
+	if (limit <= 0)
+	{
+		return target.magical_repair_time + MOON_TIME_BETWEEN_FAILED_CHECKS;
+	}
+
+	// needing armor or not needing it, attempt is using regen -> puts cooldown
+	target.magical_repair_time = time + MOON_ITEM_REPAIR_COOLDOWN;
+
+	if ( target.armorvalue >= limit )
+	{
+		return target.magical_repair_time;
+	}
+
+	target.armorvalue = clamp(target.armorvalue + MOON_ITEM_REPAIR_VALUE, limit);
+
+	return target.magical_repair_time;
+};
+
+// Applicable only to Player
+float(entity target) moon_do_target_magical_recharge_tick =
+{
+	local float limit;
+
+	if ( (target.magical_recharge_time > time) || ( (target.cells_used_time + MOON_ITEM_RECHARGE_DELAY) > time) )
+	{
+		return target.magical_recharge_time;
+	}
+	if ( (target.deadflag == DEAD_RESPAWNABLE) || (target.deadflag == DEAD_DEAD) )
+	{
+		return target.magical_recharge_time;
+	}
+
+	limit = moon_get_target_total_bonus_by_code(target, MOON_ITEM_RECHARGE_CODE);
+	if (limit <= 0)
+	{
+		return target.magical_recharge_time + MOON_TIME_BETWEEN_FAILED_CHECKS;
+	}
+
+	// needing cells or not needing them, attempt is using regen -> puts cooldown
+	target.magical_recharge_time = time + MOON_ITEM_RECHARGE_COOLDOWN;
+
+	if ( target.ammo_cells >= limit )
+	{
+		return target.magical_recharge_time;
+	}
+
+	target.ammo_cells = clamp(target.ammo_cells + MOON_ITEM_RECHARGE_VALUE, limit);
+
+	return target.magical_recharge_time;
+};

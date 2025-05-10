@@ -534,6 +534,7 @@ void() W_FireLightning =
 		return;
 	}
 
+	self.cells_used_time = time;
 	if ( self.waterlevel > 1 )
 	{
 		cells = self.ammo_cells;

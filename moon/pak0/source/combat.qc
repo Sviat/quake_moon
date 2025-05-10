@@ -304,6 +304,7 @@ void(entity targ, entity inflictor, entity attacker, float damage) T_Damage = //
 		targ.items = (targ.items - (targ.items & ((IT_ARMOR1 | IT_ARMOR2) | IT_ARMOR3)));
 	}
 	targ.armorvalue = (targ.armorvalue - save);
+	targ.armor_damaged_time = time;
 	take = ceil((damage - save));
 	if ((targ.flags & FL_CLIENT))
 	{

@@ -3,21 +3,23 @@
 /// No needs to prefix Math functions with moon_
 
 // // Forward declarations:
-// Default QC func unchanged
+// Default QC func unchanged, just forward declared
 void() player_run;
 // SORT OUT
 void() moon_make_chat_noise;
 void(entity who) moon_spawn_drop_gold;
-
-float(entity target) moon_do_target_natural_health_regen_tick;
-float(entity target) moon_do_target_magical_health_regen_tick;
-// now items, later extract
 float(entity target) moon_get_target_total_bonus_damage;
 float(entity target, float code) moon_get_target_total_bonus_by_code;
 void() moon_set_map_moon4;
 void() moon_walkman_init_think; // used in Map init
 float(entity emitter, float track) moon_walkman_play; // used by Impulse handler
+
+// moon/mn_game
 void(entity target, float delay = 0) moon_queue_target_for_removal;
+float(entity target) moon_do_target_natural_health_regen_tick;
+float(entity target) moon_do_target_magical_health_regen_tick;
+float(entity target) moon_do_target_magical_repair_tick;
+float(entity target) moon_do_target_magical_recharge_tick;
 
 // Base of base: damage, heal, move
 float(entity target, float healamount, float ignore = 0) T_Heal;

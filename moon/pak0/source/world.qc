@@ -557,6 +557,11 @@ void() PutClientInServer =
 	self.natural_regen_value = 0;
 	self.natural_regen_time = 0;
 	self.magical_regen_time = 0;
+	self.lightning_chained_time = 0;
+	self.magical_repair_time = 0;
+	self.armor_damaged_time = 0;
+	self.magical_recharge_time = 0;
+	self.cells_used_time = 0;
 
 	DecodeLevelParms();
 	moon_set_target_currentammo(self);
@@ -996,6 +1001,8 @@ void() PlayerPreThink =
 	CheckCrosshair();
 	moon_do_target_natural_health_regen_tick(self);
 	moon_do_target_magical_health_regen_tick(self);
+	moon_do_target_magical_repair_tick(self);
+	moon_do_target_magical_recharge_tick(self);
 	regen_mana();
 	check_spells();
 

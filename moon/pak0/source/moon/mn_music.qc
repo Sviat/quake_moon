@@ -99,7 +99,7 @@ void() moon_walkman_init_think =
 		return;
 	}
 
-	emitter_shop = find(world, netname, MOON_TRADE_SHOP_HEALTH_NETNAME);
+	emitter_shop = find(world, netname, MOON_TRADER_SHOP_HEALTH_NETNAME);
 	if (emitter_shop == world)
 	{
 		dprint("Cannot find any healthy trader\n");

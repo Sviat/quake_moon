@@ -49,7 +49,7 @@
 .string prefix_one;         // Prefix (.ability or level)
 .string prefix_two;         // Prefix (.ability or level)
 .string prefix_three;       // Postfix (.prefix)
-.string prefix_four;        // Postfix (??)
+.string prefix_four;        // Postfix (??), used by Shop spot to link with Trader
 
 // Status
 .float lightning_chained_time;  // target hit by chain lightning, should not prevent consequent chainings, only during same frame

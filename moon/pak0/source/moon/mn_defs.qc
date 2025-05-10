@@ -254,24 +254,28 @@ float MOON_GOLD_LOOT_BASE = 1;
 float MOON_GOLD_LOOT_LVLPERCENT = 5;
 float MOON_GOLD_LOOT_RANDOM = 60;
 
+float MOON_TRADE_STATE_OCCUPIED = 0;
+float MOON_TRADE_STATE_FREE = 1;
+float MOON_TRADE_STATE_TRADING = 2; // only applicable to trader
+
 string MOON_TRADER_SHOP_CLASSNAME = "monster_trader";
 string MOON_TRADER_MARKET_CLASSNAME = "saler";
-string MOON_TRADE_MARKET_SOMETHING_CLASSNAME = "sale_ent";
+string MOON_TRADE_MARKET_SOMETHING_CLASSNAME = "sale_ent"; // Trader standing position?
 string MOON_TRADE_SHOP_SPOT_CLASSNAME = "trade_spot"; // Shop item slot
 string MOON_TRADE_MARKET_SPOT_CLASSNAME = "goody_ent"; // Black market item slot
 
 float MOON_TRADE_SPOT_DELAY_INIT_MIN = 1;
 float MOON_TRADE_SPOT_DELAY_INIT_RANDOM = 15;
-string MOON_TRADE_SHOP_AMMO_NETNAME = "ammo_trader";
+string MOON_TRADER_SHOP_AMMO_NETNAME = "ammo_trader"; // trader.netname AND spot.prefix_four
 float MOON_TRADE_SPOT_AMMO_DELAY_MIN = 24; // was 20, changed to 24 to have int division by 2,3,4
 float MOON_TRADE_SPOT_AMMO_DELAY_RANDOM = 16; // was 20, changed compensate above
-string MOON_TRADE_SHOP_ARMOR_NETNAME = "armor_trader";
+string MOON_TRADER_SHOP_ARMOR_NETNAME = "armor_trader"; // trader.netname AND spot.prefix_four
 float MOON_TRADE_SPOT_ARMOR_DELAY_MIN = 20;
 float MOON_TRADE_SPOT_ARMOR_DELAY_RANDOM = 20;
-string MOON_TRADE_SHOP_HEALTH_NETNAME = "health_trader";
+string MOON_TRADER_SHOP_HEALTH_NETNAME = "health_trader"; // trader.netname AND spot.prefix_four
 float MOON_TRADE_SPOT_HEALTH_DELAY_MIN = 12; // was 20
 float MOON_TRADE_SPOT_HEALTH_DELAY_RANDOM = 28; // was 20
-string MOON_TRADE_SHOP_WEAPON_NETNAME = "weapon_trader";
+string MOON_TRADER_SHOP_WEAPON_NETNAME = "weapon_trader"; // trader.netname AND spot.prefix_four
 float MOON_TRADE_SPOT_WEAPON_DELAY_MIN = 24; // was 20
 float MOON_TRADE_SPOT_WEAPON_DELAY_RANDOM = 26; // was 20
 

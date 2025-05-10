@@ -35,8 +35,12 @@ void(entity target) moon_prepare_player_entity =
 	target.up_rocket = MOON_CONST_LOCKED;
 	target.up_cell = MOON_CONST_LOCKED;
 
+	target.wear_armor = MOON_ITEM_NONE;
 	target.magic_typeone = MOON_ITEM_NONE;
 	target.magic_typetwo = MOON_ITEM_NONE;
+	target.wear_ring = MOON_ITEM_NONE;
+	target.ring_typeone = MOON_ITEM_NONE;
+	target.ring_typetwo = MOON_ITEM_NONE;
 
 	target.mentat_offense_time = 0;
 	target.mentat_defense_time = 0;

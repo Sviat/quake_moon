@@ -6702,11 +6702,11 @@ void(entity target, entity selected) moon_target_wear_magic_item =
 		{
 			moon_handle_magic_effect_lost_max_health(target, target.ring_typeone, target.ring_typeone_value);
 			moon_handle_magic_effect_lost_max_health(target, target.ring_typetwo, target.ring_typetwo_value);
-			target.ring_rarity_level = 0;
-			target.ring_typeone = 0;
+			target.ring_rarity_level = MOON_ITEM_RARITY_THRESHOLD_TRASH;
+			target.ring_typeone = MOON_ITEM_NONE;
 			target.ring_typeone_value = 0;
 			target.ring_prefixone = "";
-			target.ring_typetwo = 0;
+			target.ring_typetwo = MOON_ITEM_NONE;
 			target.ring_typetwo_value = 0;
 			target.ring_prefixtwo = "";
 		}

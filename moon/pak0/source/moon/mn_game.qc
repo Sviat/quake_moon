@@ -381,7 +381,7 @@ float(entity target) moon_do_target_natural_health_regen_tick =
 	{
 		if ( !(target.flags & FL_MONSTER) && (target.items & IT_SUPERHEALTH) )
 		{
-			moon_heal_target_player(target, MOON_MEDKIT_MEGA_DECAY_VALUE);
+			moon_decayheal_target_player(target, MOON_MEDKIT_MEGA_DECAY_VALUE);
 			target.natural_regen_time = time + MOON_MEDKIT_MEGA_DECAY_COOLDOWN;
 		}
 		return target.natural_regen_time;

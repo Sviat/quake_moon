@@ -22,6 +22,7 @@ float(entity target) moon_do_target_magical_recharge_tick;
 // moon/mn_character
 float(entity target, float healamount) moon_heal_target_player;
 float(entity target, float healamount) moon_overheal_target_player;
+float(entity target, float decayamount) moon_decayheal_target_player;
 void(entity target, float healamount) moon_heal_target_monster;
 float(entity target, float healamount) moon_recover_target_mana;
 float(entity target) moon_get_target_total_bonus_damage;

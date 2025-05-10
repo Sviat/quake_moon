@@ -52,6 +52,25 @@ float(entity target, float healamount) moon_overheal_target_player = // Player M
 	return TRUE;
 };
 
+float(entity target, float healamount) moon_decayheal_target_player = // Megahealth rot only!
+{ // healamount <= 0
+	if ( target.health <= 0 ) // you can't help him
+	{
+		return FALSE;
+	}
+
+	if ( target.health <= target.max_health )
+	{
+		target.items = (target.items & ~IT_SUPERHEALTH);
+		return FALSE;
+	}
+
+	healamount = ceil(healamount);
+	target.health = clampd( target.max_health, (target.health + healamount), CONST_QC_DISPLAY_MAX);
+
+	return TRUE;
+};
+
 void(entity e, float healamount) moon_heal_target_monster =	// Monster heal only - doesnt need to fit to screen, so may lead to numbers above CONST_QC_DISPLAY_MAX
 {
 	e.health = e.health + healamount;

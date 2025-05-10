@@ -357,31 +357,28 @@ entity(entity e, float enc) spawn_shalrath =
 
 void() Mage_Cast =
 {
-	if ((self.mana <= WF_NORMAL))
+	if ( self.mana <= 0 )
 	{
 		return;
 	}
-	if ((self.scroll_time > time))
+	if ( self.scroll_time > time )
 	{
 		return;
 	}
-	if ((self.health < self.max_health))
+	if ( self.health < self.max_health )
 	{
 		sound(self, CHAN_VOICE, "moon/misc/cast.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
-		T_Heal(self, GRD_PATROLTIME, WF_NORMAL); // TODO: use MonsterHeal function
-		self.mana = (self.mana - START_OFF);
-		self.scroll_heal_eff = (time + MON_BACKTIME);
-		self.scroll_time = ((time + MON_BACKTIME) + (self.rfr * 2));
-	}
-	else
+		moon_heal_target_monster(self, 20);
+		self.mana = (self.mana - 1);
+		self.scroll_heal_eff = (time + 0.5);
+		self.scroll_time = (time + 0.5) + (self.rfr * 2);
+	} else
+	if ( self.scroll_shie_eff < time )
 	{
-		if ((self.scroll_shie_eff < time))
-		{
-			sound(self, CHAN_VOICE, "moon/misc/cast.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
-			self.mana = (self.mana - LOGIC_FINDDEFEND);
-			self.scroll_shie_eff = (time + SVC_SETVIEWANGLES);
-			self.scroll_time = (((time + START_OFF) + (random() * START_OFF)) + (self.rfr * 2));
-		}
+		sound(self, CHAN_VOICE, "moon/misc/cast.wav", MOON_SOUND_VOLUME_DEFAULT, ATTN_NORM);
+		self.mana = (self.mana - 3);
+		self.scroll_shie_eff = (time + 10);
+		self.scroll_time = (time + 1) + (random() * 1) + (self.rfr * 2);
 	}
 };
 

@@ -8,8 +8,6 @@ void() player_run;
 // SORT OUT
 void() moon_make_chat_noise;
 void(entity who) moon_spawn_drop_gold;
-float(entity target) moon_get_target_total_bonus_damage;
-float(entity target, float code) moon_get_target_total_bonus_by_code;
 void() moon_set_map_moon4;
 void() moon_walkman_init_think; // used in Map init
 float(entity emitter, float track) moon_walkman_play; // used by Impulse handler
@@ -21,9 +19,23 @@ float(entity target) moon_do_target_magical_health_regen_tick;
 float(entity target) moon_do_target_magical_repair_tick;
 float(entity target) moon_do_target_magical_recharge_tick;
 
+// moon/mn_character
+float(entity target, float healamount) moon_heal_target_player;
+float(entity target, float healamount) moon_overheal_target_player;
+void(entity target, float healamount) moon_heal_target_monster;
+float(entity target, float healamount) moon_recover_target_mana;
+float(entity target) moon_get_target_total_bonus_damage;
+float(entity target, float code) moon_get_target_total_bonus_by_code;
+void(entity target, float value = 1) moon_raise_target_vitality;
+void(entity target, float value = 1) moon_raise_target_strength;
+void(entity target, float value = 1) moon_raise_target_sanity;
+void(entity target, float value = 1) moon_raise_target_intuition;
+
+// moon/mn_items?
+void() moon_self_pickup_magic_item_and_clear;
+void(entity target, entity selected) moon_target_wear_magic_item;
+
 // Base of base: damage, heal, move
-float(entity target, float healamount, float ignore = 0) T_Heal;
-void(entity e, float healamount) moon_heal_target_monster;
 void(entity inflictor, entity attacker, float damage, entity ignore) T_RadiusDamage;
 float(entity subject, entity object) moon_can_trace_object;
 entity(vector source, vector destination, entity attacker) moon_trace_lightning_bolt_shambler;
@@ -68,14 +80,6 @@ string(float rarity_level) moon_lookup_item_rarity_display;
 void(entity target, string prefix, string name, string postfix) moon_print_target_item_name;
 void(entity target, float rarity_level) moon_print_target_item_rarity;
 
-// Character
-void(entity target, float value = 1) moon_raise_target_vitality;
-void(entity target, float value = 1) moon_raise_target_strength;
-void(entity target, float value = 1) moon_raise_target_sanity;
-void(entity target, float value = 1) moon_raise_target_intuition;
-
-void() moon_self_pickup_magic_item_and_clear;
-void(entity target, entity selected) moon_target_wear_magic_item;
 // // end of Forward declarations
 
 // // Randoms
@@ -328,4 +332,17 @@ float(entity target) moon_target_player_needs_tutorial =
 		return TRUE;
 	}
 	return FALSE;
+};
+
+entity() moon_gimme_your_heart =
+{
+	local entity heart;
+	heart = find(world, classname, MOON_HEART_CLASSNAME);
+	if ( heart != world )
+	{
+		return heart;
+	}
+
+	dprint("you have no heart\n");
+	return world;
 };

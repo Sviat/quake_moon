@@ -4,69 +4,7 @@ float H_MEGA      = 2;
 .float healamount;
 .float healtype;
 
-void() W_SetCurrentAmmo;
 void() health_touch;
-void() item_megahealth_rot;
-
-float(entity target, float healamount, float ignore = 0) T_Heal = // Player heal only!
-{
-	if ((target.health <= 0))
-	{
-		return (0);
-	}
-	if ((!ignore && (target.health >= target.max_health)))
-	{
-		return (0);
-	}
-
-	healamount = ceil(healamount);
-	target.health = (target.health + healamount);
-	if ((!ignore && (target.health >= target.max_health)))
-	{
-		target.health = target.max_health;
-	}
-	target.health = clamp(target.health, CONST_QC_DISPLAY_MAX); //  If Monster heal will be necessary in future, change that
-	return (1);
-};
-
-float(entity e, float healamount) T_Overheal = // may be put overheal rot here?
-{
-	if ( e.health <= 0 )
-	{
-		return FALSE;
-	}
-
-	healamount = ceil(healamount);
-	e.health = clamp( (e.health + healamount), CONST_QC_DISPLAY_MAX);
-
-	return TRUE;
-};
-
-void(entity e, float healamount) moon_heal_target_monster =
-{
-	e.health = e.health + healamount;
-	if ( e.health > e.max_health )
-	{
-		e.health = e.max_health;
-	}
-};
-
-float(entity e, float healamount) T_Mana =
-{
-	if ((e.mana >= e.max_mana))
-	{
-		return FALSE;
-	}
-
-	healamount = ceil(healamount);
-	e.mana = (e.mana + healamount);
-	if ((e.mana >= e.max_mana))
-	{
-		e.mana = e.max_mana;
-	}
-	e.mana = clamp(e.mana, CONST_QC_DISPLAY_MAX);
-	return TRUE;
-};
 
 void(entity target, float gain) moon_give_target_gold =
 {
@@ -90,19 +28,6 @@ float(entity target, float cost) moon_pay_target_gold =
 	return TRUE;
 };
 
-entity() moon_gimme_your_heart =
-{
-	local entity heart;
-	heart = find(world, classname, MOON_HEART_CLASSNAME);
-	if ( heart != world )
-	{
-		return heart;
-	}
-
-	dprint("you have no heart\n");
-	return world;
-};
-
 void() moon_broadcast_heart_state =
 {
 	local entity heart;
@@ -112,82 +37,6 @@ void() moon_broadcast_heart_state =
 		bprint("\sHeart\s's life now ");
 		moon_println_all_other_health(heart);
 	}
-};
-
-float(entity target, float code) moon_get_target_total_bonus_by_code =
-{
-	local float bonus;
-	bonus = 0;
-	if ( target.magic_typeone == code )
-	{
-		bonus = (bonus + target.magic_typeone_value);
-	}
-	if ( target.magic_typetwo == code )
-	{
-		bonus = (bonus + target.magic_typetwo_value);
-	}
-	if ( target.ring_typeone == code )
-	{
-		bonus = (bonus + target.ring_typeone_value);
-	}
-	if ( target.ring_typetwo == code )
-	{
-		bonus = (bonus + target.ring_typetwo_value);
-	}
-	return bonus;
-};
-
-float(entity target) moon_get_target_bonus_health =
-{
-	return moon_get_target_total_bonus_by_code(target, MOON_ITEM_HEALTH_CODE);
-};
-
-float(entity target) moon_get_target_total_bonus_damage =
-{
-	// TODO: add offensive strength influence, scroll of brut and mentat here
-	return moon_get_target_total_bonus_by_code(target, MOON_ITEM_DAMAGE_CODE);
-};
-
-void(entity target, float value) moon_raise_target_max_health =
-{
-	target.max_health = (target.max_health + value);
-	target.max_health = clampd(MOON_STAT_MAXHEALTH_MIN, target.max_health, CONST_QC_DISPLAY_MAX);
-	if (value > 0)
-	{
-		T_Heal(target, value);
-	}
-};
-
-void(entity target, float value) moon_raise_target_max_mana =
-{
-	target.max_mana = (target.max_mana + value);
-	target.max_mana = clampd(MOON_STAT_MAXMANA_MIN, target.max_mana, CONST_QC_DISPLAY_MAX);
-	if (value > 0)
-	{
-		T_Mana(target, value);
-	}
-};
-
-void(entity target, float value = 1) moon_raise_target_vitality =
-{
-	target.vit = (target.vit + value);
-	moon_raise_target_max_health(target, (value*MOON_STAT_HEALTH_PER_VITALITY));
-};
-
-void(entity target, float value = 1) moon_raise_target_strength = // This is not necessary so far, but for consistency
-{
-	target.stre = (target.stre + value);
-};
-
-void(entity target, float value = 1) moon_raise_target_sanity =
-{
-	target.wiz = (target.wiz + value);
-	moon_raise_target_max_mana(target, (value*MOON_STAT_MANA_PER_SANITY));
-};
-
-void(entity target, float value = 1) moon_raise_target_intuition = // This is not necessary so far, but for consistency
-{
-	target.intu = (target.intu + value);
 };
 
 void() SUB_regen =
@@ -269,45 +118,24 @@ void() health_touch =
 		{
 			return;
 		}
-		if (!T_Overheal(other, self.healamount))
+		if (!moon_overheal_target_player(other, self.healamount))
 		{
 			return;
 		}
 	} else {
-		if (!T_Heal(other, self.healamount))
+		if (!moon_heal_target_player(other, self.healamount))
 		{
 			return;
 		}
 	}
-	sprint(other, "You receive {} health\n", floor_ftos(self.healamount));
+	sprint(other, "You receive {0} health\n", floor_ftos(self.healamount));
 	sound(other, CHAN_ITEM, self.noise, 1, ATTN_NORM);
 	flash_target(other);
 
 	self.model = string_null;
 	self.solid = SOLID_NOT;
-	if ( self.healtype == MOON_MEDKIT_MEGA_TYPE )
-	{
-		other.items = (other.items | IT_SUPERHEALTH);
-		self.nextthink = (time + LOGIC_PATROL);
-		self.think = item_megahealth_rot;
-		self.owner = other;
-	}
-
 	activator = other;
 	SUB_UseTargets();
-};
-
-void() item_megahealth_rot =
-{
-	other = self.owner;
-	if ( other.health > other.max_health )
-	{
-		other.health = (other.health - 1);
-		self.nextthink = (time + 1);
-		return;
-	}
-	other.items = (other.items & (~IT_SUPERHEALTH));
-	remove(self);
 };
 
 // UNUSED?!
@@ -3109,7 +2937,6 @@ void() moon_buy_item_market =
 	local entity head;
 	local entity selected;
 	local float min_dist;
-	local entity mega;
 	local float best;
 
 	min_dist = MOON_PHYSIC_ITEMSEARCH_RADIUS;
@@ -3149,23 +2976,25 @@ void() moon_buy_item_market =
 			sound(self, CHAN_ITEM, "items/armor1.wav", 1, ATTN_NORM);
 			break;
 		case MOON_MEDKIT_MEGA_MARKET_NETNAME:
-			if ( self.health >= (self.max_health + MOON_MEDKIT_MEGA_OVERHEAL_SOFTLIMIT) ) { return; }
-			if ( self.health >= CONST_QC_DISPLAY_MAX ) { return; }
-
-			if ((selected.healtype == H_MEGA))
+			if ( self.health >= (self.max_health + MOON_MEDKIT_MEGA_OVERHEAL_SOFTLIMIT) )
 			{
-				T_Heal(self, selected.healamount, 1);
-				if (!(self.items & IT_SUPERHEALTH))
-				{
-					mega = spawn();
-					mega.nextthink = (time + 5);
-					mega.think = item_megahealth_rot;
-					mega.owner = self;
-					self.items = (self.items | IT_SUPERHEALTH);
-				}
+				sprint(self, "you \sdon't\s need it\n");
+				return;
+			}
+			if ( self.health >= CONST_QC_DISPLAY_MAX )
+			{
+				sprint(self, "you \sdon't\s need it\n");
+				return;
 			}
 
-			sprint(self, "You bought {}\n", MOON_MEDKIT_MEGA_MARKET_DISPLAYNAME);
+			if ( selected.healtype == H_MEGA )
+			{
+				moon_overheal_target_player(self, selected.healamount);
+			} else {
+				moon_heal_target_player(self, selected.healamount);
+			}
+
+			sprint(self, "You bought {0}\n", MOON_MEDKIT_MEGA_MARKET_DISPLAYNAME);
 			sound(self, CHAN_ITEM, selected.noise1, 1, ATTN_NORM);
 			break;
 		case MOON_ELIXIR_MARKET_NETNAME:
@@ -3788,7 +3617,6 @@ void() moon_buy_item =
 	local entity head;
 	local entity selected;
 	local float min_dist;
-	local entity mega;
 	local float best;
 	local float tempf;
 
@@ -3838,25 +3666,19 @@ void() moon_buy_item =
 		{
 			if ( self.health >= (self.max_health + MOON_MEDKIT_MEGA_OVERHEAL_SOFTLIMIT) )
 			{
+				sprint(self, "you \sdon't\s need it\n");
 				return;
 			}
 
-			T_Overheal(self, selected.healamount);
-			if (!(self.items & IT_SUPERHEALTH))
-			{
-				mega = spawn();
-				mega.nextthink = (time + 5);
-				mega.think = item_megahealth_rot;
-				mega.owner = self;
-				self.items = (self.items | IT_SUPERHEALTH);
-			}
+			moon_overheal_target_player(self, selected.healamount);
 		} else {
 			if ( self.health >= self.max_health )
 			{
 				sprint(self, "you \sdon't\s need it\n");
 				return;
 			}
-			T_Heal(self, selected.healamount, 0);
+
+			moon_heal_target_player(self, selected.healamount);
 		}
 		sprint(self, "You bought {0} and healed {1}HP\n", selected.targetname, floor_ftos(selected.healamount));
 		sound(self, CHAN_ITEM, selected.noise, 1, ATTN_NORM);
@@ -6950,20 +6772,19 @@ void(entity e) prepare_item =
 	e.angles_y = rint((random() * 360));
 };
 
-void() HPTouch =
+void() HPTouch = // self - HP potion, other - player
 {
 	if (other.classname != MOON_PLAYER_CLASSNAME) { return; }
 	if (other.health <= 0) { return; }
 
-	if ((other.health < other.max_health))
+	if ( moon_heal_target_player(other, self.healamount) )
 	{
+		flash_target(other);
 		sprint(other, "You get {0} and receive {1} health\n", self.netname, floor_ftos(self.healamount));
 	} else {
 		sprint(other, "You wasted {0}\n", self.netname);
 	}
 
-	flash_target(other);
-	T_Heal(other, self.healamount, 0);
 	sound(other, CHAN_ITEM, "moon/items/potion.wav", 1, ATTN_NORM);
 	remove(self);
 };

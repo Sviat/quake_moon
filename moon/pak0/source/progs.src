@@ -15,6 +15,7 @@ moon/mn_init.qc
 moon/mn_session.qc
 moon/mn_game.qc
 moon/mn_cui.qc
+moon/mn_character.qc
 moon/mn_weapons.qc
 moon/mn_magic.qc
 //moon/mn_waves.qc

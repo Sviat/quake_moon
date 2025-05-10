@@ -377,12 +377,22 @@ float(entity target) moon_do_target_natural_health_regen_tick =
 	// needing health or not needing it, attempt is using regen -> puts cooldown
 	target.natural_regen_time = time + target.natural_regen_cooldown;
 
-	if ( (target.health <= 0) || (target.health >= target.max_health) )
+	if ( target.health >= target.max_health )
 	{
+		if ( !(target.flags & FL_MONSTER) && (target.items & IT_SUPERHEALTH) )
+		{
+			moon_heal_target_player(target, MOON_MEDKIT_MEGA_DECAY_VALUE);
+			target.natural_regen_time = time + MOON_MEDKIT_MEGA_DECAY_COOLDOWN;
+		}
 		return target.natural_regen_time;
 	}
 
-	T_Heal(target, target.natural_regen_value);
+	if ( target.flags & FL_MONSTER )
+	{
+		moon_heal_target_monster(target, target.natural_regen_value);
+	} else {
+		moon_heal_target_player(target, target.natural_regen_value);
+	}
 
 	return target.natural_regen_time;
 };
@@ -415,7 +425,7 @@ float(entity target) moon_do_target_magical_health_regen_tick =
 		return target.magical_regen_time;
 	}
 
-	T_Heal(target, bonus);
+	moon_heal_target_player(target, bonus);
 
 	return target.magical_regen_time;
 };

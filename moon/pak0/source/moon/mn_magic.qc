@@ -155,7 +155,7 @@ void() moon_magic_cast_spell_heal = // TODO: clear this mess one day. Heal is He
 		return;
 	}
 	//sound(self, CHAN_VOICE, "moon/magic/m_heal.wav", 1, ATTN_NORM); // missing file
-	T_Heal(self, eff, 0);
+	moon_heal_target_player(self, eff);
 	self.mana = (self.mana - rm);
 	if ((self.mana < 0))
 	{

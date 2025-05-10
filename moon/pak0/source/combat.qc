@@ -236,7 +236,7 @@ void(entity targ, entity inflictor, entity attacker, float damage) T_Damage = //
 				if ( targ.flags & FL_MONSTER )
 				{
 					bnheal = percent(damage, bnheal);
-					T_Heal(attacker, bnheal);
+					moon_heal_target_player(attacker, bnheal);
 				}
 			}
 		}
@@ -410,7 +410,7 @@ void(entity targ, entity inflictor, entity attacker, float damage) T_Damage = //
 				}
 				if ( gh > 0 )
 				{
-					T_Heal(attacker, gh);
+					moon_heal_target_player(attacker, gh);
 				}
 			}
 			if ( targ.flags & FL_MONSTER )

@@ -436,3 +436,14 @@ void() moon_print_cmd_help =
 	sprint(self, "use `map moon4` or `restartserver` to restart this map\n");
 	sprint(self, "-------------------------------------\n");
 };
+
+void() moon_broadcast_heart_state =
+{
+	local entity heart;
+	heart = moon_gimme_your_heart();
+	if ( heart != world )
+	{
+		bprint("\sHeart\s's life now ");
+		moon_println_all_other_health(heart);
+	}
+};

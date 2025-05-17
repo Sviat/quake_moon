@@ -199,3 +199,25 @@ void(entity target, float value = 1) moon_raise_target_intuition = // This is no
 {
 	target.intu = (target.intu + value);
 };
+void(entity target, float gain) moon_give_target_gold =
+{
+	target.gold = (target.gold + gain);
+
+	flash_target(target);
+	sprint(target, "You got {0} gold\n", floor_ftos(gain));
+	sound(target, CHAN_ITEM, "moon/items/gold.wav", 1, ATTN_NORM);
+};
+
+float(entity target, float cost) moon_pay_target_gold =
+{
+	if ( target.gold < cost )
+	{
+		sprint(target, "not enough gold\n");
+		return FALSE;
+	}
+	target.gold =  target.gold - cost;
+
+	sprint(target, "You paid {0} gold, {1} left\n", floor_ftos(cost), floor_ftos(target.gold));
+	return TRUE;
+};
+

@@ -6,39 +6,6 @@ float H_MEGA      = 2;
 
 void() health_touch;
 
-void(entity target, float gain) moon_give_target_gold =
-{
-	target.gold = (target.gold + gain);
-
-	flash_target(target);
-	sprint(target, "You got {} gold\n", floor_ftos(gain));
-	sound(target, CHAN_ITEM, "moon/items/gold.wav", 1, ATTN_NORM);
-};
-
-float(entity target, float cost) moon_pay_target_gold =
-{
-	if ( target.gold < cost )
-	{
-		sprint(target, "not enough gold\n");
-		return FALSE;
-	}
-	target.gold = (target.gold - cost);
-
-	sprint(target, "You paid {0} gold, {1} left\n", floor_ftos(cost), floor_ftos(target.gold));
-	return TRUE;
-};
-
-void() moon_broadcast_heart_state =
-{
-	local entity heart;
-	heart = moon_gimme_your_heart();
-	if ( heart != world )
-	{
-		bprint("\sHeart\s's life now ");
-		moon_println_all_other_health(heart);
-	}
-};
-
 void() SUB_regen =
 {
 	self.model = self.mdl;

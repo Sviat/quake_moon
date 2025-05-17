@@ -125,8 +125,6 @@ float MOON_IMPULSE_CODE_LAST_TRACE = 223;
 float MOON_IMPULSE_CODE_LAST = 234;
 // //
 
-float CHSCAM_ON    = 1; // no idea
-
 float MOON_DIFFICULTY_MIN = 0; // easy
 float MOON_DIFFICULTY_MAX = 3; // nightmare
 

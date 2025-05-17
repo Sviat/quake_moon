@@ -6,11 +6,37 @@
 // Default QC func unchanged, just forward declared
 void() player_run;
 // SORT OUT
+void() intermission_victory;
 void() moon_make_chat_noise;
 void(entity who) moon_spawn_drop_gold;
 void() moon_set_map_moon4;
-void() moon_walkman_init_think; // used in Map init
-float(entity emitter, float track) moon_walkman_play; // used by Impulse handler
+
+// moon/mn_character
+float(entity target, float healamount) moon_heal_target_player;
+float(entity target, float healamount) moon_overheal_target_player;
+float(entity target, float decayamount) moon_decayheal_target_player;
+void() moon_medkit_touch;
+void(entity target, float healamount) moon_heal_target_monster;
+float(entity target, float healamount) moon_recover_target_mana;
+float(entity target, float code) moon_get_target_total_bonus_by_code;
+float(entity target) moon_get_target_bonus_health;
+float(entity target) moon_get_target_total_bonus_damage;
+void(entity target, float value = 1) moon_raise_target_vitality;
+void(entity target, float value = 1) moon_raise_target_strength;
+void(entity target, float value = 1) moon_raise_target_sanity;
+void(entity target, float value = 1) moon_raise_target_intuition;
+
+// moon/mn_cui
+void() moon_print_cmd_help;
+void() moon_print_character_status;
+void() moon_print_skills;
+void() moon_print_inventory;
+void() moon_identify_items_in_radius;
+void() moon_buy_item;
+void(entity subject) moon_bprint_describe_player;
+string(float rarity_level) moon_lookup_item_rarity_display;
+void(entity target, string prefix, string name, string postfix) moon_print_target_item_name;
+void(entity target, float rarity_level) moon_print_target_item_rarity;
 
 // moon/mn_game
 void(entity target, float delay = 0) moon_queue_target_for_removal;
@@ -18,19 +44,6 @@ float(entity target) moon_do_target_natural_health_regen_tick;
 float(entity target) moon_do_target_magical_health_regen_tick;
 float(entity target) moon_do_target_magical_repair_tick;
 float(entity target) moon_do_target_magical_recharge_tick;
-
-// moon/mn_character
-float(entity target, float healamount) moon_heal_target_player;
-float(entity target, float healamount) moon_overheal_target_player;
-float(entity target, float decayamount) moon_decayheal_target_player;
-void(entity target, float healamount) moon_heal_target_monster;
-float(entity target, float healamount) moon_recover_target_mana;
-float(entity target) moon_get_target_total_bonus_damage;
-float(entity target, float code) moon_get_target_total_bonus_by_code;
-void(entity target, float value = 1) moon_raise_target_vitality;
-void(entity target, float value = 1) moon_raise_target_strength;
-void(entity target, float value = 1) moon_raise_target_sanity;
-void(entity target, float value = 1) moon_raise_target_intuition;
 
 // moon/mn_items?
 void() moon_self_pickup_magic_item_and_clear;
@@ -43,22 +56,19 @@ entity(vector source, vector destination, entity attacker) moon_trace_lightning_
 entity(vector source, vector destination, entity attacker, entity inflictor, float piercing_strength = 0) moon_trace_lightning_bolt_shaft;
 void(entity attacker, entity target, float max_distance, float jump_count = 0) moon_trace_lightning_bolt_chain;
 
-// moon/mn_weapons
-void(entity target) moon_limit_target_ammo;
-void(entity target, entity object) moon_target_consume_ammo_from;
-float(entity target, float include_dangerous = false) moon_get_target_best_weapon;
-float(entity target, float wpn) moon_select_target_weapon;
-float(entity target, float include_dangerous = false) moon_swap_target_to_best_weapon;
-// TODO: add functions to use or gain ammo
-
 // Bots (Guards and Monsters) logic
 void(entity who) moon_particle_heal;
 // Guard logic
+void() moon_spawn_guard;
 
 // Monster logic
 void() moon_monster_apply_effect_self;
 
-// Waves
+// moon/mn_music
+void() moon_walkman_init_think; // used in Map init
+float(entity emitter, float track) moon_walkman_play; // used by Impulse handler
+
+// moon/mn_waves
 entity(entity spawner, float level) moon_spawn_monster_entity {return world;}; // TODO: Implement
 void(entity e, float enc) spawn_knight; // unused so far
 entity(entity e, float enc) spawn_soldier;
@@ -69,17 +79,13 @@ entity(entity e, float enc) spawn_snake;
 entity(entity e, float enc) spawn_mage;
 entity(entity e, float enc) spawn_shalrath;
 
-// moon/mn_cui
-void() moon_print_cmd_help;
-void() moon_print_character_status;
-void() moon_print_skills;
-void() moon_print_inventory;
-void() moon_identify_item;
-void() moon_buy_item;
-void(entity subject) moon_bprint_describe_player;
-string(float rarity_level) moon_lookup_item_rarity_display;
-void(entity target, string prefix, string name, string postfix) moon_print_target_item_name;
-void(entity target, float rarity_level) moon_print_target_item_rarity;
+// moon/mn_weapons
+void(entity target) moon_limit_target_ammo;
+void(entity target, entity object) moon_target_consume_ammo_from;
+float(entity target, float include_dangerous = false) moon_get_target_best_weapon;
+float(entity target, float wpn) moon_select_target_weapon;
+float(entity target, float include_dangerous = false) moon_swap_target_to_best_weapon;
+// TODO: add functions to use ammo
 
 // // end of Forward declarations
 

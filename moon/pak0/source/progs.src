@@ -22,6 +22,9 @@ moon/mn_economy.qc
 moon/mn_weapons.qc
 moon/mn_magic.qc
 moon/mn_waves.qc
+moon/mn_ai.qc
+moon/mn_ai_monster.qc
+// moon/mn_ai_bot.qc
 moon/mn_items.qc
 moon/mn_music.qc
 ai.qc

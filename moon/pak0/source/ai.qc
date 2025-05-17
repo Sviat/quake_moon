@@ -91,31 +91,17 @@ void(float dist) ai_back =
 /*
 ============
 FacingIdeal
+
 ============
 */
 float() FacingIdeal =
 {
-	// TEMP REMOVE IT
-	//	return TRUE;
+	local	float	delta;
 
-	//	bprint("FACING IDEAL CALLED!\n");
-
-	local	float	delta, gamma;
-
-	delta = anglemod(self.angles_y);
-	gamma = vectoyaw(self.enemy.origin - self.origin);
-	if(gamma >= 360) gamma = gamma - 360;
-	if(delta >= 360) delta = delta - 360;
-
-	if(gamma > delta)
-	if((gamma - delta) < 25)
-		return TRUE;
-
-	if(gamma < delta)
-	if((delta - gamma) < 25)
-		return TRUE;
-
-	return FALSE;
+	delta = anglemod(self.angles_y - self.ideal_yaw);
+	if (delta > 45 && delta < 315)
+		return FALSE;
+	return TRUE;
 };
 
 

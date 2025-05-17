@@ -11,6 +11,7 @@
 
 // Vanilla consts that declared only to remember them
 #define CONST_QC_DISPLAY_MAX 999
+#define CONST_QC_BIGFUCKINGINT 99999997952
 
 #define CONST_QC_SPRINT_A "\a"			// Black cell
 #define CONST_QC_SPRINT_F "\f"			// ?!?

@@ -564,7 +564,7 @@ void(float dist) mon_ai_run = // OMNISSIAH save our souls!
 		{
 			if ((self.show_hostile < time))
 			{
-				if ((moon_FacingIdeal() == TRUE))
+				if ((moon_is_self_facing_ideal() == TRUE))
 				{
 					if ((self.attack_finished < time))
 					{
@@ -748,7 +748,7 @@ void(float dist) mon_ai_run = // OMNISSIAH save our souls!
 		{
 			if ((self.enemy.health > WF_NORMAL))
 			{
-				if ((moon_FacingIdeal() == TRUE))
+				if ((moon_is_self_facing_ideal() == TRUE))
 				{
 					if ((self.show_hostile < time))
 					{

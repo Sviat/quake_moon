@@ -8,7 +8,7 @@
 FacingIdeal
 ============
 */
-float() moon_FacingIdeal =
+float() moon_is_self_facing_ideal =
 {
 	local float delta;
 	local float gamma;
@@ -29,7 +29,7 @@ float() moon_FacingIdeal =
 	return FALSE;
 };
 
-vector() GetRandomVector = // Get randomized 3D shift for aiming around the target
+vector() moon_get_randomly_selected_shift_vector = // Get one of predefined 3D shift vectors for aiming around the target
 {
 	local vector vec;
 	local float r;
@@ -98,7 +98,7 @@ float(entity targ) BotCanSeePlayer =
 
 	spot1 = self.origin + self.view_ofs;
 
-	vec = GetRandomVector();
+	vec = moon_get_randomly_selected_shift_vector();
 	spot2 = targ.origin + vec;
 
 	traceline(spot1, spot2, TRUE, self);	// see through other monsters

@@ -55,15 +55,15 @@ void() noclass =	// empty c-tor, for catching something
 
 void() PlaceItem =
 {
-	self.mdl = self.model;
-	self.flags = FL_ITEM;
+	self.mdl = self.model;		// so it can be restored on respawn
+	self.flags = FL_ITEM;		// make extra wide
 	self.solid = SOLID_TRIGGER;
 	self.movetype = MOVETYPE_TOSS;
 	self.velocity = VEC_ORIGIN;
 	self.origin_z = (self.origin_z + 6);
 	if (!droptofloor())
 	{
-		dprint("Bonus item fell out of level at {}\n", vtos(self.origin));
+		dprint("Bonus item fell out of level at {0}\n", vtos(self.origin));
 		remove(self);
 		return;
 	}

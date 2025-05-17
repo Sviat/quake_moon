@@ -1931,7 +1931,7 @@ float(float level) moon_generate_trait_effect_code =
 	}
 };
 
-float(float level) moon_generate_trait_quality = // return int in range [MAXLEVEL, 2*MAXLEVEL]
+float(float level) moon_generate_trait_quality =
 {
 	local float shift;
 	local float width;
@@ -1960,11 +1960,8 @@ float(float level) moon_generate_trait_quality = // return int in range [MAXLEVE
 	return shift + rint(random() * width);
 };
 
-float(float level) moon_generate_trait_prefix_rarity =
+float(float total_quality) moon_generate_trait_prefix_rarity =
 {
-	local float total_quality;
-	total_quality = moon_generate_trait_quality(level);
-
 	if ( total_quality <= MOON_ITEM_TRAIT_THRESHOLD_PREFIX_LOW )
 	{
 		return MOON_ITEM_RARITY_LOW;
@@ -1981,11 +1978,8 @@ float(float level) moon_generate_trait_prefix_rarity =
 	}
 };
 
-float(float level) moon_generate_trait_postfix_rarity =
+float(float total_quality) moon_generate_trait_postfix_rarity =
 {
-	local float total_quality;
-	total_quality = moon_generate_trait_quality(level);
-
 	if ( total_quality <= MOON_ITEM_TRAIT_THRESHOLD_POSTFIX_LOW )
 	{
 		return MOON_ITEM_RARITY_LOW;
@@ -2012,7 +2006,8 @@ void(entity e) moon_generate_magic_prefix =
 	effect = moon_generate_trait_effect_code(mxx);
 	e.magic_typeone = effect;
 
-	rarity = moon_generate_trait_prefix_rarity(mxx);
+	e.lvl = moon_generate_trait_quality(mxx);
+	rarity = moon_generate_trait_prefix_rarity(e.lvl);
 	e.magic_rarity_level = e.magic_rarity_level + rarity;
 	switch(effect)
 	{
@@ -2248,7 +2243,8 @@ void(entity e) moon_generate_magic_postfix =
 	effect = moon_generate_trait_effect_code(mxx);
 	e.magic_typetwo = effect;
 
-	rarity = moon_generate_trait_postfix_rarity(mxx);
+	e.lvl = moon_generate_trait_quality(mxx);
+	rarity = moon_generate_trait_postfix_rarity(e.lvl);
 
 	if ( rarity == MOON_ITEM_RARITY_EPIC ) // Postfix rolled to EPIC -> chance for Unique item
 	{
@@ -2478,6 +2474,9 @@ void(entity target) moon_init_target_as_magic_item =
 		setmodel(target, "progs/ring.mdl");
 		target.noise1 = "moon/items/ring.wav";
 	}
+
+	target.lvl = 0;
+	target.magic_rarity_level = 0;
 
 	z = random();
 	if ( z < MOON_ITEM_MAGIC_CHANCE_PREFIX )

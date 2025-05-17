@@ -5,7 +5,7 @@
 // Stats
 .float gold;        // Held currency
 .float exp;         // Experience points
-.float lvl;         // Level
+.float lvl;         // Level (for items - Quality)
 .float point;       // Free skill points
 .float stre;        // Strength
 .float vit;         // Vitality

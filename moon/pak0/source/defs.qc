@@ -398,7 +398,7 @@ float LOGIC_HUNTENEMY = 6;
 .float scroll_time;
 .float mx_speed;
 void() execute_changelevel;
-void() MagicItemTouch;
+void() moon_magic_item_touch;
 void() M_FireShotgun;
 void(vector org) M_FireSuperNail;
 void(vector org) M_FireNail;

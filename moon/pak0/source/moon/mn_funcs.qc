@@ -3,8 +3,11 @@
 /// No needs to prefix Math functions with moon_
 
 // // Forward declarations:
-// Default QC func unchanged, just forward declared
+// Default QC funcs unchanged, just forward declared
 void() player_run;
+float(float v) anglemod;
+//
+
 // SORT OUT
 void() intermission_victory;
 void() moon_make_chat_noise;

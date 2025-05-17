@@ -1,6 +1,7 @@
 /// ReProjectMoon-specific source file
 /// Here go all functions that communicate with user through console prints (Console UI)
 
+
 void(entity print_target, string print_text) moon_print_func_target =
 {
 	sprint(print_target, print_text);
@@ -119,7 +120,7 @@ void(entity value_target) moon_println_all_other_health =
 
 void(entity target) moon_println_target_exp =
 {
-	sprint(target, "Level: {0}, Exp {1}{2}/{3}{4}\n", floor_ftos(target.lvl), MOON_CONST_GLYPH_BRACKET_OPEN, floor_ftos(target.exp), quick_ftos(ceil(target.nextexp)), MOON_CONST_GLYPH_BRACKET_CLOSE);
+	sprint(target, "Level: {0}, Exp {1}{2}/{3}{4}\n", floor_ftos(target.lvl), MOON_CONST_GLYPH_BRACKET_OPEN, floor_ftos(target.exp), floor_ftos(target.nextexp), MOON_CONST_GLYPH_BRACKET_CLOSE);
 };
 
 void(entity target) moon_print_mentat_offense =
@@ -435,6 +436,217 @@ void() moon_print_cmd_help =
 	sprint(self, "{}| use `pmc_fps` to show Framerate\n", quick_ftos(MOON_IMPULSE_CODE_SHOWFPS));
 	sprint(self, "use `map moon4` or `restartserver` to restart this map\n");
 	sprint(self, "-------------------------------------\n");
+};
+
+void(entity item, entity subject) moon_identify_magic_item_by_subject =
+{
+	if (subject.classname != MOON_PLAYER_CLASSNAME) { return; }
+	if (subject.health <= 0) { return; }
+
+	if ( (item.next_mesg_time < time) && (subject.next_mesg_time < time) )
+	{
+		sprint(subject, "=== magic item ===\n");
+		moon_print_target_item_name(subject, item.prefix_one, item.netname, item.prefix_two);
+		moon_print_target_item_rarity(subject, item.magic_rarity_level);
+		sprint(subject, "\n");
+		moon_println_target_own_magic_item_description(subject); // when touching item, its magic is held in same place for both Armor and Ring
+
+		if ( moon_target_player_needs_tutorial(subject) )
+		{
+			if ( item.classname == MOON_TRADE_MARKET_SPOT_CLASSNAME )
+			{
+				sprint(subject, "Use `buy` (default: `F`) command to buy it.\n");
+			} else {
+				sprint(subject, "Use `use` (default: `E`) command to pick it up.\n");
+			}
+		}
+
+		item.next_mesg_time = time + MOON_TIME_BETWEEN_ITEMTOUCH_ITEM_PRINT;
+		subject.next_mesg_time = time + MOON_TIME_BETWEEN_ITEMTOUCH_PLAYER_PRINT;
+	}
+};
+
+void() moon_magic_item_touch = // self - magic item, other - player
+{
+	moon_identify_magic_item_by_subject(self, other);
+};
+
+void(entity item, entity subject) moon_identify_shop_item_by_subject =
+{
+	sprint(subject, "======== shop item ========\n");
+	if ( item.items & IT_ARMOR1 )
+	{
+		sprint(subject, MOON_ARMOR_GREEN_DISPLAYNAME);
+	}
+	if ( item.items & IT_ARMOR2 )
+	{
+		sprint(subject, MOON_ARMOR_YELLOW_DISPLAYNAME);
+	}
+	if ( item.items & IT_ARMOR3 )
+	{
+		sprint(subject, MOON_ARMOR_RED_DISPLAYNAME);
+	}
+	if ( item.items & IT_SUPERHEALTH )
+	{
+		sprint(subject, "{0} +{1}", item.targetname, floor_ftos(item.healamount));
+	}
+	if ( item.cnt == MOON_ITEM_TRADE_SIGNOF_AMMO )
+	{
+		sprint(subject, "Box of");
+		moon_print_target_container_ammo(subject, item);
+	} else
+	if ( item.cnt == MOON_ITEM_TRADE_SIGNOF_WEAPON )
+	{
+		sprint(subject, item.targetname);
+	}
+
+	sprint(subject, ". Cost: {0}\n", floor_ftos(item.cost));
+};
+
+void(entity item, entity subject) moon_identify_market_item_by_subject =
+{
+	sprint(subject, "======= market item =======\n");
+	if ( item.netname == MOON_ARMOR_MARKET_NETNAME )
+	{
+		sprint(subject, item.targetname);
+	} else
+	if ( item.netname == MOON_ELIXIR_MARKET_NETNAME )
+	{
+		sprint(subject, item.targetname);
+	} else
+	if ( item.netname == MOON_AMMO_MARKET_NETNAME )
+	{
+		sprint(subject, "{0} {1}", floor_ftos(item.currentammo), item.targetname);
+	} else
+	if ( item.netname == MOON_WEAPON_MARKET_NETNAME )
+	{
+		sprint(subject, item.targetname);
+	} else
+	if ( item.netname == MOON_MEDKIT_MEGA_MARKET_NETNAME )
+	{
+		sprint(subject, item.targetname);
+	} else
+	if ( (item.netname == MOON_ITEM_ARMOR_NETNAME) || (item.netname == MOON_ITEM_RING_NETNAME) )
+	{
+		moon_identify_magic_item_by_subject(subject, other);
+	}
+	sprint(subject, "\n");
+
+	sprint(subject, "Cost: ");
+	moon_print_golden_number(subject, item.cost);
+	sprint(subject, "\n");
+};
+
+void() moon_identify_items_in_radius =
+{
+	local entity head;
+	local entity selected;
+	local float min_dist;
+
+	min_dist = MOON_PHYSIC_ITEMSEARCH_RADIUS;
+	head = world;
+	while ( (head = find(head, classname, MOON_ITEM_MAGIC_CLASSNAME)) )
+	{
+		if ( vlen(head.origin - self.origin) < min_dist )
+		{
+			min_dist = vlen(head.origin - self.origin);
+			selected = head;
+		}
+	}
+	if ( selected != world )
+	{
+		moon_identify_magic_item_by_subject(selected, self);
+		return;
+	}
+
+	min_dist = MOON_PHYSIC_SHOPITEMSEARCH_RADIUS;
+	head = world;
+	while ( (head = find(head, classname, MOON_TRADE_SHOP_SPOT_CLASSNAME)) )
+	{
+		if ( head.free == MOON_TRADE_STATE_OCCUPIED )
+		{
+			if ( vlen(head.origin - self.origin) < min_dist )
+			{
+				min_dist = vlen(head.origin - self.origin);
+				selected = head;
+			}
+		}
+	}
+	if ( selected != world )
+	{
+		moon_identify_shop_item_by_subject(selected, self);
+		return;
+	}
+
+	min_dist = MOON_PHYSIC_SHOPITEMSEARCH_RADIUS;
+	head = world;
+	while ( (head = find(head, classname, MOON_TRADE_MARKET_SPOT_CLASSNAME)) )
+	{
+		if ( head.free == MOON_TRADE_STATE_OCCUPIED )
+		{
+			if ( vlen((head.origin - self.origin)) < min_dist )
+			{
+				min_dist = vlen( head.origin - self.origin );
+				selected = head;
+			}
+		}
+	}
+	if ( selected != world )
+	{
+		moon_identify_market_item_by_subject(selected, self);
+		return;
+	}
+
+	sprint(self, "Nothing to identify.\n");
+};
+
+void() moon_print_skills =
+{
+	local float bonus;
+
+	sprint(self, "======= stats =======\n");
+	sprint(self, "|free points: {0}", quick_ftos(self.point));
+	if ( self.point < 10 )
+	{
+		sprint(self, " ");
+	}
+	sprint(self, "    |\n");
+
+	bonus = moon_get_target_bonus_health(self);
+	sprint(self, "| vitality: {0} ({1}", quick_ftos(self.vit), quick_ftos(self.max_health));
+
+	if ( bonus > 0 )
+	{
+		sprint(self, " (+{0})", quick_ftos(bonus));
+	}
+	sprint(self, " max hp) |");
+	if ( moon_target_player_needs_tutorial(self) && (self.point > 0) )
+	{
+		sprint(self, " Use `skill\1` to raise");
+	}
+	sprint(self, "\n");
+
+	bonus = moon_get_target_total_bonus_damage(self);
+	if ( self.mentat_offense_time > time )
+	{
+		bonus = (bonus + MOON_MENTAT_OFFENSE_VALUE);
+	}
+
+	sprint(self, "| strength: {0} ({1}%", quick_ftos(self.stre), quick_ftos((self.stre * MOON_STAT_DAMAGE_PER_STRENGTH) + 100));
+	if (bonus > 0)
+	{
+		sprint(self, " (+{0}%)", quick_ftos(bonus));
+	}
+	sprint(self, " dmg) |");
+	if ( moon_target_player_needs_tutorial(self) && (self.point > 0) )
+	{
+		sprint(self, " Use `skill\2` to raise");
+	}
+	sprint(self, "\n");
+
+	// TODO: Sanity stat
+	// TODO: Intuition stat
+	sprint(self, "---------------------\n");
 };
 
 void() moon_broadcast_heart_state =

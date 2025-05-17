@@ -1603,7 +1603,7 @@ entity(entity e, float enc) spawn_spider =
 	m.netname = "spider";
 	m.speed = 225;
 	m.lvl = enc;
-	GetMonsterPrefixLevel(m, enc);
+	moon_set_monster_prefix_for_level(m, enc);
 	if ((enc == 0))
 	{
 		m.health = 180;
@@ -2045,7 +2045,7 @@ entity(entity e, float enc) spawn_soldier =
 			}
 		}
 	}
-	GetMonsterPrefixLevel(m, enc);
+	moon_set_monster_prefix_for_level(m, enc);
 	if ((enc == 0))
 	{
 		m.health = MON_CAMPTIME;

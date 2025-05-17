@@ -236,7 +236,7 @@ entity(entity e, float enc) spawn_shalrath =
 	m.netname = "shalrath";
 	m.skin = WF_NORMAL;
 	m.misspeed = 700;
-	GetMonsterPrefixLevel(m, enc);
+	moon_set_monster_prefix_for_level(m, enc);
 	if ( enc == 0 )
 	{
 		m.health = 300;
@@ -626,7 +626,7 @@ entity(entity e, float enc) spawn_mage =
 	m.speed = 205;
 	m.view_ofs = '0 0 25'; // TODO: fix for each of them
 	m.netname = "mage";
-	GetMonsterPrefixLevel(m, enc);
+	moon_set_monster_prefix_for_level(m, enc);
 	if ((enc == 0))
 	{
 		m.health = 140;
@@ -1038,7 +1038,7 @@ entity(entity spawner, float enc) spawn_enforcer =
 	m.netname = "enforcer";
 	m.skin = 0;
 	m.misspeed = 800;
-	GetMonsterPrefixLevel(m, enc);
+	moon_set_monster_prefix_for_level(m, enc);
 	if ((enc == 0))
 	{
 		m.health = 80;

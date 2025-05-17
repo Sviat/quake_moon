@@ -568,7 +568,7 @@ entity(entity e, float enc) spawn_ogre =
 	m.netname = "ogre";
 	m.skin = WF_NORMAL;
 	m.speed = 230;
-	GetMonsterPrefixLevel(m, enc);
+	moon_set_monster_prefix_for_level(m, enc);
 	if ((enc == WF_NORMAL))
 	{
 		m.health = 200;
@@ -886,7 +886,7 @@ entity(entity e, float enc) spawn_snake =
 	m.view_ofs = '0 0 25'; // TODO: fix for each of them
 	m.netname = "snake";
 	m.lvl = enc;
-	GetMonsterPrefixLevel(m, enc);
+	moon_set_monster_prefix_for_level(m, enc);
 	if ((enc == WF_NORMAL))
 	{
 		m.health = 140;

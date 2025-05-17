@@ -199,6 +199,7 @@ void(entity target, float value = 1) moon_raise_target_intuition = // This is no
 {
 	target.intu = (target.intu + value);
 };
+
 void(entity target, float gain) moon_give_target_gold =
 {
 	target.gold = (target.gold + gain);
@@ -221,3 +222,97 @@ float(entity target, float cost) moon_pay_target_gold =
 	return TRUE;
 };
 
+float(float next_lvl, float prev_exp) moon_get_experience_for_next_level =
+{
+	return floor( prev_exp + (next_lvl * MOON_NEXTLEVEL_MORE_PLAYERLEVEL_TIMES * MOON_NEXTLEVEL_MORE_SCALING_FACTOR) );
+};
+
+void(entity target) level_up_target =
+{
+	target.frags = target.lvl + 1;
+	target.nextexp = moon_get_experience_for_next_level(target.frags, target.nextexp); // Increase requirement with updated level
+	target.lvl = target.frags;
+
+	if ( target.health > 0 )
+	{
+		if ( target.health < target.max_health )
+		{
+			target.health = target.max_health;
+		}
+	}
+
+	target.items = (target.items | IT_KEY1);
+	if ( target.lvl <= MOON_PLAYER_LEVEL_GROW_FAST )
+	{
+		target.point = (target.point + MOON_PLAYER_POINT_GROW_FAST);
+	} else
+	if ( target.lvl <= MOON_PLAYER_LEVEL_GROW_NORMAL )
+	{
+		target.point = (target.point + MOON_PLAYER_POINT_GROW_NORMAL);
+	} else {
+		target.point = (target.point + MOON_PLAYER_POINT_GROW_SLOW);
+	}
+
+	sound(target, CHAN_BODY, "moon/misc/levelup.wav", 1, ATTN_NORM);
+	sprint(target, "=== Level Up! ===\n");
+	sprint(target, "You are now level {0}\n", quick_ftos(target.lvl));
+
+	if (moon_target_player_needs_tutorial(target))
+	{
+		sprint(target, "Get {0} experience for the next Level.\n", quick_ftos(target.nextexp));
+		sprint(target, "use `stats` command to check and upgrade your stats\n");
+		sprint(target, "-----------------\n");
+	}
+};
+
+void(entity heart) level_up_heart =
+{
+	if (heart == world) { return; }
+
+	if (heart.lvl >= MOON_HEART_MAX_LEVEL)
+	{
+		bprint("Congratulations! You \swon\s the game.\n");
+		intermission_victory();
+		return;
+	}
+
+	moon_spawn_guard();
+
+	heart.frags = heart.lvl + 1;
+	heart.nextexp = moon_get_experience_for_next_level(heart.frags, heart.nextexp); // Increase requirement with updated level
+	heart.lvl = heart.frags;
+
+	heart.max_health = (heart.max_health + MOON_HEART_HEALTH_GROW);
+	heart.health = (heart.health + MOON_HEART_HEALTH_GROW);
+	if (heart.health > heart.max_health)
+	{
+		heart.health = heart.max_health;
+	}
+};
+
+void(float experience) moon_grant_all_exp =
+{
+	local entity heart;
+	local entity e;
+
+	if (gameover) { return; }
+
+	heart = find(world, classname, MOON_HEART_CLASSNAME);
+	if (heart != world)
+	{
+		heart.exp = (heart.exp + experience);
+		if (heart.exp >= heart.nextexp)
+		{
+			level_up_heart(heart);
+		}
+	}
+
+	while ( (e = find(e, classname, MOON_PLAYER_CLASSNAME)) )
+	{
+		e.exp = (e.exp + experience);
+		if (e.exp >= e.nextexp)
+		{
+			level_up_target(e);
+		}
+	}
+};

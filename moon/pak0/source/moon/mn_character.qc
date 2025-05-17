@@ -52,8 +52,8 @@ float(entity target, float healamount) moon_overheal_target_player = // Player M
 	return TRUE;
 };
 
-float(entity target, float healamount) moon_decayheal_target_player = // Megahealth rot only!
-{ // healamount <= 0
+float(entity target, float decayamount) moon_decayheal_target_player = // Megahealth rot only!
+{ // decayamount <= 0
 	if ( target.health <= 0 ) // you can't help him
 	{
 		return FALSE;
@@ -65,10 +65,40 @@ float(entity target, float healamount) moon_decayheal_target_player = // Megahea
 		return FALSE;
 	}
 
-	healamount = ceil(healamount);
-	target.health = clampd( target.max_health, (target.health + healamount), CONST_QC_DISPLAY_MAX);
+	decayamount = ceil(decayamount);
+	target.health = clampd( target.max_health, (target.health + decayamount), CONST_QC_DISPLAY_MAX);
 
 	return TRUE;
+};
+
+void() moon_medkit_touch = // self - medkit, other - player
+{
+	if ( other.classname != MOON_PLAYER_CLASSNAME ) { return; }
+
+	if ( self.healtype == MOON_MEDKIT_MEGA_TYPE )
+	{
+		if ( other.health >= (other.max_health + MOON_MEDKIT_MEGA_OVERHEAL_HARDLIMIT) )
+		{
+			return;
+		}
+		if (!moon_overheal_target_player(other, self.healamount))
+		{
+			return;
+		}
+	} else {
+		if (!moon_heal_target_player(other, self.healamount))
+		{
+			return;
+		}
+	}
+	sprint(other, "You receive {0} health\n", floor_ftos(self.healamount));
+	sound(other, CHAN_ITEM, self.noise, 1, ATTN_NORM);
+	flash_target(other);
+
+	self.model = string_null;
+	self.solid = SOLID_NOT;
+	activator = other;
+	SUB_UseTargets();
 };
 
 void(entity e, float healamount) moon_heal_target_monster =	// Monster heal only - doesnt need to fit to screen, so may lead to numbers above CONST_QC_DISPLAY_MAX

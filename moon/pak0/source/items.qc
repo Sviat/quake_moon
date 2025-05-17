@@ -1,8 +1,8 @@
 //Decompiled code. Please respect the original copyright.
 float H_ROTTEN    = 1;
 float H_MEGA      = 2;
-.float healamount;
-.float healtype;
+// .float healamount; 	// moved into mn_entity.qc for a while, remove after rename
+// .float healtype; 	// moved into mn_entity.qc for a while, remove after rename
 
 void() health_touch;
 
@@ -75,10 +75,34 @@ void() StartItem =
 	self.think = PlaceItem;
 };
 
-// UNUSED?!
-void() item_health = // Refactor extract consts
+//
+// T_Heal: add health to an entity, limiting health to max_health
+// "ignore" will ignore max_health limit
+//
+float (entity e, float healamount, float ignore) T_Heal = // UNUSED, see: moon_heal_target_player
 {
-	self.touch = health_touch;
+	if (e.health <= 0)
+		return 0;
+
+	if ((!ignore) && (e.health >= e.max_health))
+		return 0;
+
+	healamount = ceil(healamount);
+
+	e.health = e.health + healamount;
+
+	if ((!ignore) && (e.health >= e.max_health))
+		e.health = e.max_health;
+
+	if (e.health > 250)
+		e.health = 250;
+
+	return 1;
+};
+
+void() item_health = // keep as close to vanilla as possible
+{
+	self.touch = moon_medkit_touch; // was health_touch
 	if ((self.spawnflags & H_ROTTEN))
 	{
 		setmodel(self, "maps/b_bh10.bsp");
@@ -107,35 +131,68 @@ void() item_health = // Refactor extract consts
 	StartItem();
 };
 
-// UNUSED?!
-void() health_touch =
+void() item_megahealth_rot = // UNUSED
 {
-	if ( other.classname != MOON_PLAYER_CLASSNAME ) { return; }
+	other = self.owner;
 
-	if ( self.healtype == MOON_MEDKIT_MEGA_TYPE )
+	if (other.health > other.max_health)
 	{
-		if ( other.health >= (other.max_health + MOON_MEDKIT_MEGA_OVERHEAL_HARDLIMIT) )
-		{
-			return;
-		}
-		if (!moon_overheal_target_player(other, self.healamount))
-		{
-			return;
-		}
-	} else {
-		if (!moon_heal_target_player(other, self.healamount))
-		{
-			return;
-		}
+		other.health = other.health - 1;
+		self.nextthink = time + 1;
+		return;
 	}
-	sprint(other, "You receive {0} health\n", floor_ftos(self.healamount));
+
+	// 	it is possible for a player to die and respawn between rots, so don't
+	// 	just blindly subtract the flag off
+
+	other.items = other.items - (other.items & IT_SUPERHEALTH);
+	remove(self);
+};
+
+void() health_touch = // UNUSED, see: moon_medkit_touch
+{
+	local	string	s;
+
+	if (other.classname != "player")
+		return;
+
+	if (self.healtype == 2) // Megahealth?  Ignore max_health...
+	{
+		if (other.health >= other.max_health + 250)
+			return;
+		if (!T_Heal(other, self.healamount, 1))
+			return;
+	}
+	else
+	{
+		if (!T_Heal(other, self.healamount, 0))
+			return;
+	}
+
+	sprint(other, "You receive ");
+	s = ftos(self.healamount);
+	sprint(other, s);
+	sprint(other, " health\n");
+
+	// health touch sound
 	sound(other, CHAN_ITEM, self.noise, 1, ATTN_NORM);
-	flash_target(other);
+
+	stuffcmd (other, "bf\n");
 
 	self.model = string_null;
 	self.solid = SOLID_NOT;
+
+	// Megahealth = rot down the player's super health
+	if (self.healtype == 2)
+	{
+		other.items = other.items | IT_SUPERHEALTH;
+		self.nextthink = time + 5;
+		self.think = item_megahealth_rot;
+		self.owner = other;
+	}
+
 	activator = other;
-	SUB_UseTargets();
+	SUB_UseTargets();				// fire all targets / killtargets
 };
 
 // UNUSED?!

@@ -1878,11 +1878,6 @@ entity() moon_market_place_ammo =
 	return e;
 };
 
-float(float price) moon_get_inflation_adjusted_cost =
-{
-	return price + percent(price, up_gold_value);
-};
-
 entity() moon_market_place_elixir =
 {
 	local entity e;

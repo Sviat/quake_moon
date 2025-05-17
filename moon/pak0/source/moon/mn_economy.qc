@@ -30,3 +30,8 @@ void(entity e) moon_calculate_magic_cost =
 
 	e.cost = ccost;
 };
+
+float(float price) moon_get_inflation_adjusted_cost =
+{
+	return price + percent(price, up_gold_value);
+};

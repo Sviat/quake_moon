@@ -311,7 +311,7 @@ void(float impulse_code) moon_handle_impulse_trace =
 		moon_buy_item();
 		break;
 	case MOON_IMPULSE_CODE_ITEM_IDENTIFY:
-		moon_identify_item();
+		moon_identify_items_in_radius();
 		break;
 	default:
 		dprint("Unhandled impulse code for CLI UI {0}\n", quick_ftos(impulse_code));
@@ -369,6 +369,13 @@ float(entity target) moon_do_target_natural_health_regen_tick =
 		return target.natural_regen_time;
 	}
 
+	if ( !(target.flags & FL_MONSTER) && (target.items & IT_SUPERHEALTH) )
+	{
+		moon_decayheal_target_player(target, MOON_MEDKIT_MEGA_DECAY_VALUE);
+		target.natural_regen_time = time + MOON_MEDKIT_MEGA_DECAY_COOLDOWN;
+		return target.natural_regen_time;
+	}
+
 	if ( (target.natural_regen_cooldown <= 0) || (target.natural_regen_value <= 0) )
 	{
 		return target.natural_regen_time + MOON_TIME_BETWEEN_FAILED_CHECKS;
@@ -379,11 +386,6 @@ float(entity target) moon_do_target_natural_health_regen_tick =
 
 	if ( target.health >= target.max_health )
 	{
-		if ( !(target.flags & FL_MONSTER) && (target.items & IT_SUPERHEALTH) )
-		{
-			moon_decayheal_target_player(target, MOON_MEDKIT_MEGA_DECAY_VALUE);
-			target.natural_regen_time = time + MOON_MEDKIT_MEGA_DECAY_COOLDOWN;
-		}
 		return target.natural_regen_time;
 	}
 

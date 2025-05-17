@@ -58,6 +58,10 @@
 .float magical_recharge_time;   // next time magical Cells recharge happens
 .float cells_used_time;         // last time Cells were used
 
+// Items
+.float healamount;  // stolen from items.qc, rename to not clash with vanilla
+.float healtype;    // stolen from items.qc, rename to not clash with vanilla
+
 // sort these
 .float skl_expl; // no idea
 .float natural_regen_cooldown;

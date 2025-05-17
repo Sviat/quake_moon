@@ -528,7 +528,7 @@ void(entity item, entity subject) moon_identify_market_item_by_subject =
 	} else
 	if ( (item.netname == MOON_ITEM_ARMOR_NETNAME) || (item.netname == MOON_ITEM_RING_NETNAME) )
 	{
-		moon_identify_magic_item_by_subject(subject, other);
+		moon_identify_magic_item_by_subject(item, subject);
 	}
 	sprint(subject, "\n");
 

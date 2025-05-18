@@ -221,6 +221,7 @@ void() worldspawn =
 	lightstyle(TE_TELEPORT, "abcdefghijklmnopqrrqponmlkjihgfedcba");
 	lightstyle(63, "a");
 
+	moon_precache();
 	if ( waypoints_ok == FALSE )
 	{
 		moon_set_map_moon4();

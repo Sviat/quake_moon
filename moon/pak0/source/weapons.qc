@@ -17,7 +17,6 @@ void() W_Precache =
 	precache_sound("weapons/grenade.wav");
 	precache_sound("weapons/bounce.wav");
 	precache_sound("weapons/shotgn2.wav");
-	moon_precache();
 };
 
 float() crandom =

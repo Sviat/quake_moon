@@ -1,18 +1,6 @@
 /// ReProjectMoon-specific source file
 /// Here go all functions that regulate game session: map change, win/lose, (dis)connect etc
 
-void() moon_reset_globals =
-{
-	gl_playercount = 0;
-
-	sv_alwaysday = 0;	// TODO: one day - preserve Settings between restarts
-	sv_fastmeat = 0;
-	sv_noshake = 0;
-
-	up_alert = MOON_CONST_LOCKED;
-	up_gold_value = 0;
-	badluck_compensation = 0;
-};
 
 void(entity target) moon_prepare_player_entity =
 {
@@ -51,13 +39,6 @@ void(entity target) moon_prepare_player_entity =
 
 void() moon_init_self_player = // happens with first impulse check
 {
-	if ( mapname != "moon4" )
-	{
-		sprint(self, "game supports only map moon4.bsp\n");
-		localcmd("disconnect\n");
-		return;
-	}
-
 	moon_prepare_player_entity(self);
 
 	sprint(self, "Project MOON. Original v0.21beta created by \s3d[Power]\s\n");

@@ -3,6 +3,161 @@
 /// Below is merge of refactored decompiled code and Moon source
 
 
+entity() find_closest_ns =
+{
+	local entity e;
+	local entity selected;
+	local float best_waypoint_dist;
+
+	selected = world;
+	best_waypoint_dist = 99999;
+	e = find(world, classname, "sale_way");
+	while ((e != world))
+	{
+		if (CanDamage(e, self))
+		{
+			if ((vlen((e.origin - self.origin)) < best_waypoint_dist))
+			{
+				selected = e;
+				best_waypoint_dist = vlen((e.origin - self.origin));
+			}
+		}
+		e = find(e, classname, "sale_way");
+	}
+	return (selected);
+};
+
+float() find_ns =
+{
+	if ((self.goalentity.classname == "sale_way"))
+	{
+		return (FALSE);
+	}
+	self.goalentity = find_closest_ns();
+	if ((self.goalentity == world))
+	{
+		return (FALSE);
+	}
+	self.ideal_yaw = vectoyaw((self.goalentity.origin - self.origin));
+	return (TRUE);
+};
+
+void() ns_touch = // self - waypoint, other - market trader
+{
+	local entity tmp;
+	local float nextnum;
+	local float zzz;
+	local entity ops;
+
+	if ((other.goalentity != self))
+	{
+		return;
+	}
+	if ((other.classname != MOON_TRADER_MARKET_CLASSNAME))
+	{
+		return;
+	}
+	if ((other.wantnum > self.num))
+	{
+		nextnum = (self.num + 1);
+	}
+	if ((other.wantnum < self.num))
+	{
+		nextnum = (self.num - 1);
+	}
+	if (((other.action == 2) && (self.num == 2)))
+	{
+		remove(other);
+		return;
+	}
+	if ((((other.action == 1) && (self.num < 4)) || (other.action == 2)))
+	{
+		tmp = find(world, classname, "sale_way");
+		while (tmp)
+		{
+			if ((tmp.num == nextnum))
+			{
+				other.goalentity = tmp;
+				return;
+			}
+			tmp = find(tmp, classname, "sale_way");
+		}
+	}
+	else
+	{
+		while (TRUE)
+		{
+			zzz = rint((random() * 5));
+			ops = find(world, classname, MOON_TRADE_MARKET_SOMETHING_CLASSNAME);
+			while (ops)
+			{
+				if ((ops.num == zzz))
+				{
+					if ((ops.free == MOON_TRADE_STATE_FREE))
+					{
+						other.goalentity = ops;
+						return;
+					}
+				}
+				ops = find(ops, classname, MOON_TRADE_MARKET_SOMETHING_CLASSNAME);
+			}
+		}
+	}
+	bprint("ERROR: ns_touch error\n");
+};
+
+void(vector org, float nm, float rd) NS = // black market waypoints for Trader
+{
+	local entity e;
+
+	e = spawn();
+	setorigin(e, org);
+	e.num = nm;
+	e.radius = rd;
+	setsize(e, VEC_HULL_MIN, VEC_HULL_MAX);
+	e.touch = ns_touch;
+	e.solid = SOLID_TRIGGER;
+	setsize(e, VEC_HULL_MIN, VEC_HULL_MAX);
+	e.classname = "sale_way";
+};
+
+void() s_touch = // self - market spot, other - market trader
+{
+	if ((other.goalentity != self))
+	{
+		return;
+	}
+	if ((other.classname != MOON_TRADER_MARKET_CLASSNAME))
+	{
+		return;
+	}
+	other.wantnum = 2;
+	other.action = 3;
+	other.cnt = self.angles_y;
+	other.ideal_yaw = self.angles_y;
+	other.goalentity = world;
+	self.enemy = other;
+	self.free = MOON_TRADE_STATE_OCCUPIED;
+	other.free = MOON_TRADE_STATE_FREE;
+};
+
+void(vector org, float ang, float nm) S =
+{
+	local entity e;
+
+	e = spawn();
+	setorigin(e, org);
+	e.angles_y = ang;
+	e.num = nm;
+	e.radius = 60;
+	e.free = MOON_TRADE_STATE_FREE;
+	e.classname = MOON_TRADE_MARKET_SOMETHING_CLASSNAME;
+	setsize(e, '-4 -4 0', '4 4 8');
+	e.touch = s_touch;
+	e.solid = SOLID_TRIGGER;
+	setsize(e, '-4 -4 0', '4 4 8');
+};
+
 /*
 ============
 FacingIdeal

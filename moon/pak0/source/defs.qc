@@ -440,7 +440,6 @@ void(string gibname, float dm) ThrowGib;
 .float poison_dmg;
 .float next_poison;
 .float min_attack_dist;
-void() game_brain;
 .float postenemy_time;
 .vector postenemy_org;
 .float postenemy_org_x;

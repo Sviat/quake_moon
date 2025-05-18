@@ -1,18 +1,25 @@
 ../progs.dat
 
+// File organized in such a way, to minimize cross-dependencies (represented by forward declartions)
+// Vanilla, top-prio
 sysdefs.qc
 defs.qc
 subs.qc
+
+// Third party, high prio (doesnt depend on Moon -> above it)
 3rd/consts_fte.qc
 3rd/defs_kex.qc
 3rd/subs_kex.qc
 // 3rd/subs_soc.qc
 3rd/chasecam.qc
+
+// MOON, top-prio
 moon/mn_defs.qc
 moon/mn_globals.qc
 moon/mn_entity.qc
 moon/mn_funcs.qc
 moon/mn_lookup.qc
+// MOON, shared
 moon/mn_session.qc
 moon/mn_game.qc
 moon/mn_cui.qc
@@ -27,9 +34,13 @@ moon/mn_ai_monster.qc
 // moon/mn_ai_bot.qc
 moon/mn_music.qc
 moon/mn_logic.qc
+// MOON, map-dependent
 moon/moon4/mn4_waypoints.qc
 moon/moon4/mn4_init.qc
+// MOON, init (depends on everything else -> last)
 moon/mn_init.qc
+
+// Vanilla, rest
 ai.qc
 fight.qc
 combat.qc

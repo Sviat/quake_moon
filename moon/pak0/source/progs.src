@@ -13,7 +13,6 @@ moon/mn_globals.qc
 moon/mn_entity.qc
 moon/mn_funcs.qc
 moon/mn_lookup.qc
-moon/mn_init.qc
 moon/mn_session.qc
 moon/mn_game.qc
 moon/mn_cui.qc
@@ -27,6 +26,7 @@ moon/mn_ai_monster.qc
 // moon/mn_ai_bot.qc
 moon/mn_items.qc
 moon/mn_music.qc
+moon/mn_init.qc
 ai.qc
 fight.qc
 combat.qc

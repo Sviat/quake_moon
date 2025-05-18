@@ -224,7 +224,7 @@ void() worldspawn =
 	moon_precache();
 	if ( waypoints_ok == FALSE )
 	{
-		moon_set_map_moon4();
+		moon_start_map();
 	}
 };
 

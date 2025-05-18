@@ -1,5 +1,7 @@
 /// ReProjectMoon-specific source file
-/// Here go all functions used by world.qc and others to initialize session, map, player, etc
+/// Here go all functions used by world.qc on server launch
+/// This should be LAST of moon includes in "progs.src", right before all vanilla includes go
+/// 	to know of all existing maps and reduce needs in forward declarations
 
 void() moon_precache_monsters =
 {
@@ -157,4 +159,34 @@ void() moon_precache =
 	moon_precache_monsters();
 	moon_precache_extras();
 	moon_precache_musics();
+};
+
+void() moon_reset_globals =
+{
+	gl_playercount = 0;
+
+	sv_alwaysday = 0;	// TODO: one day - preserve Settings between restarts
+	sv_fastmeat = 0;
+	sv_noshake = 0;
+
+	up_alert = MOON_CONST_LOCKED;
+	up_gold_value = 0;
+	badluck_compensation = 0;
+};
+
+void() moon_start_map =
+{
+	moon_reset_globals();
+
+	if ( mapname == "moon4" )
+	{
+		moon_set_map_moon4();
+	}
+
+	if ( mapname != "moon4" )
+	{
+		sprint(self, "game supports only map moon4.bsp\n");
+		localcmd("disconnect\n");
+		return;
+	}
 };

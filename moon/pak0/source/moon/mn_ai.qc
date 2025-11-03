@@ -88,7 +88,7 @@ void() ns_touch = // self - waypoint, other - market trader
 		while (TRUE)
 		{
 			zzz = rint((random() * 5));
-			ops = find(world, classname, MOON_TRADE_MARKET_SOMETHING_CLASSNAME);
+			ops = find(world, classname, MOON_TRADE_MARKET_SPOT_CLASSNAME);
 			while (ops)
 			{
 				if ((ops.num == zzz))
@@ -99,7 +99,7 @@ void() ns_touch = // self - waypoint, other - market trader
 						return;
 					}
 				}
-				ops = find(ops, classname, MOON_TRADE_MARKET_SOMETHING_CLASSNAME);
+				ops = find(ops, classname, MOON_TRADE_MARKET_SPOT_CLASSNAME);
 			}
 		}
 	}
@@ -132,7 +132,7 @@ void() s_touch = // self - market spot, other - market trader
 		return;
 	}
 	other.wantnum = 2;
-	other.action = 3;
+	other.action = MOON_TRADER_STATE_REACHED_LOCATION;
 	other.cnt = self.angles_y;
 	other.ideal_yaw = self.angles_y;
 	other.goalentity = world;
@@ -151,7 +151,7 @@ void(vector org, float ang, float nm) S =
 	e.num = nm;
 	e.radius = 60;
 	e.free = MOON_TRADE_STATE_FREE;
-	e.classname = MOON_TRADE_MARKET_SOMETHING_CLASSNAME;
+	e.classname = MOON_TRADE_MARKET_SPOT_CLASSNAME;
 	setsize(e, '-4 -4 0', '4 4 8');
 	e.touch = s_touch;
 	e.solid = SOLID_TRIGGER;

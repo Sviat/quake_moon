@@ -171,6 +171,7 @@ void() moon_reset_globals =
 
 	up_alert = MOON_CONST_LOCKED;
 	up_gold_value = 0;
+	up_item_magic_chance = 0;
 	badluck_compensation = 0;
 };
 

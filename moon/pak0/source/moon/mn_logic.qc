@@ -138,37 +138,38 @@ void() saler_stand = // Praise the Omnissiah!
 	ChangeYaw();
 	if ((((self.angles_y >= (self.cnt - 2)) && (self.angles_y <= (self.cnt + 2))) && (self.free == MOON_TRADE_STATE_FREE)))
 	{
+		self.free = MOON_TRADE_STATE_TRADING;
 		moon_market_place_for_sale(self);
 	}
 	if ((self.attack_finished < time))
 	{
-		self.action = 2;
-		while ( (a = find(a, classname, MOON_TRADE_MARKET_SOMETHING_CLASSNAME)) )
+		self.action = MOON_TRADER_STATE_GOING_BACK_HOME;
+		a = world; // reset iterator
+		while ( (a = find(a, classname, MOON_TRADE_MARKET_SPOT_CLASSNAME)) )
 		{
-			if ( a.enemy == self ) // spot.enemy holds owner entity
+			if ( a.enemy == self ) // spot.enemy stores Trader entity that stands on this spot
 			{
 				a.free = MOON_TRADE_STATE_FREE;
 			}
 		}
-		a = world; // reset iterator
 
-		while ( (a = find(a, classname, MOON_TRADE_MARKET_SPOT_CLASSNAME)) )
+		a = world; // reset iterator
+		while ( (a = find(a, classname, MOON_TRADE_MARKET_ITEM_CLASSNAME)) )
 		{
-			if ( a.owner == self )
+			if ( a.owner == self ) // item.owner stores Trader entity that owns this item
 			{
 				sound(self, CHAN_ITEM, a.noise1, 1, ATTN_NORM);
 				remove(a);
 			}
 		}
-		a = world; // reset iterator
 
 		self.stuck_time = 0;
 		self.rstuck_time = 0;
 		self.rstuck_org = self.origin;
 	}
-	if ((self.action < LOGIC_FINDDEFEND))
+	if ( self.action < MOON_TRADER_STATE_REACHED_LOCATION )
 	{
-		if ((find_ns() == TRUE))
+		if ( find_ns() == TRUE )
 		{
 			self.th_run();
 		}
@@ -252,7 +253,7 @@ void() saler_run =
 		self.framtime = time + 0.07;
 	}
 	saler_runn();
-	if ((self.action == LOGIC_FINDDEFEND))
+	if ( self.action == MOON_TRADER_STATE_REACHED_LOCATION )
 	{
 		self.th_stand();
 	}
@@ -274,7 +275,7 @@ void() spawn_saler = // have to clean it one day
 	e.yaw_speed = LOGIC_HUNTENEMY;
 	e.wantnum = LOGIC_DEFEND;
 	e.speed = 200;
-	e.action = 1;
+	e.action = MOON_TRADER_STATE_GOING_TO_MARKET;
 	e.attack_finished = ((time + 20) + (20 * random()));
 	e.th_stand = saler_stand;
 	e.th_run = saler_run;

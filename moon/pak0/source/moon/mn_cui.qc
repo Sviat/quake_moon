@@ -332,12 +332,12 @@ void(entity target, entity item) moon_println_target_magic_ring_description =
 
 void(entity target) moon_println_target_own_magic_item_description =
 {
-	moon_println_target_magic_item_description(target, self);
+	moon_println_target_magic_item_description(target, target);
 };
 
 void(entity target) moon_println_target_own_magic_ring_description =
 {
-	moon_println_target_magic_ring_description(target, self);
+	moon_println_target_magic_ring_description(target, target);
 };
 
 void() moon_print_inventory =
@@ -449,7 +449,7 @@ void(entity item, entity subject) moon_identify_magic_item_by_subject =
 		moon_print_target_item_name(subject, item.prefix_one, item.netname, item.prefix_two);
 		moon_print_target_item_rarity(subject, item.magic_rarity_level);
 		sprint(subject, "\n");
-		moon_println_target_own_magic_item_description(subject); // when touching item, its magic is held in same place for both Armor and Ring
+		moon_println_target_magic_item_description(subject, item); // when touching item, its magic is held in same place for both Armor and Ring
 
 		if ( moon_target_player_needs_tutorial(subject) )
 		{

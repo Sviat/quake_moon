@@ -3073,14 +3073,6 @@ void() DropItem =
 		e.nextthink = time;
 	}
 
-	// KILLME
-	if ( random() < 0.5 )
-	{
-		spawned_object = moon_spawn_drop_magic_item(self);
-		spawned_object.nextthink = (time + MOON_TIME_TO_DISAPPEAR_TRASH);
-	}
-	//
-
 	if ( self.prefix == MOON_MONSTER_TRAIT_EXTRA_GOLD )
 	{
 		moon_spawn_drop_gold(self);

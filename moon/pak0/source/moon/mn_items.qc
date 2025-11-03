@@ -35,7 +35,7 @@ void(entity target, float armor_code, float armor_durability = -1) moon_init_tar
 		break;
 	default:
 		target.max_health = 1; // Division by zero guard
-		dprint("Unknown armor code {0}\n", armor_code);
+		dprint("Unknown armor code {0}\n", quick_ftos(armor_code));
 	}
 
 	// Adjust cost for damaged Armors
@@ -137,7 +137,7 @@ void(entity target, float weapon_code, float ammo_count = -1) moon_init_target_a
 		target.items = IT_LIGHTNING;
 		break;
 	default:
-		dprint("Unknown weapon code {0}\n", weapon_code);
+		dprint("Unknown weapon code {0}\n", quick_ftos(weapon_code));
 	}
 
 	target.count = target.currentammo; // duplicate for easier crosshair identification
@@ -176,7 +176,7 @@ void(entity target, float medkit_code, float medkit_durability = -1) moon_init_t
 		break;
 	default:
 		target.max_health = 1; // Division by zero guard
-		dprint("Unknown medkit code {0}\n", medkit_code);
+		dprint("Unknown medkit code {0}\n", quick_ftos(medkit_code));
 	}
 
 	// Adjust cost for spoiled medkits
@@ -241,7 +241,7 @@ void(entity target, float ammo_code, float ammo_count = -1) moon_init_target_as_
 		target.targetname = MOON_AMMO_CELLS_DISPLAYNAME;
 		break;
 	default:
-		dprint("Unknown ammunition code {0}\n", ammo_code);
+		dprint("Unknown ammunition code {0}\n", quick_ftos(ammo_code));
 	}
 
 	target.count = target.currentammo; // duplicate for easier crosshair identification

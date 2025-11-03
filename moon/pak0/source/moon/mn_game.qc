@@ -74,7 +74,7 @@ void() moon_handle_impulse_noop =
 
 	e = world; // reset iterator
 	min_dist = MOON_PHYSIC_ITEMSEARCH_RADIUS;
-	while ( (e = find(e, classname, MOON_TRADE_MARKET_SPOT_CLASSNAME)) )
+	while ( (e = find(e, classname, MOON_TRADE_MARKET_ITEM_CLASSNAME)) )
 	{
 		if ( vlen(e.origin - self.origin) < min_dist)
 		{

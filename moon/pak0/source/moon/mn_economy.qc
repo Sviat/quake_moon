@@ -16,7 +16,7 @@ entity() moon_market_place_armor =
 	makevectors(self.angles);
 	setorigin(e, ((self.origin + (v_forward * 47)) - '0 0 24'));
 	e.solid = SOLID_NOT;
-	e.classname = MOON_TRADE_MARKET_SPOT_CLASSNAME;
+	e.classname = MOON_TRADE_MARKET_ITEM_CLASSNAME;
 	e.netname = MOON_ARMOR_MARKET_NETNAME;
 	e.noise1 = "items/armor1.wav";
 	e.owner = self;
@@ -51,7 +51,7 @@ entity() moon_market_place_ammo =
 	makevectors(self.angles);
 	setorigin(e, (((self.origin + (v_forward * 47)) - '0 0 24') + (v_right * KEY_MOVERIGHT)));
 	e.solid = SOLID_NOT;
-	e.classname = MOON_TRADE_MARKET_SPOT_CLASSNAME;
+	e.classname = MOON_TRADE_MARKET_ITEM_CLASSNAME;
 	e.netname = MOON_AMMO_MARKET_NETNAME;
 	e.skin = 0;
 	setmodel(e, string_null);
@@ -80,7 +80,7 @@ entity() moon_market_place_elixir =
 	makevectors(self.angles);
 	setorigin(e, ((self.origin + (v_forward * 47)) - '0 0 24'));
 	e.solid = SOLID_NOT;
-	e.classname = MOON_TRADE_MARKET_SPOT_CLASSNAME;
+	e.classname = MOON_TRADE_MARKET_ITEM_CLASSNAME;
 	e.netname = MOON_ELIXIR_MARKET_NETNAME;
 	e.skin = 2; // TODO: extract
 	setmodel(e, "progs/potion.mdl");
@@ -110,19 +110,19 @@ entity() moon_market_place_elixir =
 	return e;
 };
 
-entity() moon_market_place_magic_item =
+entity(entity trader) moon_market_place_magic_item =
 {
 	local entity e;
 
 	e = spawn();
-	makevectors(self.angles);
-	setorigin(e, ((self.origin + (v_forward * 47)) - '0 0 24'));
-	e.solid = SOLID_NOT;
-	e.classname = MOON_TRADE_MARKET_SPOT_CLASSNAME;
-	e.owner = self;
+	makevectors(trader.angles);
+	setorigin(e, ((trader.origin + (v_forward * 47)) - '0 0 24'));
+	// e.solid = SOLID_NOT;
+	e.owner = trader;
 	sound(e, CHAN_ITEM, "items/itembk2.wav", 1, ATTN_NORM);
 
 	moon_init_target_as_magic_item(e);
+	e.classname = MOON_TRADE_MARKET_ITEM_CLASSNAME; // overwrite default from above
 
 	return e;
 };
@@ -136,7 +136,7 @@ entity() moon_market_place_weapon =
 	makevectors(self.angles);
 	setorigin(e, ((self.origin + (v_forward * 47)) - '0 0 24'));
 	e.solid = SOLID_NOT;
-	e.classname = MOON_TRADE_MARKET_SPOT_CLASSNAME;
+	e.classname = MOON_TRADE_MARKET_ITEM_CLASSNAME;
 	e.noise1 = "weapons/pkup.wav";
 	e.owner = self;
 	sound(e, CHAN_ITEM, "items/itembk2.wav", 1, ATTN_NORM);
@@ -191,7 +191,7 @@ entity() moon_market_place_medkit_mega = // TODO: use moon_init_target_as_medkit
 	setorigin(e, (((self.origin + (v_forward * 49)) - '0 0 24') + (v_right * KEY_MOVEFORWARD)));
 	e.solid = SOLID_NOT;
 	e.angles_y = anglemod((self.angles_y + MENTAT_TIME));
-	e.classname = MOON_TRADE_MARKET_SPOT_CLASSNAME;
+	e.classname = MOON_TRADE_MARKET_ITEM_CLASSNAME;
 	e.netname = MOON_MEDKIT_MEGA_MARKET_NETNAME;
 	e.targetname = MOON_MEDKIT_MEGA_MARKET_DISPLAYNAME;
 	e.noise1 = "items/r_item2.wav";
@@ -213,7 +213,7 @@ void(entity trader) moon_market_place_for_sale =
 	r = random();
 	if ( r < 0.2 )
 	{
-		moon_market_place_magic_item();
+		moon_market_place_magic_item(trader);
 	} else
 	if ( r < 0.37 )
 	{
@@ -233,8 +233,6 @@ void(entity trader) moon_market_place_for_sale =
 	} else {
 		moon_market_place_ammo();
 	}
-
-	trader.free = MOON_TRADE_STATE_TRADING;
 };
 
 void() moon_buy_item_market =
@@ -245,7 +243,7 @@ void() moon_buy_item_market =
 	local float best;
 
 	min_dist = MOON_PHYSIC_ITEMSEARCH_RADIUS;
-	while ( (head = find(head, classname, MOON_TRADE_MARKET_SPOT_CLASSNAME)) )
+	while ( (head = find(head, classname, MOON_TRADE_MARKET_ITEM_CLASSNAME)) )
 	{
 		if ((head.free == MOON_TRADE_STATE_OCCUPIED))
 		{

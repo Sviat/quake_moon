@@ -300,7 +300,7 @@ void(entity target, float effect_code, float effect_value) moon_println_target_m
         sprint(target, MOON_ITEM_REPAIR_EFFECT, floor_ftos(effect_value));
 		break;
 	default:
-		dprint("Unknown effect code {}\n", effect_code);
+		dprint("Unknown effect code {0}\n", quick_ftos(effect_code));
 		return; // Avoid newline
     }
 
@@ -453,7 +453,7 @@ void(entity item, entity subject) moon_identify_magic_item_by_subject =
 
 		if ( moon_target_player_needs_tutorial(subject) )
 		{
-			if ( item.classname == MOON_TRADE_MARKET_SPOT_CLASSNAME )
+			if ( item.classname == MOON_TRADE_MARKET_ITEM_CLASSNAME )
 			{
 				sprint(subject, "Use `buy` (default: `F`) command to buy it.\n");
 			} else {
@@ -580,7 +580,7 @@ void() moon_identify_items_in_radius =
 
 	min_dist = MOON_PHYSIC_SHOPITEMSEARCH_RADIUS;
 	head = world;
-	while ( (head = find(head, classname, MOON_TRADE_MARKET_SPOT_CLASSNAME)) )
+	while ( (head = find(head, classname, MOON_TRADE_MARKET_ITEM_CLASSNAME)) )
 	{
 		if ( head.free == MOON_TRADE_STATE_OCCUPIED )
 		{

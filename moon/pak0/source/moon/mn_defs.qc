@@ -45,7 +45,8 @@
 
 // Special Flag for Traits/ItemSlots/Upgrades with Locked->Unlocked->Level1->...->LevelN progression
 #define MOON_CONST_LOCKED -1
-#define MOON_CONST_UNLOCKED 0 // anything above this is the Level of that property
+#define MOON_CONST_UNLOCKED 0   // anything above this is the Level of that property
+#define MOON_CONST_EMPTY 0      // same as UNLOCKED, but for items
 
 // Special Flag for Axe hit state (vanilla was 0/1, added 2)
 #define MOON_CONST_AXE_NOT 0
@@ -54,6 +55,10 @@
 
 // Max level is widely used throughout the code
 #define MOON_CONST_MAXLVL 50
+// Magic properties are linear ranges, so need boundaries as DEFINEs
+#define MOON_CONST_TRAIT_ITEM_MIN 1  // Ensure all Effects fit [A, B] range
+#define MOON_CONST_TRAIT_ITEM_MAX 10 // Ensure all Effects fit [A, B] range
+// //
 
 // // Bit flag enums for debug option
 #define MOON_CONST_DEBUG_DPRINT_NONE 0              // dprint > /dev/null
@@ -63,6 +68,7 @@
 #define MOON_CONST_DEBUG_DPRINT_SPAWNED_NAMES 8     // Every wave: dprint name of each spawned monster
 #define MOON_CONST_DEBUG_CHEATS_ON 16               // Allow the use of cheats
 #define MOON_CONST_DEBUG_EPRINT_MONSTERS 32         // Allow eprint-ing monsters (i.e to find stuck on respawn)
+#define MOON_CONST_DEBUG_DPRINT_ITEMS 64            // DPrint everyitem property generated
 // Traits later be used in playable classes
 #define MOON_CONST_TRAIT_CPRINT_SEE_ALLY_HP 512     // Show ally (heart, guard) HP on crosshair
 #define MOON_CONST_TRAIT_CPRINT_SEE_MONSTER_HP 1024 // Show monster HP on crosshair
@@ -71,7 +77,7 @@
 /// end of (preprocessor) consts
 
 string MOON_VERSION = "0.29kf";
-float MOON_DEBUG = MOON_CONST_DEBUG_DPRINT_SPAWNED_NAMES | MOON_CONST_DEBUG_CHEATS_ON | MOON_CONST_TRAIT_CPRINT_SEE_ALLY_HP | MOON_CONST_TRAIT_CPRINT_SEE_MONSTER_HP | MOON_CONST_DEBUG_EPRINT_MONSTERS;
+float MOON_DEBUG = MOON_CONST_DEBUG_DPRINT_ITEMS|MOON_CONST_TRAIT_CPRINT_SEE_MONSTER_HP | MOON_CONST_DEBUG_DPRINT_SPAWNED_NAMES | MOON_CONST_DEBUG_CHEATS_ON | MOON_CONST_TRAIT_CPRINT_SEE_ALLY_HP | MOON_CONST_DEBUG_EPRINT_MONSTERS;
 // // Impulse codes. First 19 keep for original Q1; limit is 255; so we should line up somewhere in between
 float QC_IMPULSE_CODE_NOOP = 0;
 // Code range WEAPONS 1..8 - Quake defaults
@@ -265,11 +271,15 @@ float MOON_TRADE_STATE_OCCUPIED = 0;
 float MOON_TRADE_STATE_FREE = 1;
 float MOON_TRADE_STATE_TRADING = 2; // only applicable to trader
 
+float MOON_TRADER_STATE_GOING_TO_MARKET = 1;
+float MOON_TRADER_STATE_GOING_BACK_HOME = 2;
+float MOON_TRADER_STATE_REACHED_LOCATION = 3;
+
 string MOON_TRADER_SHOP_CLASSNAME = "monster_trader";
-string MOON_TRADER_MARKET_CLASSNAME = "saler";
-string MOON_TRADE_MARKET_SOMETHING_CLASSNAME = "sale_ent"; // Trader standing position?
 string MOON_TRADE_SHOP_SPOT_CLASSNAME = "trade_spot"; // Shop item slot
-string MOON_TRADE_MARKET_SPOT_CLASSNAME = "goody_ent"; // Black market item slot
+string MOON_TRADER_MARKET_CLASSNAME = "saler";
+string MOON_TRADE_MARKET_SPOT_CLASSNAME = "sale_ent"; // Trader standing position/waypoint
+string MOON_TRADE_MARKET_ITEM_CLASSNAME = "goody_ent"; // Black market spawned item entity class
 
 float MOON_TRADE_SPOT_DELAY_INIT_MIN = 1;
 float MOON_TRADE_SPOT_DELAY_INIT_RANDOM = 15;
@@ -360,7 +370,7 @@ string MOON_ITEM_RARITY_THRESHOLD_DISPLAY_LEGENDARY = MOON_CONST_GLYPH_WHITECELL
 string MOON_ITEM_RARITY_THRESHOLD_DISPLAY_UNIQUE = MOON_CONST_GLYPH_REDSQUARE;
 
 // Dynamic Magical item grid
-// Trait effect is chosen uniformaly between [MOON_ITEM_TRAIT_MIN_EFFECT, MOON_ITEM_TRAIT_MAX_EFFECT]
+// Trait effect is chosen uniformaly between [MOON_CONST_TRAIT_ITEM_MIN, MOON_CONST_TRAIT_ITEM_MAX]
 float MOON_ITEM_TRAIT_CODE_LOW_HIGHEST  = 6;
 float MOON_ITEM_TRAIT_CODE_THRESHOLD_LOW    = 10; // after this level - do not generate HIGH tier
 float MOON_ITEM_TRAIT_CODE_HIGH_LOWEST  = 4;

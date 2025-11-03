@@ -251,13 +251,13 @@ float(float level) moon_generate_trait_effect_code =
 {
 	if ( level < MOON_ITEM_TRAIT_CODE_THRESHOLD_LOW )
 	{
-		return random_int(MOON_ITEM_TRAIT_MIN_EFFECT, MOON_ITEM_TRAIT_CODE_LOW_HIGHEST);
+		return random_int(MOON_CONST_TRAIT_ITEM_MIN, MOON_ITEM_TRAIT_CODE_LOW_HIGHEST);
 	} else
 	if ( level > MOON_ITEM_TRAIT_CODE_THRESHOLD_HIGH )
 	{
-		return random_int(MOON_ITEM_TRAIT_CODE_HIGH_LOWEST, MOON_ITEM_TRAIT_MAX_EFFECT);
+		return random_int(MOON_ITEM_TRAIT_CODE_HIGH_LOWEST, MOON_CONST_TRAIT_ITEM_MAX);
 	} else {
-		return random_int(MOON_ITEM_TRAIT_MIN_EFFECT, MOON_ITEM_TRAIT_MAX_EFFECT);
+		return random_int(MOON_CONST_TRAIT_ITEM_MIN, MOON_CONST_TRAIT_ITEM_MAX);
 	}
 };
 
@@ -338,7 +338,13 @@ void(entity e) moon_generate_magic_prefix =
 
 	e.lvl = moon_generate_trait_quality(mxx);
 	rarity = moon_generate_trait_prefix_rarity(e.lvl);
+
 	e.magic_rarity_level = e.magic_rarity_level + rarity;
+	if ( MOON_DEBUG && MOON_CONST_DEBUG_DPRINT_ITEMS )
+	{
+		dprint("Generate magic prefix - Code:{0}, Quality:{1}, Rarity-this:{2}, Rarity-total:{3}\n", quick_ftos(effect), quick_ftos(e.lvl), quick_ftos(rarity), quick_ftos(e.magic_rarity_level));
+	}
+
 	switch(effect)
 	{
 	case MOON_ITEM_HEALTH_CODE:
@@ -555,12 +561,6 @@ void(entity e) moon_generate_magic_prefix =
 		e.magic_typeone = MOON_ITEM_NONE;
 		bprint("moon_generate_magic_prefix cannot handle code {0}\n", quick_ftos(effect));
 	}
-
-	// Just adding Rarity levels works correctly, except for one case, when item has both prefix and postfix of same LOW level trait (which effectively makes it COMMON from TRASH)
-	if ( (e.magic_typeone >= MOON_ITEM_SOME) && (e.magic_typetwo >= MOON_ITEM_SOME) && (e.magic_rarity_level == MOON_ITEM_RARITY_THRESHOLD_TRASH) )
-	{
-		e.magic_rarity_level = MOON_ITEM_RARITY_THRESHOLD_COMMON;
-	}
 };
 
 void(entity e) moon_generate_magic_postfix =
@@ -588,6 +588,11 @@ void(entity e) moon_generate_magic_postfix =
 	}
 
 	e.magic_rarity_level = e.magic_rarity_level + rarity;
+	if ( MOON_DEBUG && MOON_CONST_DEBUG_DPRINT_ITEMS )
+	{
+		dprint("Generate magic postfix - Code:{0}, Quality:{1}, Rarity-this:{2}, Rarity-total:{3}\n", quick_ftos(effect), quick_ftos(e.lvl), quick_ftos(rarity), quick_ftos(e.magic_rarity_level));
+	}
+
 	switch(effect)
 	{
 	case MOON_ITEM_HEALTH_CODE:
@@ -764,12 +769,6 @@ void(entity e) moon_generate_magic_postfix =
 		e.magic_typetwo = MOON_ITEM_NONE;
 		bprint("moon_generate_magic_postfix cannot handle code {0}\n", quick_ftos(effect));
 	}
-
-	// Just adding Rarity levels works correctly, except for one case, when item has both prefix and postfix of same LOW level trait (which effectively makes it COMMON from TRASH)
-	if ( (e.magic_typeone >= MOON_ITEM_SOME) && (e.magic_typetwo >= MOON_ITEM_SOME) && (e.magic_rarity_level == MOON_ITEM_RARITY_THRESHOLD_TRASH) )
-	{
-		e.magic_rarity_level = MOON_ITEM_RARITY_THRESHOLD_COMMON;
-	}
 };
 
 void(entity e) moon_handle_magic_unique =
@@ -819,6 +818,10 @@ void(entity target) moon_init_target_as_magic_item =
 {
 	local float z;
 
+	target.classname = MOON_ITEM_MAGIC_CLASSNAME;
+	target.solid = SOLID_TRIGGER;
+	target.touch = moon_magic_item_touch;
+
 	z = random();
 	if ( z < MOON_ITEM_ARMOR_VS_RING_CHANCE )
 	{
@@ -850,6 +853,7 @@ void(entity target) moon_init_target_as_magic_item =
 		moon_generate_magic_postfix(target);
 		moon_handle_magic_unique(target);
 	}
+	target.magic_rarity_level = floor(target.magic_rarity_level); // Assuming Lowest rarity is 0.5, either stuck two of them to 1.0, or just remove fraction part
 
 	moon_calculate_magic_cost(target);
 };

@@ -348,7 +348,7 @@ float MOON_ITEM_LVLTHRESHOLD_POTION_UPPER = 8;
 
 // MOON_ITEM_EFFECT -> MOON_ITEM
 // (Prefix- or Postfix-) Effect rarity
-float MOON_ITEM_RARITY_LOW 		= 0;
+float MOON_ITEM_RARITY_LOW 		= 0.5;
 float MOON_ITEM_RARITY_NORMAL 	= 1;
 float MOON_ITEM_RARITY_HIGH 	= 2;
 float MOON_ITEM_RARITY_EPIC 	= 3;

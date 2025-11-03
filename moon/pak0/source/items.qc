@@ -2467,15 +2467,13 @@ entity(entity who) moon_spawn_drop_magic_item =
 	item.velocity_z = 300;
 	item.velocity_x = (-100 + (random() * 200));
 	item.velocity_y = (-100 + (random() * 200));
-	item.flags = FL_ITEM;
-	item.solid = SOLID_TRIGGER;
 	item.movetype = MOVETYPE_TOSS;
-	item.classname = MOON_ITEM_MAGIC_CLASSNAME;
+	item.flags = FL_ITEM;
 
 	moon_init_target_as_magic_item(item);
-
+	item.classname = MOON_ITEM_MAGIC_CLASSNAME; // overwrite default from above
 	setsize(item, '-16 -16 0', '16 16 48');
-	item.touch = moon_magic_item_touch;
+
 	item.nextthink = (time + MOON_TIME_TO_DISAPPEAR_IMPORTANT);
 	item.think = SUB_Remove;
 
@@ -3076,7 +3074,7 @@ void() DropItem =
 	}
 
 	// KILLME
-	if ( random() < 0.17 )
+	if ( random() < 0.5 )
 	{
 		spawned_object = moon_spawn_drop_magic_item(self);
 		spawned_object.nextthink = (time + MOON_TIME_TO_DISAPPEAR_TRASH);
@@ -3098,7 +3096,7 @@ void() DropItem =
 		moon_spawn_drop_book_upgrade_castle(self);
 		return;
 	}
-	if ((random() < 0.025))
+	if ( random() < (0.025 + (up_item_magic_chance/100.0)) )
 	{
 		moon_spawn_drop_magic_item(self);
 		return;

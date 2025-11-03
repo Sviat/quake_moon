@@ -674,7 +674,7 @@ string MOON_ITEM_RING_DISPLAY_LONG = "Magical Ring";
 
 float MOON_ITEM_MARKET_COST_BASE = 1;
 // // list of Magical Effects, _CODE's should be in strict increasing order without gaps
-float MOON_ITEM_NO_CODE = 0;
+float MOON_ITEM_NO_CODE = MOON_CONST_EMPTY;
 
 // Each effect can be used as Prefix and Postfix
 //  in general Prefixes (of same effect and rarity) are more reliable (smaller range)
@@ -685,11 +685,9 @@ float MOON_ITEM_NO_CODE = 0;
 // Each rarity level has effect value range [FROM, TO]
 //  these ranges are not disjoint, so higher roll LOW can have same or little better value as lower roll NORMAL item
 // Some effects may be missing one or more rarity levels in original mod. That is to be eventually filled
-float MOON_ITEM_TRAIT_MIN_EFFECT        = 1;
-//
-float MOON_ITEM_HEALTH_CODE = 1;
+float MOON_ITEM_HEALTH_CODE = MOON_CONST_TRAIT_ITEM_MIN;
 float MOON_ITEM_HEALTH_MARKET_COST_SCALE = 22; // was 45. Purpose of change: overall bonus values raised for all levels, to just keep items a competetive choice, hence need to lower price scaling
-string MOON_ITEM_HEALTH_EFFECT  	= "+{} to maximum health";
+string MOON_ITEM_HEALTH_EFFECT  	= "+{0} to maximum health";
 string MOON_ITEM_HEALTH_PREFIX_LOW   	= "Echidna ";
 float MOON_ITEM_HEALTH_PREFIX_LOW_FROM = 16;    // was 12
 float MOON_ITEM_HEALTH_PREFIX_LOW_TO = 32;      // was 25
@@ -714,7 +712,7 @@ float MOON_ITEM_HEALTH_POSTFIX_HIGH_TO = 90;    // was 80
 
 float MOON_ITEM_DAMAGE_CODE = 2;
 float MOON_ITEM_DAMAGE_MARKET_COST_SCALE = 50;
-string MOON_ITEM_DAMAGE_EFFECT 		= "{}% damage amplify";
+string MOON_ITEM_DAMAGE_EFFECT 		= "{0}% damage amplify";
 string MOON_ITEM_DAMAGE_PREFIX_LOW   	= "Brutal ";
 float MOON_ITEM_DAMAGE_PREFIX_LOW_FROM = 8; // was 5
 float MOON_ITEM_DAMAGE_PREFIX_LOW_TO = 24; // was 25
@@ -739,11 +737,11 @@ float MOON_ITEM_DAMAGE_POSTFIX_HIGH_TO = 44;    // was 101
 
 float MOON_ITEM_GOLD_CODE = 3;
 float MOON_ITEM_GOLD_MARKET_COST_SCALE = 7; // was 25. Purpose of change is to make such items on marketplace a "farm guns" - cheap, giving extra gold, but no combat benefits - perfect for early game
-string MOON_ITEM_GOLD_EFFECT	 	= "{}% extra gold from monsters";
+string MOON_ITEM_GOLD_EFFECT	 	= "{0}% extra gold from monsters";
 string MOON_ITEM_GOLD_PREFIX_LOW   		= "Lunacy ";
 float MOON_ITEM_GOLD_PREFIX_LOW_FROM = 20;
 float MOON_ITEM_GOLD_PREFIX_LOW_TO = 42;
-string MOON_ITEM_GOLD_PREFIX_NORMAL  	= "Fanatic ";
+string MOON_ITEM_GOLD_PREFIX_NORMAL  	= "Tempting "; // was Fanatic
 float MOON_ITEM_GOLD_PREFIX_NORMAL_FROM = 40;
 float MOON_ITEM_GOLD_PREFIX_NORMAL_TO = 64;
 string MOON_ITEM_GOLD_PREFIX_HIGH   	= "Golden ";
@@ -758,13 +756,13 @@ float MOON_ITEM_GOLD_POSTFIX_LOW_TO = 36;
 string MOON_ITEM_GOLD_POSTFIX_NORMAL 	= " of Treasure";
 float MOON_ITEM_GOLD_POSTFIX_NORMAL_FROM = 35;
 float MOON_ITEM_GOLD_POSTFIX_NORMAL_TO = 50;
-string MOON_ITEM_GOLD_POSTFIX_HIGH      = " of Midas";
+string MOON_ITEM_GOLD_POSTFIX_HIGH      = " of Calf";
 float MOON_ITEM_GOLD_POSTFIX_HIGH_FROM = 48;
 float MOON_ITEM_GOLD_POSTFIX_HIGH_TO = 64;
 
 float MOON_ITEM_RESIST_CODE = 4;
 float MOON_ITEM_RESIST_MARKET_COST_SCALE = 65;
-string MOON_ITEM_RESIST_EFFECT  	= "reduce damage received by {}%";
+string MOON_ITEM_RESIST_EFFECT  	= "reduce damage received by {0}%";
 string MOON_ITEM_RESIST_PREFIX_LOW   	= "Halo ";
 float MOON_ITEM_RESIST_PREFIX_LOW_FROM = 5; // was 1
 float MOON_ITEM_RESIST_PREFIX_LOW_TO = 12;  // was 10
@@ -775,7 +773,6 @@ string MOON_ITEM_RESIST_PREFIX_HIGH   	= "Stone ";
 float MOON_ITEM_RESIST_PREFIX_HIGH_FROM = 20;
 float MOON_ITEM_RESIST_PREFIX_HIGH_TO = 26;
 string MOON_ITEM_RESIST_PREFIX_EPIC   	= "Dragonskin ";
-float MOON_ITEM_RESIST_PREFIX_EPIC_CODE = 24;
 float MOON_ITEM_RESIST_PREFIX_EPIC_FROM = 25;
 float MOON_ITEM_RESIST_PREFIX_EPIC_TO = 31;
 string MOON_ITEM_RESIST_POSTFIX_LOW		= " of Resistance";
@@ -790,7 +787,7 @@ float MOON_ITEM_RESIST_POSTFIX_HIGH_TO = 30;
 
 float MOON_ITEM_RETALATE_CODE = 5;
 float MOON_ITEM_RETALATE_MARKET_COST_SCALE = 20;
-string MOON_ITEM_RETALATE_EFFECT 	= "attacker takes {}% of damage caused";
+string MOON_ITEM_RETALATE_EFFECT 	= "attacker takes {0}% of damage caused";
 string MOON_ITEM_RETALATE_PREFIX_LOW   	= "Dread ";
 float MOON_ITEM_RETALATE_PREFIX_LOW_FROM = 10;  // was 3
 float MOON_ITEM_RETALATE_PREFIX_LOW_TO = 21;    // was 11
@@ -815,7 +812,7 @@ float MOON_ITEM_RETALATE_POSTFIX_HIGH_TO = 64;
 
 float MOON_ITEM_VAMPIR_CODE = 6;
 float MOON_ITEM_VAMPIR_MARKET_COST_SCALE = 70;
-string MOON_ITEM_VAMPIR_EFFECT 		= "{}% your damage converts to life";
+string MOON_ITEM_VAMPIR_EFFECT 		= "{0}% your damage converts to life";
 string MOON_ITEM_VAMPIR_PREFIX_LOW   	= "Flesh ";
 float MOON_ITEM_VAMPIR_PREFIX_LOW_FROM = 3;
 float MOON_ITEM_VAMPIR_PREFIX_LOW_TO = 9;
@@ -841,7 +838,7 @@ float MOON_ITEM_VAMPIR_POSTFIX_HIGH_TO = 27;
 float MOON_ITEM_REGEN_CODE = 7;
 float MOON_ITEM_REGEN_MARKET_COST_SCALE = 500;
 float MOON_ITEM_REGEN_COOLDOWN = 1; // in seconds
-string MOON_ITEM_REGEN_EFFECT  		= "replenish {} health every second";
+string MOON_ITEM_REGEN_EFFECT  		= "replenish {0} health every second";
 string MOON_ITEM_REGEN_PREFIX_LOW   	= "Vein ";
 float MOON_ITEM_REGEN_PREFIX_LOW_FROM = 1;
 float MOON_ITEM_REGEN_PREFIX_LOW_TO = 3;
@@ -866,7 +863,7 @@ float MOON_ITEM_REGEN_POSTFIX_HIGH_TO = 8;
 
 float MOON_ITEM_CONSUME_CODE = 8;
 float MOON_ITEM_CONSUME_MARKET_COST_SCALE = 100;
-string MOON_ITEM_CONSUME_EFFECT		= "adds {} health after each kill";
+string MOON_ITEM_CONSUME_EFFECT		= "adds {0} health after each kill";
 string MOON_ITEM_CONSUME_PREFIX_LOW   	= "Brash ";
 float MOON_ITEM_CONSUME_PREFIX_LOW_FROM = 2;    // was 1
 float MOON_ITEM_CONSUME_PREFIX_LOW_TO = 10;     // was 6
@@ -895,7 +892,7 @@ float MOON_ITEM_REPAIR_MARKET_COST_SCALE = 50;
 float MOON_ITEM_REPAIR_DELAY = 5.0; // after last damage to start repair, in seconds
 float MOON_ITEM_REPAIR_VALUE = 3;   // repair increment
 float MOON_ITEM_REPAIR_COOLDOWN = 1.0; // between repairs, in seconds
-string MOON_ITEM_REPAIR_EFFECT		= "slowly repair armor up to {}";
+string MOON_ITEM_REPAIR_EFFECT		= "slowly repair armor up to {0}";
 string MOON_ITEM_REPAIR_PREFIX_LOW   	= "Durable ";
 float MOON_ITEM_REPAIR_PREFIX_LOW_FROM = 10;
 float MOON_ITEM_REPAIR_PREFIX_LOW_TO = 25; // last and first overlap intentionally
@@ -918,12 +915,13 @@ string MOON_ITEM_REPAIR_POSTFIX_HIGH 	= " of Forgotten Technology";
 float MOON_ITEM_REPAIR_POSTFIX_HIGH_FROM = 36;
 float MOON_ITEM_REPAIR_POSTFIX_HIGH_TO = 60;
 
-float MOON_ITEM_RECHARGE_CODE = 10;
+// last Effect's _CODE should not be greater than MOON_CONST_TRAIT_ITEM_MAX
+float MOON_ITEM_RECHARGE_CODE = MOON_CONST_TRAIT_ITEM_MAX;
 float MOON_ITEM_RECHARGE_MARKET_COST_SCALE = 250;
 float MOON_ITEM_RECHARGE_DELAY = 5.0; // after last use to start recharge, in seconds
 float MOON_ITEM_RECHARGE_VALUE = 1;   // charge increment
 float MOON_ITEM_RECHARGE_COOLDOWN = 1.0; // between charges, in seconds
-string MOON_ITEM_RECHARGE_EFFECT		= "slowly charge cells up to {}";
+string MOON_ITEM_RECHARGE_EFFECT		= "slowly charge cells up to {0}";
 string MOON_ITEM_RECHARGE_PREFIX_LOW   	= "Absorbing ";
 float MOON_ITEM_RECHARGE_PREFIX_LOW_FROM = 1;
 float MOON_ITEM_RECHARGE_PREFIX_LOW_TO = 5; // last and first overlap intentionally
@@ -946,8 +944,6 @@ string MOON_ITEM_RECHARGE_POSTFIX_HIGH 	= " of Forgotten Tech";
 float MOON_ITEM_RECHARGE_POSTFIX_HIGH_FROM = 10;
 float MOON_ITEM_RECHARGE_POSTFIX_HIGH_TO = 16;
 //
-float MOON_ITEM_TRAIT_MAX_EFFECT        = 10;
-// // last Effect's _CODE should not be greater than MOON_ITEM_TRAIT_MAX_EFFECT
 
 // // list of Upgrades
 // These things cannot and should be attached to Items, hence new Code sequence.
@@ -956,7 +952,7 @@ float MOON_ITEM_GLOBALGOLD_CODE = 11;
 float MOON_ITEM_GLOBALGOLD_BONUS_FLAT 	= 5;
 float MOON_ITEM_GLOBALGOLD_BONUS_LVLPERCENT = 0.5;
 float MOON_ITEM_GLOBALGOLD_BONUS_RANDOM = 7;
-string MOON_ITEM_GLOBALGOLD_EFFECT 		= "Book of Treasures (global gold income increase by {}%)\n";
+string MOON_ITEM_GLOBALGOLD_EFFECT 		= "Book of Treasures (global gold income increase by {0}%)\n";
 float MOON_ITEM_GATEALERT_CODE = 12;
 string MOON_ITEM_GATEALERT_EFFECT  		= "Book of \sRed\s Alert (gate gives a signal when killed)\n";
 string MOON_ITEM_GATEALERT_SIDEEFFECT 	= "Book of \sRed\s Gate (+10 max health to Gate)\n";
@@ -965,7 +961,7 @@ float MOON_ITEM_HEART_CODE = 13;
 float MOON_ITEM_HEART_BONUS_FLAT 		= 5;
 float MOON_ITEM_HEART_BONUS_LVLPERCENT 	= 0.25;
 float MOON_ITEM_HEART_BONUS_RANDOM 		= 5;
-string MOON_ITEM_HEART_EFFECT 			= "Book of Immortality (\sHeart\s life increased by {})\n";
+string MOON_ITEM_HEART_EFFECT 			= "Book of Immortality (\sHeart\s life increased by {0})\n";
 float MOON_ITEM_GUARDIAN_CODE = 14;
 string MOON_ITEM_GUARDIAN_EFFECT 		= "Book of Blind Guardian (guardian joins your army)\n";
 // Personal - Ammo/Weapons - One continuous code span
@@ -1046,7 +1042,7 @@ string MOON_MONSTER_TRAIT_QUADDAMAGE_DISPLAY        = "quaded ";
 float MOON_MONSTER_TRAIT_IRON               = 2;
 float MOON_MONSTER_TRAIT_IRON_SKIN                  = 1;
 string MOON_MONSTER_TRAIT_IRON_DISPLAY              = "iron ";
-string MOON_MONSTER_TRAIT_IRON_DESCRIPTION          = "takes only {}% damage from each instance";
+string MOON_MONSTER_TRAIT_IRON_DESCRIPTION          = "takes only {0}% damage from each instance";
 float MOON_MONSTER_TRAIT_IRON_DAMAGERECEIVED        = 20;
 float MOON_MONSTER_TRAIT_STONE              = 3;
 float MOON_MONSTER_TRAIT_STONE_SKIN                 = 2;

@@ -1,0 +1,43 @@
+Adjectives for Prefixes (if present)
+
+    Eldritch
+
+    Abyssal ----------
+
+    Chthonic ----------
+
+    Void-Touched
+
+    Corrupted
+
+    Unstable
+
+    Singularity-Forged
+
+    Quantum-Twisted
+
+    Forbidden ----------
+
+    Hyperdimensional
+
+Postfixes for Items (if present)
+
+    of the Nameless
+
+    of the Black Star
+
+    of the Crawling Chaos
+
+    of the Unknowable
+
+    of the Fractured Reality
+
+    of the Silent Void
+
+    of the Shattered Continuum
+
+    of the Whispering Abyss
+
+    of the Forgotten Ones ----------
+
+    of the Event Horizon
